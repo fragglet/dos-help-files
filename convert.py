@@ -26,6 +26,7 @@ CHAR_ESCAPES = {
 	">": "_gt_",
 	"#": "_hash_",
 	".": "_dot_",
+	"@": "_at_",
 	" ": "_",
 }
 
@@ -85,9 +86,7 @@ class Topic(object):
 		self.topic = u""
 		self.text = u""
 
-	def name(self):
-		if len(self.topic) > 0:
-			return self.topic
+	def prettiest_context(self):
 		best = ""
 		best_cnt = 9999
 		for c in self.contexts:
@@ -97,9 +96,14 @@ class Topic(object):
 				best_cnt = digits
 		return best
 
+	def name(self):
+		if len(self.topic) > 0:
+			return self.topic
+		return self.prettiest_context()
+
 	def filename(self):
 		escaped = (u"".join(CHAR_ESCAPES.get(c, c)
-		           for c in self.name()))
+		           for c in self.prettiest_context()))
 		return escaped + ".html"
 
 	def to_html(self):
@@ -169,11 +173,11 @@ class Database(object):
 			last_was_context = False
 
 		self.current_topic = None
-		self.topics_by_name = {t.name(): t for t in topics}
-		self.topics = {}
+		self.topics = topics
+		self.topics_by_context = {}
 		for t in topics:
 			for c in t.contexts:
-				self.topics[c] = t
+				self.topics_by_context[c] = t
 
 if len(sys.argv) != 3:
 	print("Usage: %s <filename> <output dir>" % sys.argv[0])
@@ -182,13 +186,13 @@ outdir = sys.argv[2]
 f = read_as_utf8(sys.argv[1])
 db = Database()
 db.parse_text(f)
-for tname, t in db.topics_by_name.items():
+for t in db.topics:
 	filename = t.filename()
 	outfile = os.path.join(outdir, filename)
 	with open(outfile, "wb") as out:
 		html = HTML_TEMPLATE % {
 			'body': t.to_html(),
-			'title': tname,
+			'title': t.name(),
 		}
 		out.write(html.encode("utf-8"))
 
