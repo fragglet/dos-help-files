@@ -70,7 +70,7 @@ class Database(object):
 
 	def parse_text(self, text):
 		self.current_topic = Topic()
-		self.topics = []
+		topics = []
 
 		last_was_context = False
 
@@ -86,7 +86,7 @@ class Database(object):
 				# New topic?
 				if not last_was_context:
 					self.current_topic = Topic()
-					self.topics.append(self.current_topic)
+					topics.append(self.current_topic)
 				self.current_topic.contexts.append(arg)
 				last_was_context = True
 				continue
@@ -95,13 +95,18 @@ class Database(object):
 			last_was_context = False
 
 		self.current_topic = None
+		self.topics_by_name = {t.name(): t for t in topics}
+		self.topics = {}
+		for t in topics:
+			for c in t.contexts:
+				self.topics[c] = t
 
 for filename in sys.argv[1:]:
 	f = read_as_utf8(filename)
 	db = Database()
 	db.parse_text(f)
-	print("Read %d topics from %r" % (len(db.topics), filename))
-	for t in db.topics:
+	print("Read %d topics from %r" % (len(db.topics_by_name), filename))
+	for tname, t in db.topics_by_name.items():
 		print("\t%r" % t.name())
-		print(t.text.encode("utf-8"))
+		#print(t.text.encode("utf-8"))
 
