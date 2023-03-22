@@ -6,6 +6,8 @@ import re
 
 DOTCMD_RE = re.compile(r"^\.([a-zA-Z]+)\s+(.*)")
 
+FORMAT_SWITCH_RE = re.compile(r"\\([ibup])", re.DOTALL)
+
 DONTCARE_COMMANDS = { "freeze", "list", "paste", "popup", "ref", "mark", "length" }
 
 # For filenames:
@@ -75,6 +77,22 @@ class Topic(object):
 	def filename(self):
 		return u"".join(CHAR_ESCAPES.get(c, c) for c in self.name())
 
+	def to_html(self):
+		result = self.text
+		curr = ['p']
+		def switch_format(m):
+			old_format, new_format = curr[0], m.group(1)
+			if old_format != "p":
+				tag = "</%c>" % old_format
+			else:
+				tag = ""
+			if new_format != "p":
+				tag += "<%c>" % new_format
+			curr[0] = new_format
+			return tag
+		result = FORMAT_SWITCH_RE.sub(switch_format, result)
+		return result
+
 class Database(object):
 
 	def parse_dotcmd(self, cmd, arg):
@@ -127,5 +145,5 @@ for filename in sys.argv[1:]:
 	print("Read %d topics from %r" % (len(db.topics_by_name), filename))
 	for tname, t in db.topics_by_name.items():
 		print("\t%r" % t.filename())
-		#print(t.text.encode("utf-8"))
+		print(t.to_html().encode("utf-8"))
 
