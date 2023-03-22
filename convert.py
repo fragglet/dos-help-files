@@ -8,6 +8,22 @@ DOTCMD_RE = re.compile(r"^\.([a-zA-Z]+)\s+(.*)")
 
 DONTCARE_COMMANDS = { "freeze", "list", "paste", "popup", "ref", "mark", "length" }
 
+# For filenames:
+CHAR_ESCAPES = {
+	"\\": "_bksl_",
+	"/": "_sl_",
+	"\"": "_dqt_",
+	"\'": "_qt_",
+	",": "_cm_",
+	":": "_cln_",
+	"&": "_amp_",
+	"<": "_lt_",
+	">": "_gt_",
+	"#": "_hash_",
+	".": "_dot_",
+	" ": "_",
+}
+
 cp437 = [
 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
 # 0, 9786, 9787, 9829, 9830, 9827, 9824, 8226, 9688, 9675, 9689, 9794, 9792, 9834, 9835, 9788,
@@ -55,6 +71,9 @@ class Topic(object):
 				best = c
 				best_cnt = digits
 		return best
+
+	def filename(self):
+		return u"".join(CHAR_ESCAPES.get(c, c) for c in self.name())
 
 class Database(object):
 
@@ -107,6 +126,6 @@ for filename in sys.argv[1:]:
 	db.parse_text(f)
 	print("Read %d topics from %r" % (len(db.topics_by_name), filename))
 	for tname, t in db.topics_by_name.items():
-		print("\t%r" % t.name())
+		print("\t%r" % t.filename())
 		#print(t.text.encode("utf-8"))
 
