@@ -2,6 +2,7 @@
 
 from __future__ import generators, division, print_function, unicode_literals
 from xml.sax.saxutils import escape, unescape
+import os
 import sys
 import re
 
@@ -27,6 +28,21 @@ CHAR_ESCAPES = {
 	".": "_dot_",
 	" ": "_",
 }
+
+HTML_TEMPLATE="""<html>
+
+<head>
+<title>%(title)s</title>
+</head>
+
+<body>
+<pre>
+%(body)s
+</pre>
+</body>
+
+</html>
+"""
 
 cp437 = [
 # Control code range is an odd mix of symbols and real control codes:
@@ -82,7 +98,9 @@ class Topic(object):
 		return best
 
 	def filename(self):
-		return u"".join(CHAR_ESCAPES.get(c, c) for c in self.name())
+		escaped = (u"".join(CHAR_ESCAPES.get(c, c)
+		           for c in self.name()))
+		return escaped + ".html"
 
 	def to_html(self):
 		# TODO: HTML escape < to &lt; etc.
@@ -137,7 +155,7 @@ class Database(object):
 				last_was_context = False
 				continue
 
-			cmdname, arg = m.group(1), m.group(2)
+			cmdname, arg = m.group(1), m.group(3)
 			if cmdname == "context":
 				# New topic?
 				if not last_was_context:
@@ -157,12 +175,20 @@ class Database(object):
 			for c in t.contexts:
 				self.topics[c] = t
 
-for filename in sys.argv[1:]:
-	f = read_as_utf8(filename)
-	db = Database()
-	db.parse_text(f)
-	print("Read %d topics from %r" % (len(db.topics_by_name), filename))
-	for tname, t in db.topics_by_name.items():
-		print("\t%r" % t.filename())
-		print(t.to_html().encode("utf-8"))
+if len(sys.argv) != 3:
+	print("Usage: %s <filename> <output dir>" % sys.argv[0])
+
+outdir = sys.argv[2]
+f = read_as_utf8(sys.argv[1])
+db = Database()
+db.parse_text(f)
+for tname, t in db.topics_by_name.items():
+	filename = t.filename()
+	outfile = os.path.join(outdir, filename)
+	with open(outfile, "wb") as out:
+		html = HTML_TEMPLATE % {
+			'body': t.to_html(),
+			'title': tname,
+		}
+		out.write(html.encode("utf-8"))
 
