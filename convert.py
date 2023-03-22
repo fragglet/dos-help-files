@@ -4,11 +4,11 @@ from __future__ import generators, division, print_function, unicode_literals
 import sys
 import re
 
-DOTCMD_RE = re.compile(r"^\.([a-zA-Z]+)\s+(.*)")
+DOTCMD_RE = re.compile(r"^\.([a-zA-Z]+)(\s+(.*))?")
 
 FORMAT_SWITCH_RE = re.compile(r"\\([\\ibup])", re.DOTALL)
 
-DONTCARE_COMMANDS = { "freeze", "list", "paste", "popup", "ref", "mark", "length" }
+DONTCARE_COMMANDS = { "freeze", "list", "paste", "popup", "ref", "mark", "length", "end" }
 
 # For filenames:
 CHAR_ESCAPES = {
@@ -63,7 +63,7 @@ def read_as_utf8(filename):
 class Topic(object):
 	def __init__(self):
 		self.contexts = []
-		self.categories = []
+		self.category = None
 		self.topic = u""
 		self.text = u""
 
@@ -106,7 +106,7 @@ class Database(object):
 		if cmd in DONTCARE_COMMANDS:
 			return
 		if cmd == "category":
-			self.current_topic.categories.append(arg)
+			self.current_topic.category = arg
 		elif cmd == "topic":
 			self.current_topic.topic = arg
 		else:
