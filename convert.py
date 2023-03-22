@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import generators, division, print_function, unicode_literals
+from xml.sax.saxutils import escape, unescape
 import sys
 import re
 
@@ -85,7 +86,7 @@ class Topic(object):
 
 	def to_html(self):
 		# TODO: HTML escape < to &lt; etc.
-		result = self.text
+		result = escape(self.text)
 		curr = ['p']
 		def switch_format(m):
 			old_format, new_format = curr[0], m.group(1)
@@ -100,8 +101,13 @@ class Topic(object):
 			curr[0] = new_format
 			return tag
 		def create_link(m):
-			text, dest = m.group(1), m.group(2)
-			return "<a href='#%s'>%s</a>" % (dest, text)
+			text, dest = m.group(1), unescape(m.group(2))
+			dest = unescape(dest)
+			if dest == "!B":
+				dest = "javascript:history.back();"
+			else:
+				dest = "#" + dest
+			return "<a href='%s'>%s</a>" % (dest, text)
 		result = FORMAT_SWITCH_RE.sub(switch_format, result)
 		result = HYPERLINK_RE.sub(create_link, result)
 		return result
