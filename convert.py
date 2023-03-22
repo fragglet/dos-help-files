@@ -6,7 +6,7 @@ import re
 
 DOTCMD_RE = re.compile(r"^\.([a-zA-Z]+)\s+(.*)")
 
-FORMAT_SWITCH_RE = re.compile(r"\\([ibup])", re.DOTALL)
+FORMAT_SWITCH_RE = re.compile(r"\\([\\ibup])", re.DOTALL)
 
 DONTCARE_COMMANDS = { "freeze", "list", "paste", "popup", "ref", "mark", "length" }
 
@@ -87,6 +87,8 @@ class Topic(object):
 		curr = ['p']
 		def switch_format(m):
 			old_format, new_format = curr[0], m.group(1)
+			if new_format == "\\":  # Double \\
+				return new_format
 			if old_format != "p":
 				tag = "</%c>" % old_format
 			else:
