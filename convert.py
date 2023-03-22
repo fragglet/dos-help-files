@@ -2,6 +2,11 @@
 
 from __future__ import generators, division, print_function, unicode_literals
 import sys
+import re
+
+DOTCMD_RE = re.compile(r"^\.([a-zA-Z]+)\s+(.*)")
+
+DONTCARE_COMMANDS = { "freeze", "list", "paste", "popup", "ref", "mark", "length" }
 
 cp437 = [
 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
@@ -32,7 +37,71 @@ def read_as_utf8(filename):
 		result.append(u"%c" % cp437[ord(c)])
 	return u"".join(result)
 
+class Topic(object):
+	def __init__(self):
+		self.contexts = []
+		self.categories = []
+		self.topic = u""
+		self.text = u""
+
+	def name(self):
+		if len(self.topic) > 0:
+			return self.topic
+		best = ""
+		best_cnt = 9999
+		for c in self.contexts:
+			digits = len(list(x for x in c if u"0" <= x <= u"9"))
+			if digits < best_cnt:
+				best = c
+				best_cnt = digits
+		return best
+
+class Database(object):
+
+	def parse_dotcmd(self, cmd, arg):
+		if cmd in DONTCARE_COMMANDS:
+			return
+		if cmd == "category":
+			self.current_topic.categories.append(arg)
+		elif cmd == "topic":
+			self.current_topic.topic = arg
+		else:
+			raise Exception("Unknown dot command %r" % cmd)
+
+	def parse_text(self, text):
+		self.current_topic = Topic()
+		self.topics = []
+
+		last_was_context = False
+
+		for line in text.splitlines():
+			m = DOTCMD_RE.match(line)
+			if not m:
+				self.current_topic.text += line + "\n"
+				last_was_context = False
+				continue
+
+			cmdname, arg = m.group(1), m.group(2)
+			if cmdname == "context":
+				# New topic?
+				if not last_was_context:
+					self.current_topic = Topic()
+					self.topics.append(self.current_topic)
+				self.current_topic.contexts.append(arg)
+				last_was_context = True
+				continue
+
+			self.parse_dotcmd(cmdname, arg)
+			last_was_context = False
+
+		self.current_topic = None
+
 for filename in sys.argv[1:]:
 	f = read_as_utf8(filename)
-	sys.stdout.write(f.encode("utf-8"))
+	db = Database()
+	db.parse_text(f)
+	print("Read %d topics from %r" % (len(db.topics), filename))
+	for t in db.topics:
+		print("\t%r" % t.name())
+		print(t.text.encode("utf-8"))
 
