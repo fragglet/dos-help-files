@@ -7,6 +7,7 @@ import re
 DOTCMD_RE = re.compile(r"^\.([a-zA-Z]+)(\s+(.*))?")
 
 FORMAT_SWITCH_RE = re.compile(r"\\([\\ibup])", re.DOTALL)
+HYPERLINK_RE = re.compile(r"\\a(.*?)\\v(.*?)\\v")
 
 DONTCARE_COMMANDS = { "freeze", "list", "paste", "popup", "ref", "mark", "length", "end" }
 
@@ -83,6 +84,7 @@ class Topic(object):
 		return u"".join(CHAR_ESCAPES.get(c, c) for c in self.name())
 
 	def to_html(self):
+		# TODO: HTML escape < to &lt; etc.
 		result = self.text
 		curr = ['p']
 		def switch_format(m):
@@ -97,7 +99,11 @@ class Topic(object):
 				tag += "<%c>" % new_format
 			curr[0] = new_format
 			return tag
+		def create_link(m):
+			text, dest = m.group(1), m.group(2)
+			return "<a href='#%s'>%s</a>" % (dest, text)
 		result = FORMAT_SWITCH_RE.sub(switch_format, result)
+		result = HYPERLINK_RE.sub(create_link, result)
 		return result
 
 class Database(object):
