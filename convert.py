@@ -60,6 +60,23 @@ REDIRECT_TEMPLATE="""<html>
 </html>
 """
 
+TOPIC_LIST_TEMPLATE="""<html>
+
+<head>
+<title> List of Topics </title>
+</head>
+
+<body>
+<h1> List of Topics </h1>
+<ul>
+%s
+</ul>
+
+</body>
+
+</html>
+"""
+
 cp437 = [
 # Control code range is an odd mix of symbols and real control codes:
 0, 9786, 9787, 9829, 9830, 9827, 9824, 8226, 9688, 9675, 
@@ -246,6 +263,18 @@ def write_redirect_file(filename, topic):
 		html = REDIRECT_TEMPLATE % (topic.filename(),)
 		out.write(html.encode("utf-8"))
 
+def write_topic_list(filename, db):
+	with open(filename, "wb") as out:
+		topic_list = []
+		for topic in db.topics:
+			topic_list.append((topic.name(), topic.filename()))
+		html_topic_list = "\n".join(
+			"<li> <a href='%s'>%s</a>" % (f, t)
+			for t, f in sorted(topic_list)
+		)
+		html = TOPIC_LIST_TEMPLATE % (html_topic_list,)
+		out.write(html.encode("utf-8"))
+
 if len(sys.argv) != 3:
 	print("Usage: %s <filename> <output dir>" % sys.argv[0])
 
@@ -258,4 +287,5 @@ for t in db.topics:
 	write_html_file(os.path.join(outdir, filename), t)
 	for filename in t.alias_filenames():
 		write_redirect_file(os.path.join(outdir, filename), t)
+write_topic_list(os.path.join(outdir, "TOPIC_LIST.html"), db)
 
