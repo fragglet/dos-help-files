@@ -10,6 +10,7 @@ DOTCMD_RE = re.compile(r"^\.([a-zA-Z]+)(\s+(.*))?")
 
 FORMAT_SWITCH_RE = re.compile(r"\\([\\ibup])", re.DOTALL)
 HYPERLINK_RE = re.compile(r"\\a(.*?)\\v(.*?)\\v")
+ALWAYS_GREEN_RE = re.compile(u"([\u25ba\u25c4])")
 
 DONTCARE_COMMANDS = { "freeze", "list", "paste", "popup", "ref", "mark", "length", "end" }
 
@@ -81,7 +82,8 @@ def read_as_utf8(filename):
 	return u"".join(result)
 
 class Topic(object):
-	def __init__(self):
+	def __init__(self, db):
+		self.db = db
 		self.contexts = []
 		self.category = None
 		self.topic = u""
@@ -128,11 +130,22 @@ class Topic(object):
 			dest = unescape(dest)
 			if dest == "!B":
 				dest = "javascript:history.back();"
+			elif "!" not in dest:
+				target_topic = (
+					self.db.topics_by_context.get(dest))
+				if target_topic is not None:
+					dest = target_topic.filename()
+				else:
+					dest = "unknown#" + dest
 			else:
-				dest = "#" + dest
+				dest = "TODO#" + dest
 			return "<a href='%s'>%s</a>" % (dest, text)
+		def make_green(m):
+			return "<span class='grhilite'>%s</span>" % m.group(1)
+
 		result = FORMAT_SWITCH_RE.sub(switch_format, result)
 		result = HYPERLINK_RE.sub(create_link, result)
+		result = ALWAYS_GREEN_RE.sub(make_green, result)
 		return result
 
 class Database(object):
@@ -148,7 +161,7 @@ class Database(object):
 			raise Exception("Unknown dot command %r" % cmd)
 
 	def parse_text(self, text):
-		self.current_topic = Topic()
+		self.current_topic = Topic(self)
 		topics = []
 
 		last_was_context = False
@@ -164,7 +177,7 @@ class Database(object):
 			if cmdname == "context":
 				# New topic?
 				if not last_was_context:
-					self.current_topic = Topic()
+					self.current_topic = Topic(self)
 					topics.append(self.current_topic)
 				self.current_topic.contexts.append(arg)
 				last_was_context = True
