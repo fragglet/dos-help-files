@@ -10,6 +10,7 @@ DOTCMD_RE = re.compile(r"^\.([a-z]+)(\s+(.*))?")
 
 FORMAT_SWITCH_RE = re.compile(r"\\([\\ibup])", re.DOTALL)
 HYPERLINK_RE = re.compile(r"\\a(.*?)\\v(.*?)\\v")
+NON_HYPERLINK_RE = re.compile(r"\\v[^\\]*\\v")
 ALWAYS_GREEN_RE = re.compile(u"([\u25ba\u25c4])")
 
 DONTCARE_COMMANDS = { "freeze", "list", "paste", "popup", "ref", "mark",
@@ -174,6 +175,7 @@ class Topic(object):
 
 		result = FORMAT_SWITCH_RE.sub(switch_format, result)
 		result = HYPERLINK_RE.sub(create_link, result)
+		result = NON_HYPERLINK_RE.sub("", result)
 		result = ALWAYS_GREEN_RE.sub(make_green, result)
 		return result
 
