@@ -1,0 +1,59 @@
+<html>
+
+<head>
+<title>CALL, CALLS (Non-BASIC) Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the CALL and CALLS statements to pass a BASIC array to a
+'C function.
+ 
+'NOTE: To run this program, you must separately compile the C function with
+'the medium-model (/AM) switch and place the object module in a Quick library
+'or link it to the BASIC main program.
+ 
+DEFINT A-Z
+ 
+DECLARE SUB AddArr CDECL (SEG Array, SEG Num)
+ 
+DIM a(1 TO 100) AS INTEGER
+'Fill the array with the numbers 1 to N.
+N = 15
+FOR I = 1 TO N
+    A(I) = I
+NEXT I
+ 
+'Call the C function using CALLS the first time
+'and increment all array elements by 1.
+CALLS AddArr(a(1), N)
+ 
+'Call the same C function again using CALL and
+'increment all array elements by 1.
+CALL AddArr(a(1),N)
+ 
+'Print the modified array. All elements will be incremented
+'by a total of two. For example, what was 1 will now be 3.
+FOR I = 1 TO N
+   PRINT A(I),
+NEXT I
+END
+ 
+'C Function addarr.
+'
+'/* Add one to the first num elements of array arr.*/
+'void far addarr(arr,num)
+'int far *arr;
+'int far *num;
+'{
+'   int i;
+'   for(i=0;i&lt;*num;i++) arr[i]++;
+'}
+
+</pre>
+</body>
+
+</html>

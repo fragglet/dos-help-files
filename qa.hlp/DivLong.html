@@ -1,0 +1,41 @@
+<html>
+
+<head>
+<title>DivLong</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* DivLong - Divides an unsigned long integer by an unsigned short integer.
+;* The procedure does not check for overflow or divide-by-zero.
+;*
+;* Shows:   Instruction -  div
+;*
+;* Params:  long1 - First integer (dividend)
+;*          short2 - Second integer (divisor)
+;*          remn - Pointer to remainder
+;*
+;* Return:  Quotient as short integer
+ 
+DivLong PROC \
+        USES di, \
+        long1:DWORD, short2:WORD, remn:PTR WORD
+ 
+        mov     ax, WORD PTR long1[0]   ; AX = low word of dividend
+        mov     dx, WORD PTR long1[2]   ; DX = high word of dividend
+        div     short2                  ; Divide by short integer
+        LoadPtr es, di, remn            ; Point ES:DI to remainder
+        mov     es:[di], dx             ; Copy remainder
+        ret                             ; Return with AX = quotient
+ 
+DivLong ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

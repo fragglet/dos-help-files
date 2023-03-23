@@ -1,0 +1,110 @@
+<html>
+
+<head>
+<title>COPY1.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* COPY1.C illustrates low-level file I/O and dynamic memory allocation
+ * functions including:
+ *      _open           _close
+ *      _read           _write          _eof
+ *      malloc          free            _memmax
+ *
+ * Also the global variable:
+ *      errno
+ *
+ * See <a href='_at_L80b5.html'>COPY2.C</a> for another version of the copyfile function and
+ * <a href='_at_L80ca.html'>HEAPBASE.C</a> for an example of based heap management.
+ */
+ 
+#include &lt;io.h&gt;
+#include &lt;conio.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;fcntl.h&gt;          /* _O_ constant definitions */
+#include &lt;sys\types.h&gt;
+#include &lt;sys\stat.h&gt;       /* _S_ constant definitions */
+#include &lt;malloc.h&gt;
+#include &lt;errno.h&gt;
+ 
+int copyfile( char *source, char *destin );     /* Prototype */
+ 
+void main( int argc, char *argv[] )
+{
+    if( argc == 3 )
+        if( copyfile( argv[1], argv[2] ) )
+            printf( "Copy failed\n" );
+        else
+            printf( "Copy successful\n" );
+    else
+        printf( "  SYNTAX: COPY1 &lt;source&gt; &lt;target&gt;\n" );
+}
+ 
+/* Copies one file to another (both specified by path). Dynamically
+ * allocates memory for the file buffer. Prompts before overwriting
+ * existing file. Returns 0 if successful, otherwise an error number.
+ */
+int copyfile( char *source, char *target )
+{
+    char *buf;
+    int hsource, htarget, ch;
+    unsigned count = 0xff00;
+ 
+    /* Open source file and create target, overwriting if necessary. */
+    if( (hsource = _open( source, _O_BINARY | _O_RDONLY )) == - 1 )
+        return errno;
+    htarget = _open( target, _O_BINARY | _O_WRONLY | _O_CREAT | _O_EXCL,
+                             _S_IREAD | _S_IWRITE );
+    if( errno == EEXIST )
+    {
+        _cputs( "Target exists. Overwrite? " );
+        ch = _getch();
+        if( (ch == 'y') || (ch == 'Y') )
+            htarget = _open( target, _O_BINARY | _O_WRONLY | _O_CREAT |
+                                     _O_TRUNC, _S_IREAD | _S_IWRITE );
+        printf( "\n" );
+    }
+    if( htarget == -1 )
+        return errno;
+ 
+    if( _filelength( hsource ) &lt; count )
+        count = (int)_filelength( hsource );
+ 
+    /* Dynamically allocate a large file buffer. If there's not enough
+     * memory for it, find the largest amount available on the near heap
+     * and allocate that. This can't fail, no matter what the memory model.
+     */
+    if( (buf = (char *)malloc( (size_t)count )) == NULL )
+    {
+        count = _memmax();
+        if( (buf = (char *)malloc( (size_t)count )) == NULL )
+            return ENOMEM;
+    }
+ 
+    /* Read-write until there's nothing left. */
+    while( !_eof( hsource ) )
+    {
+        /* Read and write input. */
+        if( (count = _read( hsource, buf, count )) == -1 )
+            return errno;
+        if( (count = _write( htarget, buf, count )) == - 1 )
+            return errno;
+    }
+ 
+    /* Close files and release memory. */
+    _close( hsource );
+    _close( htarget );
+    free( buf );
+    return 0;
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

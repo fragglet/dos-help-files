@@ -1,0 +1,41 @@
+<html>
+
+<head>
+<title>OpenFile</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L83fe.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* OpenFile - Opens specified file for reading or writing. See the CopyFile
+;* procedure for another example of using DOS Function 3Dh to open files.
+;*
+;* Shows:   DOS Function - 3Dh (Open File)
+;*
+;* Params:  Access - Access code:  0 = read    1 = write    2 = read/write
+;*          Fspec - Pointer to ASCIIZ file specification
+;*
+;* Return:  Short integer with file handle or -1 for error
+ 
+OpenFile PROC USES ds,
+        Access:WORD, Fspec:PBYTE
+ 
+        LoadPtr ds, dx, Fspec           ; Point DS:DX to file spec
+        mov     ax, Access              ; AL = access code
+        mov     ah, 3Dh                 ; AH = function number
+        int     21h                     ; Open file
+        .IF     carry?
+        mov     ax, -1                  ; Set error code
+        .ENDIF
+        ret
+ 
+OpenFile ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

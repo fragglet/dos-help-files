@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>PCOPY and SCREEN Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the SCREEN statement to set up a multipage EGA or VGA
+'mode 7 (320x200) display. A help screen is displayed for several
+'seconds, then copied (using the PCOPY statement) to page 2 for later use.
+'A cube is displayed and rotated on the screen. By pressing Shift+F1, the
+'user can again see the help screen, after which the cube display is resumed.
+ 
+DEFINT A-Z
+'Define a macro string to draw a cube and paint its sides.
+One$ = "BR30 BU25 C1 R54 U45 L54 D45 BE20 P1, 1G20 C2 G20"
+Two$ = "R54 E20 L54 BD5 P2, 2 U5 C4 G20 U45 E20 D45 BL5 P4, 4"
+Plot$ = One$ + Two$
+'Initialize values for active page, visual page, help page, and angle
+'of rotation.
+APage% = 0
+VPage% = 1
+HPage% = 2
+Angle% = 0
+'Create a HELP screen on the visual page.
+SCREEN 7, 0, VPage%, VPage%
+LOCATE 1, 18
+PRINT "HELP"
+LOCATE 5, 1
+PRINT "Press 'Alt+F1' keys to see this HELP"
+PRINT "screen  while the  cube is  rotating"
+PRINT "around the  center of  the  screen. "
+PRINT
+PRINT "After a  brief delay, the  cube will"
+PRINT "resume  at the  next  point in  it's"
+PRINT "rotation."
+PRINT
+PRINT "Press  any  other  key  to  exit the"
+PRINT "program. "
+'Put a copy of the help screen in page 2.
+PCOPY VPage%, HPage%
+SLEEP 5
+DO
+    SCREEN 7, 0, APage%, VPage%
+    'Clear the active page.
+    CLS 1
+    'Rotate the cube Angle% degrees.
+    DRAW "TA" + STR$(Angle%) + Plot$
+    'Angle% is some multiple of 15 degrees.
+    Angle% = (Angle% + 15) MOD 360
+    'Drawing is complete. Make the cube visible in its new position
+    'by swapping the active and visual pages.
+    SWAP APage%, VPage%
+    'Check the keyboard input.
+    Kbd$ = INKEY$
+    SELECT CASE Kbd$
+        'If Shift+F1 is pressed, show the HELP page.
+        CASE CHR$(0) + CHR$(104)
+            PCOPY HPage%, APage%
+            SLEEP 3
+        'Do nothing if no key is pressed.
+        CASE ""
+        CASE ELSE
+            EXIT DO
+    END SELECT
+LOOP
+END
+
+</pre>
+</body>
+
+</html>

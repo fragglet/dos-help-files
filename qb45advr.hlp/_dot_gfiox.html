@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>GET (File I/O) Statement Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#GET'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='_dot_gfior.html'>Details<span class='grhilite'>►</span></a>     <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>GET (File I/O) Statement Programming Example</b>
+ 
+The following program opens the file TESTDAT2.DAT for random
+access and displays the contents on the screen.
+ 
+'  Read and display the contents of a file containing a
+'  name of up to 20 characters and a test score.
+'
+'  Define record fields.
+TYPE TestRecord
+   NameField  AS STRING * 20
+   ScoreField AS SINGLE
+END TYPE
+' Define a variable of the user type.
+DIM Rec AS TestRecord
+'********************************************************************
+' This part of the program is an insert whose only function is to
+' create a random-access file to be used by the second part of the
+' program, which demonstrates the CVSMBF function
+'********************************************************************
+OPEN "TESTDAT2.DAT" FOR RANDOM AS #1 LEN = LEN(Rec)
+CLS
+RESTORE
+READ NameField$, ScoreField
+I = 0
+DO WHILE UCASE$(NameField$) &lt;&gt; "END"
+   I = I + 1
+   Rec.NameField = NameField$
+   Rec.ScoreField = ScoreField
+   PUT #1, I, Rec
+   READ NameField$, ScoreField
+   IF NameField$ = "END" THEN EXIT DO
+LOOP
+CLOSE #1
+'
+   DATA "John Simmons", 100
+   DATA "Allie Simpson", 95
+   DATA "Tom Tucker", 72
+   DATA "Walt Wagner", 90
+   DATA "Mel Zucker", 92
+   DATA "END", 0
+ 
+'  Open the test data file.
+'
+DIM FileBuffer AS TestRecord
+OPEN "TESTDAT2.DAT" FOR RANDOM AS #1 LEN=LEN(FileBuffer)
+'  Calculate number of records in the file.
+Max = LOF(1) / LEN(FileBuffer)
+'  Read and print contents of each record.
+FOR I = 1 TO Max
+   GET #1, I, FileBuffer
+   PRINT FileBuffer.NameField, FileBuffer.ScoreField
+NEXT I
+CLOSE #1
+END
+ 
+
+</pre>
+</body>
+
+</html>

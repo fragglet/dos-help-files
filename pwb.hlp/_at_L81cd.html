@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<title>Handling Indirect Dependency</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L81cc.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Programmer's WorkBench─────────────────────────────────────────────────
+ 
+     The usual structure of the build process is:
+ 
+     FILE.C  ──compile──<span class='grhilite'>►</span>  FILE.OBJ  ──link──<span class='grhilite'>►</span>  PROGRAM.EXE
+ 
+     A description block for PROGRAM.EXE is given in the makefile, with
+     FILE.OBJ listed as a dependent. NMAKE applies the .c.obj inference
+     rule to compile FILE.SRC into FILE.OBJ.
+ 
+     However, when using a preprocesssor that generates a source file,
+     the build process is:
+ 
+     FILE.PRE ──tool──<span class='grhilite'>►</span>  FILE.C  ──compile──<span class='grhilite'>►</span>  FILE.OBJ  ...
+ 
+     FILE.OBJ is indirectly dependent on FILE.PRE. Intuitively, it seems
+     that all that is necessary is to define a .pre.c inference rule and
+     add .pre to the .SUFFIXES list. However, this does not work.
+ 
+     If FILE.PRE is modified and FILE.C exists from a previous build,
+     NMAKE does not close the indirect dependency from FILE.PRE to
+     FILE.OBJ. Because there is a .c.obj inference rule, NMAKE first
+     checks FILE.OBJ against FILE.C, finds that FILE.OBJ is up-to-date
+     with respect to FILE.C, and performs no action.
+ 
+     You can handle this by short-circuiting the indirect dependency as
+     follows:
+ 
+       ■  Create a .pre.obj inference rule.
+ 
+          This defines an inference rule that describes how to build
+          the object file directly from the preprocessor source file.
+          The build rule to define this is:
+ 
+               Build: inference .pre.obj tool_pre_c cc_c_obj
+ 
+          Note that the standard C compiler command (cc_c_obj) is reused
+          to perform that part of the build.
+ 
+       ■  List .pre before .src in the .SUFFIXES list.
+ 
+          This ensures that NMAKE checks the modification date of
+          FILE.OBJ against FILE.PRE before checking FILE.C. The build
+          rule to define this is:
+ 
+               Build: suffixes .pre
+ 
+          PWB automatically appends .c to the .SUFFIXES list when it
+          creates the makefile.
+ 
+     These rules should be added to a previously saved custom project
+     template that is appropriate for the language and type of project
+     that you want to build.
+ 
+     See
+ 
+     <span class='grhilite'>◄</span><a href='Build_cln_suffixes.html'>Build:suffixes</a><span class='grhilite'>►</span>
+     <span class='grhilite'>◄</span><a href='_at_L81cb.html'>How PWB Creates a Project Makefile</a><span class='grhilite'>►</span>
+     <span class='grhilite'>◄</span><a href='../nmake.hlp/_dot_SUFFIXES.html'>NMAKE .SUFFIXES Directive</a><span class='grhilite'>►</span>
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

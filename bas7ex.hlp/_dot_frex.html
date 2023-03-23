@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<title>FRE and STACK Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the FRE function to report the availability of memory
+'resources. The example also uses the STACK function to allocate stack space.
+ 
+'If QBX is invoked with the /Ea switch, the integer arrays used in this
+'example will be placed in available EMS memory space, otherwise they will
+'occupy far memory. If the arrays are placed in EMS, each array will reduce
+'available EMS memory by 16K. If not in EMS, far memory will be reduced by
+'the number of bytes occupied by the array rounded up to an even 16 bytes.
+ 
+DECLARE SUB MakeSubString ()
+DECLARE SUB Printit (a$)
+DECLARE SUB Recursive (n!)
+ 
+CLS
+'Report the way things are to begin.
+PRINT "Remaining space (in bytes) to begin with is:"
+CALL Printit(a$)
+ 
+'Create a 32K string and give report.
+String1$ = STRING$(32767, 90)
+PRINT "The remaining space after creating a 32K far string is:"
+CALL Printit(String1$)
+ 
+'Make a substring and give report.
+MakeSubString
+PRINT "The remaing space after returning from a sub is:"
+CALL Printit(String2$)
+ 
+'Do 50 recursive calls to a SUB.
+n = 50
+CALL Recursive(n)
+ 
+'Allocate 2K for the stack.
+STACK (2048)
+PRINT "After allocating 2K for the stack, the space is:"
+CALL Printit(a$)
+ 
+'Do another 50 recursive calls to a SUB.
+n = 50
+CALL Recursive(n)
+ 
+'Dimension a 1001 element dynamic array in EMS.
+REDIM a%(999)
+PRINT "After dimensioning a 1000-element integer array, the space is:"
+CALL Printit(a$)
+ 
+PRINT "After dimensioning a second 1000-element integer array, the space is:"
+REDIM B%(999)
+CALL Printit(a$)
+ 
+'Reset the stack to the default size.
+PRINT "Stack reset to default value: "; STACK
+ 
+SUB MakeSubString
+SHARED String1$
+    String2$ = STRING$(32767, 90)
+    PRINT "The space remaining after creating a 32K sub string is:"
+    CALL Printit(String1$)
+END SUB
+ 
+SUB Printit (a$)
+    PRINT "Far Memory"; TAB(15); "Stack"; TAB(25);
+    PRINT "String Segment"; TAB(45); "Temp. Segment"; TAB(65); "EMS Memory"
+    PRINT FRE(-1); TAB(15); FRE(-2); TAB(25); FRE(a$); TAB(45); FRE("");
+    PRINT TAB(65); FRE(-3); "K"
+    PRINT
+END SUB
+ 
+SUB Recursive (n)
+SHARED String1$
+    n = n - 1
+    IF n = 0 THEN
+        PRINT "The remaining space after 50 recursive calls is:"
+        CALL Printit(String1$)
+        EXIT SUB
+    ELSE
+        CALL Recursive(n)
+    END IF
+END SUB
+
+</pre>
+</body>
+
+</html>

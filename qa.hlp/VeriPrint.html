@@ -1,0 +1,40 @@
+<html>
+
+<head>
+<title>VeriPrint</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* VeriPrint - Checks if LPT1 (PRN) is available.
+;*
+;* Shows:   BIOS Interrupt - 17h (Parallel Port Printer Driver)
+;*
+;* Params:  None
+;*
+;* Return:  Short integer, 1 for yes or 0 for no
+ 
+VeriPrint PROC
+ 
+        mov     ah, 2                   ; Check printer status for
+        sub     dx, dx                  ;   parallel printer (port 0)
+        int     17h
+        xchg    dx, ax                  ; Put 0 (for error) in AX
+        test    dh, 00101001b           ; Are any error bits on?
+        jne     exit                    ; Yes?  Leave 0
+        test    dh, 10010000b           ; Are both operation bits on?
+        jz      exit                    ; No?  Leave 0
+        inc     ax                      ; Yes?  Return 1
+exit:   ret
+ 
+VeriPrint ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

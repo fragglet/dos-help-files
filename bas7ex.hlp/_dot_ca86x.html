@@ -1,0 +1,60 @@
+<html>
+
+<head>
+<title>Interrupt, InterruptX Routines Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the Interrupt routine to determine the current
+'drive and the amount of free space remaining on the drive.
+ 
+'Note: To use the Interrupt routine, you must load the Quick library
+'QBX.QLB using the /L switch when you begin QBX. The following include
+'file must also be present.
+ 
+'$INCLUDE: 'QBX.BI'
+ 
+'Define registers.
+DIM regs AS RegType
+ 
+'Get current drive info; set up input and do system call.
+regs.ax = &amp;H1900
+CALL Interrupt(&amp;H21, regs, regs)
+ 
+'Convert drive info to readable form.
+Drive$ = CHR$((regs.ax AND &amp;HFF) + 65) + ":"
+ 
+'Get disk free space; set up input values and do system call.
+regs.ax = &amp;H3600
+regs.dx = ASC(UCASE$(Drive$)) - 64
+CALL Interrupt(&amp;H21, regs, regs)
+ 
+'Decipher the results.
+SectorsInCluster = regs.ax
+BytesInSector = regs.cx
+IF regs.dx &gt;= 0 THEN
+        ClustersInDrive = regs.dx
+ELSE
+        ClustersInDrive = regs.dx + 65536
+END IF
+IF regs.bx &gt;= 0 THEN
+        ClustersAvailable = regs.bx
+ELSE
+        ClustersAvailable = regx.bx + 65536
+END IF
+Freespace = ClustersAvailable * SectorsInCluster * BytesInSector
+ 
+'Report results.
+CLS
+PRINT "Drive "; Drive$; " has a total of";
+PRINT USING "###,###,###"; Freespace;
+PRINT " bytes remaining free."
+
+</pre>
+</body>
+
+</html>

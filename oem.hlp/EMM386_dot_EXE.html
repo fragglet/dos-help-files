@@ -1,0 +1,222 @@
+<html>
+
+<head>
+<title>EMM386.EXE</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='EMM386_dot_EXE--Note.html'>Notes</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='EMM386_dot_EXE--Example.html'>Examples</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                                 EMM386.EXE
+ 
+Provides access to the upper memory area and uses extended memory to
+simulate expanded memory. This device driver must be loaded by a &lt;<a href='Device.html'>DEVICE</a>&gt;
+command in your CONFIG.SYS file and can be used only on computers with an
+80386 or higher processor.
+ 
+EMM386 uses extended memory to simulate expanded memory for programs that
+can use expanded memory. EMM386 also makes it possible to load programs and
+device drivers into upper memory blocks (UMBs).
+ 
+<b>Syntax</b>
+ 
+    DEVICE=[drive:][path]EMM386.EXE [ON|OFF|AUTO] [memory] [MIN=size]
+    [W=ON|W=OFF] [Mx|FRAME=address|/Pmmmm] [Pn=address] [X=mmmm-nnnn]
+    [I=mmmm-nnnn] [B=address] [L=minXMS] [A=altregs] [H=handles] [D=nnn]
+    [RAM=mmmm-nnnn] [NOEMS] [NOVCPI] [HIGHSCAN] [VERBOSE] [WIN=mmmm-nnnn]
+    [NOHI] [ROM=mmmm-nnnn] [NOMOVEXBDA] [ALTBOOT]
+ 
+<b>Parameters</b>
+ 
+[drive:][path]
+    Specifies the location of the EMM386.EXE file.
+ 
+[ON|OFF|AUTO]
+    Activates the EMM386 device driver (if set to ON), or suspends the
+    EMM386 device driver (if set to OFF), or places the EMM386 device driver
+    in auto mode (if set to AUTO). Auto mode enables expanded-memory support
+    and upper memory block support only when a program calls for it. The
+    default value is ON. Use the EMM386 command to change this value after
+    EMM386 has started.
+ 
+memory
+    Specifies the maximum amount of extended memory (in kilobytes) that you
+    want EMM386 to provide as expanded/Virtual Control Program Interface
+    (EMS/VCPI) memory. This amount is in addition to the memory used for
+    UMBs and EMM386 itself. Values for memory are in the range 64 through
+    the lesser of either 32768 or the amount of extended memory available
+    when EMM386 is loaded. The default value is the amount of free extended
+    memory. If you specify the NOEMS switch, the default value is 0. EMM386
+    rounds the value down to the nearest multiple of 16.
+ 
+<b>Switches</b>
+ 
+MIN=size
+    Specifies the minimum amount of EMS/VCPI memory (in kilobytes) that
+    EMM386 will provide, if that amount of memory is available. EMM386
+    reserves this amount of extended memory for use as EMS/VCPI memory when
+    EMM386 is loaded by the DEVICE=EMM386.EXE command in your CONFIG.SYS
+    file. EMM386 may be able to provide additional EMS/VCPI memory (up to
+    the amount specified by the MEMORY parameter) if sufficient XMS memory
+    is available when a program requests EMS/VCPI memory. Values are in the
+    range 0 through the value specified by the MEMORY parameter. The default
+    value is 256. If you specify the NOEMS switch, the default value is 0.
+    If the value of MIN is greater than the value of MEMORY, EMM386 uses the
+    value specified by MIN.
+ 
+W=ON|W=OFF
+    Enables or disables support for the Weitek coprocessor. The default
+    setting is W=OFF.
+ 
+Mx
+    Specifies the address of the page frame. Valid values for x are in the
+    range 1 through 14. The following list shows each value and its
+    associated base address in hexadecimal format:
+ 
+            1 =&gt; C000h    8 =&gt; DC00h
+            2 =&gt; C400h    9 =&gt; E000h
+            3 =&gt; C800h    10 =&gt; 8000h
+            4 =&gt; CC00h    11 =&gt; 8400h
+            5 =&gt; D000h    12 =&gt; 8800h
+            6 =&gt; D400h    13 =&gt; 8C00h
+            7 =&gt; D800h    14 =&gt; 9000h
+ 
+    Values in the range 10 through 14 should be used only on computers that
+    have 512K of memory.
+ 
+FRAME=address
+    Specifies the page-frame segment base directly. To specify a specific
+    segment-base address for the page frame, use the FRAME switch and
+    specify the address you want. Valid values for address are in the ranges
+    8000h through 9000h and C000h through E000h, in increments of 400h. To
+    provide expanded memory and disable the page frame, you can specify
+    FRAME=NONE; however, this may cause some programs that require expanded
+    memory to work improperly.
+ 
+/Pmmmm
+    Specifies the address of the page frame. Valid values for mmmm are in
+    the ranges 8000h through 9000h and C000h through E000h, in increments of
+    400h.
+ 
+Pn=address
+    Specifies the segment address of a specific page, where n is the number
+    of the page you are specifying and address is the segment address you
+    want. Valid values for n are in the range 0 through 255. Valid values
+    for address are in the ranges 8000h through 9C00h and C000h through
+    EC00h, in increments of 400h. The addresses for pages 0 through 3 must
+    be contiguous in order to maintain compatibility with version 3.2 of the
+    Lotus/Intel/Microsoft Expanded Memory Specification (LIM EMS). If you
+    use the Mx switch, the FRAME switch, or the /Pmmmm switch, you cannot
+    specify the addresses for pages 0 through 3 for the /Pmmmm switch.
+ 
+X=mmmm-nnnn
+    Prevents EMM386 from using a particular range of segment addresses for
+    an EMS page or for UMBs. Valid values for mmmm and nnnn are in the range
+    A000h through FFFFh and are rounded down to the nearest 4-kilobyte
+    boundary. The X switch takes precedence over the I switch if the two
+    ranges overlap.
+ 
+I=mmmm-nnnn
+    Specifies a range of segment addresses to be used (included) for an EMS
+    page or for UMBs. Valid values for mmmm and nnnn are in the range A000h
+    through FFFFh and are rounded down to the nearest 4-kilobyte boundary.
+    The X switch takes precedence over the I switch if the two ranges
+    overlap.
+ 
+B=address
+    Specifies the lowest segment address available for EMS "banking"
+    (swapping of 16-kilobyte pages). Valid values are in the range 1000h
+    through 4000h. The default value is 4000h.
+ 
+l=minXMS
+    Ensures that the specified amount (in kilobytes) of extended memory will
+    still be available after EMM386 is loaded. The default value is 0.
+ 
+A=altregs
+    Specifies how many fast alternate register sets (used for multitasking)
+    you want to allocate to EMM386. Valid values are in the range 0 through
+    254. The default value is 7. Every alternate register set adds about 200
+    bytes to the size in memory of EMM386.
+ 
+H=handles
+    Specifies how many handles EMM386 can use. Valid values are in the range
+    2 through 255. The default value is 64.
+ 
+D=nnn
+    Specifies how many kilobytes of memory should be reserved for buffered
+    direct memory access (DMA). Discounting floppy-disk DMA, this value
+    should reflect the largest DMA transfer that will occur while EMM386 is
+    active. Valid values for nnn are in the range 16 through 256. The
+    default value is 32.
+ 
+RAM=mmmm-nnnn
+    Specifies a range of segment addresses to be used for UMBs and also
+    enables EMS support. If you do not specify a range, EMM386 uses all
+    available adapter space to create UMBs and a page frame for EMS.
+ 
+NOEMS
+    Provides access to the upper memory area but prevents access to expanded
+    memory.
+ 
+NOVCPI
+    Disables support for VCPI applications. This switch must be used with
+    the NOEMS switch. If you specify the NOVCPI switch without specifying
+    the NOEMS switch, EMM386 does not disable VCPI support. If you specify
+    both switches, EMM386 disregards the MEMORY parameter and the MIN
+    switch. Disabling support for VCPI applications reduces the amount of
+    extended memory allocated.
+ 
+HIGHSCAN
+    Specifies that EMM386 use an additional check to determine the
+    availablity of upper memory for use as UMBs or EMS windows. On some
+    computers, specifying this switch may have no effect or cause EMM386 to
+    identify upper memory areas as available when they are not. As a
+    result, your computer might stop responding.
+ 
+VERBOSE
+    Directs EMM386 to display status and error messages while loading. By
+    default, EMM386 displays messages only if it encounters an error
+    condition. You can abbreviate VERBOSE as V. (To display status messages
+    without adding the VERBOSE switch, press and hold the ALT key while
+    EMM386 starts and loads.)
+ 
+WIN=mmmm-nnnn
+    Reserves a specified range of segment addresses for Windows instead of
+    for EMM386. Valid values for mmmm and nnnn are in the range A000h
+    through FFFFh and are rounded down to the nearest 4-kilobyte boundary.
+    The X switch takes precedence over the WIN switch if the two ranges
+    overlap. The WIN switch takes precedence over the RAM, ROM, and I
+    switches if their ranges overlap.
+ 
+[NOHI]
+    Prevents EMM386 from loading into the upper memory area. Normally, a
+    portion of EMM386 is loaded into upper memory. Specifying this switch
+    decreases available conventional memory and increases the upper memory
+    area available for UMBs.
+ 
+[ROM=mmmm-nnnn]
+    Specifies a range of segment addresses that EMM386 uses for shadow
+    RAM──random-access memory used for read-only memory (ROM). Valid values
+    for mmmm and nnnn are in the range A000h through FFFFh and are rounded
+    down to the nearest 4-kilobyte boundary. Specifying this switch may
+    speed up your system if it does not already have shadow RAM.
+ 
+[NOMOVEXBDA]
+    Prevents EMM386 from moving the extended BIOS data from conventional
+    memory to upper memory.
+ 
+[ALTBOOT]
+    Specifies that EMM386 use an alternate handler to restart your computer
+    when you press CTRL+ALT+DEL. Use this switch only if your computer stops
+    responding or exhibits other unusual behavior when EMM386 is loaded and
+    you press CTRL+ALT+DEL.
+ 
+                                      ♦
+
+</pre>
+</body>
+
+</html>

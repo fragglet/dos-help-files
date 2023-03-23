@@ -1,0 +1,56 @@
+<html>
+
+<head>
+<title>Selected Event and Error Trapping Example Programs</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='_dot_pswitch.html'>Selected Programs<span class='grhilite'>►</span></a>   <span class='grhilite'>◄</span>Trapping Programs<span class='grhilite'>►</span>   <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>   <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>Event and Error Trapping</b>
+ 
+The following program shows how to trap an event that occurs while a
+program is running. With event trapping, you can get your program to
+detect run-time events such as keystrokes.
+ 
+<b>Example 1 - Event Trapping</b>
+ 
+If you use a 101-key keyboard, you can trap any of the keys on the
+dedicated keypad by assigning the string
+ 
+  CHR$(128) + CHR$(scancode)
+ 
+to any of the keynumber values from 15 to 25.
+ 
+The next example shows how to trap the LEFT direction keys on both
+the dedicated cursor keypad and the numeric keypad.
+ 
+  ' 128 = keyboard flag for keys on the
+  '       dedicated cursor keypad
+  '  75 = scan code for LEFT arrow key
+  '
+  KEY 15, CHR$(128) + CHR$(75)    ' Trap LEFT key on
+  ON KEY(15) GOSUB CursorPad      ' the dedicated
+  KEY(15) ON                      ' cursor keypad.
+ 
+  ON KEY(12) GOSUB NumericPad     ' Trap LEFT key on
+  KEY(12) ON                      ' the numeric keypad.
+ 
+  DO
+  LOOP UNTIL INKEY$ = "q"          ' Idle loop
+  END
+ 
+  CursorPad:
+    PRINT "Pressed LEFT key on cursor keypad."
+  RETURN
+ 
+  NumericPad:
+    PRINT "Pressed LEFT key on numeric keypad."
+  RETURN
+
+</pre>
+</body>
+
+</html>

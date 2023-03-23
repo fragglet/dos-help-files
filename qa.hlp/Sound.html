@@ -1,0 +1,52 @@
+<html>
+
+<head>
+<title>Sound</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* Sound - Sounds speaker with specified frequency and duration.
+;*
+;* Shows:   Instructions - in     out
+;*
+;* Params:  freq - Desired frequency of sound in Hertz
+;*          duration - Desired duration in clocks, where
+;*                     18 clocks = approx 1 second
+;*
+;* Return:  None
+ 
+Sound   PROC \
+        freq:WORD, duration:WORD
+ 
+        mov     al, 0B6h                ; Initialize channel 2 of
+        out     43h, al                 ;   timer chip
+        mov     dx, 12h                 ; Divide 1,193,182 Hertz
+        mov     ax, 34DEh               ;   (clock frequency) by
+        div     freq                    ;   desired frequency
+                                        ; Result is timer clock count
+        out     42h, al                 ; Low byte of count to timer
+        mov     al, ah
+        out     42h, al                 ; High byte of count to timer
+        in      al, 61h                 ; Read value from port 61h
+        or      al, 3                   ; Set first two bits
+        out     61h, al                 ; Turn speaker on
+        push    duration
+        call    Pause                   ; Pause for specified time
+        add     sp, 2                   ; Clean stack on return
+        in      al, 61h                 ; Get port value
+        xor     al, 3                   ; Kill bits 0-1 to turn
+        out     61h, al                 ;   speaker off
+        ret
+ 
+Sound   ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

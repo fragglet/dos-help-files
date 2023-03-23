@@ -1,0 +1,92 @@
+<html>
+
+<head>
+<title>WATERBUG.PAS</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.index'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM waterbug;
+ 
+{ WATERBUG.PAS illustrates video page functions including:
+ 
+      _SetActivePage    _SetVisualPage
+}
+ 
+USES
+    MSGraph, Crt;
+ 
+TYPE
+    j = ARRAY [0..3, 0..2] OF STRING [3];
+ 
+CONST
+    jumper : j = ( ('\o/', ' 0 ', '/ \'),
+                   ('_o_', ' 0 ', '( )'),
+                   (' o ', '/0\', '/ \'),
+                   (' o ', ' 0 ', '( )') );
+ 
+VAR
+    errorcode, row, line, col, page : Integer;
+    oldapage, oldvpage              : Integer;
+    vc                              : _VideoConfig;
+    old_cursor                      : Boolean;
+ 
+BEGIN
+ 
+    oldapage := _GetActivePage;
+    oldvpage := _GetVisualPage;
+    _GetVideoConfig( vc );
+ 
+    IF (vc.NumVideoPages &lt; 4) THEN
+        Halt( 1 );    { Fail for monochrome }
+ 
+    IF (_SetVideoModeRows( _TextBW40, 25 ) = 0) THEN
+        Halt( 1 );    { Fail if no 40-column mode }
+ 
+    old_cursor := _DisplayCursor( False );
+ 
+    { Draw image on each page }
+    FOR page := 0 TO 3 DO
+        BEGIN
+        _SetActivePage( page );
+        row := 1;
+        col := 1;
+        WHILE row &lt; 23 DO
+            BEGIN
+            WHILE col &lt; 37 DO
+                BEGIN
+                FOR line := 0 TO 2 DO
+                    BEGIN
+                    _SetTextPosition( row+line, col );
+                    _OutText( jumper [page,line]  );
+                    END; { FOR line 0 to 2 }
+                col := col+7
+                END; { WHILE col &lt; 37 }
+            row := row+7;
+            col := 1;
+            END; { WHILE row &lt; 23 }
+        END; { FOR page }
+ 
+    { Cycle through pages 0 to 3 }
+    REPEAT
+        FOR page := 0 TO 3 DO
+            BEGIN
+            _SetVisualPage( page );
+            Delay( 150 );
+            END;
+    UNTIL KeyPressed;
+ 
+    { Restore original page }
+    errorcode := _SetVideoMode( _DefaultMode );
+    _SetActivePage( oldapage );
+    _SetVisualPage( oldvpage );
+ 
+END.
+
+</pre>
+</body>
+
+</html>

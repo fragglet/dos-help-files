@@ -1,0 +1,43 @@
+<html>
+
+<head>
+<title>ClearBox</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* ClearBox - Clears portion of screen with specified fill attribute.
+;*
+;* Shows:   BIOS Interrupt - 10h, Function 6 (Initialize or Scroll Up Window)
+;*
+;* Params:  attr - Fill attribute
+;*          row1 - Top screen row of cleared section
+;*          col1 - Left column of cleared section
+;*          row2 - Bottom screen row of cleared section
+;*          col2 - Right column of cleared section
+;*
+;* Return:  None
+ 
+ClearBox PROC \
+        attr:WORD, row1:WORD, col1:WORD, row2:WORD, col2:WORD
+ 
+        mov     ax, 0600h               ; Scroll service
+        mov     bh, BYTE PTR attr       ; BH = fill attribute
+        mov     ch, BYTE PTR row1       ; CH = top row of clear area
+        mov     cl, BYTE PTR col1       ; CL = left column
+        mov     dh, BYTE PTR row2       ; DH = bottom row of clear area
+        mov     dl, BYTE PTR col2       ; DL = right column
+        int     10h                     ; Clear screen by scrolling up
+        ret
+ 
+ClearBox ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

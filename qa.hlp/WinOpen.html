@@ -1,0 +1,114 @@
+<html>
+
+<head>
+<title>WinOpen</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* WinOpen - Saves portion of screen to allocated memory, then opens a window
+;* with specified fill attribute. See also the WinClose procedure.
+;*
+;* Shows:   DOS Function - 48h (Allocate Memory Block)
+;*          BIOS Interrupt - 10h, Function 6 (Initialize or Scroll Up Window)
+;*          Instructions - movsw     stosw     rep
+;*
+;* Uses:    vconfig - Video configuration structure, declared in the
+;*          DEMO.INC include file. The structure must first be
+;*          initialized by calling the GetVidConfig procedure.
+;*
+;* Params:  row1 - Row at top of window
+;*          col1 - Column at left edge of window
+;*          row2 - Row at bottom of window
+;*          col2 - Column at right edge of window
+;*          attr - Fill attribute for window
+;*
+;* Return:  Short integer with segment address of allocated buffer, or
+;*          0 if unable to allocate memory
+ 
+WinOpen PROC \
+        USES ds di si, \
+        row1:WORD, col1:WORD, row2:WORD, col2:WORD, attr:WORD
+ 
+        GetVidOffset row1, col1         ; Get offset in video segment
+        mov     si, ax                  ; SI = video offset for window
+        mov     bx, row2
+        sub     bx, row1
+        inc     bx                      ; BX = number of window rows
+        mov     cx, col2
+        sub     cx, col1
+        inc     cx                      ; CX = number of columns
+ 
+        mov     ax, cx                  ; Compute number of video
+        mul     bl                      ;   cells in window
+        add     ax, 3                   ; Plus 3 additional entries
+        shr     ax, 1                   ; Shift right 3 times to
+        shr     ax, 1                   ;   multiply by 2 bytes/cell,
+        shr     ax, 1                   ;   divide by 16 bytes/para
+        inc     ax                      ; Add a paragraph
+        push    bx                      ; Save number of rows
+        mov     bx, ax                  ; BX = number of paragraphs
+        mov     ah, 48h                 ; Request DOS Function 48h
+        int     21h                     ; Allocate Memory Block
+        pop     bx
+        jnc     @F                      ; If successful, continue
+        sub     ax, ax                  ; Else return null pointer
+        jmp     SHORT exit
+ 
+@@:     mov     es, ax                  ; Point ES:DI to allocated
+        sub     di, di                  ;   buffer
+        mov     ax, si
+        stosw                           ; Copy video offset to buffer
+        mov     ax, bx
+        stosw                           ; Number of rows to buffer
+        mov     ax, cx
+        stosw                           ; Number of cols to buffer
+        mov     ax, 160                 ; Number of video cells/row
+        mov     ds, vconfig.sgmnt       ; DS = video segment
+loop1:  push    si                      ; Save ptr to start of line
+        push    cx                      ;   and number of columns
+        cmp     vconfig.adapter, CGA    ; CGA adapter?
+        jne     @F                      ; No?  Skip video disable
+ 
+; For CGA adapters, WinOpen avoids screen "snow" by disabling the video prior
+; to block memory moves, then reenabling it. Although this technique can
+; result in brief flickering, it demonstrates the fastest way to access a
+; block in the CGA video buffer without causing display snow. See also the
+; StrWrite procedure for another solution to the problem of CGA snow.
+ 
+        call    DisableCGA              ; Yes?  Disable video
+@@:     rep     movsw                   ; Copy one row to buffer
+        cmp     vconfig.adapter, CGA
+        jne     @F
+        call    EnableCGA               ; Reenable CGA video
+@@:     pop     cx                      ; Recover number of columns
+        pop     si                      ;   and start of line
+        add     si, ax                  ; Point to start of next line
+        dec     bx                      ; Decrement row counter
+        jnz     loop1                   ; Loop while rows remain
+ 
+ 
+; Screen contents (including display attributes) are now copied to buffer.
+; Next open window, overwriting the screen portion just saved.
+ 
+        mov     ax, 0600h               ; Scroll service
+        mov     bh, BYTE PTR attr       ; Fill attribute
+        mov     cx, col1                ; CX = row/col for upper left
+        mov     ch, BYTE PTR row1
+        mov     dx, col2                ; DX = row/col for lower right
+        mov     dh, BYTE PTR row2
+        int     10h                     ; Blank window area on screen
+        mov     ax, es                  ; Return address of allocated
+exit:   ret                             ;   segment
+ 
+WinOpen ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

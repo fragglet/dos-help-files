@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<title>COMMAND$ Function Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This program uses the COMMAND$ function to break the command line into
+'separate arguments. Each argument is separated from adjoining arguments
+'by one or more blanks or tabs on the command line.
+ 
+'Default variable type is integer in this module.
+DEFINT A-Z
+ 
+'Declare the Comline SUB procedure, as well as the number and
+'type of its parameters.
+DECLARE SUB Comline(N, A$(),Max)
+ 
+DIM A$(1 TO 15)
+'Get what was typed on the command line.
+CALL Comline(N,A$(),10)
+'Print out each part of the command line.
+PRINT "Number of arguments = ";N
+PRINT "Arguments are: "
+FOR I=1 TO N : PRINT A$(I) : NEXT I
+ 
+'SUB procedure to get command line and split into arguments.
+'Parameters:  NumArgs : Number of command line args found.
+'             Args$() : Array in which to return arguments.
+'             MaxArgs : Maximum number of arguments array can return.
+SUB Comline(NumArgs,Args$(),MaxArgs) STATIC
+CONST TRUE=-1, FALSE=0
+ 
+   NumArgs=0 : In=FALSE
+   'Get the command line using the COMMAND$ function.
+   Cl$=COMMAND$
+   L=LEN(Cl$)
+   'Go through the command line a character at a time.
+   FOR I=1 TO L
+      C$=MID$(Cl$,I,1)
+      'Test for character being a blank or a tab.
+      IF (C$&lt;&gt;" " AND C$&lt;&gt;CHR$(9)) THEN
+      'Neither blank nor tab. Test if you're already inside an argument.
+         IF NOT In THEN
+         'You've found the start of a new argument.
+            'Test for too many arguments.
+            IF NumArgs=MaxArgs THEN EXIT FOR
+            NumArgs=NumArgs+1
+            In=TRUE
+         END IF
+         'Add the character to the current argument.
+         Args$(NumArgs)=Args$(NumArgs)+C$
+      ELSE
+      'Found a blank or a tab.
+         'Set "Not in an argument" flag to FALSE.
+         In=FALSE
+      END IF
+   NEXT I
+ 
+END SUB
+ 
+ 
+'The following is a sample command line and output for a stand-alone
+'executable file (assumes program name is arg.exe):
+'
+'arg one  two   three    four     five      six
+ 
+'Sample Output
+'
+'Number of arguments =  6
+'Arguments are:
+'ONE
+'TWO
+'THREE
+'FOUR
+'FIVE
+'SIX
+
+</pre>
+</body>
+
+</html>

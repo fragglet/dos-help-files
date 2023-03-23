@@ -1,0 +1,39 @@
+<html>
+
+<head>
+<title>POINT Function Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the POINT function to find the border of the ellipse by
+'testing for a change in color while redrawing an ellipse drawn with the
+'CIRCLE statement.
+ 
+DEFINT X-Y
+INPUT "Enter angle of tilt in degrees (0 to 90): ",Ang
+SCREEN 1         'Medium resolution screen.
+Ang = (3.1415926# / 180) * Ang      'Convert degrees to radians.
+Cs = COS(Ang) : Sn = SIN(Ang)
+CIRCLE (45, 70), 50, 2, , , 2       'Draw ellipse.
+PAINT (45, 70), 2                   'Paint interior of ellipse.
+FOR Y = 20 TO 120
+   FOR X = 20 TO 70
+   'Check each point in rectangle enclosing ellipse.
+   IF POINT(X, Y) &lt;&gt; 0 THEN
+       'If the point is in the ellipse, plot a corresponding
+       'point in the "tilted" ellipse.
+       Xnew = (X * Cs - Y * Sn) + 200 : Ynew = (X * Sn + Y * Cs)
+       PSET(Xnew, Ynew), 2
+   END IF
+   NEXT
+NEXT
+END
+
+</pre>
+</body>
+
+</html>

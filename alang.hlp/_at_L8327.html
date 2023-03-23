@@ -1,0 +1,48 @@
+<html>
+
+<head>
+<title>Int 23h</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='23h.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='_at_L8476.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='_at_L8255.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     The initialization code for an application can use Int 21h
+     Function 25h to reset the Interrupt 23h vector to point to its own
+     routine for CTRL+C handling. In this way, the program can avoid
+     being terminated unexpectedly as the result of the user's entry of
+     CTRL+C or CTRL+Break.
+ 
+     When CTRL+C is detected and the program's Int 23h handler
+     receives control, all registers are set to their values at the
+     point of the original function call. The handler can then do any
+     of the following:
+ 
+        ■ Set a local flag for later inspection by the application, or
+          take any other appropriate action, and perform an IRET. All
+          registers must be preserved. The MS-DOS function in progress
+          will be restarted from scratch and will proceed to
+          completion, control finally returning to the application in
+          the normal manner.
+        ■ Take appropriate action and then perform a RET FAR to give
+          control back to MS-DOS. The state of the carry flag is used
+          by MS-DOS to determine what action to take. If the carry flag
+          is set, the application will be terminated; if the carry flag
+          is clear, the application will continue in the normal manner.
+        ■ Retain control by transferring to an error-handling routine
+          within the application and then resume execution or take
+          other appropriate action, never performing a RET FAR or an
+          IRET to end the interrupt-handling sequence. This option will
+          cause no harm to the system.
+ 
+     Any MS-DOS function call may be used within the body of an Int 23h
+     handler.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

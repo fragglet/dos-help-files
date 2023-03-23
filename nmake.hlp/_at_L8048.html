@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<title>Inferred Dependents</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='nmake_dot_inference_rule.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────NMAKE──────────────────────────────────────────────────────────────────
+ 
+     NMAKE can assume an inferred dependent for a target if there is an
+     applicable inference rule.
+ 
+          .fromext.toext:
+            commands
+ 
+          target : dependent
+ 
+     See: <span class='grhilite'>◄</span><a href='_at_L8025.html'>Dependents</a><span class='grhilite'>►</span>
+          <span class='grhilite'>◄</span><a href='nmake_dot_inference_rule.html'>Inference Rules</a><span class='grhilite'>►</span>
+          <span class='grhilite'>◄</span><a href='_at_L8021.html'>Targets</a><span class='grhilite'>►</span>
+ 
+     Rules for Inferred Dependents
+ 
+     An inference rule is applicable if:
+ 
+        ■ &lt;toext&gt; matches the extension of &lt;target&gt;.
+ 
+        ■ &lt;fromext&gt; matches the extension of a file in the current or
+          specified directory that has the same base name as &lt;target&gt;.
+ 
+        ■ &lt;fromext&gt; is in the .SUFFIXES list.
+          See: <span class='grhilite'>◄</span><a href='nmake_dot_SUFFIXES.html'>.SUFFIXES Directive</a><span class='grhilite'>►</span>
+ 
+        ■ No other &lt;toext&gt; rule has a &lt;fromext&gt; with a higher priority.
+ 
+        ■ &lt;dependent&gt; does not have higher priority (or is unspecifed)
+ 
+     If &lt;dependent&gt; is specifed, matches an inference rule, and has a
+     higher .SUFFIXES priority, NMAKE does not infer a dependent.
+ 
+     Effect of an Inferred Dependent
+ 
+     NMAKE does not necessarily execute the &lt;commands&gt; in an inference
+     rule for an inferred dependent. If &lt;target&gt;'s description block
+     contains commands, NMAKE executes the description block's commands
+     and not the inference rule's commands. The effect is as follows:
+ 
+          project.obj :
+            cl /Zi /c project.c
+ 
+     If a makefile contains this description block and if the current
+     directory contains a file named PROJECT.C and no other files,
+     NMAKE uses the predefined rule for .c.obj to infer the dependent
+     called project.c. It does not execute the predefined rule's
+     command (cl /c project.c). Instead, it runs the specified command.
+ 
+     Caution
+ 
+     Inferred dependents can cause unexpected side effects.
+ 
+     Assume that both PROJECT.ASM and PROJECT.C exist, that .SUFFIXES
+     contains the default setting, and that the following dependency
+     line is in the makefile:
+ 
+          project.obj : project.c
+ 
+     Given this dependency line, NMAKE infers a dependent called
+     project.asm ahead of project.c because .SUFFIXES lists .asm
+     before .c and because a rule for .asm.obj exists. If either
+     PROJECT.ASM or PROJECT.C is out-of-date, NMAKE executes the
+     commands in the rule for .asm.obj.
+ 
+     However, if the dependency is followed by a commands block,
+     NMAKE executes the specified commands and not the commands in
+     the inference rule for the inferred dependent.
+ 
+     Another side effect occurs because NMAKE builds a target if it is
+     out-of-date with respect to any of its dependents, whether they
+     are explicitly specified or inferred.
+ 
+     If PROJECT.OBJ is up-to-date with respect to PROJECT.C but not
+     with respect to PROJECT.ASM, and if the makefile contains:
+ 
+          project.obj : project.c
+            cl /Zi /c project.c
+ 
+     then NMAKE infers the dependent project.asm and unnecessarily
+     updates project.obj using the command cl /Zi /c project.c.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

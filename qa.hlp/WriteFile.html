@@ -1,0 +1,60 @@
+<html>
+
+<head>
+<title>WriteFile</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* WriteFile - Write ASCIIZ string to file. If handle = 0, the string is
+;* written to STDOUT (console). See the CopyFile procedure for another
+;* example of using DOS Function 40h to write to files.
+;*
+;* Shows:   DOS Function - 40h (Write File or Device)
+;*
+;* Params:  handle - File handle
+;*          str - Pointer to ASCIIZ string
+;*
+;* Return:  Short integer with error code
+;*          0 if successful
+;*          1 if write error
+;*          2 if number of bytes written not equal to string length
+ 
+WriteFile PROC \
+        USES ds di, \
+        handle:WORD, str:PTR BYTE
+ 
+        LoadPtr es, di, str             ; Point ES:DI to string
+        push    di                      ; Hold on to string pointer
+        mov     cx, -1                  ; Set CX to maximum
+        sub     al, al                  ; AL = 0
+        repne   scasb                   ; Scan string for NULL
+        pop     dx                      ; Recover string pointer
+        dec     di
+        sub     di, dx                  ; Get string length (w/o NULL)
+        mov     cx, di                  ; Put it into CX
+        mov     bx, handle              ; Load BX with handle
+        push    es                      ; Set DS to ES to ensure
+        pop     ds                      ;   DS:DX points to string
+        mov     ah, 40h                 ; Request DOS write
+        int     21h                     ; Write File or Device
+        mov     bx, ax                  ; Get number of bytes written
+        mov     ax, 0                   ; Set error code, preserve CY
+        jc      e_exit                  ; If error, exit
+        cmp     bx, cx                  ; All bytes written?
+        je      exit                    ; Yes?  Exit, error code = 0
+        inc     ax                      ; Else inc error code twice
+e_exit: inc     ax                      ; Increment error code once
+exit:   ret
+ 
+WriteFile ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

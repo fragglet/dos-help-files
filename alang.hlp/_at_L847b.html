@@ -1,0 +1,40 @@
+<html>
+
+<head>
+<title>PushC</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L8440.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* pushc - Macro that pushes a constant using the most efficient
+;* method for the current processor. The 80286 version pushes
+;* directly. Since this is illegal on the 8086, this version pushes
+;* through AX.
+;*
+;* Shows:   Operator    - OPATTR
+;*          Text macro  - @Cpu
+ 
+IF  @Cpu AND 00000010y
+    pushc  MACRO op             ;; 80186 or higher
+        push op
+    ENDM
+ELSE
+    pushc  MACRO op             ;; 8088/8086
+        IFE (OPATTR (adr)) AND 00000100y
+            mov  ax, op         ;; If it's really a constant
+            push ax             ;;   push through register
+        ELSE
+            push op             ;; If not constant, push normal
+        ENDIF
+    ENDM
+ENDIF
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

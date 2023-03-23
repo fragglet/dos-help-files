@@ -1,0 +1,50 @@
+<html>
+
+<head>
+<title>WriteTTY</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* WriteTTY - Displays ASCIIZ string at cursor position, in either text
+;* or graphics mode.
+;*
+;* Shows:   BIOS Interrupt - 10h, Function 0Eh (Write Character in TTY mode)
+;*          Instruction - loop
+;*
+;* Uses:    vconfig - Video configuration structure, declared in the
+;*          DEMO.INC include file. The structure must first be
+;*          initialized by calling the GetVidConfig procedure.
+;*
+;* Params:  str - Pointer to ASCIIZ string
+;*          icolor - Color index (for graphics mode only)
+;*
+;* Return:  None
+ 
+WriteTTY PROC \
+        USES ds si, \
+        str:PTR BYTE, icolor:WORD
+ 
+        mov     bx, icolor              ; BL = color index
+        mov     bh, vconfig.dpage       ; BH = current display page
+        LoadPtr ds, si, str
+        mov     cx, -1                  ; Set loop counter to maximum
+        mov     ah, 14                  ; Function 14
+loop1:  lodsb                           ; Get character from string
+        or      al, al                  ; NULL string terminator?
+        jz      exit                    ; Yes?  Exit
+        int     10h                     ; No?  Display, advance cursor
+        loop    loop1                   ; Loop to get next character
+exit:   ret
+ 
+WriteTTY ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

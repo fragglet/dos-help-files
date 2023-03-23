@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<title>__segname</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8107.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────C/C++ Language─────────────────────────────────────────────────────────
+ 
+  Keyword:   __segname
+ 
+  Syntax:    __segname( "segment-name" )
+ 
+  Summary:   Specifies the name of a segment.
+ 
+  See also:  __based, __segment, __self
+ 
+     You can declare a based variable by giving it a segment constant
+     as a base. Microsoft C/C++ predefines four segments:
+ 
+     Segment    Description
+ 
+     _CODE      Default code segment
+ 
+     _CONST     Constant segment for strings such as
+                "This is a constant string"
+ 
+     _DATA      Default data segment
+ 
+     _STACK     Stack segment
+ 
+     The __segname keyword marks the name of a segment. It is always
+     followed by parentheses and a string, as in the example below:
+ 
+          // Compile in small model, DOS only
+          #include &lt;stdio.h&gt;
+          #include &lt;malloc.h&gt;
+ 
+          char __based( __segname( "_CODE" ) ) mystring[] =
+              "Code-based string.\n";
+          // Code-based integer:
+          int __based( __segname( "_CODE" ) ) ib = 12345;
+          void main()
+          {
+             printf( "%Fs %d", (char __far *)mystring, ib );
+          }
+ 
+     The mystring variable is declared as an array of characters
+     based in the code segment. The ib variable is an integer (not a
+     pointer) that is also based in the code segment.
+ 
+     Note that the small model version of printf would treat mystring
+     as a near pointer. The F in the format specifier %Fs forces the
+     function to treat it as a far pointer, and the cast to
+     (char __far*) coerces the address to four bytes.
+ 
+     You also can name your own segments. The declaration of &lt;mystring&gt;
+     might look like this:
+ 
+          char __based( __segname( "MYSEGMENT" ) ) mystr[] = "Based string";
+ 
+     In the example above, the compiler creates a new segment called
+     MYSEGMENT and places the string there.
+ 
+     Do not use the __segment keyword in a 32-bit program.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

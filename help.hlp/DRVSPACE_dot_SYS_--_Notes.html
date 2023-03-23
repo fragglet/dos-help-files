@@ -1,0 +1,84 @@
+<html>
+
+<head>
+<title>DRVSPACE.SYS -- Notes</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='DRVSPACE_dot_SYS_--_Examples.html'>Examples</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='DRVSPACE_dot_SYS.html'>Syntax</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                           DRVSPACE.SYS ── Notes
+ 
+<b>DRVSPACE.SYS does not provide access to compressed drives</b>
+ 
+The DRVSPACE.SYS device driver does not provide access to compressed drives;
+it simply moves DRVSPACE.BIN to its final location in memory. (DRVSPACE.BIN
+is the part of MS-DOS that provides access to compressed drives; it loads
+with other operating system functions, before MS-DOS carries out the
+commands in your CONFIG.SYS file.)
+ 
+<b>If your compressed drive's host drive requires a device driver</b>
+ 
+A few disk drives require an installable device driver. If such a drive
+contains compressed volume files (either you compressed that drive, or you
+created new compressed drives on that drive), the command for the
+DRVSPACE.SYS device driver must appear in the CONFIG.SYS file after the
+command for your drive's device driver. Otherwise, DriveSpace will not mount
+any compressed volume files located on that drive when your computer
+starts.
+ 
+<b>Avoiding conflicts with programs that require access to the top of</b>
+<b>conventional memory</b>
+ 
+When you start your computer, MS-DOS loads DRVSPACE.BIN at the top of
+conventional memory; after processing the CONFIG.SYS file, MS-DOS moves
+DRVSPACE.BIN to the bottom of conventional memory.
+ 
+However, a few programs that are loaded from the CONFIG.SYS file require
+access to the top of conventional memory and do not work properly if
+DRVSPACE.BIN is located there. To avoid such conflicts, DriveSpace Setup
+adds a command for DRVSPACE.SYS before any command that starts a program
+that is known to require this area of memory. The DRVSPACE.SYS device driver
+moves DRVSPACE.BIN from the top of conventional memory to another area of
+memory (either to the bottom of conventional memory or to upper memory).
+ 
+Depending on your configuration, your CONFIG.SYS file might contain more
+than one command for DRVSPACE.SYS. This will not cause any problems.
+ 
+<b>Moving part of DRVSPACE.BIN to the high memory area</b>
+ 
+By default, if your CONFIG.SYS file contains a DOS=HIGH command,
+DRVSPACE.SYS moves the compression server, a portion of DRVSPACE.BIN, to the
+HMA. To move a portion of DRVSPACE.BIN to the HMA, you must have an 80286 or
+higher computer with extended memory, and must be running HIMEM or another
+extended-memory manager.
+ 
+<b>Moving DRVSPACE.BIN to upper memory</b>
+ 
+When loaded with a DEVICEHIGH command, the DRVSPACE.SYS device driver moves
+DRVSPACE.BIN from conventional to upper memory. If there is no upper memory
+block large enough to accommodate DRVSPACE.BIN, it is instead moved to the
+bottom of conventional memory.
+ 
+To use the upper memory area, you must have an 80386 or 80486 computer with
+extended memory.
+ 
+<b>Using BUFFERS with DriveSpace</b>
+ 
+If you are using DriveSpace and SMARTDrive, and MS-DOS is loaded into the
+HMA, set BUFFERS=10. This ensures that there will be enough room in the HMA
+for MS-DOS, DriveSpace, and all your buffers. (If BUFFERS is set to a value
+higher than 10, there might not be enough room in the HMA for all your
+buffers, and MS-DOS will place all the buffers into conventional memory.) If
+you're using SMARTDrive, specifying more than 10 buffers will not speed up
+your system much, but will use additional memory.
+ 
+                                      ♦
+
+</pre>
+</body>
+
+</html>

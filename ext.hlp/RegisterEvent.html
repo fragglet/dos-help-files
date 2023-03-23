@@ -1,0 +1,98 @@
+<html>
+
+<head>
+<title>RegisterEvent, DeRegisterEvent</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='ext_dot_functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────PWB Extensions─────────────────────────────────────────────────────────
+ 
+  Syntax:  void pascal EXPORT DeRegisterEvent( EVT far *Event );
+           void pascal EXPORT RegisterEvent  ( EVT far *Event );
+ 
+  See:     <span class='grhilite'>◄</span><a href='../pwb.hlp/Softcr.html'>PWB Softcr Switch</a><span class='grhilite'>►</span>
+ 
+     The RegisterEvent and DeRegisterEvent functions allow your
+     extension to install an event handler. An event handler is a
+     function that PWB calls when a certain event occurs. For user
+     extensions, only the newline event is supported.
+ 
+     For the newline event, PWB calls your handler after you execute the
+     Newline or Emacsnewl functions and the Softcr switch is set to Yes.
+     Your handler then specifies the new position for the cursor.
+ 
+     The event structure that you register gives the address of the
+     event handler, and specifies the type of event. A newline event is
+     defined in your extension as follows:
+ 
+         EVT EvtNewline = { 0, Handler, 0, EVT_NEWLINE, 0 };
+ 
+     The event structure has the definition:
+ 
+         struct eventType {                  // Event definition struct
+             struct eventType far *pEVTNext; //   Next handler in list
+             flagType (pascal EXPORT *func)
+                             (EVTargs far *);//   Handler
+             EVTargs far *pEVTargs;          //   Pointer to arg
+             unsigned    evtType;            //   Type
+             PFILE       focus;              //   File at event time
+             };
+         typedef struct eventType EVT;
+ 
+     You specify only the handler function and the event type in the
+     structure. The other members are used by PWB and should be empty
+     (zero).
+ 
+     Your event function must have the prototype:
+ 
+         flagType pascal EXPORT Handler( EVTargs far *EventArg );
+ 
+     When the event occurs, PWB calls your event handler with a pointer
+     to an event argument structure. Your handler returns TRUE if it
+     handles the event. Otherwise your handler returns FALSE to pass the
+     event to other event handlers.
+ 
+     The event argument is defined in EXT.H as follows:
+ 
+         struct newlinevent {      // Newline event argument
+             PFILE     pFile;      // pFile at time of event
+             char far *lpszSuffix; // file suffix
+             LINE      line;       // current line of pFile
+             COL       newcol;     // returns x-position on new line
+             int       tabmode;    // TM_NONE, TM_FORWARD, TM_BACKWARD
+             };
+         typedef union {                     // event argument
+             struct newlinevent EvtNewline;  // newline event data
+             } EVTargs;
+ 
+     For the newline event, PWB calls your handler after creating the
+     new line and passes the handle of the file, the filename extension
+     (suffix) of the file, and the new line number.
+ 
+     Your handler should define a text switch that lists the suffixes
+     for which your handler should process newline events. If the suffix
+     at the time of the event is listed in your handler's list, then it
+     should fill in the event argument structure and return TRUE. If the
+     suffix is not in the list, your handler should return FALSE.
+ 
+     To handle a newline event, your handler should set the newcol
+     member to the new column and the tabmode member to one of the
+     following values:
+ 
+     tabmode        Action
+ 
+     TM_NONE        Place cursor at 'newcol'
+     TM_FORWARD     Place cursor 1 backtab from 'newcol'
+     TM_BACKWARD    Place cursor 1 tab from 'newcol'
+ 
+     For an example of a newline event handler, see the INDENT.C example
+     extension.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

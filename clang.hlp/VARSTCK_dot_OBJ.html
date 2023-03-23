@@ -1,0 +1,57 @@
+<html>
+
+<head>
+<title>Controlling Stack and Heap Allocation</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L812f.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────C/C++ Language─────────────────────────────────────────────────────────
+ 
+     You can let the heap allocate memory from unused stack space by
+     linking your program with VARSTCK.OBJ. This file allows the near-
+     memory allocation functions to allocate items in unused stack
+     space if they run out of other memory. The near memory allocation
+     functions are _nmalloc, _nrealloc, _nexpand, and _ncalloc in all
+     memory models, and malloc, realloc, _expand, and calloc in small
+     data models (small and medium memory models).
+ 
+     Programs compiled and linked under Microsoft C/C++ run with a fixed
+     stack size (default size is 2K). The stack resides above static
+     data, and the near heap uses space left above the stack. However,
+     for some programs a fixed-stack model may not be ideal. Having the
+     stack and heap compete for space may be more appropriate. Use
+     VARSTCK.OBJ to do this. When the heap runs out of memory, it uses
+     available stack space until it reaches the top of the stack.
+ 
+     Be aware of the following:
+ 
+        ■ The stack cannot grow beyond the last heap item allocated in
+          the stack or, if no heap items are in the stack, beyond the
+          size set at link time.
+ 
+        ■ Once any part of stack memory is incorporated into the near
+          heap, it can never be used as stack space again.
+ 
+        ■ While the heap can employ unused stack space, the stack
+          cannot take unused heap space.
+ 
+     When using VARSTCK.OBJ, be wary of suppressing stack checking,
+     which is done with the #check_stack pragma or with the /Gs or /Ox
+     option. Stack overflow can occur more easily in programs that
+     suppress stack checking, possibly causing errors that are
+     difficult to detect.
+ 
+     The following command line compiles TEST.C, then links the
+     resulting object module with VARSTCK.OBJ. Use the /NOE option to
+     avoid multiple symbol definitions. For example:
+ 
+          CL TEST.C VARSTCK /LINK /NOE
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

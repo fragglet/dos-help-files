@@ -1,0 +1,44 @@
+<html>
+
+<head>
+<title>LPOS and LPRINT Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the LPRINT statement to print team and player names
+'on a line printer. The LPOS function is used to determine the position
+'of the print head and avoid printing past the end of the line.
+ 
+'Note: To run this program, you must have a printer connected to LPT1.
+ 
+CLS                                  'Clear screen.
+LPRINT "Team Members"; TAB(76); "TEAM"
+LPRINT
+INPUT "How many teams"; TEAMS
+INPUT "How many players per team";PPT
+PRINT
+FOR T = 1 TO TEAMS
+    INPUT "Team name: ", TEAM$
+    FOR P = 1 TO PPT
+        INPUT "   Enter player name: ", PLAYER$
+        LPRINT PLAYER$;
+        IF P &lt; PPT THEN
+            IF LPOS(0) &gt; 55 THEN     'Print a new line if print
+                                     'head past column 55.
+                LPRINT : LPRINT "     ";
+            ELSE
+                LPRINT ", ";         'Otherwise, print a comma.
+            END IF
+        END IF
+    NEXT P
+    LPRINT STRING$(80-LPOS(0)-LEN(TEAM$),"."); TEAM$
+NEXT T
+
+</pre>
+</body>
+
+</html>

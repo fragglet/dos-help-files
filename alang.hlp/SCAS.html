@@ -1,0 +1,61 @@
+<html>
+
+<head>
+<title>SCAS Instruction</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L83cf.html'>Detail</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='_at_L83fb.html'>Key</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='_at_L848d.html'>Example</a><span class='grhilite'>►</span>                    <span class='grhilite'>◄</span><a href='_at_L842e.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Title:    Scan String Flags                     Flags: O D I T S Z A P C
+                                                         ═════════════════
+  Syntax:   SCAS dest                                    ±       ± ± ± ± ±
+            SCASB
+            SCASW
+            SCASD (80386/486 Only)
+ 
+  Description:
+ 
+     Scans a string to find a value specified in the accumulator
+     register. The string to be scanned is considered the destination
+     and must be pointed to by ES:DI (even if an operand is specified).
+ 
+     For each element, the destination element is subtracted from the
+     accumulator value and the flags are updated to reflect the result
+     (although the result is not stored). DI is adjusted according to
+     the size of the operands and the status of the direction flag. DI
+     is increased if the direction flag has been cleared with CLD or
+     decreased if the direction flag has been set with STD.
+ 
+     If the SCAS form of the instruction is used, an operand must be
+     provided to indicate the size of the data elements to be
+     processed. No segment override is allowed. If SCASB (bytes), SCASW
+     (words), or SCASD (doublewords) is used, the instruction
+     determines the size of the data elements to be processed and
+     whether the element scanned for is in AL, AX, or EAX.
+ 
+     SCAS and its variations are normally used with repeat prefixes.
+     Use REPNE (or REPNZ) to find the first element in a string that
+     matches the value in the accumulator. Use REPE (or REPZ) to
+     find the first mismatch.
+ 
+     Before the scan, CX should contain the maximum number of elements
+     to scan. After a REPNE SCAS, the zero flag is clear if the string does
+     not contain the accumulator value. After a REPE SCAS, the zero flag
+     is set if a the string contains nothing but the accumulator value.
+ 
+     When the instruction finishes, ES:DI points to the element that follows
+     (if the direction flag is clear) or precedes (if the direction flag is
+     set) the match or mismatch. If CX decrements to 0, ES:DI points to the
+     element that follows or precedes the last comparison. The zero flag is
+     set or clear according to the result of the last comparison, not
+     according to the value of CX.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

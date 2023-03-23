@@ -1,0 +1,109 @@
+<html>
+
+<head>
+<title>Int 21H Function 65H</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span><a href='21H_dot_65H.html'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Notes<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+▀ The information returned by this function is a superset of the informa-
+  tion returned by Int 21H Function 38H.
+ 
+▀ This function may fail if either the country code or the code page num-
+  ber is invalid or if the code page does not match the country code.
+ 
+▀ The function fails if the specified buffer length is less than five
+  bytes. If the buffer to receive the information is at least five bytes
+  long but is too short for the requested information, the data is trun-
+  cated and no error is returned.
+ 
+▀ The format of the data returned by Subfunction 01H is:
+ 
+  Byte(s)   Contents
+  ═══════   ════════════════════════════════════════
+  00H       Information ID code (1)
+  01H-02H   Length of following buffer
+  03H-04H   Country ID
+  05H-06H   Code page number
+  07H-08H   Date format
+            0 = USA    m d y
+            1 = Europe d m y
+            2 = Japan  y m d
+  09H-0DH   ASCIIZ currency symbol
+  0EH-0FH   ASCIIZ thousands separator
+  10H-11H   ASCIIZ decimal separator
+  12H-13H   ASCIIZ date separator
+  14H-15H   ASCIIZ time separator
+  16H       Currency format flags
+            bit 0=0 if currency symbol precedes value
+                 =1 if currency symbol follows value
+            bit 1=0 if no space between value and
+                     currency 0 symbol
+                 =1 if one space between value and
+                     currency symbol
+            bit 2=0 if currency symbol and decimal
+                     are separate
+                 =1 if currency symbol replaces
+                     decimal separator
+  17H       Number of digits after decimal in
+             currency
+  18H       Time format
+            bit 0=0 if 12-hour clock
+                 =1 if 24-hour clock
+  19H-1CH   Case-map routine call address
+  1DH-1EH   ASCIIZ data list separator
+  1FH-28H   Reserved
+ 
+▀ The format of the data returned by Subfunctions 02H, 04H, 06H, and 07H is:
+ 
+  Byte(s)   Contents
+  ═══════   ═══════════════════════════════════
+  00H       Information ID code (2, 4, 6, or 7)
+  01H-04H   Double-word pointer to table
+ 
+▀ The uppercase and filename uppercase tables are a maximum of 130 bytes
+  long. The first two bytes contain the size of the table; the following
+  bytes contain the uppercase equivalents, if any, for character codes
+  80H-FFH. The main use of these tables is to map accented or otherwise
+  modified vowels to their plain vowel equivalents. Text translated with
+  the help of this table can be sent to devices that do not support the
+  IBM graphics character set, or used to create filenames that do not re-
+  quire a special keyboard configuration for entry.
+ 
+▀ The collating table is a maximum of 258 bytes long. The first two bytes
+  contain the table length, and the subsequent bytes contain the values to
+  be used for the corresponding character codes (0-FFH) during a sort opera-
+  tion. This table maps uppercase and lowercase ASCII characters to the same
+  collating codes so that sorts will be case-insensitive, and it maps
+  accented vowels to their plain vowel equivalents.
+ 
+▀ [4.0+] Subfunction 07H returns a pointer to a variable-length table that
+  defines ranges for double-byte character set (DBCS) lead bytes. The table
+  is terminated by a pair of zero bytes, unless it must be truncated to fit
+  in the buffer, and has the following format:
+ 
+  dw     length
+  db     start1,end1
+  db     start2,end2
+  (3-vertical ellipsis)
+  db     0,0
+  For example:
+  dw     4
+  db     81h,9fh
+  db     0e0h,0fch
+  db     0,0
+ 
+▀ In some cases a truncated translation table may be presented to the pro-
+  gram by MS-DOS. Applications should always check the length at the be-
+  ginning of the table to ensure that it contains a translation code for
+  the particular character of interest.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

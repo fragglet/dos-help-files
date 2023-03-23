@@ -1,0 +1,137 @@
+<html>
+
+<head>
+<title>COLOR Statement Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#COLOR'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='_dot_huex.html'>Example<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>COLOR Statement Details</b>
+ 
+<b>Syntax</b>
+  COLOR [foreground][,[background][,border]]     Screen mode   0
+  COLOR [background][,palette]                   Screen mode   1
+  COLOR [foreground][,background]                Screen modes  7-10
+  COLOR [foreground]                             Screen modes 11-13
+ 
+With the COLOR statement, you can set the foreground and background
+colors for the display. In screen mode 0 a border color can also
+be selected. In screen mode 1 no foreground color can be selected,
+but one of two four-color palettes can be selected for use with
+graphics statements. In screen modes 12-13 only the foreground color
+can be set.
+ 
+The values of foreground in screen modes 7-10, 12, and 13 are
+attribute numbers (not color numbers) and display the color
+assigned to that attribute. See the PALETTE statement for a
+description of attributes.
+ 
+The COLOR statement does not determine the range of available
+colors. The combination of adapter, display, and the mode set by the
+SCREEN statement determine the color range. See the SCREEN
+statement for more information.
+ 
+The different syntaxes and their effects in different screen modes
+are described below:
+ 
+  Mode         Description
+ 
+  SCREEN 0     Modifies the current default text foreground and
+               background colors and the screen border. The
+               foreground color must be an integer expression in
+               the range 0-31. It determines the "foreground"
+               color in text mode-the default color of text.
+               Sixteen colors can be selected with the integers
+               0-15. You can select a blinking version of a color
+               by adding 16 to the color number. For example
+               a blinking color 7 is equal to 7 + 16, or 23.
+ 
+               The background color is an integer expression in
+               the range 0-7 and is the color of the background
+               for each text character. Blinking background colors
+               are not supported.
+ 
+               The border color-the color used to draw the screen
+               border-is an integer expression in the range 0-15.
+               The IBM Enhanced Graphics Adapter (EGA), the IBM
+               Video Graphics Array adapter (VGA), and the IBM
+               Multicolor Graphics Array adapter (MCGA) do not
+               support the border argument.
+ 
+  SCREEN 1     In mode 1, the COLOR statement has a unique syntax
+               that includes a palette argument that is an odd or
+               even integer expression in the range 0 to 255. This
+               argument determines which of two sets of colors to
+               use when displaying particular color numbers.
+ 
+               The default colors for the palette parameter are
+               equivalent to the following PALETTE statements on
+               a system equipped with an EGA:
+ 
+               COLOR ,0     'Same as the next three
+                            'PALETTE statements.
+               PALETTE 1,2  'Attribute 1 = color 2 (green)
+               PALETTE 2,4  'Attribute 2 = color 4 (red)
+               PALETTE 3,6  'Attribute 3 = color 6 (yellow)
+ 
+               COLOR ,1     'Same as the next three
+                            'PALETTE statements.
+               PALETTE 1,3  'Attribute 1 = color 3 (cyan)
+               PALETTE 2,5  'Attribute 2 = color 5 (magenta)
+               PALETTE 3,7  'Attribute 3 = color 7 (white)
+ 
+               Note that in screen mode 1, a COLOR statement
+               overrides previous PALETTE statements.
+ 
+  SCREEN 2     An "Illegal function call" message results if COLOR
+               is used in this mode.
+ 
+  SCREEN 7,    In these modes, no border color can be specified.
+         8,    the graphics background is given by the background
+         9,    color number, which must be in the range of valid
+         10    color numbers for the screen mode. The foreground
+               color argument is the default line-drawing color.
+               In screen modes 7 to 10 foreground is an attribute
+               number, while background is a color number. See the
+               SCREEN statement for more details.
+ 
+  SCREEN 11    Use the PALETTE statement to set color in screen
+               mode 11. An "Illegal function call" message results if
+               COLOR is used in this mode.
+ 
+  SCREEN 12,   No background color can be specified in these modes.
+         13    The foreground argument is the attribute used for
+               the foreground graphics color. The attribute must
+               be in the correct range for the screen mode. See
+               the SCREEN statement for more information.
+ 
+Arguments outside the valid ranges produce error messages that read
+"Illegal function call."
+ 
+The foreground can be the same color as the background, making
+displayed characters invisible. The default background is black, or
+color number 0 for all display hardware configurations and all screen
+modes.
+ 
+In screen modes 12 and 13 you can set the background color by
+assigning a color to attribute 0 with a PALETTE statement. For
+example, to make the background color 8224 (a light violet), you would
+use the following PALETTE statement:
+ 
+  PALETTE 0,8224
+ 
+In screen mode 11 you can set both the foreground and background color
+by assigning a color to attribute 0 with a PALETTE statement.
+ 
+With an EGA, VGA, or MCGA installed, the PALETTE statement gives you
+flexibility in assigning different display colors to the actual
+color-number ranges for the foreground, background, and border colors
+discussed above. See the PALETTE statement for more details.
+
+</pre>
+</body>
+
+</html>

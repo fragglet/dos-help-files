@@ -1,0 +1,53 @@
+<html>
+
+<head>
+<title>Int 2Fh Function B7h</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L8339.html'>Detail</a><span class='grhilite'>►</span>                                     <span class='grhilite'>◄</span><a href='2Fh.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Interrupt:   2Fh     Function:   B7h
+ 
+  Title:       APPEND [Version 3.0+]
+ 
+  Description:
+ 
+     Allows an application to test whether APPEND has been installed.
+     If APPEND is resident, returns the APPEND version, state, and the
+     path used to search for data files.
+ 
+     Input                                   Output
+ 
+     AH = B7h                                If function successful
+     AL = Subfunction                          Carry flag: clear
+          00h = Get Installed State          And if called with AL = 00h
+          02h = Get Append Version             AL = APPEND installed status
+                [Version 4.0+]                    = 00h (if not installed,
+          04h = Get Append Path Pointer                  OK to install)
+                [Version 4.0+]                    = 01h (if not installed,
+          06h = Get Append Function                      not OK to install)
+                State [Version 4.0+]              = FFh (if installed)
+          07h = Set Append Function          Or if called with AL=02h
+                State [Version 4.0+]         [Version 4.0+]
+          11h = Set Return Found Name          AX = FFFFh if MS-DOS 4.0
+                State [Version 4.0+]           APPEND
+                                             Or if called with AL = 04h
+     BX = APPEND state (if AL = 07h)         [Version 4.0+]
+                                               ES:DI = segment:offset of
+          Bits   Significance (if set)             active APPEND path
+                                             Or if called with AL=06h
+          0        APPEND enabled            [Version 4.0+]
+          1-12     Reserved (0)                BX = APPEND state (see above)
+          13       /PATH switch active
+          14       /E switch active          If function unsuccessful
+          15       /X switch active            AX = Error code
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

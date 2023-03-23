@@ -1,0 +1,55 @@
+<html>
+
+<head>
+<title>intdosx</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='intdosx.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='_at_L82bc.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     The intdosx function invokes the DOS system call specified by
+     register values defined in &lt;inregs&gt;, and returns the results of the
+     system call in &lt;outregs&gt;. The &lt;inregs&gt; and &lt;outregs&gt; arguments are
+     unions of type REGS.
+ 
+     Unlike the intdos function, intdosx accepts segment-register
+     values in &lt;segregs&gt;. This lets programs that use large-model data
+     segments or far pointers specify which segment or pointer should
+     be used during the system call.
+ 
+     The &lt;segregs&gt; argument is a structure of type SREGS. These types
+     are defined in the include file DOS.H.
+ 
+     To invoke a system call, intdosx executes an INT 21H instruction.
+     Before executing the instruction, the function copies the contents
+     of &lt;inregs&gt; and &lt;segregs&gt; to the corresponding registers. Only the
+     DS and ES register values in &lt;segregs&gt; are used.
+ 
+     After the INT instruction returns, intdosx copies the current
+     register values to &lt;outregs&gt; and restores DS. It also copies the
+     status of the system carry flag to the cflag field in &lt;outregs&gt;.
+     If this field is nonzero, the flag was set by the system call and
+     indicates an error condition.
+ 
+     The intdosx function is used to invoke DOS system calls that take
+     an argument in the ES register or that take a DS register value
+     different from the default data segment.
+ 
+     Segment values for the &lt;segregs&gt; argument can be obtained by using
+     either the segread function or the FP_SEG macro.
+ 
+     Return Value
+ 
+     The intdosx function returns the value of the AX register after
+     the system call is completed. If the cflag field in &lt;outregs&gt; is
+     nonzero, an error has occurred. In such cases, _doserrno is also
+     set to the corresponding error code.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

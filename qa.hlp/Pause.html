@@ -1,0 +1,47 @@
+<html>
+
+<head>
+<title>Pause</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* Pause - Waits for specified number of clocks to elapse, then returns.
+;*
+;* Shows:   BIOS Interrupt - 1Ah, Function 0 (Real-Time Clock Driver)
+;*          Operators - LOCAL     []
+;*
+;* Params:  duration - Desired duration in clocks, where
+;*                     18 clocks = approx 1 second
+;*
+;* Return:  None
+ 
+Pause   PROC \
+        duration:WORD
+ 
+        LOCAL time:DWORD
+ 
+        sub     ah, ah
+        int     1Ah                     ; Get Clock Count in CX:DX
+        add     dx, duration            ; Add pause time to it
+        adc     cx, 0
+        mov     WORD PTR time[0], dx    ; Result is target time;
+        mov     WORD PTR time[2], cx    ;   keep in local variable
+loop1:  int     1AH                     ; Now repeatedly poll clock
+        cmp     dx, WORD PTR time[0]    ;   count until the target
+        jb      loop1                   ;   time is reached
+        cmp     cx, WORD PTR time[2]
+        jb      loop1
+        ret
+ 
+Pause   ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

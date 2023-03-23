@@ -1,0 +1,108 @@
+<html>
+
+<head>
+<title>VIEWS.PAS</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.index'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM views;
+ 
+{ VIEWS.PAS illustrates windows and coordinate systems using the
+  following functions:
+ 
+      _ClearScreen    _Ellipse_wxy    _Rectangle_wxy    _SetViewPort
+      _Ellipse        _Rectangle      _SetClipRgn       _SetWindow
+      _Ellipse_w      _Rectangle_w    _SetViewOrg
+ 
+  Although not all illustrated here, functions ending in _w are similar
+  to _Rectangle_w and _Ellipse_w; functions ending in _wxy are similar
+  to _Rectangle_wxy and _Ellipse_wxy.
+}
+ 
+USES
+    MSGraph;
+ 
+VAR
+    bool             : Boolean;
+    errorcode, Mode,
+    xhalf, yhalf,
+    xquar, yquar     : Integer;
+    xyorg            : _XYCoord;
+    upleft, botright : _WXYCoord;
+    vc               : _VideoConfig;
+ 
+BEGIN
+ 
+    { Find a valid graphics mode }
+    IF (_SetVideoMode( _MaxResMode ) = 0) THEN
+        Halt ( 1 );
+ 
+    _GetVideoConfig( vc );
+ 
+    xhalf := vc.NumXPixels DIV 2;
+    yhalf := vc.NumYPixels DIV 2;
+    xquar := xhalf DIV 2;
+    yquar := yhalf DIV 2;
+ 
+    { First window -- integer physical coordinates }
+    _SetViewport( 0, 0, xhalf - 1, yhalf - 1 );
+    _Rectangle( 2 , 0, 0, xhalf - 1, yhalf - 1 );
+    _Ellipse( _GFillInterior, xquar DIV 4, yquar DIV 4,
+              xhalf - (xquar DIV 4), yhalf - (yquar DIV 4) );
+    Readln;
+ 
+    _ClearScreen( _GViewport );
+    _Rectangle ( _GBorder, 0, 0, xhalf - 1, yhalf - 1 );
+ 
+    { Second window -- integer world coordinates with clip region }
+    _SetClipRgn( xhalf, 0, vc.NumXPixels, yhalf );
+    _SetViewOrg( xhalf + xquar - 1, yquar - 1, xyorg );
+    _Rectangle( _GBorder, -xquar + 1, -yquar + 1, xquar, yquar );
+    _Ellipse( _GFillInterior, (-xquar * 3) DIV 4, (-yquar * 3) DIV 4,
+              (xquar * 3) DIV 4, (yquar * 3) DIV 4 );
+    Readln;
+ 
+    _ClearScreen( _GViewport );
+    _Rectangle( _GBorder, -xquar + 1, -yquar + 1, xquar, yquar );
+ 
+    { Third window }
+    _SetViewport( xhalf, yhalf, vc.NumXPixels - 1, vc.NumYPixels - 1 );
+    _SetWindow( False, -4.0, -5.0, 4.0, 5.0 );
+    _Rectangle_w( _GBorder, -4.0, -5.0, 4.0, 5.0 );
+    _Ellipse_w( _GFillInterior, -3.0, -3.5, 3.0, 3.5 );
+ 
+    Readln;
+ 
+    _ClearScreen( _GViewport );
+    _Rectangle_w( _GBorder, -4.0, -5.0, 4.0, 5.0 );
+ 
+    { Fourth window }
+    _SetViewport( 0, yhalf, xhalf - 1, vc.NumYPixels - 1 );
+    _SetWindow( True, -4.0, -5.0, 4.0, 5.0 );
+    upleft.wx   := -4.0;
+    upleft.wy   := -5.0;
+    botright.wx := 4.0;
+    botright.wy := 5.0;
+    _Rectangle_wxy( _GBorder, upleft, botright );
+    upleft.wx   := -3.0;
+    upleft.wy   := -3.5;
+    botright.wx := 3.0;
+    botright.wy := 3.5;
+    _Ellipse_wxy( _GFillInterior, upleft, botright );
+ 
+    Readln;
+ 
+    errorcode := _SetVideoMode( _DefaultMode );
+    Halt( errorcode );
+ 
+END.
+ 
+
+</pre>
+</body>
+
+</html>

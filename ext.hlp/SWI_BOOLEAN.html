@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<title>Switch Table Entries</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='swiDesc.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────PWB Extensions─────────────────────────────────────────────────────────
+ 
+     Each swiDesc element an extension swiTable array contains a type
+     member which determines the kind of values the switch takes and how
+     the switch is initialized. The type member must be one of the
+     following constants:
+ 
+     SWI_BOOLEAN
+          The switch is Boolean. Setting the switch to No in PWB sets
+          the variable to FALSE (zero). Setting the switch to Yes sets
+          the variable to TRUE (nonzero).
+ 
+          The act member must be a far pointer to a flagType variable.
+ 
+     SWI_NUMERIC
+          The switch is numeric. SWI_NUMERIC must be combined with
+          either RADIX10 or RADIX16 to specify whether PWB interprets
+          switch values as as decimal or hexadecimal.
+ 
+          The act member must be a far pointer to an int variable.
+ 
+     SWI_EXTTEXT
+          The switch is a text switch. The act member must be a pointer
+          to the function that processes the value of the switch when it
+          is initialized or displayed. The prototype for the function
+          must be:
+ 
+               char far * pascal EXTERNAL Func( char far *Text,
+                                                flagType fQuery );
+ 
+          The fQuery argument specifies the action that the switch
+          function is to perform, as follows:
+ 
+          fQuery    Description
+ 
+          FALSE     The switch is being assigned a value. The switch
+                    function must set the switch according to the Text
+                    argument and return NULL if successful. Otherwise,
+                    it must return an error message to display.
+ 
+          TRUE      The value for the switch is being displayed or the
+                    switch is being saved in TOOLS.INI. The switch
+                    function must return the current value of the
+                    switch. The Text argument is normally NULL and
+                    should be ignored.
+ 
+     SWI_SPECIAL
+     SWI_SPECIAL2
+          The switch is a string. These types are obsolete and supported
+          for PWB 1.x extensions only. Use SWI_EXTTEXT for new
+          extensions.
+ 
+          The act member must be a pointer to the function that will
+          process the string. The difference between the two switch
+          types is in the prototype of the function.
+ 
+          For SWI_SPECIAL the function prototype must be:
+ 
+               flagType pascal EXTERNAL Func( char far * );
+ 
+          For SWI_SPECIAL2 the function prototype must be:
+ 
+               char far *pascal EXTERNAL Func( char far * );
+ 
+          The text is passed to the function for processing. The
+          function may need to check the string for suitability. If the
+          string is acceptable, SWI_SPECIAL functions return TRUE.
+          SWI_SPECIAL2 functions return NULL. If the string is
+          unacceptable, SWI_SPECIAL functions return FALSE. SWI_SPECIAL2
+          functions return an error string for PWB to display.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

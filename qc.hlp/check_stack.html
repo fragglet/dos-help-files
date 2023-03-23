@@ -1,0 +1,101 @@
+<html>
+
+<head>
+<title>check_stack</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8009.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Pragma:    check_stack
+ 
+  Syntax:    #pragma check_stack ([{ on | off }])
+ 
+  Summary:   Instructs the compiler to turn off stack probes if off is
+             specified, or to turn on stack probes if on is specified.
+             If no argument is given, stack probes are treated
+             according to the default (on, unless /Gs was used).
+ 
+  See also:  check_pointer
+ 
+     You can reduce the size of a program and speed up execution
+     slightly by removing stack probes. You can do this with either the
+     /Gs option or the check_stack pragma.
+ 
+     A "stack probe" is a short routine called on entry to a function
+     to verify that there is enough room in the program stack to
+     allocate local variables required by the function. The stack probe
+     routine is called at every function entry point. Ordinarily, the
+     stack probe routine generates a stack overflow message when it
+     determines that the required stack space is not available. When
+     stack checking is turned off, the stack probe routine is not
+     called, and stack overflow can occur without being diagnosed
+     (i.e., no error message is printed).
+ 
+     Use the /Gs option when you want to turn off stack checking for an
+     entire module if you know that the program does not exceed the
+     available stack space. For example, stack probes may not be needed
+     for programs that make very few function calls, or that have only
+     modest local variable requirements. In the absence of the /Gs
+     option, stack checking is on.
+ 
+     Use the check_stack pragma when you want to turn stack checking on
+     or off for selected routines only, leaving the default (as
+     determined by the presence or absence of the /Gs option) for the
+     rest. When you want to turn off stack checking, put the following
+     line before the definition of the function that you do not want to
+     check:
+ 
+          #pragma check_stack( off )
+ 
+     Note that the preceding line disables stack checking for all
+     routines that follow it in the source file, not just the routines
+     on the same line. To reinstate stack checking, insert the
+     following line:
+ 
+          #pragma check_stack( on )
+ 
+     For earlier versions of Microsoft C, the check_stack pragma had a
+     different format: check_stack+ to enable stack checking and
+     check_stack- to disable stack checking. Although the Microsoft C
+     compiler still accepts this format, its use is discouraged, since
+     it may not be supported in future versions.
+ 
+     If no argument is given for the check_stack pragma, stack checking
+     reverts to the behavior specified on the command line: disabled if
+     the /Gs option is given, or enabled if otherwise. The interaction
+     of the check_stack pragma with the /Gs option is explained in
+     greater detail below:
+ 
+                                  Compiled with
+     Syntax                       /Ox or /Ol?     Action
+ 
+     #pragma check_stack()        Yes             Turns off stack
+                                                  checking for routines
+                                                  that follow
+ 
+     #pragma check_stack()        No              Turns on stack
+                                                  checking for routines
+                                                  that follow
+ 
+     #pragma check_stack( on )    Yes or no       Turns on stack
+                                                  checking for routines
+                                                  that follow
+ 
+     #pragma check_stack( off )   Yes or no       Turns off stack
+                                                  checking for routines
+                                                  that follow
+ 
+     The check_stack( off ) and /Gs options should be used with great
+     care. Although these options can make a program smaller and
+     faster, they may mean that the program will not be able to detect
+     certain execution errors.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

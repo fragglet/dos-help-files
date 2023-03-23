@@ -1,0 +1,196 @@
+<html>
+
+<head>
+<title>HIMEM.SYS</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='testmem.html'>Notes</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='HIMEM_dot_SYS--Example.html'>Examples</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                                 HIMEM.SYS
+ 
+HIMEM is an extended-memory manager──a program that coordinates the use of
+your computer's extended memory, including the high memory area (HMA), so
+that no two applications or device drivers use the same memory at the same
+time.
+ 
+You install HIMEM by adding a &lt;<a href='Device.html'>DEVICE</a>&gt; command for HIMEM.SYS to your
+CONFIG.SYS file. The HIMEM.SYS command line must come before any commands
+that start applications or device drivers that use extended memory; for
+example, the HIMEM.SYS command line must come before the EMM386.EXE command
+line.
+ 
+<b>Syntax</b>
+ 
+    DEVICE=[drive:][path]HIMEM.SYS [/A20CONTROL:ON|OFF] [/CPUCLOCK:ON|OFF]
+    [/EISA] [/HMAMIN=m] [/INT15=xxxx] [/NUMHANDLES=n] [/MACHINE:xxxx]
+    [/SHADOWRAM:ON|OFF] [/TESTMEM:ON|OFF] [/VERBOSE]
+ 
+In most cases, you won't need to specify command-line options. The default
+values for HIMEM.SYS are designed to work with most hardware.
+ 
+<b>Parameter</b>
+ 
+[drive:][path]
+    Specifies the location of the HIMEM.SYS file. HIMEM.SYS should always be
+    located on the same drive that contains your MS-DOS files. If the
+    HIMEM.SYS file is in the root directory of your startup drive, you don't
+    need to include a path. However, you must always include the complete
+    filename (HIMEM.SYS).
+ 
+<b>Switches</b>
+ 
+/A20CONTROL:ON|OFF
+    Specifies whether HIMEM is to take control of the A20 line even if A20
+    was on when HIMEM was loaded. The A20 handler gives your computer access
+    to the HMA. If you specify /A20CONTROL:OFF, HIMEM takes control of the
+    A20 line only if A20 was off when HIMEM was loaded. The default setting
+    is /A20CONTROL:ON.
+ 
+/CPUCLOCK:ON|OFF
+    Specifies whether HIMEM is to affect the clock speed of your computer.
+    If your computer's clock speed changes when you install HIMEM,
+    specifying /CPUCLOCK:ON may correct the problem; however, enabling this
+    option slows down HIMEM. The default setting is /CPUCLOCK:OFF.
+ 
+/EISA
+    Specifies that HIMEM should allocate all available extended memory. This
+    switch is necessary only on an EISA (Extended Industry Standard
+    Architecture) computer with more than 16 MB of memory; on other
+    computers, HIMEM automatically allocates all available extended memory.
+ 
+/HMAMIN=m
+    Specifies how many kilobytes of memory an application must require for
+    HIMEM to give that application use of the HMA. Only one application can
+    use the HMA at a time; HIMEM allocates the HMA to the first application
+    that meets the memory-use requirements set by this option. You can
+    specify a value from 0 to 63.
+ 
+    Set /HMAMIN to the amount of memory required by the application that
+    uses the most HMA memory.
+ 
+    The /HMAMIN option is not required; the default value is zero. Omitting
+    this option (or setting it to zero) specifies that HIMEM allocate the
+    HMA to the first application that requests it, regardless of how much of
+    the HMA the application is going to use.
+ 
+    The /HMAMIN option has no effect when Windows is running in 386 enhanced
+    mode.
+ 
+/INT15=xxxx
+    Allocates the amount of extended memory (in kilobytes) to be reserved
+    for the Interrupt 15h interface. Some older applications use the
+    Interrupt 15h interface to allocate extended memory rather than using
+    the XMS (eXtended-Memory Specification) method provided by HIMEM. If you
+    use these applications, you can ensure enough memory is available to
+    them by setting xxxx to 64 KB larger than the amount required by the
+    application.
+ 
+    You can specify a value from 64 to 65535; however, you cannot specify
+    more memory than your system has available. If you specify a value less
+    than 64, the value becomes 0. The default value is 0.
+ 
+/NUMHANDLES=n
+    Specifies the maximum number of extended-memory block (EMB) handles that
+    can be used simultaneously. You can specify a value from 1 to 128; the
+    default value is 32. Each additional handle requires an additional 6
+    bytes of memory.
+ 
+    The /NUMHANDLES option has no effect when Windows is running in 386
+    enhanced mode.
+ 
+/MACHINE:xxxx
+    Specifies what type of computer you are using. Usually, HIMEM can detect
+    your computer type successfully; however, there are a few computers that
+    HIMEM cannot detect. On such systems, HIMEM uses the default system type
+    (IBM AT or compatible). You might need to include the /MACHINE option if
+    your computer is a type that HIMEM cannot detect and if HIMEM does not
+    work properly on your system by using the default system type.
+ 
+    Currently, systems that require this option include Acer 1100, Wyse, and
+    IBM 7552.
+ 
+    The value for xxxx can be any of the codes or their equivalent numbers
+    listed in the following table.
+ 
+<b>Code         Number  Computer type</b>
+───────────────────────────────────────────────────────────────────────────
+ 
+at           1       IBM AT or 100% compatible
+ 
+ps2          2       IBM PS/2
+ 
+ptlcascade   3       Phoenix Cascade BIOS
+ 
+hpvectra     4       HP Vectra (A &amp; A+)
+ 
+att6300plus  5       AT&amp;T 6300 Plus
+ 
+acer1100     6       Acer 1100
+ 
+toshiba      7       Toshiba 1600 &amp; 1200XE
+ 
+wyse         8       Wyse 12.5 Mhz 286
+ 
+tulip        9       Tulip SX
+ 
+zenith       10      Zenith ZBIOS
+ 
+at1          11      IBM PC/AT (alternative delay)
+ 
+at2          12      IBM PC/AT (alternative delay)
+ 
+css          12      CSS Labs
+ 
+at3          13      IBM PC/AT (alternative delay)
+ 
+philips      13      Philips
+ 
+fasthp       14      HP Vectra
+ 
+ibm7552      15      IBM 7552 Industrial Computer
+ 
+bullmicral   16      Bull Micral 60
+ 
+dell         17      Dell XBIOS
+ 
+/SHADOWRAM:ON|OFF
+    Specifies whether to disable shadow RAM (SHADOWRAM:OFF) or to leave the
+    ROM code running from RAM (SHADOWRAM:ON).
+ 
+    Some computers make ROM code run faster by "shadowing" it in RAM──that
+    is, by copying the ROM code into faster RAM memory at startup, which
+    uses some extended memory. On computers that use shadow RAM and have
+    less than 2 MB of RAM, HIMEM usually attempts to disable shadow RAM to
+    recover additional extended memory for Windows to use. (HIMEM can
+    disable shadow RAM only on certain types of systems.) When HIMEM
+    disables shadow RAM, the ROM code runs in the slower ROM instead of RAM;
+    therefore, your computer might run slightly slower than it did before.
+ 
+/TESTMEM:ON|OFF
+    Determines whether HIMEM performs a memory test when your computer
+    starts. By default, HIMEM tests the reliability of your computer's
+    extended memory each time your computer starts. This test can identify
+    memory that is no  longer reliable; unreliable memory can cause system
+    instability or loss of data. HIMEM's memory test is more thorough than
+    the standard power-up memory test performed by most computers. To
+    prevent HIMEM from performing the memory test, specify /TESTMEM:OFF.
+    Disabling the memory test will shorten the startup process. (The default
+    setting is /TESTMEM:ON.)
+ 
+/VERBOSE
+    Directs HIMEM to display status and error messages while loading. By
+    default, HIMEM does not display any messages unless it encounters an
+    error. You can abbreviate /VERBOSE as /V. (To display status messages
+    without adding the /VERBOSE switch, press and hold the ALT key while
+    HIMEM starts and loads.)
+ 
+                                      ♦
+
+</pre>
+</body>
+
+</html>

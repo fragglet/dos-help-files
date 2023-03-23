@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>C2604</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='../clang.hlp/clang_dot_contents.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     Compiler error C2604
+ 
+     cannot declare 'modifier' access to 'modifier' member
+     'class::identifier'
+ 
+     The access declaration of the given identifier specified an
+     access that was different from the access declared in the base
+     class or structure.
+ 
+     An access declaration may not restrict access to a member that
+     is accessible in a base class, nor may it grant more access to a
+     member of the base class, beyond that which already it already
+     has.
+ 
+     The following example shows illegal access declarations:
+ 
+          struct X
+          {
+          private:
+              int priv;
+          protected:
+              int prot;
+          public:
+              int pub;
+          };
+ 
+          struct A : public X
+          {
+          protected:
+             X::priv;    // error
+             X::pub;     // error
+          public:
+             X::priv;    // error
+             X::prot;    // error
+          };
+ 
+          struct B : protected X
+          {
+          protected:
+             X::priv;    // error
+             X::pub;     // error
+          public:
+             X::priv;    // error
+             X::prot;    // error
+          };
+ 
+          struct C : private X
+          {
+          protected:
+             X::priv;    // error
+             X::pub;     // error
+          public:
+             X::priv;    // error
+             X::prot;    // error
+          };
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

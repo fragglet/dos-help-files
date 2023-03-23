@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<title>BUFTEST.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* BUFTEST.C illustrates buffer control for stream I/O, using function:
+ *      setvbuf
+ */
+ 
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
+ 
+long countln( FILE *stream );           /* Prototype        */
+char buf[BUFSIZ * 4];                   /* File buffer      */
+ 
+void main( int argc, char *argv[] )
+{
+    time_t start, end;
+    FILE *stream;
+    long c;
+ 
+    /* Use standard buffer. */
+    if( (stream = fopen( argv[1], "rt" )) == NULL )
+    {
+        printf( "SYNTAX: BUFTEST filename\n" );
+        exit( 1 );
+    }
+    start = clock();
+    c = countln( stream );
+    end = clock();
+    printf( "Time: %5.1f\tBuffering: Normal\tBuffer size: %d\n",
+             ((float)end - start) / CLOCKS_PER_SEC, BUFSIZ );
+ 
+    /* Use a larger buffer. */
+    if( (stream = fopen( argv[1], "rt" )) == NULL )
+        exit( 1 );
+    setvbuf( stream, buf, _IOFBF, sizeof( buf ) );
+    start = clock();
+    c = countln( stream );
+    end = clock();
+    printf( "Time: %5.1f\tBuffering: Normal\tBuffer size: %d\n",
+             ((float)end - start) / CLOCKS_PER_SEC, BUFSIZ * 4 );
+ 
+    /* Try it with no buffering. */
+    if( (stream = fopen( argv[1], "rt" )) == NULL )
+        exit( 1 );
+    setvbuf( stream, NULL, _IONBF, 0 );
+    start = clock();
+    c = countln( stream );
+    end = clock();
+    printf( "Time: %5.1f\tBuffering: None\tBuffer size: %d\n",
+             ((float)end - start) / CLOCKS_PER_SEC, 0 );
+ 
+    printf( "File %s has %ld lines\n", argv[1], c );
+    exit( 0 );
+}
+ 
+/* Counts lines in a text file and closes file */
+long countln( FILE *stream )
+{
+    char linebuf[256];
+    long c = 0;
+ 
+    while( !feof( stream ) )
+    {
+        if( fgets( linebuf, 255, stream ) == NULL )
+            break;
+        ++c;
+    }
+    fclose( stream );
+    return c;
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

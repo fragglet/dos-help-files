@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<title>DO...LOOP Statement Programming Examples</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'These three examples use DO...LOOP to show how the placement of the
+'condition affects the number of times the block of statements is executed,
+'to illustrate testing at the end of a loop, and to present a SUB procedure
+'where an ending test is appropriate.
+ 
+DIM I AS INTEGER
+CLS
+'In this example, the test is done at the beginning of the loop.
+'Because I is not less than 10, the body of the loop (the
+'statement block) is never executed.
+ 
+'DO...LOOP with test at the top of the loop.
+'Output shows that loop was not executed.
+I = 10
+PRINT "Example 1:": PRINT
+PRINT "Value of I at beginning of loop is  "; I
+DO WHILE I &lt; 10
+   I = I + 1
+LOOP
+PRINT "Value of I at end of loop is  "; I
+ 
+'The following example tests I at the end of the loop, so the
+'statement block executes at least once.
+ 
+'DO...LOOP with test at the bottom of the loop.
+'Output shows loop was executed once.
+I = 10
+PRINT : PRINT : PRINT "Example 2:": PRINT
+DO
+   PRINT "Value of I at beginning of loop is  "; I
+   I = I + 1
+LOOP WHILE I &lt; 10
+PRINT "Value of I at end of loop is  "; I
+ 
+'The following sort program tests at the end of the loop because
+'the entire array must be examined at least once to see if it is in
+'order. In general, test at the end of a loop only if you know that
+'you always want the statement block executed at least once.
+ 
+'Set up a special value to indicate no exchanges.
+CONST NOEXCH = -1
+DIM Exes(12)
+'Load the array and mix it up.
+FOR I = 1 TO 12 STEP 2
+   Exes(I) = 13 - I
+   Exes(I + 1) = 0 + I
+NEXT I
+Limit = 12
+PRINT : PRINT : PRINT "Example 3:": PRINT
+PRINT "This is the list of numbers to sort in ascending order:"
+PRINT
+FOR I = 1 TO 12
+   PRINT USING " ### "; Exes(I);
+NEXT I
+PRINT
+'In the following DO...LOOP, INKEY$ is tested at the bottom of the loop.
+'When the user presses a key, INKEY$ is no longer a null string and the
+'loop terminates, continuing program execution.
+ 
+'DO...LOOP with test at the bottom of the loop.
+PRINT : PRINT "Press any key to continue."
+DO
+LOOP WHILE INKEY$ = ""
+ 
+DO
+   Exchange = NOEXCH
+   FOR I = 1 TO Limit - 1            'Make one pass over the array.
+      IF Exes(I) &gt; Exes(I + 1) THEN
+         SWAP Exes(I), Exes(I + 1)   'Exchange array elements.
+         Exchange = I                'Record location of most
+      END IF                         'recent exchange.
+   NEXT I
+   Limit = Exchange                  'Sort on next pass only to where
+                                     'last exchange was done.
+LOOP UNTIL Exchange = NOEXCH         'Sort until no elements are exchanged.
+ 
+PRINT : PRINT "Sorting is completed. This is the sorted list:": PRINT
+FOR I = 1 TO 12
+   PRINT USING " ### "; Exes(I);
+NEXT I
+END
+
+</pre>
+</body>
+
+</html>

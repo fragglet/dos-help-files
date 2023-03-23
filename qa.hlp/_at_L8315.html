@@ -1,0 +1,55 @@
+<html>
+
+<head>
+<title>Interrupt 25H</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span><a href='25H.html'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Notes<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+▀ All registers except the segment registers may be destroyed.
+ 
+▀ When this function returns, the CPU flags originally pushed on the stack
+  by the INT 25H instruction are still on the stack. The stack must be
+  cleared by a POPF or ADD SP,2 to prevent uncontrolled stack growth and
+  to make accessible any other values that were pushed on the stack before
+  the call to INT 25H.
+ 
+▀ Logical sector numbers are obtained by numbering each disk sector se-
+  quentially from track 0, head 0, sector 1, and continuing until the last
+  sector on the disk is counted. The head number is incremented before the
+  track number. Logically adjacent sectors may not be physically adjacent,
+  due to interleaving that occurs at the device-driver level for some disk
+  types.
+ 
+▀ The error code is interpreted as follows: The lower byte (AL) is the
+  same error code that is returned in the lower byte of DI when an Int 24H
+  is issued. The upper byte (AH) contains:
+ 
+  80H  if attachment failed to respond
+  40H  if seek operation failed
+  20H  if controller failed
+  10H  data error (bad CRC)
+  08H  if direct memory access (DMA) failure
+  04H  if requested sector not found
+  02H  if bad address mark
+  01H  if bad command
+ 
+▀ [4.0+] When accessing partitions larger than 32 MB under MS-DOS version
+  4, this function uses a parameter block with the following format:
+ 
+  Bytes       Description
+  ═══════     ═════════════════════════
+  00H-03H     32-bit sector number
+  04H-05H     number of sectors to read
+  06H-07H     offset of buffer
+  08H-09H     segment of buffer
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,103 @@
+<html>
+
+<head>
+<title>GetKeyClock</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* GetKeyClock - Waits for keypress while updating time at specified location
+;* on screen.
+;*
+;* Shows:   BIOS Interrupt - 16h, Functions 0 and 10h (Read Character)
+;*                           16h, Functions 1 and 11h (Get Keyboard Status)
+;*          DOS Functions - 2Ah (Get Date)
+;*                          2Ch (Get Time)
+;*
+;* Uses:    vconfig - Video configuration structure, declared in the
+;*          DEMO.INC include file. The structure must first be
+;*          initialized by calling the GetVidConfig procedure.
+;*
+;* Params:  row - Screen row for clock display
+;*          col - Screen column for clock display
+;*
+;* Return:  Short integer with key scan code in high byte and ASCII
+;*          character code in low byte. Low byte is 0 for special
+;*          keys (such as the "F" keys) which don't generate characters.
+ 
+        .DATA
+        PUBLIC datestr
+datestr DB      '  -  -     :  :  ', 0  ; Date/time string
+        .CODE
+ 
+        EXTRN StrWrite:PROC
+ 
+GetKeyClock PROC \
+        row:WORD, col:WORD
+ 
+        LOCAL   service:BYTE
+ 
+        call    GetShift                ; Check for extended keyboard
+        mov     service, 11h            ; Request for Function 11h
+        cmp     dx, 1                   ; Extended keyboard available?
+        je      key1                    ; Yes?  Set AH appropriately
+        mov     service, 1              ; No? Set AH for Function 1
+key1:   mov     ah, service
+        int     16h                     ; Check if Key is Ready
+        jnz     exit                    ; Ready?  Exit procedure
+                                        ; Not ready?  Check text mode
+        cmp     vconfig.mode, 7         ; Monochrome text mode?
+        je      @F                      ; Yes?  Continue
+        cmp     vconfig.mode, 3         ; Color text mode?
+        je      @F                      ; Yes?  Continue
+        cmp     vconfig.mode, 2         ; Black/white?
+        jne     key1                    ; No?  Skip clock update and
+                                        ;   poll keyboard again
+ 
+; If 80-column text, get date and time from DOS before again polling keyboard,
+; and display at upper right corner of screen.
+ 
+@@:     mov     ah, 2Ch                 ; Request time
+        int     21h                     ; Get Time
+        mov     dl, dh
+        push    dx                      ; Save seconds,
+        push    cx                      ;   minutes,
+        mov     cl, ch                  ;   and
+        push    cx                      ;   hours
+        mov     ah, 2Ah                 ; Request date
+        int     21h                     ; Get Date
+        sub     cx, 1900                ; Subtract century, CL = year
+        push    cx                      ; Save year,
+        push    dx                      ;   day,
+        mov     dl, dh                  ;   and
+        push    dx                      ;   month
+ 
+        mov     cx, 6
+        sub     bx, bx
+loop1:  pop     ax                      ; Recover all 6 numbers in AL
+        aam                             ; Convert to unpacked BCD
+        xchg    al, ah                  ; Switch bytes for word move
+        or      ax, '00'                ; Make ASCII numerals
+        mov     WORD PTR datestr[bx], ax; Copy to string
+        add     bx, 3                   ;   at every third byte
+        loop    loop1
+ 
+        DispText row, col, &lt;OFFSET datestr&gt;
+        jmp     key1                    ; Loop again for keypress
+ 
+exit:   mov     ah, service             ; 1 or 11h, depending on keybd
+        dec     ah                      ; Set AH to 0 or 10h
+        int     16h                     ; Get key to remove it from
+        ret                             ;   keyboard buffer
+ 
+GetKeyClock ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

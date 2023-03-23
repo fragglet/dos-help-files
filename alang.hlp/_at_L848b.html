@@ -1,0 +1,53 @@
+<html>
+
+<head>
+<title>Sound</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L83fd.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* Sound - Sounds speaker with specified frequency and duration.
+;*
+;* Shows:   Instructions - in           out
+;*
+;* Params:  Freq - Desired frequency of sound in Hertz
+;*          Duration - Desired duration in clocks, where
+;*                     18 clocks = approx 1 second
+;*
+;* Return:  None
+ 
+Sound   PROC,
+        Freq:WORD, Duration:WORD
+ 
+        mov     al, 0B6h                ; Initialize channel 2 of
+        out     43h, al                 ;   timer chip
+        mov     dx, 12h                 ; Divide 1,193,182 Hertz
+        mov     ax, 34DEh               ;   (clock frequency) by
+        div     Freq                    ;   desired frequency
+                                        ; Result is timer clock count
+        out     42h, al                 ; Low byte of count to timer
+        mov     al, ah
+        out     42h, al                 ; High byte of count to timer
+        in      al, 61h                 ; Read value from port 61h
+        or      al, 3                   ; Set first two bits
+        out     61h, al                 ; Turn speaker on
+ 
+        ; Pause, pass duration of delay
+        INVOKE  Pause, Duration
+ 
+        in      al, 61h                 ; Get port value
+        xor     al, 3                   ; Kill bits 0-1 to turn
+        out     61h, al                 ;   speaker off
+        ret
+ 
+Sound   ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

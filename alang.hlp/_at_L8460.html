@@ -1,0 +1,67 @@
+<html>
+
+<head>
+<title>GetStr</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L83fe.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* GetStr - Gets a string of up to 128 characters from the user. Since
+;* this function uses the DOS input mechanism, it can use the DOS editing
+;* keys or the keys of a DOS command-line editor if one is loaded.
+;*
+;* Shows:   DOS Function - 0Ah (Buffered Keyboard Input)
+;*          Directive    - EQU
+;*
+;* Params:  Strbuf - Pointer to area where input string will be placed
+;*          Maxlen - Maximum length (up to 128 characters) of string
+;*
+;* Return:  0 if successful, 1 if error (Maxlen is too long)
+ 
+        .DATA
+MAXSTR  EQU     128
+max     BYTE    MAXSTR
+actual  BYTE    ?
+string  BYTE    MAXSTR DUP (?)
+ 
+        .CODE
+GetStr  PROC USES si di,
+        Strbuf:PBYTE,
+        Maxlen:WORD
+ 
+        mov     ax, 1                   ; Assume error
+        mov     cx, Maxlen              ; Copy length to register
+ 
+        .IF (cx != 0) &amp;&amp; (cx &lt;= MAXSTR) ; Error if 0 or too long
+        mov     max, cl                 ; Load maximum length
+        mov     ah, 0Ah                 ; Request DOS Function 0Ah
+        mov     dx, OFFSET max          ; Load offset of string
+        int     21h                     ; Buffered Keyboard Input
+ 
+        mov     bl, actual              ; Put number of characters read
+        sub     bh, bh                  ;   in BX
+        mov     string[bx], 0           ; Null-terminate string
+        mov     cx, bx                  ; Put count in CX
+        inc     cx                      ; Plus one for the null terminator
+ 
+        LoadPtr es, di, Strbuf          ; ES:DI points to destination buffer
+        mov     si, OFFSET string       ; DS:SI points to source string
+        rep     movsb                   ; Copy source to destination
+        sub     ax, ax                  ; Return 0 for success
+        .ENDIF
+ 
+        ret
+ 
+GetStr  ENDP
+ 
+        END
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,47 @@
+<html>
+
+<head>
+<title>EXTERNDEF/COMM Diagram</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='ABS.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     Variables can be shared between source files in the following
+     manner:
+ 
+                      ┌─TOOLS.INC────────────────┐
+                      │                          │
+                      │ EXTERNDEF  Global: WORD  │<span class='grhilite'>◄</span>─Declaration
+                      │ COMM       Communal: WORD│<span class='grhilite'>◄</span>─Declaration &amp;
+                      └────────────┬─────────────┘  definition
+                                   │
+                  ┌────────────────┴─────────────────┐
+                  │                                  │
+     ┌─USER.ASM───┴──────────┐          ┌─TOOLS.ASM──┴──────────┐
+     │                       │          │                       │
+     │ INCLUDE   TOOLS.INC   │          │ INCLUDE   TOOLS.INC   │
+     │                       │          │                       │
+     │ mov       Global, ax  │<span class='grhilite'>◄</span>┬─Use    │ Global    WORD ?      │<span class='grhilite'>◄</span>─Definition
+     │ mov       bx, Communal│<span class='grhilite'>◄</span>┘        │                       │
+     └───────────────────────┘          └───────────────────────┘
+ 
+     The EXTERNDEF directive in TOOLS.INC declares the variable Global
+     and allows it to be accessed within modules that include
+     TOOLS.INC, such as USER.ASM. The EXTERNDEF directive does not
+     define Global; it is created by TOOLS.ASM. If TOOLS.INC is
+     included by a module that does not use Global, the linker will not
+     import Global.
+ 
+     The COMM directive in TOOLS.INC declares and defines the variable
+     Communal and exports it to all modules that include TOOLS.INC,
+     regardless of whether or not Communal is used.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

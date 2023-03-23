@@ -1,0 +1,125 @@
+<html>
+
+<head>
+<title>signal</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='signal.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='_at_L80ed.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+     The signal function allows a process to choose one of several
+     ways to handle an interrupt from the operating system. The
+     signal function takes two arguments: &lt;sig&gt; and &lt;func&gt;.
+ 
+     The &lt;sig&gt; argument is the interrupt for which you want the
+     signal function to respond; it must be one of the following
+     manifest constants (defined in SIGNAL.H):
+ 
+     SIGABRT     SIGFPE      SIGILL
+     SIGINT      SIGSEGV     SIGTERM
+ 
+     The &lt;func&gt; argument is either an address to a signal handler that
+     you write or it is one of the following manifest constants
+     (defined in SIGNAL.H):
+ 
+     SIG_DFL     SIG_IGN
+ 
+     If &lt;func&gt; is a function, it is installed as the signal handler
+     for the given signal. The signal handler's prototype requires one
+     formal argument, &lt;sig&gt;, of type int. The operating system
+     provides the actual argument through &lt;sig&gt; when an interrupt
+     occurs; the argument will be the signal that generated the
+     interrupt. Thus, you can use the six manifest constants (SIGABRT,
+     SIGFPE, SIGILL, SIGINT, SIGSEGV, and SIGTERM) inside your signal
+     handler to determine which interrupt occurred and take appropriate
+     action.
+ 
+     For example, you could call the signal function twice to assign
+     the same handler to two different signals, then test the &lt;sig&gt;
+     argument inside the handler to take different actions based on
+     the signal received.
+ 
+     If you are testing for floating-point exceptions (SIGFPE), the
+     function pointed to by &lt;func&gt; takes an optional second argument
+     which is one of several manifest constants of the form FPE_xxx
+     (defined in FLOAT.H). When a SIGFPE signal occurs, you can test
+     the value of the second argument to determine the type of
+     floating-point exception and then take appropriate action. This
+     argument and its possible values are Microsoft extensions.
+ 
+     For floating-point exceptions, the value of &lt;func&gt; is not reset
+     upon receiving the signal. To recover from floating-point
+     exceptions, use setjmp in conjunction with longjmp. If the
+     function returns, the calling process resumes execution with the
+     floating-point state of the process left undefined.
+ 
+     If the signal handler returns, the calling process resumes execution
+     immediately following the point at which it received the interrupt
+     signal. This is true regardless of the type of signal or operating
+     mode.
+ 
+     Before the specified function is executed under DOS version 3.x or
+     earlier, the value of &lt;func&gt; is set to SIG_DFL. The next interrupt
+     signal is treated as described for SIG_DFL, unless an intervening
+     call to signal specifies otherwise. This allows the user to reset
+     signals in the called function if desired.
+     See: SIG_DFL
+ 
+     Since signal-handler routines are usually called asynchronously
+     when an interrupt occurs, it is possible that your signal-
+     handler function will get control when a run-time operation is
+     incomplete and in an unknown state. There are certain restrictions
+     as to which functions you can use in your signal-handler routine.
+     The list below summarizes these restrictions:
+ 
+        ■ Do not issue low-level or STDIO.H I/O routines (e.g., printf,
+          fread).
+ 
+        ■ Do not call heap routines or any routine that uses the heap
+          routines (e.g., malloc, _freect, _strdup, _putenv).
+          See: malloc
+ 
+        ■ Do not use any function that generates a system call (e.g.,
+          _getcwd, time).
+ 
+        ■ Do not use the longjmp function unless the interrupt is
+          caused by a floating-point exception (i.e., &lt;sig&gt; is
+          SIGFPE). In this case, the program should first reinitialize
+          the floating-point package by means of a call to _fpreset.
+ 
+        ■ Do not use any overlay routines.
+ 
+     NOTE: Under DOS, a program must contain floating-point code if it
+           is to trap the SIGFPE exception with the signal function. If
+           your program does not have floating-point code and it
+           requires the run-time library's signal-handling code, simply
+           declare a volatile double and initialize it to zero:
+ 
+                volatile double d = 0.0f;
+ 
+     The SIGILL, SIGSEGV, and SIGTERM signals are not generated under
+     DOS. They are included for ANSI compatibility. Thus you can set
+     signal handlers for these signals via signal, and you can also
+     explicitly generate these signals by calling raise.
+ 
+     Signal settings are not preserved in child processes created by
+     calls to _exec or _spawn. The signal settings are reset to the
+     default in the child process.
+ 
+     Return Value
+ 
+     The signal function returns the previous value of &lt;func&gt;
+     associated with the given signal. For example, if the previous
+     value of &lt;func&gt; was SIG_IGN, the return value will be SIG_IGN.
+ 
+     A return value of SIG_ERR indicates an error, and errno is set to
+     EINVAL.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

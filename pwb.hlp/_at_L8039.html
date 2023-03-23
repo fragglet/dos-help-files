@@ -1,0 +1,62 @@
+<html>
+
+<head>
+<title>Macro Prompt Directive Examples</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='macro_dot_prompt.html'>Description</a><span class='grhilite'>►</span>                               <span class='grhilite'>◄</span><a href='macro.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Programmer's WorkBench─────────────────────────────────────────────────
+ 
+     Example 1
+ 
+     The _pwbclosefile predefined macro uses the prompt directive to
+     restore the 'File has changed! Save Changes?' prompt displayed by
+     the Closefile function.
+ 
+          _pwbclosefile := cancel closefile &lt;
+ 
+     Closefile normally displays this prompt when the current file is
+     modified and Autosave is turned off. However, when executed from a
+     macro, Closefile assumes the Yes response.
+ 
+     Example 2
+ 
+     The GetMac macro in the following definition uses the prompt
+     directive and a conditional jump to validate a filename passed to
+     the Setfile function. GetMac assumes a text argument with the base
+     name of a .MAC file to be found in the INIT directory.
+ 
+          ;GetMac - Load a file of macros or assignments.
+          ;
+          ;Usage: Arg 'file' getMac where &lt;file&gt; is the base name of
+          ;       a file in the INIT directory
+          ;
+          GetMac := cancel lasttext begline "$INIT:" endline ".MAC"  \
+                    setfile &lt;n +&gt;Ok   lasttext begline               \
+                    "Can't find \"" endline "\"" message =&gt;          \
+               :&gt;Ok begfile arg endfile assign -&gt;  arg refresh
+ 
+     To validate the filename, GetMac changes the default response for
+     the Setfile 'File does not exist! Create?' prompt from Yes to No so
+     that the file is not created. The exact phrase in the macro is:
+ 
+          Setfile &lt;n +&gt;ok
+ 
+     The '&lt;n' changes the default Setfile response from Yes to No. The
+     '-&gt;ok' jumps to the label 'ok' when Setfile returns true (the file
+     exists). Otherwise, GetMac displays a message that the file could
+     not be found and exits the macro with '=&gt;'.
+ 
+     The 'ok' branch selects the contents of the file and executes the
+     Assign function. If the assignment succeeds, GetMac closes the
+     file. Otherwise, it exits the macro so that you can correct the
+     assignment that caused Assign to fail.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

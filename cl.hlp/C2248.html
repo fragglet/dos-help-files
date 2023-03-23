@@ -1,0 +1,56 @@
+<html>
+
+<head>
+<title>C2248</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='../clang.hlp/clang_dot_contents.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     Compiler error C2248
+ 
+     'member' : cannot access 'specifier' member declared in class
+     'class'
+ 
+     The specified private or protected member of a class, structure,
+     or union was accessed.
+ 
+     This error can be caused by accessing a member that is declared
+     as private or protected, or by accessing a public member of a
+     base class that is inherited with private or protected access.
+ 
+     The member should be accessed through a member function with
+     public access or should be declared with public access.
+ 
+     The following is an example of this error:
+ 
+          class X
+          {
+          public:
+             int pubMemb;
+             void setPrivMemb( int i ) { privMemb = i; }
+          protected:
+             int protMemb;
+          private:
+             int privMemb;
+          } x;
+ 
+          class Y : X {} y;       // default access to X is private
+ 
+          void main()
+          {
+             x.privMemb;          // error, privMemb is private
+             x.protMemb;          // error, protMemb is protected
+             y.pubMemb;           // error, Y inherits X as private
+             x.pubMemb;           // OK, pubMemb is public
+             x.setPrivMemb( 0 );  // OK, uses public access function
+          }
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

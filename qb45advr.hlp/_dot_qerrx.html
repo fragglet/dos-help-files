@@ -1,0 +1,59 @@
+<html>
+
+<head>
+<title>ERROR Statement Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#ERROR'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='_dot_qerrr.html'>Details<span class='grhilite'>►</span></a>     <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>ERROR Statement Programming Example</b>
+ 
+This example uses an ERROR statement in an error-handling
+routine, Handler, to trap a user input error.
+ 
+  Tip:  You must supply a text file when you run this example.
+        Use a text file you have already created, create a file
+        with a text editor, or specify the README.DOC text file.
+ 
+ON ERROR GOTO Handler
+OpenFile:
+    INPUT "Name of file to update"; FileSpec$
+    IF FileSpec$ = "" THEN END
+    OPEN FileSpec$ FOR INPUT AS #1
+    PRINT "The first five lines of "; FILESPEC$;" are:" : PRINT
+    FOR I = 1 TO 5
+        LINE INPUT #1, Temp$
+        PRINT Temp$
+    NEXT
+    PRINT : INPUT "Is this the correct file"; R$
+    'Define error 200.
+    IF LEFT$(R$,1) &lt;&gt; "y" THEN ERROR 200
+    END
+ 
+Handler:        'Error-handling routine.
+    Number = ERR
+    'If program generates run-time error for "file not found,"
+    'a special message is printed and the user is prompted to
+    'enter a new file specification or end the program.
+    IF Number = 53 THEN
+        CLOSE #1
+        PRINT "File not in this directory"
+        PRINT "Enter new file spec ([d:]xxx...xxx) or"
+        PRINT "press &lt;RETURN&gt; to end program"
+        RESUME OpenFile
+    ELSEIF Number = 200 THEN    'User entered "n"
+        CLOSE #1
+        RESUME OpenFile
+    ELSE
+        ERROR Number       'Error other than 53 or 200.
+        ON ERROR GOTO 0    'Print message, disable error
+    END IF                 'handling, and stop program.
+ 
+
+</pre>
+</body>
+
+</html>

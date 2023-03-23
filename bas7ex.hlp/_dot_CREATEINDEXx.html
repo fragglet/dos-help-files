@@ -1,0 +1,128 @@
+<html>
+
+<head>
+<title>ISAM Index Statements Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the CREATEINDEX, SETINDEX and DELETEINDEX statements to
+'index an ISAM file in several ways. It displays records from the file using
+'the GETINDEX$ and BOF functions and the MOVEdest statements.
+ 
+'Note: To run this program, you must load the ISAM TSR program PROISAMD.EXE.
+'Also, this program assumes a file called BOOKS.MDB exists in the current
+'directory. BOOKS.MDB is a sample ISAM file that SETUP copies to your disk.
+ 
+'If this program is interrupted before the database is closed, the file
+'BOOKS.MDB may be left in an inconsistent state.
+ 
+DEFINT A-Z
+TYPE BookRec
+    IDNum AS DOUBLE             'Unique ID number for each book.
+    Price AS CURRENCY           'Book's price.
+    Edition AS INTEGER          'Book's edition
+    Title AS STRING * 50        'Book's title.
+    Publisher AS STRING * 50    'Book's publisher.
+    Author AS STRING * 36       'Book's author.
+END TYPE
+ 
+DIM Library AS BookRec          'Record structure variable.
+DIM msgtxt AS STRING
+ 
+CONST Database = "books.mdb"    'Name of the disk file.
+CONST TableName = "Bookstock"   'Name of the table.
+tablenum = FREEFILE             'File number.
+ 
+    OPEN Database FOR ISAM BookRec TableName AS tablenum
+    CREATEINDEX tablenum, "A", 0, "Author"
+    CREATEINDEX tablenum, "I", 1, "IDnum"
+    CREATEINDEX tablenum, "T", 0, "Title"
+    CREATEINDEX tablenum, "C", 0, "Price"
+ 
+    'Display static instructions.
+    CLS : LOCATE 13, 30
+    PRINT "Choose a key:"
+    PRINT SPC(9); "Move to:"; TAB(49); "Order by: X"
+    PRINT : PRINT SPC(9); "F - First record"; TAB(49); "A - Author"
+    PRINT : PRINT SPC(9); "L - Last record"; TAB(49); "I - ID Number"
+    PRINT : PRINT SPC(9); "N - Next record"; TAB(49); "T - Title"
+    PRINT : PRINT SPC(9); "P - Previous record"; TAB(49); "C - Cost"
+    PRINT : PRINT SPC(9); "Q - Quit"; TAB(49); "X - No order"
+    LOCATE 3, 1: PRINT TAB(37); "Books"
+    PRINT STRING$(80, "-");
+    VIEW PRINT 5 TO 10          'Set viewport for displaying records.
+ 
+    MOVEFIRST tablenum
+    DO
+        'Display current record.
+        CLS
+        RETRIEVE tablenum, Library
+        PRINT "Author:    "; Library.Author;
+        PRINT TAB(49); "ID #"; Library.IDNum
+        PRINT "Title:     "; Library.Title
+        PRINT "Publisher: "; Library.Publisher
+        PRINT "Cost:     "; Library.Price
+        PRINT SPC(30); msgtxt
+        PRINT STRING$(64, "-");
+        IF GETINDEX$(tablenum) = "" THEN
+            PRINT STRING$(15, "-");
+        ELSE
+            PRINT "Index in use: "; GETINDEX$(tablenum);
+        END IF
+ 
+        'Get keystroke from user.
+        validkeys$ = "FLNPQATICX"
+        DO
+            Keychoice$ = UCASE$(INKEY$)
+        LOOP WHILE INSTR(validkeys$, Keychoice$) = 0 OR Keychoice$ = ""
+        msgtxt = ""
+ 
+        'Move to appropriate record, or change indexes.
+        SELECT CASE Keychoice$
+            CASE "F"
+                MOVEFIRST tablenum
+            CASE "L"
+                MOVELAST tablenum
+            CASE "N"
+                MOVENEXT tablenum
+                IF EOF(tablenum) THEN
+                    MOVELAST tablenum
+                    BEEP: msgtxt = "** At last record **"
+                END IF
+            CASE "P"
+                MOVEPREVIOUS tablenum
+                IF BOF(tablenum) THEN
+                    MOVEFIRST tablenum
+                    BEEP: msgtxt = "** At first record **"
+                END IF
+            CASE "Q"
+                EXIT DO
+            CASE ELSE           'User chose an index.
+                VIEW PRINT
+        LOCATE 13, 59: PRINT Keychoice$;
+                VIEW PRINT 5 TO 10
+                IF Keychoice$ = "X" THEN Keychoice$ = ""
+                SETINDEX tablenum, Keychoice$
+                MOVEFIRST tablenum
+        END SELECT
+    LOOP
+ 
+    'User wants to quit, so reset viewport, delete indexes and close files.
+    VIEW PRINT
+    DELETEINDEX tablenum, "A"
+    DELETEINDEX tablenum, "I"
+    DELETEINDEX tablenum, "T"
+    DELETEINDEX tablenum, "C"
+    CLOSE
+    END
+ 
+ 
+
+</pre>
+</body>
+
+</html>

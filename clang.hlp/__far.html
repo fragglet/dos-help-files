@@ -1,0 +1,111 @@
+<html>
+
+<head>
+<title>__far</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8107.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────C/C++ Language─────────────────────────────────────────────────────────
+ 
+  Keyword:   __far
+ 
+  Syntax:    type __far declarator
+             class __far class-name
+             class __far class-name func()
+             type member-func() __far
+ 
+  Summary:   Specifies that a data object can reside anywhere in
+             memory and is not assumed to reside in the default data
+             segment. Specifies that a function can be called by other
+             functions anywhere in memory, and not only by those in the
+             same code segment. Functions and data are referenced with
+             32-bit addresses, and pointers declared as __far are
+             32-bit values.
+ 
+  See also:  __based, __huge, __near
+             <span class='grhilite'>◄</span><a href='../cl.hlp/memorymodel.html'>Memory Models</a><span class='grhilite'>►</span>
+ 
+     The __far keyword can be used to modify data objects, pointers,
+     functions, classes, the this pointer of member functions, and the
+     addressing mode of objects returned by functions.
+ 
+     If the /Zc compiler switch is used, both far and _far are
+     synonyms for __far. If /Za is used, only __far is accepted.
+ 
+     NOTE: Do not use __far in a 32-bit program.
+ 
+     Data Objects or Pointers
+ 
+     A far data object can reside anywhere in memory.
+ 
+     A far pointer is a 32-bit address value that provides access to
+     data in any segment.
+ 
+     For example:
+ 
+          char __far a;                 // Far character
+          char __far *fp;               // Far pointer
+ 
+     The Calling Convention of Functions
+ 
+     A far function can be called by functions in any code segment. A
+     pointer to a far function is a 32-bit value.
+ 
+     For example:
+ 
+          char __far redraw();
+ 
+     Classes
+ 
+     Objects of a far class can reside anywhere in memory, unless an
+     overriding keyword appears in the individual declaration.
+     Structure or union types also can be declared as __far.
+ 
+     For example:
+ 
+          class __far Node
+          {
+             // ...
+          };
+ 
+          Node my_node;              // Far by default
+          Node __near your_node;     // Explicitly declared __near
+ 
+     Member Functions
+ 
+     You can overload a member function to operate on far objects
+     if objects of the class are not far by default. Within the
+     function, the this pointer is a far pointer.
+ 
+     For example:
+ 
+          class Node
+          {
+          public:
+             void print() __far;     // Called for far objects
+             void print();           // Called for default objects
+          private:
+             // ...
+          };
+ 
+     The Addressing Mode of Return Objects
+ 
+     You can specify that a function return a far object. This is
+     useful if you call a member function for the temporary object
+     returned by the function.
+ 
+     For example:
+ 
+          class __far Node make_node(); // Function returns a far Node
+ 
+          make_node().print();     // Call far print() for temporary
+                                   //     object
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

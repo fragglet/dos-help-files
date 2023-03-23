@@ -1,0 +1,120 @@
+<html>
+
+<head>
+<title>Declare Variables</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L844d.html'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='_at_L8410.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Syntax:   [name] [S]BYTE initializer [, initializer]...
+ 
+            [name] [S]WORD initializer [, initializer]...
+ 
+            [name] [S]DWORD initializer [, initializer]...
+ 
+            [name] FWORD initializer [, initializer]...
+ 
+            [name] QWORD initializer [, initializer]...
+ 
+            [name] TBYTE initializer [, initializer]...
+ 
+            [name] REAL4 initializer [, initializer]...
+ 
+            [name] REAL8 initializer [, initializer]...
+ 
+            [name] REAL10 initializer [, initializer]...
+ 
+  Description:
+ 
+                            Integer
+    Type    Abbr  Size      Range        Types Allowed
+  ┌───────┬─────┬─────────┬────────────┬──────────────────────────────────┐
+  │ BYTE  │ DB  │ 1 byte  │ -128 to    │ Character, String                │
+  │       │     │         │ +255       │                                  │
+  ├───────┼─────┼─────────┼────────────┼──────────────────────────────────┤
+  │ WORD  │ DW  │ 2 bytes │ -32,768 to │ 16-bit near ptr, 2 characters,   │
+  │       │     │         │ +65,535    │ double-byte character            │
+  ├───────┼─────┼─────────┼────────────┼──────────────────────────────────┤
+  │ DWORD │ DD  │ 4 bytes │ -2Gig to   │ 16-bit far ptr, 32-bit near ptr, │
+  │       │     │         │ +4Gig-1    │ 32-bit long word                 │
+  ├───────┼─────┼─────────┼────────────┼──────────────────────────────────┤
+  │ FWORD │ DF  │ 6 bytes │    ──      │ 32-bit far pointer               │
+  ├───────┼─────┼─────────┼────────────┼──────────────────────────────────┤
+  │ QWORD │ DQ  │ 8 bytes │    ──      │ 64-bit long word                 │
+  ├───────┼─────┼─────────┼────────────┼──────────────────────────────────┤
+  │ TBYTE │ DT  │10 bytes │    ──      │ BCD, 10-byte binary numbers      │
+  └───────┴─────┴─────────┴────────────┴──────────────────────────────────┘
+  ┌───────┬─────┬─────────┬────────────┬──────────────────────────────────┐
+  │ REAL4 │ DD  │ 4 bytes │    ──      │ Single-precision floating point  │
+  ├───────┼─────┼─────────┼────────────┼──────────────────────────────────┤
+  │ REAL8 │ DQ  │ 8 bytes │    ──      │ Double-precision floating point  │
+  ├───────┼─────┼─────────┼────────────┼──────────────────────────────────┤
+  │ REAL10│ DT  │10 bytes │    ──      │ 10-byte floating point           │
+  └───────┴─────┴─────────┴────────────┴──────────────────────────────────┘
+ 
+     These directives allocate and optionally initialize one or
+     more bytes of global data. The S prefix indicates signed data,
+     but this information is used internally by the assembler for
+     comparisons used by <a href='_at_L841b.html'>control-flow directives</a> and
+     argument passing in INVOKE statements. CodeView also uses this
+     information to specify the data format.
+ 
+     The abbreviations (such as DB, DD) are limited forms of the
+     data-declaration directives; they cannot be used as types. They
+     are included for compatibility with previous versions of the
+     assembler.
+ 
+     String initializers, available with the BYTE directive, allocate
+     a byte for each character of the string. The characters are stored
+     with the leftmost character in the lowest memory location so that
+ 
+          BYTE   "WASHINGTON"
+ 
+     would be assembled to
+ 
+          57 41 53 48 49 4E 47 54 4F 4E    "WASHINGTON"
+ 
+     Character initializers, however, are stored with the leftmost
+     character in the highest memory location. They are also limited
+     to the current expression size so that under the default
+     OPTION EXPR32
+ 
+          DWORD        "WASH"
+ 
+     would be assembled to
+ 
+          48 53 41 57  "HSAW"
+ 
+     and under OPTION EXPR16
+ 
+          WORD         "WA"
+ 
+     would be assembled to
+ 
+          41 57        "AW"
+ 
+     Use the REAL4, REAL8, and REAL10 data types for floating-point
+     data. They inform CodeView that the data is in floating-point
+     format and cause the assembler to perform more stringent type
+     checking.
+ 
+     Parameter    Description
+ 
+     name         Symbol name assigned to the variable. If no name is
+                  assigned, the memory space is allocated, but the
+                  starting address of the variable has no symbolic
+                  name.
+ 
+     initializer  A type shown in the table above, constant integer
+                  expression, <a href='?.html'>?</a>, or DUP expression. Separate multiple
+                  values with commas or use the DUP operator.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

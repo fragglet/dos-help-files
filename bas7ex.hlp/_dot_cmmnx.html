@@ -1,0 +1,62 @@
+<html>
+
+<head>
+<title>COMMON Statement Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the COMMON statement to pass variables between two chained
+'programs. It uses the CHAIN statement, in the first program, to load and
+'run a second program which finds and prints the average of the values.
+ 
+'NOTE: After running this example from QBX, you will be left in PROG2.BAS.
+ 
+'Set up the variables that are passed from PROG1 to PROG2.
+DIM values(1 TO 50)
+COMMON values(), NumValues%
+ 
+'The following few lines of code creates the second program on the disk
+'so that it can load and run with the CHAIN statement. It is, in fact, a
+'series of PRINT # statements to put the proper BASIC statements in a file.
+ 
+OPEN "PROG2.BAS" FOR OUTPUT AS #1
+PRINT #1, "'This is PROG2 for the CHAIN and COMMON statement examples"
+PRINT #1, "DIM X(1 TO 50)"
+PRINT #1, "COMMON X(), N%"
+PRINT #1, "PRINT"
+PRINT #1, "IF N% &gt; 0 THEN"
+PRINT #1, "   Sum% = 0"
+PRINT #1, "   FOR I% = 1 TO N%"
+PRINT #1, "      Sum% = Sum% + X(I%)"
+PRINT #1, "   NEXT I%"
+PRINT #1, "   PRINT "; CHR$(34); "The average of the values is";
+PRINT #1, CHR$(34); "; Sum% / N%"
+PRINT #1, "END IF"
+PRINT #1, "END"
+CLOSE #1
+'End of PROG2 creation section.
+ 
+CLS
+PRINT "Enter values one per line. Type 'END' to quit."
+NumValues% = 0
+DO
+   INPUT "-&gt; ", N$
+   IF I% &gt;= 50 OR UCASE$(N$) = "END" THEN EXIT DO
+   NumValues% = NumValues% + 1
+   values(NumValues%) = VAL(N$)
+LOOP
+PRINT "Press any key to continue... "
+DO WHILE INKEY$ = ""
+LOOP
+CHAIN "PROG2.BAS"
+END
+ 
+
+</pre>
+</body>
+
+</html>

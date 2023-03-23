@@ -1,0 +1,54 @@
+<html>
+
+<head>
+<title>CALL INTERRUPT Statement Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#INTERRUPT'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='_dot_ca86r.html'>Details<span class='grhilite'>►</span></a>     <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>CALL INTERRUPT Statement Programming Example</b>
+ 
+This example uses INT86OLD to open a file and place some text in it.
+ 
+' Note:  To use CALL INTERRUPT, you must load the Quick library QB.LIB
+'        with QuickBASIC. The program also uses the QB.BI header file.
+ 
+' Include header file for INT86OLD, etc.
+$INCLUDE:'QB.BI'
+ 
+DIM INARY%(7),OUTARY%(7)          'Define input and output
+                                  'arrays for INT86.
+'
+' Define register-array indices to
+' make program easier to understand.
+CONST AX=0, BX=1, CX=2, DX=3, BP=4, SI=5, DI=6, FL=7
+'
+INARY%(AX) = &amp;H3C00               'DOS function to create a file.
+INARY%(CX) = 0                    'DOS attribute for created file.
+INARY%(DX) = SADD("FOO.TXT"+CHR$(0))
+                                  'Pointer to file-name string
+                                  'with zero byte termination.
+ 
+CALL INT86OLD(&amp;H21,INARY%(),OUTARY%())
+                                  'Perform the creation.
+'
+INARY%(BX) = OUTARY%(AX)          'Move created file handle for write.
+INARY%(AX) = &amp;H4000               'DOS function to write to file.
+TEXT$ = "hello, world"+CHR$(13)+CHR$(10)
+                                  'Define text to write to file.
+INARY%(CX) = LEN(TEXT$)           'Get length of text string.
+INARY%(DX) = SADD(TEXT$)          'Get address of text string.
+CALL INT86OLD(&amp;H21,INARY%(),OUTARY%())
+                                  'Perform the write.
+'
+INARY%(AX) = &amp;H3E00               'DOS function to close a file.
+CALL INT86OLD(&amp;H21,INARY%(),OUTARY%())
+                                  'Perform the close.
+
+</pre>
+</body>
+
+</html>

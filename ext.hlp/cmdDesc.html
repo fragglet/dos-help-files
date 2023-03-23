@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<title>Extension Command Table</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='writext.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────PWB Extensions─────────────────────────────────────────────────────────
+ 
+     All extensions must have a command table. The cmdTable array is an
+     array of cmdDesc structures. Each element describes a command you
+     want to create. The array is terminated with an empty structure of
+     all zeros.
+ 
+     The cmdTable array is normally defined as follows:
+ 
+          struct cmdDesc cmdTable[] =
+          {
+              // name    func   arg  argType
+              { "Goto",  Goto,  0,   TEXTARG|KEEPMETA|WINDOWFUNC },
+              { "YesNo", YesNo, 0,   TEXTARG|NOWINDOWS|ICONFOCUS },
+              // . . .
+              { NULL,    NULL,  0,   0 } //Terminator
+          }
+ 
+     Each element describes a new PWB function that is implemented by
+     your extension. The array is terminated with a structure of zeros.
+     You can create an extension that defines no functions, but it still
+     requires a command table with only the terminating element.
+ 
+     The cmdDesc structure is defined in EXT.H as:
+ 
+          struct cmdDesc {                     // Function definition
+              char far *name;                  // Name of the function
+              flagType (pascal EXTERNAL *func) // Pointer to function
+                  ( CMDDATA, ARG far *, flagType );
+              CMDDATA  arg;                    // Reserved
+              unsigned long argType;           // Argument types
+              };
+          typedef struct cmdDesc far *PCMD;
+ 
+     The argType member determines the types of arguments accepted by
+     the function.
+     See: <span class='grhilite'>◄</span><a href='NOARG.html'>Extension Argument Types</a><span class='grhilite'>►</span>
+ 
+     A pointer to a cmdDesc structure is defined as the PCMD typedef. A
+     PCMD is used by various functions, including NameToFunc, ReadCmd,
+     GetListEntry, and ScanList.
+ 
+     The function must have the prototype:
+ 
+     PWBFUNC funcname( unsigned argData, ARG far *pArg, flagType fMeta );
+ 
+     See: <span class='grhilite'>◄</span><a href='argData.html'>Writing Extension Functions</a><span class='grhilite'>►</span>
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

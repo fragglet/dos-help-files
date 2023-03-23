@@ -1,0 +1,99 @@
+<html>
+
+<head>
+<title>SELECT CASE Statement Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#SELECT'>Syntax</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../bas7ex.hlp/_dot_isx.html'>Example</a><span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+SELECT executes one of several statement blocks depending on the value
+of an expression.
+ 
+<b>SELECT CASE testexpression</b>
+<b>CASE expressionlist1</b>
+  [statementblock-1]
+<b>[CASE expressionlist2</b>
+  [statementblock-2]] ...
+<b>[CASE ELSE</b>
+  [statementblock-n]]
+<b>END SELECT</b>
+ 
+     ■ The argument expressionlist can have any of these forms:
+ 
+         expression[,expression]...
+         expression TO expression
+         IS relational-operator expression
+ 
+         The following list describes the parts of expressionlist:
+ 
+           expression           Any numeric or string expression. The type
+                                of the expression must be compatible with
+                                testexpression. (The type of expression
+                                will be coerced to the same type as
+                                testexpression. For example, if test-
+                                expression is an integer, expressionlist
+                                can contain a double-precision data
+                                type.)
+           relational-operator  &lt;     Less than
+                                &lt;=    Less than or equal to
+                                &gt;     Greater than
+                                &gt;=    Greater than or equal to
+                                &lt;&gt;    Not equal to
+                                =     Equal to
+ 
+Usage Notes
+    ■ If testexpression matches the expressionlist associated with a
+      particular CASE clause, the statement block following that CASE
+      clause is executed up to the next CASE clause or, for the last one,
+      up to END SELECT. Control then passes to the statement following
+      END SELECT.
+    ■ If you use the TO keyword to indicate a range of values, the smaller
+      value must appear first. For example, the statements associated with
+      the line:
+ 
+         CASE -1 TO -5
+ 
+      are not executed if the testexpresssion is -4. The line should be
+      written as:
+ 
+         CASE -5 TO -1
+ 
+    ■ You can use a relational operator only if the IS keyword appears.
+      If CASE ELSE is used, its associated statements are executed only if
+      the testexpression does not match any of the other CASE selections.
+      It is a good idea to have a CASE ELSE statement in your SELECT CASE
+      block to handle unforeseen testexpression values.
+    ■ When there is no CASE ELSE statement, and no expression listed in the
+      CASE clauses matches testexpression, program execution continues
+      normally.
+    ■ You can use multiple expressions or ranges in each CASE clause. For
+      example, the following line is valid:
+ 
+         CASE 1 TO 4, 7 TO 9, 11, 13, IS &gt; MaxNumber%
+ 
+    ■ You can also specify ranges and multiple expressions for strings:
+ 
+         CASE "everything", "nuts" TO "soup", TestItem$
+ 
+      CASE matches strings that are exactly equal to everything, the
+      current value of TestItem$, or that fall between nuts and soup in
+      alphabetical order.
+    ■ Strings are evaluated according to the ASCII values of their
+      characters. Lowercase letters have larger ASCII values than
+      uppercase, so this statement is true:
+ 
+         nuts &gt; Nuts &gt; NUTS
+ 
+    ■ If an expression appears in more than one CASE clause, only the
+      statements associated with the first appearance of the expression are
+      executed.
+    ■ SELECT CASE statements can be nested. Each SELECT CASE statement must
+      have a matching END SELECT statement.
+
+</pre>
+</body>
+
+</html>

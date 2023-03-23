@@ -1,0 +1,90 @@
+<html>
+
+<head>
+<title>DDB# Function Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the DDB# function to return the depreciation of an asset
+'for a specific period using the double declining balance method based on
+'the asset's initial cost, salvage value, and the useful life of the asset.
+ 
+'Note: To run this example you must use a Quick library that includes the
+'procedures contained in the date/time/format and financial function
+'library files. The following include files must also be present.
+ 
+'$INCLUDE: 'FINANC.BI'
+'$INCLUDE: 'FORMAT.BI'
+ 
+CONST YEARMONTHS = 12
+CONST DOLLARFORMAT$ = "$###,###,###.00"
+DEFDBL A-Z
+DIM Status AS INTEGER
+ 
+CLS
+PRINT "Assume you have a piece of expensive manufacturing equipment."
+INPUT "Enter the original cost of the equipment"; Cost
+PRINT
+PRINT "Salvage value is the value of the asset at the end of its useful life."
+INPUT "What is the salvage value of the equipment"; SalvageVal
+PRINT
+INPUT "What is the useful life of the equipment in months"; Life
+IF Life &lt; YEARMONTHS THEN
+    PRINT
+    PRINT "If the life is less than a year, it is not an asset."
+    INPUT "Reenter the useful life of the equipment in months"; Life
+END IF
+ 
+YearsInLife = Life / YEARMONTHS
+ 
+'Round up to a whole year.
+IF YearsInLife &lt;&gt; INT(Life / YEARMONTHS) THEN
+    YearsInLife = INT(YearsInLife + 1)
+END IF
+ 
+PRINT
+PRINT "For what year of the asset's life do you want to calculate ";
+INPUT "depreciation "; DeprYear
+DO WHILE Depr &lt; YearsInLife AND DeprYear &gt; YearsInLife
+    PRINT
+    PRINT "The year you enter must be at least 1, and not more than";
+    PRINT YearsInLife
+    INPUT "Reenter the year"; DeprYear
+LOOP
+ 
+'Calculate and format the results.
+TotalDepreciation = Cost - SalvageVal
+PeriodDepreciation = DDB#(Cost, SalvageVal, YearsInLife, DeprYear, Status)
+MonthDepreciation = PeriodDepreciation / YEARMONTHS
+ 
+Cost$ = FormatD$(Cost, DOLLARFORMAT$)
+SalvageVal$ = FormatD$(SalvageVal, DOLLARFORMAT$)
+TotalDepreciation$ = FormatD$(TotalDepreciation, DOLLARFORMAT$)
+PeriodDepreciation$ = FormatD$(PeriodDepreciation, DOLLARFORMAT$)
+MonthDepreciation$ = FormatD$(MonthDepreciation, DOLLARFORMAT$)
+ 
+'Examine Status to determine success or failure of DDB#.
+IF Status THEN
+    'If unsuccessful, announce a problem.
+    PRINT
+    PRINT "There was an error in calculating depreciation."
+ELSE
+    'If successful, display the results.
+    PRINT
+    PRINT "If the original cost of your equipment is "; Cost$
+    PRINT "and the salvage value of that equipment is "; SalvageVal$
+    PRINT "at the end of its"; Life; "month lifetime, the total "
+    PRINT "depreciation is "; TotalDepreciation$; ". "
+    PRINT
+    PRINT "The depreciation in year"; DeprYear; "is "; PeriodDepreciation$
+    PRINT "or "; MonthDepreciation$; " per month."
+END IF
+
+</pre>
+</body>
+
+</html>

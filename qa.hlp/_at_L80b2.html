@@ -1,0 +1,169 @@
+<html>
+
+<head>
+<title>Int 10H Function 1BH</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span><a href='10H_dot_1BH.html'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Notes<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+    The caller's buffer is filled in with information that depends on the
+    current video display mode:
+ 
+    Byte(s)      Contents
+    ═══════      ════════════════════════════════════════════════════════════
+    00H-03H      pointer to functionality information (see next Note)
+    04H          current video mode
+    05H-06H      number of character columns
+    07H-08H      length of video refresh buffer (bytes)
+    09H-0AH      starting address in buffer of upper left corner of display
+    0BH-1AH      cursor position for video pages 0-7 as eight 2-byte entries;
+                 first byte of each pair is y coordinate, second byte is x
+                 coordinate
+    1BH          cursor starting line
+    1CH          cursor ending line
+    1DH          active display page
+    1EH-1FH      adapter base port address (3BXH monochrome, 3DXH color)
+    20H          current setting of register 3B8H or 3D8H
+    21H          current setting of register 3B9H or 3D9H
+    22H          number of character rows
+    23H-24H      character height in scan lines
+    25H          active display code (see Int 10H Function 1AH)
+    26H          inactive display code (see Int 10H Function 1AH)
+    27H-28H      number of displayable colors (0 for monochrome)
+    29H          number of display pages
+    2AH          number of scan lines
+                 00H=200 scan lines
+                 01H=350 scan lines
+                 02H=400 scan lines
+                 03H=480 scan lines
+                 04H-FFH=reserved
+    2BH          primary character block
+                 (see Int 10H Function 11H Subfunction 03H)
+    2CH          secondary character block
+    2DH          miscellaneous state information
+                 Bit(s)          Significance
+                 ══════          ═══════════════════════════════════════════
+                 0               =1 if all modes on all displays active
+                                  (always 0 on MCGA)
+                 1               =1 if gray-scale summing active
+                 2               =1 if monochrome display attached
+                 3               =1 if mode set default palette
+                                  loading disabled
+                 4               =1 if cursor emulation active
+                                  (always 0 on=MCGA)
+                 5               =state of I/B toggle (0=intensity, 1=blink)
+                 6-7             =reserved
+    2EH-30H      reserved
+    31H          video memory available
+                 00H=64 KB
+                 01H=128 KB
+                 02H=192 KB
+                 03H=256 KB
+    32H          save pointer state information
+                 Bit(s)          Significance
+                 ══════          ════════════════════════════════════
+                 0               =1 if 512-character set active
+                 1               =1 if dynamic save area active
+                 2               =1 if alpha font override active
+                 3               =1 if graphics font override active
+                 4               =1 if palette override active
+                 5               =1 if display combination code (DCC)
+                                    extension active
+                 6-7             =reserved
+    33H-3FH      reserved
+ 
+    Bytes 0-3 of the caller's buffer contain a DWORD pointer (offset in
+    lower word, segment in upper word) to the following information about
+    the display adapter and monitor:
+ 
+    Byte(s)      Contents
+    ═══════      ════════════════════════════════════════════════════════
+    00H          video modes supported
+                 Bit(s)          Significance
+                 ══════          ════════════════════════
+                 0               =1 if mode 00H supported
+                 1               =1 if mode 01H supported
+                 2               =1 if mode 02H supported
+                 3               =1 if mode 03H supported
+                 4               =1 if mode 04H supported
+                 5               =1 if mode 05H supported
+                 6               =1 if mode 06H supported
+                 7               =1 if mode 07H supported
+    01H          video modes supported
+                 Bit(s)          Significance
+                 ══════          ════════════════════════
+                 0               =1 if mode 08H supported
+                 1               =1 if mode 09H supported
+                 2               =1 if mode 0AH supported
+                 3               =1 if mode 0BH supported
+                 4               =1 if mode 0CH supported
+                 5               =1 if mode 0DH supported
+                 6               =1 if mode 0EH supported
+                 7               =1 if mode 0FH supported
+    02H          video modes supported
+                 Bit(s)          Significance
+                 ══════          ════════════════════════
+                 0               =1 if mode 10H supported
+                 1               =1 if mode 11H supported
+                 2               =1 if mode 12H supported
+                 3               =1 if mode 13H supported
+                 4-7             =reserved
+    03H-06H      reserved
+    07H          scan lines available in text modes
+                 Bit(s)          Significance
+                 ══════          ════════════════════
+                 0               =1 if 200 scan lines
+                 1               =1 if 350 scan lines
+                 2               =1 if 400 scan lines
+                 3-7             =reserved
+    08H          character blocks available in text modes (see Int 10H
+                 Function 11H)
+    09H          maximum number of active character blocks in text modes
+    0AH          miscellaneous BIOS capabilities
+                 Bit(s)          Significance
+                 ══════          ══════════════════════════════════════
+                 0               =1 if all modes active on all displays
+                                  (always 0 for MCGA)
+                 1               =1 if gray-scale summing available
+                 2               =1 if character font loading available
+                 3               =1 if mode set default palette
+                                  loading available
+                 4               =1 if cursor emulation available
+                 5               =1 if EGA (64-color) palette available
+                 6               =1 if color register loading available
+                 7               =1 if color register paging mode
+                                  select available
+    0BH          miscellaneous BIOS capabilities
+                 Bit(s)          Significance
+                 ══════          ════════════════════════════════════════
+                 0               =1 if light pen available
+                 1               =1 if save/restore video state available
+                                  (always 0 on MCGA)
+                 2               =1 if background intensity/blinking
+                                  control available
+                 3               =1 if get/set display combination
+                                  code available
+                 4-7             =reserved
+    0CH-0DH      reserved
+    0EH          save area capabilities
+                 Bit(s)          Significance
+                 ══════          ══════════════════════════════════════
+                 0               =1 if supports 512-character sets
+                 1               =1 if dynamic save area available
+                 2               =1 if alpha font override available
+                 3               =1 if graphics font override available
+                 4               =1 if palette override available
+                 5               =1 if display combination code
+                                  extension available
+                 6-7             =reserved
+    0FH          reserved
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,55 @@
+<html>
+
+<head>
+<title>IOTEST.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+/* IOTEST.C compares low-level and stream I/O using function:
+ *      fdopen
+ */
+ 
+#include &lt;io.h&gt;
+#include &lt;fcntl.h&gt;          /* O_ constant definitions */
+#include &lt;sys\types.h&gt;
+#include &lt;sys\stat.h&gt;       /* S_ constant definitions */
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
+ 
+void main( int argc, char *argv[] )
+{
+    int  handle;
+    FILE *stream;
+    clock_t start;
+    char tmp[16];
+ 
+    /* Open for low-level I/O and read file in 16-byte chunks. */
+    if( (handle = open( argv[1], O_BINARY | O_RDONLY )) == - 1 )
+        exit( 1 );
+    start = clock();
+    while( !eof( handle ) )
+        read( handle, tmp, 16 );
+    printf( "I/O Type: Low level\tTime: %5.1f\n",
+             ((float)clock() - start) / CLK_TCK );
+ 
+    /* Change to stream I/O and read file in 16-byte chunks. */
+    if( (stream = fdopen( handle, "rb" )) == NULL )
+        exit( 1 );
+    while( !feof( stream ) )
+        fread( tmp, sizeof( char ), 16, stream );
+    printf( "I/O Type: Stream\tTime: %5.1f\n",
+             ((float)clock() - start) / CLK_TCK );
+    close( handle );
+    exit( 0 );
+}
+
+</pre>
+</body>
+
+</html>

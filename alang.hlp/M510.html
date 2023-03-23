@@ -1,0 +1,107 @@
+<html>
+
+<head>
+<title>Maximize Compatibility with MASM 5.1</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='OPTION.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Syntax:   OPTION M510
+ 
+            OPTION NOM510
+ 
+  See also: <a href='../ml.hlp/_sl_Zm.html'>/Zm</a>
+ 
+  Description:
+ 
+     The M510 option sets all options to maximize compatibility with
+     MASM 5.10. NOM510 is the default. OPTION M510 enables the
+     following:
+ 
+     <span class='grhilite'>◄</span><a href='OLDMACROS.html'>OLDMACROS</a><span class='grhilite'>►</span>
+     <span class='grhilite'>◄</span><a href='OLDSTRUCTS.html'>OLDSTRUCTS</a><span class='grhilite'>►</span>
+     <span class='grhilite'>◄</span><a href='DOTNAME.html'>DOTNAME</a><span class='grhilite'>►</span>
+     <span class='grhilite'>◄</span><a href='ALL.html'>CASEMAP:ALL</a><span class='grhilite'>►</span>
+     <span class='grhilite'>◄</span><a href='EXPR16.html'>EXPR16</a><span class='grhilite'>►</span>
+     <span class='grhilite'>◄</span><a href='SETIF2.html'>SETIF2:TRUE</a><span class='grhilite'>►</span>
+ 
+     The M510 option enables <a href='SCOPED.html'>OPTION SCOPED</a> if a language type is specified
+     in a .MODEL statement. If the .MODEL directive does not specify
+     a language type, <a href='SCOPED.html'>OPTION NOSCOPED</a> is used.
+ 
+     Using OPTION M510 also changes the default for <a href='OFFSET_cln_.html'>OFFSET</a> to <a href='OFFSET_cln_.html'>GROUP</a> if a
+     .MODEL directive is in effect and to <a href='OFFSET.html'>SEGMENT</a> otherwise.
+ 
+     With OPTION M510, keywords and instructions that are not available
+     in the current CPU mode (such as ENTER under .8086) are not treated as
+     keywords. The USE32, FLAT, FAR32, and NEAR32 segment types and the
+     80386/486 registers are not keywords with processor selection
+     directives less than .386.
+ 
+     In MASM 5.1, a large constant value that can fit only in the processor's
+     default word (four bytes for .386 and .486, two bytes otherwise) is
+     assigned a size attribute of the default word size. The value of the
+     constant affects the number of bytes changed by the instruction.
+ 
+     Without OPTION M510, the assembler never assigns a size automatically.
+     You must state it explicitly with the PTR operator, as shown in the
+     following example:
+ 
+          ; Without OPTION M510
+                  mov     [bx], WORD PTR 0100h
+ 
+     MASM 5.1 allows a code label definition in a data definition statement
+     if that statement does not also define a data label. MASM 6.1 also
+     allows such definitions if OPTION M510 is enabled; otherwise it is
+     illegal:
+ 
+          ; Legal only with OPTION M510
+                 MyCodeLabel:    DW      0
+ 
+     By default, MASM 6.1 changes the way that expressions are evaluated.
+     In MASM 5.1,
+ 
+          var-2[bx]
+ 
+     is parsed as
+ 
+          (var-2)[bx]
+ 
+     Without OPTION M510, you must rewrite the statement, since the assembler
+     parses it as
+ 
+          var-(2[bx])
+ 
+     which generates an error.
+ 
+     In compatibility mode, use the PTR operator to type-cast a constant to a
+     structure type. This is most often done in data initializers to affect
+     the CodeView information of the data label. Without OPTION M510, the
+     assembler generates an error.
+ 
+     MYSTRC  STRUC
+            f1    DB      0
+          MYSTRC  ENDS
+          MyPtr   DW      MYSTRC PTR 0    ; Illegal without OPTION M510
+ 
+     MASM 6.1 recursively expands text macros used as values, whereas
+     MASM 5.1 simply replaces the text macro with its value. The following
+     example illustrates the difference:
+ 
+; With OPTION M510
+                  tm1     EQU     &lt;contains tm2&gt;
+                  tm2     EQU     &lt;value&gt;
+                  tm3     CATSTR  tm1             ; == &lt;contains tm2&gt;
+ 
+          ; Without OPTION M510
+                  tm3     CATSTR  tm1             ; == &lt;contains value&gt;
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

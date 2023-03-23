@@ -1,0 +1,62 @@
+<html>
+
+<head>
+<title>Start a Far Data Segment</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8419.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Syntax:   .FARDATA [name]
+ 
+            .FARDATA? [name]
+ 
+  See also: .DATA, .MODEL, .CODE, .CONST, .STACK, SEG, @data, @fardata,
+            @DataSize, <a href='MemoryModels.html'>Table of Memory Models</a>, <a href='_at_L8002.html'>MASM 5.1 Compatibility</a>
+ 
+  Description:
+ 
+     The .FARDATA directive starts a far data segment for initialized
+     data (segment name FAR_DATA or &lt;name&gt;, if given), ending any
+     previous segment. The .FARDATA? directive starts a far data
+     segment for uninitialized data (segment name FAR_BSS or
+     &lt;segmentname&gt;, if given), ending any previous segment.
+ 
+     Data in segments defined with .FARDATA and .FARDATA? are not
+     placed in a group or combined with far data segments for other
+     source modules. Using &lt;name&gt; allows you to create multiple far
+     data segments in one source module. The .MODEL directive must
+     precede these directives.
+ 
+     Putting uninitialized arrays and buffers into a segment created
+     by .FARDATA? rather than .FARDATA can decrease the size of object
+     files and libraries.
+ 
+     Normally, you cannot access far data segments by name, because
+     there may be multiple <a href='MEMORY.html'>PRIVATE segments</a> with the same name. Use
+     SEG expressions instead.
+ 
+  Example:
+ 
+   ┌─MODULE1.ASM───────────────────────────────────────────────────────────┐
+   │                                                                       │
+   │         .FARDATA?                                                     │
+   │ array   WORD      1000 DUP ?                                          │
+   └───────────────────────────────────────────────────────────────────────┘
+ 
+   ┌─MODULE2.ASM───────────────────────────────────────────────────────────┐
+   │                                                                       │
+   │         mov       ax, SEG array   ;Right                              │
+   │         mov       ax, @fardata    ;Wrong, as different modules        │
+   │                                   ;create different far data segments │
+   │         mov       ds, ax                                              │
+   └───────────────────────────────────────────────────────────────────────┘
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

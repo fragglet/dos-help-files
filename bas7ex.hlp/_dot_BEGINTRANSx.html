@@ -1,0 +1,126 @@
+<html>
+
+<head>
+<title>ISAM Transaction Processing Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the DELETE statement to remove records from an ISAM file.
+'It creates a transaction with the BEGINTRANS and COMMITTRANS statements,
+'and uses the SAVEPOINT function and ROLLBACK statement within the
+'transaction to provide rollback of any or all of the deletions.
+ 
+'Note: To run this program, you must load the ISAM TSR program PROISAM.EXE.
+'Also, this program assumes a file called BOOKS.MDB exists in the current
+'directory. BOOKS.MDB is a sample ISAM file that SETUP copies to your disk.
+ 
+DEFINT A-Z
+TYPE Borrower
+    Cardnum AS LONG             'Card number.
+    TheName AS STRING * 36      'Name.
+    Street AS STRING * 50       'Street.
+    City AS STRING * 26         'City.
+    State AS STRING * 2         'State.
+    Zip AS LONG                 'Zip code.
+END TYPE
+ 
+DIM People AS Borrower          'Record structure variable.
+CONST Database = "BOOKS.MDB"    'Name of the disk file.
+CONST Tablename = "Cardholders" 'Name of the table.
+CONST viewbottom = 17, viewtop = 3, msgtxt = " *** Deleted: Savepoint "
+DIM SavePts(viewbottom - viewtop + 1)
+ 
+    TableNum = FREEFILE
+    OPEN Database FOR ISAM Borrower Tablename AS TableNum
+ 
+    'Loop until user chooses to quit.
+    DO
+        VIEW PRINT
+        CLS : COLOR 15, 0
+        PRINT SPC(34); "Card Holders"
+        PRINT "Card#"; SPC(2); "Name"; SPC(13); "Street";
+        PRINT SPC(20); "City"; SPC(6); "State"; SPC(2); "Zip"
+        LOCATE 24, 1: PRINT "Choose a key:    ";
+        PRINT "D - Delete this record    N - Next record    Q - Quit";
+        MOVEFIRST TableNum
+        VIEW PRINT viewtop TO viewbottom: COLOR 7, 0: CLS
+        vPos = viewtop
+ 
+        'Loop through a screenful of records.
+        DO
+            'For each record, display and ask user what to do with it.
+            RETRIEVE TableNum, People
+            LOCATE vPos, 1
+            PRINT USING ("#####"); People.Cardnum;
+            PRINT "  "; LEFT$(People.TheName, 15); "  ";
+            PRINT LEFT$(People.Street, 25); "  ";
+            PRINT LEFT$(People.City, 10); "  "; People.State; "   ";
+            PRINT USING ("#####"); People.Zip
+ 
+            'Get keystroke from user.
+            validkeys$ = "DNQ"
+            DO
+                keychoice$ = UCASE$(INKEY$)
+            LOOP WHILE INSTR(validkeys$, keychoice$) = 0 OR keychoice$ = ""
+ 
+            'Process keystroke.
+            SELECT CASE keychoice$
+            CASE "D"
+                IF NOT inTransaction THEN
+                    inTransaction = -1
+                    BEGINTRANS
+                END IF
+                NumSavePts = NumSavePts + 1
+                SavePts(NumSavePts) = SAVEPOINT
+                DELETE TableNum
+                LOCATE vPos, 7: PRINT msgtxt; NumSavePts; SPC(79 - POS(0));
+            CASE "Q"
+                EXIT DO
+            CASE "N"
+                MOVENEXT TableNum
+            END SELECT
+            vPos = vPos + 1
+        LOOP UNTIL EOF(TableNum) OR vPos = viewbottom
+ 
+        'If user didn't delete any records, simply quit.
+        IF NumSavePts = 0 THEN EXIT DO
+ 
+        'Allow user to commit deletions, or roll back some or all of them.
+        VIEW PRINT: LOCATE 24, 1: PRINT "Choose a key:    ";
+        PRINT "R - Rollback to a savepoint   A - Rollback all deletions"
+        PRINT SPC(17); "Q - commit deletions and Quit";
+        validkeys$ = "RAQ"
+        DO
+            keychoice$ = UCASE$(INKEY$)
+        LOOP WHILE INSTR(validkeys$, keychoice$) = 0 OR keychoice$ = ""
+        SELECT CASE keychoice$
+        CASE "R"
+            VIEW PRINT 24 TO 25: PRINT : PRINT
+            DO
+                PRINT "Roll back to which savepoint ( 1 -"; NumSavePts; ")";
+                INPUT RollbackPt
+            LOOP UNTIL RollbackPt &gt; 0 AND RollbackPt &lt;= NumSavePts
+            ROLLBACK SavePts(RollbackPt)
+            NumSavePts = RollbackPt - 1
+        CASE "A"
+            NumSavePts = 0
+            ROLLBACK ALL
+        CASE "Q"
+            EXIT DO
+        END SELECT
+    LOOP
+ 
+    IF inTransaction THEN COMMITTRANS
+    CLOSE
+    END
+ 
+ 
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<title>COMMIT.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* COMMIT.C illustrates low-level file I/O functions including:
+ *
+ *     _close    _commit    memset    _open    _write
+ *
+ * This is example code; to keep the code simple and readable
+ * return values are not checked.
+ */
+ 
+ 
+#include &lt;io.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;fcntl.h&gt;
+ 
+#define MAXBUF 32
+ 
+int log_receivable( int );
+ 
+int main( void )
+{
+    int fhandle;
+    fhandle = _open( "TRANSACT.LOG", _O_APPEND | _O_CREAT |
+                                     _O_BINARY | _O_RDWR );
+    log_receivable( fhandle );
+    _close( fhandle );
+}
+ 
+int log_receivable( int fhandle )
+{
+/* The log_receivable function prompts for a name and a monetary amount
+ * and places both values into a buffer (buf). The _write function
+ * writes the values to the operating system and the _commit function
+ * ensures that they are written to a disk file.
+ */
+ 
+    int i;
+    char  buf[MAXBUF];
+ 
+    memset( buf, '\0', MAXBUF );
+    /* Begin Transaction. */
+    printf( "Enter name: " );
+    gets( buf );
+    for( i = 1; buf[i] != '\0'; i++ );
+    /* Write the value as a '\0' terminated string. */
+    _write( fhandle, buf, i+1 );
+    printf( "\n" );
+ 
+    memset( buf, '\0', MAXBUF );
+    printf( "Enter amount: $" );
+    gets( buf );
+    for( i = 1; buf[i] != '\0'; i++ );
+    /* Write the value as a '\0' terminated string. */
+    _write( fhandle, buf, i+1 );
+    printf( "\n" );
+ 
+    return _commit( fhandle );
+    /* The _commit function ensures that two important pieces of data are
+     * safely written to disk. The return value of the _commit function
+     * is returned to the calling function.
+     */
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

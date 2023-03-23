@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>XCOPY--Examples</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='XCOPY.html'>Syntax</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='XCOPY--Notes.html'>Notes</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                              XCOPY──Examples
+ 
+The following example copies all the files and subdirectories (including any
+empty subdirectories) from the disk in drive A to the disk in drive B:
+ 
+    xcopy a: b: /s /e
+ 
+The following example uses the /D: and /V switches:
+ 
+    xcopy a: b: /d:01/18/93 /s /v
+ 
+In this example, only files on the disk in drive A that were written on or
+after 01/18/93 are copied to the disk in drive B. Once the files are written
+to the disk in drive B, the XCOPY command compares the files on the two
+disks to make sure they are the same.
+ 
+You can create a batch program to perform XCOPY operations and use the batch
+IF command to process the exit code in case an error occurs. For example,
+the following batch program uses replaceable parameters for the XCOPY source
+and destination parameters:
+ 
+    @echo off
+    rem COPYIT.BAT transfers all source
+    rem files in all directories on the source
+    rem drive (%1) to the destination drive (%2)
+ 
+    xcopy %1 %2 /s /e
+ 
+    if errorlevel 4 goto lowmemory
+    if errorlevel 2 goto abort
+    if errorlevel 0 goto exit
+ 
+    :lowmemory
+    echo Insufficient memory to copy files or
+    echo invalid drive or command-line syntax.
+    goto exit
+ 
+    :abort
+    echo You pressed CTRL+C to end the copy operation.
+    goto exit
+ 
+    :exit
+ 
+To use this batch program to copy all files in the C:\PRGMCODE directory and
+its subdirectories to drive B, type the following command:
+ 
+    copyit c:\prgmcode b:
+ 
+The command interpreter substitutes C:\PRGMCODE for %1 and B: for %2, then
+uses XCOPY with the /E and /S switches. If XCOPY encounters an error, the
+batch program reads the exit code and goes to the label indicated in the
+appropriate IF ERRORLEVEL statement. MS-DOS displays the appropriate message
+and exits from the batch program.
+ 
+                                      ♦
+
+</pre>
+</body>
+
+</html>

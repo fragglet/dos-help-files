@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<title>_bios_disk Constants</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='constants_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Constant:  _DISK_FORMAT, _DISK_READ, _DISK_RESET, _DISK_STATUS,
+             _DISK_VERIFY, _DISK_WRITE
+ 
+  Context:   _bios_disk
+ 
+  Synopsis:  The &lt;service&gt; argument of _bios_disk selects the disk
+             function desired.
+ 
+     The argument is set with one of the following constants:
+ 
+     Constant         Action
+ 
+     _DISK_FORMAT     Formats the track specified by &lt;diskinfo&gt;. The
+                      head and track fields indicate the track to be
+                      formatted. Only one track can be formatted in a
+                      single call. The buffer field points to a set of
+                      sector markers. The format of the markers depends
+                      on the type of disk drive; see the "IBM PC
+                      Technical Reference" to determine the marker
+                      format. There is no return value.
+ 
+     _DISK_READ       Reads one or more disk sectors into memory. This
+                      service uses all fields of the structure pointed
+                      to by &lt;diskinfo&gt;. If no error occurs, the
+                      function returns 0 in the high-order byte and
+                      returns the number of sectors read in the low-
+                      order byte. If there is an error, the high-order
+                      byte will contain a set of status flags, as
+                      under _DISK_STATUS (below).
+ 
+     _DISK_RESET      Forces the disk controller to do a hard reset,
+                      preparing for floppy-disk I/O. This is useful
+                      after an error occurs in another operation, such
+                      as a read. If this service is specified, the
+                      &lt;diskinfo&gt; argument is ignored.
+ 
+     _DISK_STATUS     Obtains the status of the last disk operation. If
+                      this service is specified, the &lt;diskinfo&gt;
+                      argument is ignored. Status is returned in the
+                      high-order bits of the return value, as listed
+                      below:
+ 
+                      Bits       Meaning
+ 
+                      0x01**     Invalid request or bad command
+                      0x02**     Address mark not found
+                      0x04**     Sector not found
+                      0x05**     Reset failed
+                      0x07**     Drive parameter activity failed
+                      0x09**     DMA overrun
+                      0x0A**     Bad sector flag detected
+                      0x10**     Data read (ECC) error
+                      0x11**     Corrected data read (ECC) error
+                      0x20**     Controller failure
+                      0x40**     Seek error
+                      0x80**     Disk timed out or failed to respond
+                      0xAA**     Drive not ready
+                      0xBB**     Undefined error
+                      0xCC**     Write fault on drive
+                      0xE0**     Status error
+ 
+     _DISK_VERIFY     Checks the disk to be sure the specified sectors
+                      exist and can be read. It also runs a CRC (cyclic
+                      redundancy check) test. This service uses all
+                      fields (except buffer) of the structure pointed
+                      to by &lt;diskinfo&gt;. If no error occurs, the
+                      function returns 0 in the high-order byte and
+                      returns the number of sectors compared in the
+                      low-order byte. If there is an error, the high-
+                      order byte will contain a set of status flags, as
+                      defined under _DISK_STATUS (above).
+ 
+     _DISK_WRITE      Writes data from memory to one or more disk
+                      sectors. This service uses all fields of the
+                      structure pointed to by &lt;diskinfo&gt;. If no error
+                      occurs, the function returns 0 in the high-order
+                      byte and returns the number of sectors written in
+                      the low-order byte. If there is an error, the
+                      high-order byte will contain a set of status
+                      flags, as defined under _DISK_STATUS (above).
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,66 @@
+<html>
+
+<head>
+<title>GetColor and PutColor</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='ext_dot_functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────PWB Extensions─────────────────────────────────────────────────────────
+ 
+  Syntax:  flagType GetColor( LINE line, la *colorlist, PFILE pfFile );
+           void     PutColor( LINE line, la *colorlist, PFILE pfFile );
+ 
+  Returns: GetColor returns true if there is color attached to the line,
+           otherwise false.
+ 
+  See:     SetColor, SetHiLite, AddAColor, <span class='grhilite'>◄</span><a href='_at_L8013.html'>Colors in Extensions</a><span class='grhilite'>►</span>
+ 
+     GetColor gets the color array associated with a line in a file.
+     PutColor attaches a color array to the specified line.
+ 
+     Argument       Description
+ 
+     &lt;line&gt;         Zero-based line number.
+     &lt;colorlist&gt;    A variable-length array of color/length pairs.
+     &lt;pfFile&gt;       File handle.
+ 
+     The &lt;colorlist&gt; array is a variable-length list of color index and
+     length pairs. Each pair has the lineAttr type, which is defined
+     in EXT.H as:
+ 
+          typedef struct lineAttr {     // Line color attribute info
+              unsigned char attr;       // Attribute of piece
+              unsigned char len;        // Bytes in colored piece
+              } la, *pla;
+ 
+     The format of a color list array is shown below:
+ 
+          ┌────┬────┬────┬────┬────┬────┬─────────┬────┬────┐
+          │attr│len │attr│len │attr│len │  . . .  │ -1 │ -1 │
+          └────┴────┴────┴────┴────┴────┴─────────┴────┴────┘
+ 
+     The &lt;attr&gt; element is the color index of a color in the PWB color
+     table. This is a color constant from EXT.H or an index returned by
+     AddAColor. The &lt;len&gt; element is the number of characters that have
+     the associated color. The list must be terminated with an entry in
+     which both elements are -1.
+     See: <span class='grhilite'>◄</span><a href='FGCOLOR.html'>Color Constants</a><span class='grhilite'>►</span>
+ 
+     GetColor and PutColor can be used to copy colored lines. For each
+     line to be copied, copy the text using GetLine and PutLine. Copy
+     the color by getting the color array of the source and putting it
+     on the corresponding line of the destination. In some cases it may
+     be easier to use CopyBox, CopyLine, or CopyStream, which copy
+     color attributes along with the text.
+ 
+     You can also color text by building color arrays and putting them
+     on uncolored lines, or by using SetColor.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

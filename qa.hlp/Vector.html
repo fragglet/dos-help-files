@@ -1,0 +1,46 @@
+<html>
+
+<head>
+<title>Vector</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* Vector - Macro to read current interrupt vector, store it, and replace it.
+;*
+;* Shows:   Equates - @CodeSize     @code
+;*
+;* Params:  num - Vector number
+;*          old - Pointer to doubleword for storing old vector
+;*          new - Pointer to new handler
+ 
+Vector MACRO num, old, new              ;; Macro definition
+    push ds                             ;; Save DS and ES registers
+    push es
+    mov ah, 35h                         ;; AH = DOS function number
+    mov al, num                         ;; AL = interrupt number
+    int 21h                             ;; Get Interrupt Vector
+    mov WORD PTR old[0], bx             ;; Store it
+    mov WORD PTR old[2], es
+    IF @CodeSize                        ;; If medium or large model,
+        lds dx, new                     ;;    load DS from parameter
+    ELSE
+        mov bx, @code                   ;; Else ensure DS points to
+        mov ds, bx                      ;;    to code segment
+        mov dx, new                     ;; DS:DX equals new vector
+    ENDIF
+    mov ah, 25h                         ;; AH = DOS function number
+    int 21h                             ;; Set Interrupt Vector
+    pop es                              ;; Restore ES and DS
+    pop ds
+ENDM
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,89 @@
+<html>
+
+<head>
+<title>Introduction to Mouse Routines</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='mouse.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Using the routines:
+ 
+     The mouse is useful for applications that require users to select
+     from a list of options or move objects around on the screen.
+ 
+     To use these routines, you must add the necessary 'DEVICE=...'
+     statements in your CONFIG.SYS file.
+ 
+     You must hide the mouse during the execution of any ANSI ACCEPT
+     or DISPLAY statement that operates on the area of the screen
+     where the mouse pointer is located.
+ 
+     The attributes referred to in the descriptions of routines are
+     screen attributes, not user attributes. The top left-hand corner
+     of the screen is row 0, column 0.
+ 
+  Events:
+ 
+     Whenever the mouse is moved or a button on the mouse is pressed
+     or released, the mouse hardware causes an interrupt. The mouse
+     device driver takes control and, depending on a mask you have
+     set, either saves it in a queue or ignores it. This prevents
+     events being lost if a subsequent interrupt occurs before the
+     application has read the event. With the mouse routines, you can
+     read the event queue and determine how many events are in the
+     queue.
+ 
+     When an event is generated, a description of it is stored in a
+     data structure called the event-data. If the mask allows (see
+     below), this is added to the queue. The layout of event-data is:
+ 
+         event-type           PIC X(2) COMP-X.
+         event-time           PIC X(4) COMP-X.
+         event-row            PIC X(2) COMP-X.
+         event-col            PIC X(2) COMP-X.
+ 
+     where:
+ 
+     event-type    is the action (that is, change of state) that took
+                   place:
+ 
+                       bit 3 set = button 3 pressed
+                       bit 2 set = button 2 pressed
+                       bit 1 set = button 1 pressed
+                       bit 0 set = mouse moved
+                       (other bits are reserved.)
+ 
+                   A button release is indicated by the bit for that
+                   button changing from 1 to 0. For example, if the
+                   mouse moves and button 1 is pressed at the same
+                   time, event-type contains 3.
+ 
+     event-time    is the time elapsed between when the event took place
+                   and some arbitrary but fixed starting time.
+ 
+     event-row     together, give the position of the mouse when the
+     event-col     event took place.
+ 
+  The Event Mask:
+ 
+     The event mask, which the programmer supplies, tells the system
+     which kinds of event should be queued and which ignored. It has
+     the same structure as event-type. An event is queued only if it
+     happens while the corresponding mask bit is on, or while another
+     state is on whose mask bit is on. When an event-data is queued,
+     the bit for each state is set correctly; that is, the mask does
+     not mask them out.
+ 
+     For example, the operator moving the mouse will generate an event
+     if either the mask bit for "mouse moved" is off or the operator is
+     holding down a button and the mask bit for that button is off.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

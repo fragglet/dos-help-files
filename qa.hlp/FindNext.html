@@ -1,0 +1,61 @@
+<html>
+
+<head>
+<title>FindNext</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* FindNext - Finds next entry in given directory matching specification.
+;* (Should be called only after successfully calling the FindFirst procedure.)
+;*
+;* Shows:   DOS Function - 4Fh (Find Next File)
+;*          Operator - OFFSET
+;*
+;* Params:  finfo - Pointer to 43-byte buffer. This must be the same buffer
+;*                  (or a duplicate) returned from the FindFirst procedure.
+;*
+;* Return:  Short integer with error code
+;*          0 if successful
+;*          1 if no more matches found
+ 
+FindNext PROC \
+        USES ds, \
+        finfo:PTR BYTE
+ 
+        push    ds                      ; Pass far pointer
+        mov     ax, OFFSET @data:old_dta;   to old_dta
+        push    ax
+        call    GetDTA                  ; Get current DTA address
+        add     sp, 4                   ; Adjust stack
+ 
+        LoadPtr ds, dx, finfo           ; DS:DX points to 43-byte buffer
+        push    ds                      ; Make this new DTA
+        push    dx
+        call    SetDTA                  ; Set 43-byte buffer as DTA
+        add     sp, 4                   ; Adjust stack
+        mov     ah, 4Fh                 ; AH = function number
+        int     21h                     ; Find Next File
+ 
+        pushf                           ; Preserve flags
+        push    WORD PTR @data:old_dta[2] ; Pass far pointer to
+        push    WORD PTR @data:old_dta[0] ;   SetDTA procedure
+        call    SetDTA                  ; Restore DTA address to orig
+        sub     ax, ax                  ; Set error code
+        add     sp, 4                   ; Adjust stack
+        popf                            ; Recover flags
+        jnc     exit                    ; Exit if successful match
+        inc     ax                      ; Else set error code to 1
+exit:   ret
+ 
+FindNext ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

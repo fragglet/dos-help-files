@@ -1,0 +1,51 @@
+<html>
+
+<head>
+<title>LoadPtr</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* LoadPtr - Macro to load far address into segment:register pair, or
+;* near address into register.
+;*
+;* Params:  sgmnt - Segment to be loaded with segment address
+;*          reg - Register to be loaded with offset address
+;*          ptr - Pointer to address
+;*
+;* Shows:   Instructions - lds     les
+;*          Directives - MACRO     IF        IFIDNI     ELSE      ELSEIF
+;*                       ENDIF     .ERR      %OUT       EXITM     ENDM
+;*          Operators - &lt; &gt;       ;;
+ 
+LoadPtr MACRO sgmnt, reg, ptr           ;; Macro definition
+    IF @DataSize                        ;; If far pointer, and
+        IFIDNI &lt;sgmnt&gt;, &lt;ds&gt;            ;;   if 1st argument is DS,
+            lds reg, ptr                ;;   load DS:reg with far address
+            EXITM
+        ENDIF
+        IFIDNI &lt;sgmnt&gt;, &lt;es&gt;            ;;   or if 1st argument is ES,
+            les reg, ptr                ;;   load ES:reg with far address
+            EXITM
+        ENDIF
+        .ERR                            ;; Generate error if not DS or ES
+        %OUT 1st macro argument must be DS or ES
+ 
+    ELSE                                ;; If near pointer,
+        IFIDNI &lt;sgmnt&gt;, &lt;es&gt;            ;;   and if segment is ES,
+            push ds                     ;;   ensure ES points to
+            pop  es                     ;;   same segment as DS
+        ENDIF
+        mov reg, ptr                    ;; Then load reg with near address
+    ENDIF
+ENDM
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

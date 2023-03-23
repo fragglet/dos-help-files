@@ -1,0 +1,135 @@
+<html>
+
+<head>
+<title>_dos_getvect, _dos_setvect</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_dos_getvect.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='_at_L80a4.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+     The _dos_getvect routine uses system call 0x35 to get the current
+     value of the interrupt vector specified by &lt;intnum&gt;.
+ 
+     The _dos_setvect routine uses system call 0x25 to set the current
+     value of the interrupt vector &lt;intnum&gt; to the function pointed to
+     by &lt;handler&gt;. Subsequently, whenever the &lt;intnum&gt; interrupt is
+     generated, the &lt;handler&gt; routine is called.
+ 
+     If &lt;handler&gt; is a C function, it must have been previously
+     declared with the __interrupt attribute. Otherwise, you must make
+     sure that the function satisfies the requirements for an
+     interrupt-handling routine.
+ 
+     If &lt;handler&gt; is an assembler function, it must be a far routine
+     that returns with an IRET instead of a RET.
+ 
+     The _dos_setvect routine is generally used with the _dos_getvect
+     function. To replace an interrupt vector, first save the current
+     vector of the interrupt by using _dos_getvect. Then set the vector
+     to your own interrupt routine with _dos_setvect. The saved vector
+     can later be restored, if necessary, using _dos_setvect. The user-
+     defined routine may also need the original vector in order to call
+     it or to chain to it with _chain_intr.
+ 
+     The __interrupt attribute indicates that the function is an
+     interrupt handler. The compiler generates appropriate entry and
+     exit sequences for the interrupt-handling function, including
+     saving and restoring all registers and executing an IRET
+     instruction to return.
+ 
+     Registers and Interrupt Functions
+ 
+     When you call an interrupt function, the DS register is
+     initialized to the C data segment. This allows you to access
+     global variables from within an interrupt function.
+ 
+     In addition, all registers except SS are saved on the stack. You
+     can access these registers within the function if you declare a
+     function parameter list containing a formal parameter for each
+     saved register. The following example illustrates such a
+     declaration:
+ 
+          void __interrupt __far int_handler ( unsigned _es,
+                          unsigned _ds, unsigned _di, unsigned _si,
+                          unsigned _bp, unsigned _sp, unsigned _bx,
+                          unsigned _dx, unsigned _cx, unsigned _ax,
+                          unsigned _ip, unsigned _cs, unsigned _flags )
+          {
+          ∙ ∙ ∙
+          }
+ 
+     The formal parameters must appear in the opposite order from which
+     they are pushed onto the stack. You can omit parameters from the
+     end of the list in a declaration, but not from the beginning. For
+     example, if your handler needs to use only DI and SI, you must
+     still provide ES and DS, but not necessarily BX or DX.
+ 
+     You can pass additional arguments if your interrupt handler is
+     called directly from C rather than by an INT instruction. To do
+     this, you must declare all register parameters and then declare
+     your parameter at the end of the list.
+ 
+     The compiler always saves and restores registers in the same fixed
+     order. Thus, no matter what names you use in the formal parameter
+     list, the first parameter in the list refers to ES, the second
+     refers to DS, and so on. If your interrupt routines use inline
+     assembler, you should distinguish the parameter names so that they
+     are not the same as the real register names.
+ 
+     If you change any of the register parameters of an interrupt
+     function while the function is executing, the corresponding
+     register contains the changed value when the function returns. For
+     example:
+ 
+          void __interrupt __far int_handler( unsigned _es,
+                                              unsigned _ds,
+                                              unsigned _di,
+                                              unsigned _si )
+          {
+              _di = -1;
+          }
+ 
+     This code causes the DI register to contain -1 when the &lt;handler&gt;
+     function returns. It is not a good idea to modify the values of
+     the parameters representing the IP and CS registers in interrupt
+     functions. If you must modify a particular flag (such as the carry
+     flag for certain DOS and BIOS interrupt routines), use the OR
+     operator (|) so that other bits in the flags register are not
+     changed.
+ 
+     When an interrupt function is called by an INT instruction, the
+     interrupt-enable flag is cleared. If your interrupt function
+     needs to do significant processing, you should use the _enable
+     function to set the interrupt flag so that interrupts can be
+     handled.
+ 
+     Precautions for Interrupt Functions
+ 
+     Since DOS is not reentrant (a DOS interrupt cannot be called from
+     inside a DOS interrupt), it is usually not safe to call from
+     inside an interrupt function any standard library function that
+     calls DOS INT 21H.
+ 
+     Similar precautions apply to many BIOS functions. Functions that
+     rely on INT 21H calls include I/O functions and the _dos family of
+     functions. Functions that rely on the machine's BIOS include
+     graphics functions and the _bios family of functions. It is
+     usually safe to use functions that do not rely on INT 21H or BIOS,
+     such as string-handling functions. Before using a standard library
+     function in an interrupt function, be sure that you are familiar
+     with the action of that library function.
+ 
+     Return Value
+ 
+     This _dos_getvect function returns a far pointer for the &lt;intnum&gt;
+     interrupt to the current handler, if there is one. There is no
+     return value for _dos_setvect.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

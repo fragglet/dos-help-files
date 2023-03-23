@@ -1,0 +1,102 @@
+<html>
+
+<head>
+<title>__huge</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8107.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────C/C++ Language─────────────────────────────────────────────────────────
+ 
+  Keyword:   __huge
+ 
+  Syntax:    type __huge declarator
+             class __huge class-name
+             class __huge class-name func()
+             type member-func() __huge
+ 
+  Summary:   Specifies that a data object can reside anywhere in
+             memory and is not assumed to reside in the current data
+             segment. Individual data items can exceed 64K in size.
+             Data is referenced with a 32-bit address, and pointers
+             declared as __huge are 32-bit values.
+ 
+  See also:  __based, __far, __near
+             <span class='grhilite'>◄</span><a href='../cl.hlp/memorymodel.html'>Memory Models</a><span class='grhilite'>►</span>
+ 
+     The __huge keyword can be used to modify data objects, pointers,
+     classes, the this pointer of member functions, and the addressing
+     mode of objects returned by functions.
+ 
+     If the /Zc compiler switch is used, both huge and _huge are
+     synonyms for __huge. If /Za is used, only __huge is accepted.
+ 
+     NOTE: Do not use __huge in 32-bit programs.
+ 
+     Data Objects or Pointers
+ 
+     The compiler can put a huge data object anywhere in memory. A huge
+     object can be larger than 64K.
+ 
+     A huge pointer is a 32-bit value and can address data in any
+     segment.
+ 
+     For example:
+ 
+          char __huge a[100000];       // A huge array
+          char __huge *hp;             // A huge pointer
+ 
+     Classes
+ 
+     Objects of a huge class can reside anywhere in memory and can be
+     larger than 64K in size, unless an overriding keyword appears in
+     the individual declaration. Structure or union types also can be
+     declared __huge.
+ 
+     For example:
+ 
+          class __huge Node
+          {
+             // ...
+          };
+ 
+          Node my_node;              // Huge by default
+          Node __near your_node;     // Explicitly declared __near
+ 
+     The this Pointer of Member Functions
+ 
+     You can overload a member function to operate on huge objects
+     if objects of the class are not huge by default. Within the
+     function, the this pointer is a huge pointer.
+ 
+     For example:
+ 
+          class Node
+          {
+          public:
+             void print() __huge;    // Called for huge objects
+             void print();           // Called for default objects
+          private:
+             // ...
+          };
+ 
+     The Addressing Mode of Return Objects
+ 
+     You can specify that a function returns a huge object. This is
+     useful if you call a member function for the temporary object
+     returned by the function.
+ 
+     For example:
+ 
+          class __huge Node make_node(); // Function returns a huge Node
+ 
+          make_node().print();     // Call huge print() for temporary
+                                   //    object
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>Register Macro as Prologue or Epilogue</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='OPTION.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Syntax:   OPTION PROLOGUE:macroname
+ 
+            OPTION EPILOGUE:macroname
+ 
+  See also: PROC, MACRO, <a href='RET.html'>RET Instruction</a>, <a href='IRET.html'>IRET Instruction</a>,
+            <a href='_at_L84af.html'>Using VARARG in Macros</a>
+ 
+  Description:
+ 
+     PROLOGUE registers &lt;macroname&gt; as the macro function to be called
+     when a prologue needs to be generated. EPILOGUE registers
+     &lt;macroname&gt; as the macro procedure to be called when a RET or IRET
+     instruction is encountered.
+ 
+     You can revert to the default prologue or epilogue by specifying
+     PrologueDef or EpilogueDef as &lt;macroname&gt;. EPILOGUE code is
+     generated only if the RET or IRET instruction terminating the PROC
+     block has no operand. The RETN, RETF, and IRETF instructions do not
+     cause the assembler to generate epilogue code.
+ 
+     To suppress generation of the prologue or epilogue code, give NONE
+     as the &lt;macroname&gt;.
+ 
+     The assembler expects a macro definition of this form:
+ 
+     macroname MACRO procname, flags, argbytes, localbytes, &lt;reglist&gt;,
+                     userparms:VARARG
+ 
+     Parameter      Description
+ 
+     procname       Macro name for the procedure or NONE.
+ 
+     flags          Word-size bit flag: (1=On, 0=Off)
+                    Bits    Description
+                    0-2     Language type:
+                              000     Not specified
+                              001     C
+                              010     SYSCALL
+                              011     STDCALL
+                              100     Pascal
+                              101     Fortran
+                              110     Basic
+                              111     Reserved
+                    3       Reserved
+                    4       Caller restores stack
+                    5       FAR procedure
+                    <a href='FORCEFRAME.html'>6       PRIVATE procedure</a>
+                    7       EXPORT procedure
+                    8       Epilogue caused by IRET instruction
+ 
+                    All other bits are reserved for future use.
+ 
+     argbytes       The total number of bytes used by PROC arguments.
+ 
+     localbytes     The total number of bytes used by variables defined
+                    with the LOCAL directive inside the PROC block.
+ 
+     reglist        Comma-delimited list of registers from the PROC
+                    directive USE option. This list is reversed in
+                    in the EPILOGUE directive. Angle brackets are
+                    passed.
+ 
+     userparms      Passed the optional macroarglist from the PROC
+                    directive.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

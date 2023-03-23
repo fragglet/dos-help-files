@@ -1,0 +1,44 @@
+<html>
+
+<head>
+<title>COLORS.FOR</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='graphics.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hv'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hvx'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+      INCLUDE 'FGRAPH.FI'
+ 
+      PROGRAM Colors
+ 
+      INCLUDE 'FGRAPH.FD'
+ 
+      INTEGER*2 loop, status
+      REAL rnd1, rnd2
+ 
+      status = setvideomode($MRES16COLOR)
+      status = rectangle($GFILLINTERIOR, 80, 50, 240, 150)
+      DO loop = 1, 8000
+         status = setcolor(MOD(getcolor()+1, 16))  ! Set next color
+C
+C        Set a random pixel, but only if it is already on.
+C
+         CALL RANDOM(rnd1)
+         CALL RANDOM(rnd2)
+         IF (getpixel(INT2(rnd1*320), INT2(rnd2*200))
+     +  .NE. 0) THEN
+            status = setcolor(MOD(loop, 16))
+            status = setpixel(INT2(rnd1*320), INT2(rnd2*200))
+         END IF
+      END DO
+ 
+      status = setvideomode($DEFAULTMODE)
+      END
+
+</pre>
+</body>
+
+</html>

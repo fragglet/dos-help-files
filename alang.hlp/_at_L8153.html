@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>Int 16h Functions 02h and 12h</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L845f.html'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='16h.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Interrupt:   16h     Functions:  02h and 12h
+ 
+  Title:       Get Keyboard Flags
+ 
+  See also:    <a href='_at_L8404.html'>Keyboard Data Memory</a>
+ 
+  Description:                                          [PC] [AT] [PS/2]
+ 
+     Returns flag data that describes the state of the various keyboard
+     toggles and shift keys. Use Function 02h if the code must work
+     with any keyboard. Use Function 12h if the code must handle the
+     additional keys of the enhanced keyboard (such as right CTRL and
+     ALT). You can use the keyboard data byte at <a href='_at_L843a.html'>0000:0496h</a> to determine
+     if the extended keyboard is available.
+ 
+     The low byte returned by 02h and 12h is the same as the keyboard
+     flags byte stored at <a href='_at_L843a.html'>0000:0417h</a>. The high byte returned by
+     Function 12h is similar to (but not exactly the same as) the byte
+     stored at <a href='_at_L843a.html'>0000:0418h</a>.
+ 
+     Input                       Output
+ 
+     AH = 02h for shift flags    AL = Flags (both 02h and 12h)
+        = 12h for extended
+          shift flags             7 6 5 4 3 2 1 0
+                                 ┌─┬─┬─┬─┬─┬─┬─┬─┐
+                                 │ │ │ │ │ │ │ │ │
+                                 └─┴─┴─┴─┴─┴─┴─┴─┘
+                                  │ │ │ │ │ │ │ │
+                                  │ │ │ │ │ │ │ └─ Right SHIFT key is down
+                                  │ │ │ │ │ │ └─── Left SHIFT key is down
+                                  │ │ │ │ │ └───── CTRL key is down
+                                  │ │ │ │ └─────── ALT key is down
+                                  │ │ │ └───────── SCROLL LOCK on
+                                  │ │ └─────────── NUM LOCK on
+                                  │ └───────────── CAPS LOCK on
+                                  └─────────────── INS on
+ 
+                                 AH = Extended flags (12h only)
+ 
+                                  7 6 5 4 3 2 1 0
+                                 ┌─┬─┬─┬─┬─┬─┬─┬─┐
+                                 │ │ │ │ │ │ │ │ │
+                                 └─┴─┴─┴─┴─┴─┴─┴─┘
+                                  │ │ │ │ │ │ │ │
+                                  │ │ │ │ │ │ │ └─ Left CTRL key is down
+                                  │ │ │ │ │ │ └─── Left ALT key is down
+                                  │ │ │ │ │ └───── Right CTRL key is down
+                                  │ │ │ │ └─────── Right ALT key is down
+                                  │ │ │ └───────── Scroll key is down
+                                  │ │ └─────────── NUM LOCK key is down
+                                  │ └───────────── CAPS LOCK key is down
+                                  └─────────────── SYSREQ key is down
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

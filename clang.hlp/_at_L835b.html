@@ -1,0 +1,61 @@
+<html>
+
+<head>
+<title>Customizing the new Operator</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='new.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────C/C++ Language─────────────────────────────────────────────────────────
+ 
+     You can write your own version of the new operator to implement a
+     custom memory-allocation scheme. You must use one of the following
+     prototypes:
+ 
+         void __near *operator new( size_t size );
+         void __far  *operator new( size_t size );
+         void __huge *operator new( unsigned long elems, size_t size );
+         void __based(void) *operator new( __segment seg, size_t size );
+ 
+     A new operator that returns a near or a far pointer has a parameter
+     of type size_t, which is the amount of space to be allocated. The
+     compiler sets the value of this parameter when the new operator is
+     called.
+ 
+     A new operator that returns a huge pointer acts like an array
+     allocator and has two parameters. The first parameter is the
+     number of elements to allocate, and the second parameter is the
+     size of one element. If the total size of the array is greater
+     than 128K, the size of each element must be a power of 2.
+ 
+     A new operator that returns a based pointer has two parameters.
+     The first is a segment variable, which is the segment specified
+     using the __based keyword in the allocation expression. The second
+     parameter is the amount of space to be allocated.
+ 
+     Passing Additional Arguments
+ 
+     You can pass additional arguments to your customized new operator;
+     these are called "placement" arguments. These arguments appear
+     last when you declare the argument list of the new operator's
+     prototype, but they appear before the type name and in parentheses
+     when you call new. For example, if you want a near new operator
+     that takes an integer placement argument, use the following
+     prototype:
+ 
+         void __near *operator new( size_t size, int parm );
+ 
+     To call this operator and specify a value for the placement
+     argument, you can use the following syntax:
+ 
+         T __near *pT = new __near (25) T;
+ 
+     The placement argument receives the value 25.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

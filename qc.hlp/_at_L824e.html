@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>sopen</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='sopen.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='_at_L82a2.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     The sopen function opens the file specified by &lt;filename&gt; and
+     prepares the file for subsequent shared reading or writing, as
+     defined by &lt;oflag&gt; and &lt;shflag&gt;.
+ 
+     The integer expression &lt;oflag&gt; is formed by combining one or more
+     of the following manifest constants (defined in FCNTL.H). (When
+     more than one manifest constant is given, the constants are joined
+     with the OR operator (|).)
+ 
+     O_APPEND     O_EXCL       O_TEXT
+     O_BINARY     O_RDONLY     O_TRUNC
+     O_CREAT      O_RDWR       O_WRONLY
+ 
+     The &lt;shflag&gt; argument is a constant expression consisting of one
+     of the following manifest constants (defined in SHARE.H):
+ 
+     SH_COMPAT    SH_DENYRW
+     SH_DENYNO    SH_DENYWR
+     SH_DENYRD
+ 
+     If SHARE.COM (or SHARE.EXE in some versions of MS-DOS) is not
+     installed, MS-DOS ignores the sharing mode. (See your system
+     documentation for detailed information about sharing modes.)
+ 
+     The sopen function should be used only under OS/2 and MS-DOS
+     version 3.0 and later. Under earlier versions of MS-DOS, the
+     &lt;shflag&gt; argument is ignored.
+ 
+     The &lt;pmode&gt; argument is required only when O_CREAT is specified.
+     If the file does not exist, &lt;pmode&gt; specifies the file's
+     permission settings, which are set when the new file is closed for
+     the first time. Otherwise, the &lt;pmode&gt; argument is ignored. The
+     &lt;pmode&gt; argument is an integer expression containing one or both
+     of the manifest constants S_IWRITE and S_IREAD (defined in
+     SYS\STAT.H). When both constants are given, they are combined
+     with the OR operator (|).
+ 
+     If write permission is not given, the file is read-only. Under
+     DOS and OS/2, all files are readable; it is not possible to
+     give write-only permission. Thus, the modes S_IWRITE and
+     S_IREAD | S_IWRITE are equivalent.
+ 
+     Note that under MS-DOS versions 3.x with SHARE installed, a
+     problem occurs when opening a new file with sopen under the
+     following sets of conditions:
+ 
+        ■ With &lt;oflag&gt; set to O_CREAT | O_RDONLY or O_CREAT | O_WRONLY,
+          &lt;pmode&gt; set to S_IREAD, and &lt;shflag&gt; set to SH_COMPAT
+ 
+        ■ With &lt;oflag&gt; set to any combination that includes O_FLAG,
+          &lt;pmode&gt; set to S_IREAD, and &lt;shflag&gt; set to anything other
+          than SH_COMPAT
+ 
+     In either case, the operating system prematurely closes the file
+     during system calls made within sopen, or the system generates a
+     sharing violation (INT 24H). To avoid the problem, open the file
+     with &lt;pmode&gt; set to S_IWRITE. After closing the file, call chmod
+     and change the mode back to S_IREAD. Another solution is to
+     open the file with &lt;pmode&gt; set to S_IREAD, &lt;oflag&gt; set to
+     O_CREAT | O_RDWR, and &lt;shflag&gt; set to SH_COMPAT.
+ 
+     The sopen function applies the current file-permission mask to
+     &lt;pmode&gt; before setting the permissions (see umask).
+ 
+     Return Value
+ 
+     The sopen function returns a file handle for the opened file. A
+     return value of -1 indicates an error, and errno is set to EACCES,
+     EEXIST, EMFILE, or ENOENT.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

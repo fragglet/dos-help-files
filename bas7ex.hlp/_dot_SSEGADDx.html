@@ -1,0 +1,45 @@
+<html>
+
+<head>
+<title>SSEGADD Statement Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the SSEGADD function to obtain the BASIC string address of
+'a string used by a C procedure. The BASIC program calls the printmessage C
+'procedure which, in turn, calls BASIC to obtain the string address.
+ 
+'Note: To run this program, you must first compile the C procedure (shown
+'below in remarks) and incorporate it in a Quick library or link it to the
+'compiled BASIC program.
+ 
+DEFINT A-Z
+DECLARE SUB printmessage CDECL (BYVAL farstring AS LONG)
+'Create the message as an ASCIIZ string, as required by the C printf
+'function.
+a$ = "This is a short example of a message" + CHR$(0)
+'Call the C procedure with pointers.
+CALL printmessage(SSEGADD(a$))
+ 
+ 
+'/* C Routine printmessage */
+'/* Prints a BASIC far string on the screen.*/
+'
+'#include &lt;stdio.h&gt;
+'
+'/* Define a procedure which inputs a string far pointer */
+'void  printmessage (char far *farpointer)
+'   {
+'   /* print the string addressed by the far pointer */
+'   printf( "%s\n", farpointer);
+'   }
+'
+
+</pre>
+</body>
+
+</html>

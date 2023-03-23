@@ -1,0 +1,69 @@
+<html>
+
+<head>
+<title>_putenv</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='putenv.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='_at_L80bc.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+     The _putenv function adds new environment variables. It also
+     modifies the values of or removes existing environment variables.
+     These variables define the environment in which a process executes
+     (for example, the default search path for libraries to be linked
+     with a program).
+ 
+     The &lt;envstring&gt; argument must be a pointer to a string with the
+     form
+ 
+          varname=string
+ 
+     where &lt;varname&gt; is the name of the environment variable to be
+     added or modified, and &lt;string&gt; is the variable's value. If
+     &lt;varname&gt; is already part of the environment, it is replaced by
+     &lt;string&gt;; otherwise, the new string is added to the environment.
+     A variable can be removed from the environment by specifying an
+     empty string──that is, by specifying only &lt;varname&gt;=.
+ 
+     This function affects only the environment that is local to the
+     currently running process; it cannot be used to enter new items in
+     the command-level environment. When the currently running process
+     terminates, the environment reverts to the level of the parent
+     process (in most cases, the operating-system level). However, the
+     environment affected by _putenv can be passed to any child
+     processes created by _spawn, _exec, or system, and these child
+     processes get any new items added by _putenv.
+ 
+     Never free a pointer to an environment entry, because the
+     environment variable will point into freed space. A similar
+     problem can occur if you pass a pointer to a local variable to
+     _putenv, then exit the function in which the variable is declared.
+ 
+     The _putenv function operates only on the run-time library's
+     accessible data structures, not on the environment segment
+     created for a process by the operating system.
+ 
+     Note that environment-table entries must not be changed directly.
+     If an entry must be changed, use _putenv. To modify the returned
+     value without affecting the environment table, use _strdup or
+     strcpy to make a copy of the string.
+ 
+     The getenv and _putenv functions use the global variable _environ
+     to access the environment table. The _putenv function may change
+     the value of _environ, thus invalidating the envp argument to the
+     main function. Therefore, it is safer to use the _environ variable
+     to access the environment information.
+ 
+     Return Value
+ 
+     The _putenv function returns 0 if it is successful. A return value
+     of -1 indicates an error.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<title>File Control Block (FCB) and Extension</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+                       ┌───┬───────────────────────┬───┐
+           Extension → │ -1│        rsv            │att│
+                       └───┴───────────────────────┴───┘
+ PSP                   ↓                               ↓
+ Offset
+ ──────                                                ┌───┬───────────┐
+ 50h                                          FCB #1 → │drv│  name∙∙∙  │
+       ┌───────────────────┬───────────┬───────┬───────┼───┴───────────┤
+ 60h   │∙∙∙                │    ext    │ block │ recsz │    filesz     │
+       ├───────┬───────┬───┴───────────┴───────┴───────┼───┬───────────┤
+ 70h   │  date │  time │              rsv              │rec│  rand∙∙∙  │
+       ├───┬───┴───────┴───────────────────────────────┴───┴───────────┘
+ 80h   │∙∙∙│
+       └───┘
+       └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+         0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+ 
+ 
+  Field     Extension
+ 
+  -1         First byte = 0FFh.
+  rsv        Reserved.
+  att        File attribute.
+ 
+ 
+  Field      FCB
+ 
+  drv        Drive code (0=default, 1=A, 2=B, etc).
+ 
+  name       8-character filename, left-justified with trailing blanks.
+ 
+  ext        3-character extension, left-justified with trailing blanks.
+ 
+  block      Current block number relative to beginning of file,
+             starting with 0. Each block comprises 128 records of the
+             size specified by the logical record size (below). Used
+             with current record for sequential file operations.
+ 
+  recsz      Logical record size in bytes (set to 128 when file is
+             opened).
+ 
+  filesz     File size in bytes (set by DOS).
+ 
+  date       Date file was created or last updated (set by DOS).
+ 
+  time       Time file was created or last updated (set by DOS). Date
+             and time fields are in standard file date/time formats
+             (see: <a href='_at_L84b6.html'>DOS File Date/Time Formats</a>).
+ 
+  rsv        Reserved.
+ 
+  rec        Current record number (beginning with 0) relative to
+             current block. Must be initialized before doing sequential
+             file operations.
+ 
+  rand       Record number (beginning with 0) relative to beginning of
+             file. Must be initialized before doing random file
+             operations.
+ 
+  NOTES:
+ 
+     ■ The FCB is used by certain interrupt 21h functions called "FCB
+       functions," between 0Fh (Open File) and 29h (Parse Filename).
+       These functions provide a method of file access compatible with
+       CP/M. They are not recommended in DOS Versions 2.0 and higher,
+       which offer superior file handling.
+ 
+     ■ The FCB extension is a 7-byte header used to create or access a
+       file with a read-only, hidden, system, subdirectory, and/or
+       volume-label attribute. To use the extension with any of the FCB
+       functions, set the pointer (usually DS:DX) to the first byte of
+       the extension header rather than to the FCB itself.
+ 
+     ■ The program segment prefix (PSP) holds two FCBs, identified as
+       #1 (beginning at offset 5Ch) and #2 (beginning at offset 6Ch).
+       Each FCB uses the format shown in the Summary screen. Both FCBs
+       cannot be open at the same time, since each overwrites the
+       other.
+ 
+     ■ The application program is responsible for initializing the
+       fields at FCB offsets 0-15 and 32-36. Offsets 16-31 (filesz,
+       date, time, and rsv) are set by DOS from information in the
+       file's directory entry and must not be altered.
+ 
+     See also: <a href='psp.html'>Program Segment Prefix (PSP)</a>, <a href='_at_L8414.html'>Interrupt 21h FCB Functions</a>,
+               <a href='_at_L84b6.html'>DOS File Date/Time Formats</a>
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

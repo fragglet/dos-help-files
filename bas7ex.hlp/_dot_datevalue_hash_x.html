@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>Date Functions Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the DateValue# function to convert a string to a date
+'value. A calculation is then made that tells you the date of two weeks
+'before and after your birth. Date information is displayed using the
+'Weekday&amp;, Day&amp;, Month&amp;, and Year&amp; functions.
+ 
+'Note: To run this example you must use a Quick library that includes the
+'procedures contained in the date/time library files. The following
+'include file must also be present.
+ 
+'$INCLUDE: 'DATIM.BI'
+ 
+OPTION BASE 1
+DEFINT A-Z
+ 
+DIM DayOfWeek(7) AS STRING
+DIM MonthOfYear(12) AS STRING
+ 
+'Initialize the arrays.
+FOR I = 1 TO 7
+        READ DayOfWeek(I)
+NEXT I
+FOR I = 1 TO 12
+        READ MonthOfYear(I)
+NEXT I
+ 
+INPUT "Enter your birthdate as MM/DD/YYYY "; Birthdate$
+ 
+'Convert input date to numbers and create a complete date string.
+BDateVal# = DateValue#(Birthdate$)  'Get the unique date value.
+BDay$ = DayOfWeek$(Weekday&amp;(BDateVal#))+" "+MonthOfYear$(Month&amp;(BDateVal#))
+BDay$ = BDay$ + STR$(Day&amp;(BDateVal#)) + "," + STR$(Year&amp;(BDateVal#))
+ 
+'Calculate a date 14 days earlier.
+EDateVal# = BDateVal# - 14
+'Put the date string together.
+EDay$ = DayOfWeek$(Weekday&amp;(EDateVal#))+" "+MonthOfYear$(Month&amp;(EDateVal#))
+EDay$ = EDay$ + STR$(Day&amp;(EDateVal#)) + "," + STR$(Year&amp;(EDateVal#))
+ 
+'Calculate a date 14 days later.
+LDateVal# = BDateVal# + 14
+'Put the date string together
+LDay$ = DayOfWeek$(Weekday&amp;(LDateVal#))+" "+MonthOfYear$(Month&amp;(LDateVal#))
+LDay$ = LDay$ + STR$(Day&amp;(LDateVal#)) + "," + STR$(Year&amp;(LDateVal#))
+ 
+'Display the results.
+PRINT "You were born on "; BDay$; "."
+PRINT
+PRINT "What you may not have been able to immediately calculate was:"
+PRINT
+PRINT "Two weeks before your birth was "; EDay$; "."
+PRINT "Two weeks after your birth was "; LDay$; "."
+END
+ 
+DATA "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"
+DATA "Friday", "Saturday"
+DATA "January", "February", "March", "April", "May", "June", "July"
+DATA "August", "September", "October", "November", "December"
+
+</pre>
+</body>
+
+</html>

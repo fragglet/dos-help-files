@@ -1,0 +1,211 @@
+<html>
+
+<head>
+<title>_grstatus</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_grstatus.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='_at_L8271.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+     The _grstatus function returns the status of the most recently
+     used graphics function. The _grstatus function can be used
+     immediately following a call to a graphics routine to determine
+     if errors or warnings were generated. Return values less than 0
+     are errors, and values greater than 0 are warnings.
+ 
+     The following manifest constants are defined in the GRAPH.H
+     header file for use with the _grstatus function:
+ 
+     Value   Constant               Meaning
+ 
+      0     _GROK                   Success
+ 
+     -1     _GRERROR                Graphics error
+ 
+     -2     _GRMODENOTSUPPORTED     Requested video mode not supported
+ 
+     -3     _GRNOTINPROPERMODE      Requested routine works only in
+                                    certain video modes
+ 
+     -4     _GRINVALIDPARAMETER     One or more parameters invalid
+ 
+     -5     _GRFONTFILENOTFOUND     No matching font file found
+ 
+     -6     _GRINVALIDFONTFILE      One or more font files invalid
+ 
+     -7     _GRCORRUPTEDFONTFILE    One or more font files inconsistent
+ 
+     -8     _GRINSUFFICIENTMEMORY   Not enough memory to allocate
+                                    buffer or to complete a fill
+                                    operation
+ 
+     -9     _GRINVALIDIMAGEBUFFER   Image buffer data inconsistent
+ 
+      1     _GRNOOUTPUT             Nothing drawn
+ 
+      2     _GRCLIPPED              Output was clipped to viewport
+ 
+      3     _GRPARAMETERALTERED     One or more input parameters was
+                                    altered to be within range, or
+                                    pairs of parameters were
+                                    interchanged to be in the proper
+                                    order
+ 
+     After a graphics call, use an if statement to compare the return
+     value of _grstatus to _GROK. For example:
+ 
+          if( _grstatus &lt; _GROK )
+              /* handle graphics error */;
+ 
+     The functions listed below cannot give errors, and they all set
+     _grstatus to _GROK:
+ 
+     _displaycursor                 _getvideoconfig
+     _getactivepage                 _getvisualpage
+     _getbkcolor                    _outmem
+     _getgtextvector                _outtext
+     _gettextcolor                  _unregisterfonts
+     _gettextposition               _wrapon
+     _gettextwindow
+ 
+     The functions below are for graphics or text modes only. They
+     set _grstatus to _GRNOTINPROPERMODE if in an incompatible mode;
+     otherwise to _GROK:
+ 
+     _getcolor                      _getwritemode
+     _getcurrentposition...         _imagesize...
+     _getlinestyle                  _moveto
+     _getphyscoord                  _setlinestyle
+     _gettextcursor                 _settextcursor
+     _getviewcoord...               _setvieworg
+     _getwindowcoord
+ 
+     Other functions are listed below with the error or warning
+     messages they produce for _grstatus.
+ 
+     Function              Possible                Possible
+                           _grstatus               _grstatus
+                           Error Codes             Warning Codes
+ 
+     _arc functions        _GRNOTINPROPERMODE,     _GRNOOUTPUT,
+                           _GRINVALIDPARAMETER,    _GRCLIPPED
+ 
+     _clearscreen          _GRNOTINPROPERMODE,
+                           _GRINVALIDPARAMETER
+ 
+     _ellipse functions    _GRNOTINPROPERMODE,     _GRNOOUTPUT,
+                           _GRINVALIDPARAMETER,    _GRCLIPPED
+                           _GRINSUFFICIENTMEMORY
+ 
+     _floodfill functions  _GRNOTINPROPERMODE,     _GRNOOUTPUT
+                           _GRINVALIDPARAMETER,
+                           _GRINSUFFICIENTMEMORY
+ 
+     _getarcinfo           _GRERROR,
+                           _GRNOTINPROPERMODE
+ 
+     _getfillmask          _GRERROR,
+                           _GRINVALIDPARAMETER,
+                           _GRNOTINPROPERMODE
+ 
+     _getfontinfo          _GRERROR
+ 
+     _getgtextextent       _GRERROR
+ 
+     _getgtextvector       _GRPARAMETERALTERED
+ 
+     _getimage fundtions   _GRERROR,               _GRPARAMETERALTERED
+                           _GRNOTINPROPERMODE,
+ 
+     _getpixel functions   _GRERROR,
+                           _GRNOTINPROPERMODE
+ 
+     _lineto functions     _GRNOTINPROPERMODE      _GRNOOUTPUT,
+                                                   _GRCLIPPED
+ 
+     _outgtext             _GRNOTINPROPERMODE      _GRCLIPPED,
+                                                   _GRNOOUTPUT
+ 
+     _pie functions        _GRNOTINPROPERMODE,     _GRNOOUTPUT,
+                           _GRINVALIDPARAMETER,    _GRCLIPPED
+                           _GRINSUFFICIENTMEMORY
+ 
+     _polygon functions    _GRNOTINPROPERMODE      _GRNOOUTPUT,
+                           _GRINVALIDPARAMETER     _GRCLIPPED
+                           _GRINSUFFICIENTMEMORY
+ 
+     _putimage functions   _GRERROR,               _GRPARAMETERALTERED,
+                           _GRNOTINPROPERMODE,     _GRNOOUTPUT
+                           _GRINVALIDPARAMETER,
+                           _GRINVALIDIMAGEBUFFER
+ 
+     _rectangle functions  _GRNOTINPROPERMODE,     _GRNOOUTPUT,
+                           _GRINVALIDPARAMETER,    _GRCLIPPED
+                           _GRINSUFFICIENTMEMORY
+ 
+     _registerfonts        _GRCORRUPTEDFONTFILE,
+                           _GRFONTFILENOTFOUND,
+                           _GRINSUFFICIENTMEMORY
+                           _GRINVALIDFONTFILE
+ 
+     _remappalette         _GRERROR,
+                           _GRINVALIDPARAMETER
+ 
+     _remapallpalette      _GRERROR,
+                           _GRINVALIDPARAMETER
+ 
+     _scrolltextwindow                             _GRNOOUTPUT
+ 
+     _selectpalette        _GRNOTINPROPERMODE,
+                           _GRINVALIDPARAMETER
+ 
+     _setactivepage        _GRINVALIDPARAMETER
+ 
+     _setbkcolor           _GRNOTINPROPERMODE      _GRPARAMETERALTERED
+ 
+     _setcliprgn           _GRNOTINPROPERMODE      _GRPARAMETERALTERED
+ 
+     _setcolor             _GRNOTINPROPERMODE      _GRPARAMETERALTERED
+ 
+     _setfont              _GRERROR,               _GRPARAMETERALTERED
+                           _GRFONTFILENOTFOUND,
+                           _GRINSUFFICIENTMEMORY
+ 
+     _setgtextvector                               _GRPARAMETERALTERED
+ 
+     _setpixel functions   _GRNOTINPROPERMODE      _GRNOOUTPUT
+ 
+     _settextcolor                                 _GRPARAMETERALTERED
+ 
+     _settextposition                              _GRPARAMETERALTERED
+ 
+     _settextrows          _GRINVALIDPARAMETER     _GRPARAMETERALTERED
+ 
+     _settextwindow                                _GRPARAMETERALTERED
+ 
+     _setvideomode         _GRERROR,
+                           _GRMODENOTSUPPORTED,
+                           _GRINVALIDPARAMETER
+ 
+     _setvideomoderows     _GRERROR,
+                           _GRMODENOTSUPPORTED,
+                           _GRINVALIDPARAMETER
+ 
+     _setviewport          _GRNOTINPROPERMODE      _GRPARAMETERALTERED
+ 
+     _setvisualpage        _GRINVALIDPARAMETER
+ 
+     _setwindow            _GRNOTINPROPERMODE,     _GRPARAMETERALTERED
+                           _GRINVALIDPARAMETER
+ 
+     _setwritemode         _GRNOTINPROPERMODE,
+                           _GRINVALIDPARAMETER
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

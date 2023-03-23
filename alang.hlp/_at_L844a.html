@@ -1,0 +1,113 @@
+<html>
+
+<head>
+<title>CopyFile</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L83fe.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* CopyFile - Copies a file from a specified directory to another. Allows
+;* two different copy methods. See the OpenFile, CloseFile, ReadFile, and
+;* WriteFile procedures for specific examples on opening, closing, reading
+;* from, and writing to files.
+;*
+;* Shows:   DOS Functions - 3Ch (Create File)
+;*                          5Bh (Create New File)
+;*          Instruction - clc
+;*
+;* Params:  Imode  - 0 = Create new target file or overwrite existing file
+;*                   1 = Abort and return error code if target file already
+;*                       exists (only for DOS versions 3.0 and higher)
+;*          Fspec1 - Pointer to ASCIIZ source file specification
+;*          Fspec2 - Pointer to ASCIIZ target file specification
+;*
+;* Return:  Short integer with error code
+;*          0 if successful
+;*          1 if error
+ 
+        .DATA
+Buffer  BYTE    BUFFERSIZE DUP (?)     ; Buffer for diskette read
+ 
+        .CODE
+ 
+CopyFile PROC USES ds si di,
+        Imode:WORD,
+        Fspec1:PBYTE,
+        Fspec2:PBYTE
+ 
+        LOCAL eof_flag:BYTE
+ 
+; Open source file for read only
+ 
+        LoadPtr ds, dx, Fspec1          ; Point DS:DX to source file
+        mov     ax, 3D00h               ; AH = function #, AL = access code
+        int     21h                     ; Open File (for read only)
+        jc      e_exit
+        mov     si, ax                  ; SI = file handle for source
+ 
+; Open target file according to copy mode
+ 
+        LoadPtr ds, dx, Fspec2          ; Point DS:DX to target file
+        .IF     Imode != 1              ; If Imode (DOS function) is not 1
+        mov     ah, 3Ch                 ; Request Create File
+        .ELSE
+ 
+        ; Check DOS version
+        INVOKE  GetVer
+ 
+        cmp     ax, 300                 ; 3.0 or higher?
+        jb      close                   ; No?  Abort with error code
+        mov     ah, 5Bh                 ; Request Create New File
+        .ENDIF
+        sub     cx, cx                  ; Normal attribute for target
+        int     21h                     ; DOS function for target file
+        jc      close                   ; If open error, abort
+        mov     di, ax                  ; DI = file handle for target
+ 
+; Both files successfully opened. Now read from source and copy to target.
+ 
+        mov     ax, @data
+        mov     ds, ax                  ; DS:DX = buffer. Read/write
+        mov     dx, OFFSET Buffer       ;   to and from here.
+        mov     eof_flag, 0             ; Initialize end-of-file flag
+ 
+        .REPEAT
+        mov     bx, si                  ; Handle for source file
+        mov     cx, BUFFERSIZE          ; CX = number of bytes to read
+        mov     ah, 3Fh                 ; Request DOS read
+        int     21h                     ; Read from File
+        jc      close                   ; If error, exit
+        .IF     ax != cx                ; If bytes not read successfully:
+        inc     eof_flag                ; Raise flag
+        .ENDIF
+        mov     bx, di                  ; Handle for target file
+        mov     cx, ax                  ; Write number of bytes read
+        mov     ah, 40h                 ; Request DOS write
+        int     21h                     ; Write from buffer to target file
+        jc      close                   ; If error, exit
+        .UNTIL  eof_flag != 0           ; Loop to read next block
+        clc                             ; Clear CY to indicate
+close:
+        pushf                           ; Preserve flags while closing
+        mov     bx, di                  ; Handle for target file
+        mov     ah, 3Eh                 ; Request DOS Function 3Eh
+        int     21h                     ; Close File
+        sub     ax, ax                  ; Clear error code
+        popf                            ; Recover flags
+        .IF     carry?
+e_exit:
+        mov     ax, 1                   ; Else set error code
+        .ENDIF
+        ret
+ 
+CopyFile ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

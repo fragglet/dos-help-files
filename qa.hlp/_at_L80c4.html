@@ -1,0 +1,57 @@
+<html>
+
+<head>
+<title>Int 13H Function 05H</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span><a href='13H_dot_05H.html'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Notes<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+    On floppy disks, the address field list consists of a series of 4-byte
+    entries, one entry per sector, in the following format:
+ 
+    Byte     Contents
+    ════     ══════════════════════════════════════
+    0        cylinder
+    1        head
+    2        sector
+    3        sector-size code
+             00H if 128 bytes per sector
+             01H if 256 bytes per sector
+             02H if 512 bytes per sector (standard)
+             03H if 1024 bytes per sector
+ 
+    On floppy disks, the number of sectors per track is taken from the BIOS
+    floppy disk parameter table whose address is stored in the vector for
+    Int 1EH.
+ 
+    When this function is used for floppy disks on the PC/AT or PS/2, it
+    should be preceded by a call to Int 13H Function 17H to select the type
+    of medium to be formatted.
+ 
+    On fixed disks, the upper 2 bits of the 10-bit cylinder number are placed
+    in the upper 2 bits of register CL.
+ 
+    On PC/XT-286, PC/AT, and PS/2 fixed disks, ES:BX points to a 512-byte
+    buffer containing byte pairs for each physical disk sector as follows:
+ 
+    Byte        Contents
+    ═══         ═══════════════════
+    0           00H for good sector
+                80H for bad sector
+    1           sector number
+      For example, to format a track with 17 sectors and an interleave of
+      two, ES:BX would point to the following 34-byte array at the beginning
+      of a 512-byte buffer:
+        db   00h,01h,00h,0ah,00h,02h,00h,0bh,00h,03h,00h,0ch
+        db   00h,04h,00h,0dh,00h,05h,00h,0eh,00h,06h,00h,0fh
+        db   00h,07h,00h,10h,00h,08h,00h,11h,00h,09h
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

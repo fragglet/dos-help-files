@@ -1,0 +1,43 @@
+<html>
+
+<head>
+<title>SADD and SSEG Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example creates a string and then calculates its offset and segment
+'using the SADD and SSEG functions. The information is then passed to a BASIC
+'SUB procedure which mimics the performance of a non-BASIC print routine.
+ 
+DEFINT A-Z
+ 
+'Create the string.
+Text$ = ".... a few well-chosen words"
+ 
+'Calculate the offset, segment and length of the string.
+Offset = SADD(Text$)
+Segment = SSEG(Text$)
+Length = LEN(Text$)
+ 
+'Pass these arguments to the print routine.
+CALL printit(Segment, Offset, Length)
+END
+ 
+SUB printit (Segment, Offset, Length)
+    CLS
+    'Set the segment for PEEKing.
+    DEF SEG = Segment
+    FOR i = 0 TO Length - 1
+        'Get each character from memory, convert to ASCII, and display.
+        PRINT CHR$(PEEK(i + Offset));
+    NEXT i
+END SUB
+
+</pre>
+</body>
+
+</html>

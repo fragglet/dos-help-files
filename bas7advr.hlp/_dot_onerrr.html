@@ -1,0 +1,181 @@
+<html>
+
+<head>
+<title>ON ERROR Statement Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#.onerr'>Syntax</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../bas7ex.hlp/_dot_onerrx.html'>Example</a><span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+The ON ERROR statement enables an error-handling routine and specifies
+the location of that routine in the program. ON ERROR also can be used
+to disable an error-handling routine.
+ 
+<b>ON [LOCAL] ERROR { GOTO line | RESUME NEXT | GOTO 0 }</b>
+    ■ LOCAL is a keyword that indicates an error-handling routine
+      that is "local" to the procedure within which the error handler
+      routine is located. A local error-handling routine:
+        - Overrides any enabled module-level error-handling routines.
+        - Is enabled only while the procedure within which it is
+          located is executing.
+      Notice that the local error handler remains enabled while any
+      procedures execute that are directly or indirectly called by the
+      procedure within which the error handler is located. One of those
+      procedures may supersede the local error handler.
+ 
+      Note:  The module-level error-handling routines provided by
+             previous versions of BASIC may be all you need; you may
+             never need to use the LOCAL keyword.
+    ■ The argument line is either in the module-level code or in the same
+      procedure (if the LOCAL keyword is used). If not found in either
+      place, BASIC generates a "Label Not Defined" compile-time error.
+    ■ Use of the RESUME NEXT option causes program execution to resume
+      with the statement immediately following the statement that caused
+      the run-time error. This enables you to:
+        - Continue execution of a block of program code despite a run-time
+          error, then check for the cause of the error; or
+        - Build the error-handling code in line with the main program or
+          procedure, rather than at a remote location in the program.
+    ■ The statement form ON ERROR GOTO 0 disables error handling.
+      It does not specify line 0 as the start of the error-handling code,
+      even if the program or procedure contains a line numbered 0.
+ 
+General Usage Notes
+    ■ If no ON ERROR statement is used in a program, any run-time error
+      will be fatal. (BASIC generates an error message and program
+      execution stops.)
+    ■ Notice that an error-handling routine is not a SUB or FUNCTION
+      procedure nor a DEF FN function. An error-handling routine is a
+      block of code marked by a line label or line number.
+    ■ An error-handling routine will not be executed unless it is
+      enabled by execution of an
+          ON ERROR GOTO line
+      statement (or unless a fault in the structure of the program causes
+      program control to branch to or fall into the error-handling code).
+      Once an error handler is enabled, if a run-time error that can be
+      trapped occurs, then program control jumps to the enabled error-
+      handling routine and the error handler becomes "active".
+    ■ An error handler is active from the time a run-time error has been
+      trapped until a RESUME statement is executed in the handler.
+    ■ Error-handling routines must rely on the value in ERR to determine
+      the cause of the error. The error-handling routine should test
+      or save this value before any other error can occur or before
+      calling a procedure that could cause an error. The value in ERR
+      reflects only the last error to occur.
+    ■ If you use the BC command line to compile a program that has been
+      developed in the QBX environment and which has error-handling
+      routines, compile with the /E or /X option. The QBX environment
+      Make EXE command uses these options.
+    ■ If an error occurs in a procedure or module that does not have an
+      enabled error-handling routine, BASIC searches for an enabled,
+      inactive error handler to trap the error. BASIC will search back
+      through all the procedures and modules that have called the
+      procedure where the error occurred.
+ 
+Using Module-Level Error Handlers
+    ■ Once enabled by execution of an
+          ON ERROR GOTO line
+      statement, a module-level error handler stays enabled unless
+      explicitly disabled by execution of an
+          ON ERROR GOTO 0
+      statement somewhere in the module.
+    ■ In a multiple-module program that contains only module-level
+      error handlers, if an enabled and inactive error handler cannot
+      be found in the module where the error occurred, BASIC will
+      search back through the module-level code of all the calling
+      modules, looking for an enabled, inactive error handler.
+    ■ If an error occurs in a module-level error handler itself, BASIC
+      does not automatically treat it as a fatal error. BASIC will
+      search back through the module-level code of all the calling
+      modules, looking for an enabled, inactive error handler.
+    ■ If an ON ERROR GOTO 0 statement is encountered while the current
+      module's module-level error handler is active, program execution is
+      not automatically halted. BASIC will search back through the
+      module-level code of all the calling modules, looking for an
+      enabled, inactive error handler.
+ 
+Procedure-Level Error Handlers
+    ■ SUB and FUNCTION procedures and DEF FN functions can contain their
+      own error-handling routines.
+    ■ To enable a local error handler, use the statement
+          ON LOCAL ERROR GOTO line
+      The argument line must be a label or line number in the same
+      procedure as the ON LOCAL ERROR GOTO statement.
+    ■ The local error handler is automatically disabled when the procedure
+      returns, or by execution of the statement
+          ON LOCAL ERROR GOTO 0.
+    ■ You will want program flow to avoid the statements that make up the
+      error-handling routine. One way to keep the error-handling code from
+      executing when there is no error is to place an EXIT SUB, EXIT
+      FUNCTION, or EXIT DEF statement immediately ahead of the error-
+      handling routine, as in the following example:
+ 
+         SUB InitializeMatrix (var1, var2, var3, var4)
+               .
+               .
+               .
+            ON LOCAL ERROR GOTO ErrorHandler
+               .
+               .
+               .
+            EXIT SUB
+         ErrorHandler:
+               .
+               .
+               .
+            RESUME NEXT
+         END SUB
+ 
+      The example shows the error-handling routine located after the
+      EXIT SUB statement, and before the END SUB statement. This partitions
+      the error-handling code from the normal execution flow of the procedure.
+      However, error-handling code can be placed anywhere in a procedure.
+    ■ In the QBX environment, or if the command-line compiler is used with
+      the /O option:
+        - If a local error handler is active and an END SUB, END FUNCTION,
+          or END DEF statement is encountered, BASIC generates the run-time
+          error message "No RESUME."
+        - If an EXIT SUB, EXIT FUNCTION, or EXIT DEF statement is
+          encountered, BASIC does not generates a run-time error; in other
+          words, it is assumed that this does not represent a logic error
+          in the program.
+    ■ In a multiple-module program that contains only procedure-level
+      (local) error handlers, if an enabled and inactive error handler
+      cannot be found in the procedure where the error occurred, BASIC
+      will search back through all the calling procedures as well as the
+      module-level code of all the calling modules, looking for an enabled,
+      inactive error handler.
+ 
+Using Both Module-Level and Procedure-Level Error Handlers
+    ■ For simplicity and clarity, it is a good idea to avoid using both
+      local and procedure-level error handlers in the same program, except
+      for using an error handler in the main module-level code as the last
+      line of defense against a fatal error.
+    ■ Despite the advice above, you can have both a module-level error
+      handler and a local error handler enabled at the same time; in fact,
+      both a local and a module-level error handler can be enabled from
+      within a procedure.
+    ■ While searching for an enabled, inactive error handler, BASIC may
+      encounter an active event handler:
+        - Unless an enabled error-handling routine is provided in the
+          same module-level code as the event handler, BASIC generates
+          a fatal error.
+        - Therefore, to produce completely bullet-proof BASIC code in
+          modules that trap events, make sure an error handler is enabled
+          in the same module-level code as the event handler is enabled at
+          the time the event occurs.
+      Because event handlers can be located only at the module level, this
+      is another special case where one might mix module-level and
+      procedure-level error handlers.
+    ■ Notice that when an error-handling routine is finished and program
+      execution resumes through execution of a RESUME 0 or RESUME NEXT
+      statement, the resume location is based on the location of the
+      error-handling routine, and not necessarily on the location of
+      where the error occurred. For more information, see <span class='grhilite'>◄</span><a href='unknown#RESUME'>RESUME</a><span class='grhilite'>►</span>.
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>SEEK and RESTORE Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'The following program uses the SEEK function and the SEEK statement
+'to move the file position exactly one record back and rewrite the
+'record if a variable is true (nonzero).  The RESTORE statement is
+'used to set the data pointer to the first DATA statement.
+ 
+CONST FALSE = 0, TRUE = NOT FALSE
+'Define record fields.
+TYPE TestRecord
+   NameField  AS STRING * 20
+   ScoreField AS SINGLE
+END TYPE
+ 
+'Define a variable of the user type.
+DIM RecordVar AS TestRecord
+DIM I AS LONG
+ 
+'Note: This part of the program is an insert whose function is to
+'create a random-access file to be used by the second part of the
+'program, which demonstrates the SEEK function and statement.
+ 
+OPEN "TESTDAT2.DAT" FOR RANDOM AS #1 LEN = LEN(RecordVar)
+CLS
+RESTORE
+READ NameField$, ScoreField
+I = 0
+DO WHILE NameField$ &lt;&gt; "END"
+   I = I + 1
+   RecordVar.NameField = NameField$
+   RecordVar.ScoreField = ScoreField
+   PUT #1, I, RecordVar
+   READ NameField$, ScoreField
+LOOP
+CLOSE #1
+ 
+DATA "John Simmons", 100
+DATA "Allie Simpson", 95
+DATA "Tom Tucker", 72
+DATA "Walt Wagner", 90
+DATA "Mel Zucker", 92
+DATA "END", 0
+ 
+'Open the test data file.
+DIM FileBuffer AS TestRecord
+OPEN "TESTDAT2.DAT" FOR RANDOM AS #1 LEN = LEN(FileBuffer)
+'Calculate number of records in the file.
+Max = LOF(1) \ LEN(FileBuffer)
+'Read contents of each record.
+FOR I = 1 TO Max
+   GET #1, I, FileBuffer
+   IF FileBuffer.NameField = "Tom Tucker" THEN
+      ReWriteFlag = TRUE
+      EXIT FOR
+   END IF
+NEXT I
+ 
+IF ReWriteFlag = TRUE THEN
+   'Back up file by the length of the record variable that
+   'is used to write to the file.
+   FileBuffer.ScoreField = 100
+   SEEK #1, SEEK(1) - LEN(RecordVar)
+   PUT #1, , RecordVar
+END IF
+ 
+CLOSE #1
+KILL "TESTDAT2.DAT"
+END
+
+</pre>
+</body>
+
+</html>

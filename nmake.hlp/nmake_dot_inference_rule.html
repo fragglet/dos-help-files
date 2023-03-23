@@ -1,0 +1,98 @@
+<html>
+
+<head>
+<title>Inference Rules</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────NMAKE──────────────────────────────────────────────────────────────────
+ 
+     An inference rule specifies the commands to be executed if a
+     target and dependent with certain extensions are out-of-date.
+     The rule applies to a single target and dependent that have the
+     same base name. You cannot use an inference rule to match a
+     dependency that specifies more than one target or dependent.
+ 
+     Use an inference rule to apply one commands block to more than one
+     dependency. Because rules can be specified in TOOLS.INI and
+     targets can be specified on the command line, inference rules can
+     make a makefile unnecessary.
+ 
+     You can define your own rules or use predefined inference rules.
+     Rules can be defined in the makefile or in TOOLS.INI. If a rule
+     is defined more than once, NMAKE applies a precedence decision.
+     See: <span class='grhilite'>◄</span><a href='_at_L8045.html'>Defining an Inference Rule</a><span class='grhilite'>►</span>
+          <span class='grhilite'>◄</span><a href='_at_L8049.html'>Precedence Among Inference Rules</a><span class='grhilite'>►</span>
+          <span class='grhilite'>◄</span><a href='_at_L8047.html'>Predefined Inference Rules</a><span class='grhilite'>►</span>
+          <span class='grhilite'>◄</span><a href='TOOLS_dot_INI.html'>The TOOLS.INI File</a><span class='grhilite'>►</span>
+ 
+     The .SUFFIXES list determines priorities for applying rules.
+     Inference rules apply only to extensions listed in .SUFFIXES.
+     See: <span class='grhilite'>◄</span><a href='nmake_dot_SUFFIXES.html'>.SUFFIXES Directive</a><span class='grhilite'>►</span>
+ 
+     How NMAKE Uses Inference Rules
+ 
+     Inference rules are used in the following situations:
+ 
+        ■ If NMAKE evaluates a dependency that has no commands, it
+          checks .SUFFIXES and the current or specified directory, then
+          searches for a rule that matches the extensions of the target
+          and an existing dependent file. The dependent's extension
+          must be listed in .SUFFIXES. If more than one matching file
+          exists, .SUFFIXES determines which rule is used.
+ 
+        ■ If a dependent file doesn't already exist in the current or
+          specified directory, and there is not another dependency that
+          specifies that dependent as a target, NMAKE looks for an
+          inference rule that shows how to create the missing dependent
+          from another file with the same base name.
+ 
+        ■ If a dependency specifies a target but no dependent and no
+          commands, NMAKE can use a rule to create the target.
+ 
+        ■ If a target is specified on the command line and there is no
+          makefile, or the makefile has no dependency that specifies
+          the target, NMAKE can use a rule to create the target.
+ 
+     Cautions
+ 
+     If a target is used in more than one single-colon dependency, an
+     inference rule might not be applied as expected.
+     See: <span class='grhilite'>◄</span><a href='_at_L8023.html'>Accumulating Targets in Dependencies</a><span class='grhilite'>►</span>
+ 
+     NMAKE might invoke a rule for an inferred dependent even if an
+     explicit dependent is specified.
+     See: <span class='grhilite'>◄</span><a href='_at_L8048.html'>Inferred Dependents</a><span class='grhilite'>►</span>
+ 
+     Example
+ 
+          .c.obj:
+            cl /c $&lt;
+ 
+          sample.obj :
+ 
+     This makefile contains an inference rule and a dependency. The
+     rule tells NMAKE how to build an .OBJ file from a .C file. The
+     predefined macro $&lt; represents a dependent that has a later time
+     stamp than the target. The dependency specifies a target but no
+     dependent or command. However, given the target's base name and
+     extension, plus the inference rule, NMAKE has enough information
+     to build the target.
+ 
+     After verifying that .c is in the .SUFFIXES list, NMAKE looks for
+     a file with the same base name as the target and with the .C
+     extension. If SAMPLE.C exists (and no files with higher-priority
+     extensions exist), NMAKE compares the time stamps. If SAMPLE.C has
+     changed more recently than SAMPLE.OBJ., NMAKE compiles it using
+     the CL command listed in the inference rule:
+ 
+          cl /c sample.c
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

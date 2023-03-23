@@ -1,0 +1,116 @@
+<html>
+
+<head>
+<title>GetVidConfig</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* GetVidConfig - Determines current video configuration and initializes
+;* the vconfig structure.
+;*
+;* Shows:   BIOS Interrupt - 10h, Function 0 (Set Video Mode)
+;*                           10h, Function 0Fh (Get Video Mode)
+;*                           10h, Function 1Ah (Get or Set Display
+;*                                Combination Code)
+;*
+;* Uses:    vconfig - Video configuration structure, declared in the
+;*          DEMO.INC include file.
+;*
+;* Params:  None
+;*
+;* Return:  None
+ 
+GetVidConfig PROC
+ 
+        mov     ax, 1A00h               ; Request video info for VGA
+        int     10h                     ; Get Display Combination Code
+ 
+chkVGA: cmp     al, 1Ah                 ; Is VGA or MCGA present?
+        jne     chkEGA                  ; No?  Then check for EGA
+ 
+        cmp     bl, 2                   ; If VGA exists as secondary adapter,
+        je      isCGA                   ;   check for CGA and mono as primary
+        jb      isMONO
+        cmp     bl, 5                   ; If EGA is primary, do normal
+        jbe     chkEGA                  ;   EGA checking
+ 
+chkMCGA:mov     vconfig.adapter, MCGA   ; Yes?  Assume MCGA
+        mov     vconfig.display, COLOR
+        cmp     bl, 8                   ; Correct assumption?
+        ja      gmode                   ; Yes?  Continue
+isVGA:  mov     vconfig.adapter, VGA    ; Assume it's VGA color
+        je      gmode                   ; Yes?  Continue
+        mov     vconfig.display, MONO   ; No?  Must be VGA mono
+        jmp     SHORT gmode             ; Finished with VGA, so jump
+ 
+chkEGA: mov     ah, 12h                 ; Call EGA status function
+        mov     bl, 10h
+        sub     cx, cx                  ; Clear status bits
+        int     10h                     ; Get Configuration Information
+        jcxz    chkCGA                  ; If CX is unchanged, not EGA
+ 
+isEGA:  mov     vconfig.adapter, EGA    ; Set structure fields for EGA
+        mov     vconfig.display, MONO   ; Assume EGA mono
+        or      bh, bh                  ; Correct assumption?
+        jnz     gmode                   ; Yes?  Continue
+        mov     vconfig.display, COLOR  ; No?  Must be EGA color
+        jmp     SHORT gmode             ; Finished with EGA, so jump
+ 
+chkCGA: int     11h                     ; Get equipment list
+        and     al, 30h                 ; If bits 4-5 set, monochrome
+        cmp     al, 30h                 ; Monochrome text mode?
+        je      isMONO                  ; Yes?  Continue
+isCGA:  mov     vconfig.adapter, CGA    ; No?  Must be CGA
+        mov     vconfig.display, COLOR
+        mov     vconfig.CGAvalue, 29h   ; Value for CGA 80x25 text,
+        jmp     SHORT gmode             ;   color, blink enable
+ 
+isMONO: mov     vconfig.adapter, MDA    ; Set MONO
+        mov     vconfig.display, MONO
+ 
+gmode:  mov     ah, 0Fh
+        int     10h                     ; Get Video Mode
+        mov     vconfig.mode, al        ; Record mode
+        mov     vconfig.dpage, bh       ;   and current page
+        cmp     al, 7                   ; Monochrome text mode?
+        je      @F                      ; Yes?  Continue
+        cmp     al, 3                   ; Color text mode?
+        je      @F                      ; Yes?  Continue
+        cmp     al, 2                   ; Black/white 80-col mode?
+        je      @F                      ; Yes?  Continue
+        mov     ax, 0003h               ; If not 80-col text mode,
+        mov     vconfig.mode, al        ;   request Function 0, mode 3
+        int     10h                     ; Set Video Mode to 80-col
+ 
+@@:     mov     al, vconfig.display     ; Multiply display value
+        cbw                             ;   (which is either 0 or 1)
+        mov     bx, 800h                ;   by 800h, then add to B000h
+        mul     bx                      ;   for segment address of
+        add     ax, 0B000h              ;   video buffer
+        add     ah, vconfig.dpage       ; Adding display page gives
+        mov     vconfig.sgmnt, ax       ;   address of current page
+ 
+        mov     vconfig.rows, 24        ; Assume bottom row # = 24
+        cmp     vconfig.adapter, EGA    ; EGA or VGA?
+        jl      exit                    ; No?  Exit
+        mov     ax, 1130h               ; Yes?  Request character info
+        sub     bh, bh                  ; Set BH to valid value
+        push    bp                      ; BP will change, so save it
+        int     10h                     ; Get number of rows/screen
+        mov     vconfig.rows, dl        ; Keep in structure
+        pop     bp                      ; Restore BP
+ 
+exit:   ret
+ 
+GetVidConfig ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

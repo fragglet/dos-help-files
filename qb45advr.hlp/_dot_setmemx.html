@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<title>SETMEM Function Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#SETMEM'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='_dot_setmemr.html'>Details<span class='grhilite'>►</span></a>     <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>SETMEM Function Programming Example</b>
+ 
+The following program outlines how SETMEM could be used to free memory for
+a C function that uses malloc to get dynamic memory.
+ 
+The C function must be separately compiled and then put in a Quick library
+or linked to the BASIC program. The C function is compiled using the
+large memory model, so calls to malloc use the far space freed
+by the BASIC program.
+ 
+ 
+'*** Programming example: SETMEM function ***
+'
+' Do not attempt to run this program unless you have already
+' separately compiled the C function, using the large memory model,
+' and placed it in a Quick library or linked it to the BASIC program.
+'
+DECLARE SUB CFunc CDECL (BYVAL X AS INTEGER)
+ 
+' Decrease the size of the far heap so CFunc can use
+' malloc to get dynamic memory.
+BeforeCall = SETMEM(-2048)
+ 
+' Call the C function.
+CFunc(1024%)
+ 
+' Return the memory to the far heap; use a larger value so
+' all space goes back into the heap.
+AfterCall = SETMEM(3500)
+ 
+IF AfterCall &lt;= BeforeCall THEN PRINT "Memory not reallocated."
+ 
+END
+ 
+void far cfunc(bytes)
+int bytes;
+{
+   char *malloc();
+   char *workspace;
+ 
+   /* Allocate working memory using amount BASIC freed. */
+   workspace=malloc((unsigned) bytes);
+ 
+   /* Working space would be used here. */
+ 
+   /* Free memory before returning to BASIC. */
+   free(workspace);
+}
+ 
+
+</pre>
+</body>
+
+</html>

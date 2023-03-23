@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<title>CGAPAL.PAS</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.index'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM cgapal;
+ 
+{ CGAPAL.PAS illustrates CGA palettes using:
+ 
+      _ClearScreen    _SelectPalette    _SetColor    _SetBkColor
+ 
+  It also uses:
+ 
+      _OutText        _SetTextPosition
+}
+ 
+USES
+    MSGraph, Crt;
+ 
+TYPE
+    bknamestr   = ARRAY [0..7] OF STRING;
+    bkcolorarry = ARRAY [0..7] OF LongInt;
+ 
+CONST
+    bkname  : bknamestr   = ( 'BLACK', 'BLUE',    'GREEN', 'CYAN',
+                              'RED',   'MAGENTA', 'BROWN', 'WHITE');
+    bkcolor : bkcolorarry = ( _Black,  _Blue,     _Green,  _Cyan,
+                              _Red,    _Magenta,  _Brown,  _White );
+ 
+VAR
+    i, j, k   : Integer;
+    errorcode : Integer;
+    temp      : STRING;
+ 
+BEGIN
+ 
+    { Check that this videomode is okay. }
+    IF (_SetVideoMode( _MRes4Color ) &lt;&gt; 0) THEN
+        BEGIN
+        FOR i := 0 TO 3 DO    { Loop through palettes }
+            BEGIN
+            errorcode := _SelectPalette( i );
+            FOR k := 0 TO 7 DO    { Background colors }
+                BEGIN
+                _ClearScreen( _GClearScreen );
+                _SetBkColor( bkcolor [k] );
+                _SetTextPosition( 1, 1 );
+                _OutText( 'Background: ' );
+                _OutText( bkname[k] );
+                _SetTextPosition( 2, 1 );
+                _OutText( ' Palette: ' );
+                Str( i, temp );
+                _OutText( temp );
+                FOR j := 1 TO 3 DO    { Foreground colors }
+                    BEGIN
+                    _SetColor( j );
+                    _Ellipse( _GFillInterior, 100, j * 30,
+                              220, 80 + (j * 30) );
+                    END;
+                REPEAT UNTIL KeyPressed;
+                errorcode := Ord( ReadKey );
+                END;
+            END;
+            errorcode := _SetVideoMode( _DefaultMode );
+        END
+        ELSE
+            Writeln( 'CGA adapter required for this program.' );
+ 
+END.
+ 
+
+</pre>
+</body>
+
+</html>

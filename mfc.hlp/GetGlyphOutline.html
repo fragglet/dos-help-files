@@ -1,0 +1,105 @@
+<html>
+
+<head>
+<title>GetGlyphOutline</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='CDC.html'>CDC</a><span class='grhilite'>►</span>                                         <span class='grhilite'>◄</span><a href='CDC.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span></i>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  Windows 3.1 only
+ 
+  DWORD GetGlyphOutline( UINT nChar, UINT nFormat,
+                         GLYPHMETRICS FAR* lpgm, DWORD cbBuffer,
+                         void FAR* lpBuffer,
+                         const MAT2 FAR* lpmat2 ) const;
+ 
+  Parameter   Description
+ 
+  &lt;nChar&gt;     Specifies the character for which information is to be
+              returned.
+ 
+  &lt;nFormat&gt;   Specifies the format in which the function is to return
+              information. It can be one of the following values, or 0:
+ 
+              Value        Meaning
+ 
+              GGO_BITMAP   Returns the glyph bitmap. When the function
+                           returns, the buffer pointed to by &lt;lpBuffer&gt;
+                           contains a 1-bit-per-pixel bitmap whose rows
+                           start on doubleword boundaries.
+ 
+              GGO_NATIVE   Returns the curve data points in the
+                           rasterizer's native format, using device units.
+                           When this value is specified, any
+                           transformation specified in &lt;lpmat2&gt; is
+                           ignored.
+ 
+              When the value of &lt;nFormat&gt; is 0, the function fills in a
+              GLYPHMETRICS structure but does not return glyph-outline
+              data.
+ 
+  &lt;lpgm&gt;      Points to a GLYPHMETRICS structure that describes the
+              placement of the glyph in the character cell.
+ 
+  &lt;cbBuffer&gt;  Specifies the size of the buffer into which the function
+              copies information about the outline character. If this
+              value is 0 and the &lt;nFormat&gt; parameter is either the
+              GGO_BITMAP or GGO_NATIVE values, the function returns the
+              required size of the buffer.
+ 
+  &lt;lpBuffer&gt;  Points to a buffer into which the function copies
+              information about the outline character. If &lt;nFormat&gt;
+              specifies the GGO_NATIVE value, the information is copied in
+              the form of TTPOLYGONHEADER and TTPOLYCURVE structures. If
+              this value is NULL and &lt;nFormat&gt; is either the GGO_BITMAP or
+              GGO_NATIVE value, the function returns the required size of
+              the buffer.
+ 
+  &lt;lpmat2&gt;    Points to a MAT2 structure that contains a transformation
+              matrix for the character. This parameter cannot be NULL,
+              even when the GGO_NATIVE value is specified for &lt;nFormat&gt;.
+ 
+  Remarks
+ 
+  Retrieves the outline curve or bitmap for an outline character in the
+  current font.
+ 
+  An application can rotate characters retrieved in bitmap format by
+  specifying a 2-by-2 transformation matrix in the structure pointed to by
+  &lt;lpmat2&gt;.
+ 
+  A glyph outline is returned as a series of contours. Each contour is
+  defined by a <span class='grhilite'>◄</span><a href='../win31qh.hlp/TTPOLYGONHEADER.html'>TTPOLYGONHEADER</a><span class='grhilite'>►</span> structure followed by as many TTPOLYCURVE
+  structures as are required to describe it. All points are returned as
+  <span class='grhilite'>◄</span><a href='../win31qh.hlp/POINTFX.html'>POINTFX</a><span class='grhilite'>►</span> structures and represent absolute positions, not relative
+  moves. The starting point given by the pfxStart member of the
+  <span class='grhilite'>◄</span><a href='../win31qh.hlp/TTPOLYGONHEADER.html'>TTPOLYGONHEADER</a><span class='grhilite'>►</span> structure is the point at which the outline for a
+  contour begins. The <span class='grhilite'>◄</span><a href='../win31qh.hlp/TTPOLYCURVE.html'>TTPOLYCURVE</a><span class='grhilite'>►</span> structures that follow can be either
+  polyline records or spline records. Polyline records are a series of
+  points; lines drawn between the points describe the outline of the
+  character. Spline records represent the quadratic curves used by
+  TrueType (that is, quadratic b-splines).
+ 
+  Return Value
+ 
+  The return value is the size, in bytes, of the buffer required for the
+  retrieved information if &lt;cbBuffer&gt; is 0 or &lt;lpBuffer&gt; is NULL.
+  Otherwise, it is a positive value if the function is successful, or -1
+  if there is an error.
+ 
+  See Also
+ 
+  <span class='grhilite'>◄</span><a href='GetOutlineTextMetrics.html'>CDC::GetOutlineTextMetrics</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='../win31qh.hlp/GetGlyphOutline.html'>::GetGlyphOutline</a><span class='grhilite'>►</span>
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

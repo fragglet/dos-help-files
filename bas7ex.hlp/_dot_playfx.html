@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>PLAY and VARPTR$ Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+'This example uses the PLAY statements and the PLAY and VARPTR$ functions to
+'play continuous music by calling an event-handling subroutine when the
+'background music buffer goes from three to two notes.
+ 
+CLS
+'Call subroutine Replay when the music buffer goes from 3 to 2 notes.
+ON PLAY(3) GOSUB Replay
+'Turn on event trapping for PLAY.
+PLAY ON
+'Define a string containing the melody.
+FElise$ = "o3 L8 E D+ E D+ E o2 B o3 D C L2 o2 A"
+PLAY "MB X" + VARPTR$(FElise$)
+'Suspend event trapping until next PLAY ON but remember events that occur
+'while event trapping is disabled.
+PLAY STOP
+'Introduce a variable-length delay.
+LOCATE 23, 1: PRINT "Press any key to continue."
+DO
+LOOP WHILE INKEY$ = ""
+ 
+'Re-enable play event trapping remembering that a PLAY event has occurred.
+PLAY ON
+LOCATE 23, 1: PRINT "Press any key to stop.    "
+'Loop until a key is pressed.
+DO
+    GOSUB BackGround
+LOOP WHILE INKEY$ = ""
+'Disable PLAY event processing.
+PLAY OFF
+'Count down to 0 notes in the queue.
+DO
+    GOSUB BackGround
+LOOP UNTIL NoteCount = 0
+END
+ 
+'PLAY event-handling subroutine.
+Replay:
+    'Increment and print a counter each time.
+    Count% = Count% + 1
+    LOCATE 3, 1: PRINT "Replay routine called"; Count%; "time(s)";
+    'PLAY it again to fill the buffer.
+    PLAY "MB X" + VARPTR$(FElise$)
+RETURN
+ 
+'Background music queue reporting subroutine.
+BackGround:
+    'Get a notecount.
+    NoteCount = PLAY(0)
+    LOCATE 1, 1
+    PRINT "Background queue notes remaining --&gt; "; NoteCount
+    'Loop until Notecount changes or equals 0.
+    DO
+    LOOP UNTIL NoteCount &lt;&gt; PLAY(0) OR NoteCount = 0
+RETURN
+ 
+ 
+
+</pre>
+</body>
+
+</html>

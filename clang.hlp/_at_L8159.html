@@ -1,0 +1,166 @@
+<html>
+
+<head>
+<title>_harderr, _hardresume, _hardretn</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_harderr.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='_at_L80c9.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+     The _harderr, _hardresume, and _hardretn functions are used to
+     handle critical error conditions that use DOS interrupt 0x24.
+ 
+     The _harderr function installs a new critical-error handler for
+     interrupt 0x24.
+ 
+     When a critical error occurs, control is passed to the function
+     specified in the _harderr call. The _hardresume and _hardretn
+     functions control how the program will return from the critical
+     error handler.
+ 
+     The _hardresume function returns to DOS the code that encountered
+     the critical error.
+ 
+     The _hardretn function returns directly to the application program
+     that issued the INT 0x21 DOS system call, which, in turn,
+     encountered the critical error.
+ 
+     The _harderr function does not directly install the handler
+     pointed to by &lt;handler&gt;; instead, _harderr installs a handler
+     that calls the function referenced by &lt;handler&gt;. The handler
+     calls the function with the following parameters:
+ 
+          handler( unsigned deverror, unsigned errcode,
+                   unsigned __far *devhdr );
+ 
+     The &lt;deverror&gt; argument is the device error code. It contains
+     the AX register value passed by DOS to the INT 0x24 handler. The
+     &lt;errcode&gt; argument is the DI register value that DOS passes
+     to the handler. The low-order byte of &lt;errcode&gt; can be one of
+     the following values:
+ 
+     Code     Meaning
+ 
+     0        Attempt to write to a write-protected disk
+     1        Unknown unit
+     2        Drive not ready
+     3        Unknown command
+     4        Cyclic-redundancy-check (CRC) error in data
+     5        Bad drive-request structure length
+     6        Seek error
+     7        Unknown media type
+     8        Sector not found
+     9        Printer out of paper
+     A        Write fault
+     B        Read fault
+     C        General failure
+ 
+     The &lt;devhdr&gt; argument is a far pointer to a device header
+     containing descriptive information about the device on which the
+     error occurred. The user-defined handler must not change the
+     information in the device-header control block.
+ 
+     Errors on Disk Devices
+ 
+     If the error occurred on a disk device, the high-order bit (bit
+     15) of the &lt;deverror&gt; argument will be set to 0, and the
+     &lt;deverror&gt; argument will indicate the following:
+ 
+     Bits     Meaning
+ 
+     15       Disk error if false (0).
+     14       Not used.
+     13       "Ignore" response not allowed if false (0).
+     12       "Retry" response not allowed if false (0).
+     11       "Fail" response not allowed if false (0). (Note that DOS
+               changes "fail" to "abort".)
+ 
+     9-10     Code     Location
+ 
+              00       DOS
+              01       File Allocation Table (FAT)
+              10       Directory
+              11       Data area
+ 
+     8        Read error if false; write error if true
+ 
+     The low-order byte of &lt;deverror&gt; indicates the drive where the
+     error occurred (0 = drive A, 1 = drive B, etc.).
+ 
+     Errors on Other Devices
+ 
+     If the error occurs on a device other than a disk drive, the
+     high-order bit (bit 15) of the &lt;deverror&gt; argument is 1. The
+     attribute word located at offset 4 in the device-header block
+     indicates the type of device that has the error. If bit 15 of the
+     attribute word is 0, the error is a bad memory image of the File
+     Allocation Table. If the bit is 1, the error occurred on a
+     character device, and bits 0-3 of the attribute word indicate the
+     type of device, as shown below:
+ 
+     Bit     Meaning
+ 
+     0       Current standard input
+     1       Current standard output
+     2       Current null device
+     3       Current clock device
+ 
+     Restrictions on Handler Functions
+ 
+     The user-defined handler function can issue only system calls 0x01
+     through 0x0C, or 0x59. Thus, many of the standard run-time
+     functions (such as the I/O and heap functions) cannot be used in
+     a hardware error handler. System call 0x59 can be used to obtain
+     further information about the error that occurred.
+ 
+     Using _hardresume and _harderr
+ 
+     If the handler returns, it can do so in several different ways:
+ 
+        ■ From the return statement
+        ■ From the _hardresume function
+        ■ From the _hardretn function
+ 
+     If the handler returns by way of _hardresume or from a return
+     statement, control returns to DOS.
+ 
+     The _hardresume function should be called only from within the
+     user-defined hardware error-handler function. The result supplied
+     to _hardresume must be one of the following constants:
+ 
+     _HARDERR_ABORT     _HARDERR_IGNORE
+     _HARDERR_FAIL      _HARDERR_RETRY
+ 
+     The _hardretn function allows the user-defined hardware error
+     handler to return directly to the application program rather than
+     returning to DOS. The application resumes at the point just after
+     the failing I/O function request. The _hardretn function should
+     be called only from within a user-defined hardware error-handler
+     function.
+ 
+     The error parameter of _hardretn should be a DOS error code, as
+     opposed to the XENIX-style error code that is available in errno.
+ 
+     If the failing I/O function request is an INT 0x21 function
+     greater than or equal to function 0x38, then _hardretn will return
+     to the application with the carry flag set and the AX register set
+     to the _hardretn error parameter. If the failing INT 0x21 function
+     request is less than function 0x38 and the function can return an
+     error, the AL register is set to 0xFF on return to the application.
+     If the failing INT 0x21 does not have a way of returning an error
+     condition (as is true of certain INT 0x21 functions below 0x38),
+     the error parameter of _hardretn is not used and no error code is
+     returned to the application.
+ 
+     Return Value
+ 
+     None.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

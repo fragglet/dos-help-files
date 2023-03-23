@@ -1,0 +1,50 @@
+<html>
+
+<head>
+<title>PutStr</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                              <span class='grhilite'>◄</span><a href='_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;---------------------------- cut here ----------------------------------
+;* PUTSTR.ASM is a program module containing a procedure to be
+;* called by <a href='_at_L8467.html'>HELLOM.ASM</a>. It includes <a href='../$asmex:putstr.inc/.html'>PUTSTR.INC</a>.
+ 
+IFNDEF  model
+model   TEXTEQU  &lt;small&gt;                ; Default small model
+ENDIF
+        .MODEL  model, c, os_dos
+        INCLUDE putstr.inc              ; Prototype for PutStr
+ 
+        .CODE                           ; Address of string (near or far
+putstr  PROC    string:PTR BYTE         ;   depending on model)
+        mov     ah, 02h                 ; Display character function
+ 
+        IF      @DataSize               ; If data is far (compact, large,
+        les     di, string              ;   or huge), address is ES:DI
+        .WHILE  1
+        mov     dl, es:[di]             ; Load each character through ES:[DI]
+        ELSE                            ; If data is near (tiny, small,
+        mov     di, string              ;   or medium), address is DI only
+        .WHILE  1
+        mov     dl, [di]                ; Load each character through [DI]
+        ENDIF
+        .BREAK  .IF dl == 0             ; If character is zero, done
+        int     21h                     ; DOS displays character
+        inc     di                      ; Point to next character
+        .ENDW                           ; Load next character
+        ret
+ 
+putstr  ENDP
+ 
+        END
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>Pseudotargets</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8021.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────NMAKE──────────────────────────────────────────────────────────────────
+ 
+     A pseudotarget is specified as follows:
+ 
+          pseudotarget :
+            commands block
+ 
+     A pseudotarget is a target that doesn't specify a file but instead
+     names a label for use in executing a group of commands.
+ 
+     NMAKE interprets the pseudotarget as a file that does not exist
+     and thus is always out-of-date. When evaluating a dependency whose
+     target is a pseudotarget, NMAKE always executes the commands.
+ 
+     A pseudotarget name must follow filename syntax rules. However, if
+     the name does not have an extension (that is, it does not contain
+     a period), it can exceed the 8-character limit for filenames and
+     can be up to 256 characters long. A pseudotarget name is not case
+     sensitive. Be sure that the current directory does not contain a
+     file with a name that matches the pseudotarget.
+ 
+     Time Stamps and Pseudotargets
+ 
+     NMAKE assumes that a pseudotarget used as a target has a time
+     stamp equal to the most recent time stamp of all its dependents.
+     If a pseudotarget has no dependents, the current time is assumed.
+ 
+     When a pseudotarget is listed as a dependent, its assumed time
+     stamp is evaluated. A pseudotarget used as a dependent must appear
+     as a target in another dependency; however, that dependency does
+     not need to have a commands block. A pseudotarget that is also
+     used as a dependent appears as follows:
+ 
+          targets : pseudotarget [other dependents]
+            commands block
+ 
+          pseudotarget :
+            [commands block]
+ 
+     Using a Pseudotarget
+ 
+     You can use pseudotargets to build more than one target. NMAKE
+     builds only command-line targets; if no command-line target is
+     specified, it builds only the first target in the first dependency
+     in the makefile. To build multiple targets without listing them on
+     the command line, write a makefile with a dependency whose target
+     is a pseudotarget and whose dependents are the targets you want to
+     build. Either place this description block first in the makefile
+     or specify the pseudotarget on the NMAKE command line.
+ 
+     Example
+ 
+          all : setenv project1.exe project2.exe
+ 
+          project1.exe : project1.obj
+            LINK project1;
+ 
+          project2.exe : project2.obj
+            LINK project2;
+ 
+          setenv :
+            set LIB=\project\lib
+ 
+     This makefile builds both .EXE files if no target is specified on
+     the command line (or if the pseudotarget all is specified). The
+     pseudotarget setenv changes the LIB environment variable before
+     the .EXE files are updated.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

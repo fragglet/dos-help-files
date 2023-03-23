@@ -1,0 +1,52 @@
+<html>
+
+<head>
+<title>MKSMBF$, MKDMBF$, CVSMBF, CVDMBF Functions</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='-9996.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='-9997.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+MKSMBF$ and MKDMBF$ convert IEEE-format numbers to Microsoft-Binary-format
+numeric strings that can be stored in FIELD statement string variables.
+CVSMBF and CVDMBF convert those strings back to IEEE-format numbers.
+ 
+<b>MKSMBF$(single-precision-expression!)</b>
+<b>MKDMBF$(double-precision-expression#)</b>
+<b>CVSMBF (4-byte-numeric-string)</b>
+<b>CVDMBF (8-byte-numeric-string)</b>
+ 
+    Function    Returns
+    ════════    ════════════════════════════════════════════════════════════
+    MKSMBF$     A 4-byte string containing a Microsoft-Binary-format number
+    MKDMBF$     An 8-byte string containing a Microsoft-Binary-format number
+    CVSMBF      A single-precision number in IEEE format
+    CVDMBF      A double-precision number in IEEE format
+ 
+    ■ These functions are useful for maintaining data files created with
+      older versions of Basic.
+ 
+Example:
+    TYPE Buffer
+        SngNum AS STRING * 4
+        DblNum AS STRING * 8
+    END TYPE
+    DIM RecBuffer AS Buffer
+    OPEN "TESTDAT.DAT" FOR RANDOM AS #1 LEN = 12
+    SNum = 98.9
+    DNum = 645.3235622#
+    RecBuffer.SngNum = MKSMBF$(SNum)
+    RecBuffer.DblNum = MKDMBF$(DNum)
+    PUT #1, 1, RecBuffer
+    GET #1, 1, RecBuffer
+    CLOSE #1
+    PRINT CVSMBF(RecBuffer.SngNum), CVDMBF(RecBuffer.DblNum)
+ 
+See Also    <span class='grhilite'>◄</span><a href='FIELD.html'>FIELD</a><span class='grhilite'>►</span>    <span class='grhilite'>◄</span><a href='CVI.html'>MKn$, CVn</a><span class='grhilite'>►</span>
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,40 @@
+<html>
+
+<head>
+<title>GetFileSize</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* GetFileSize - Gets the size of an open file, specified by handle.
+;*
+;* Shows:   DOS Function - 42h (Set File Pointer)
+;*
+;* Params:  handle - File handle
+;*
+;* Return:  Long integer with file size in bytes
+ 
+GetFileSize PROC \
+        handle:WORD
+ 
+        mov     bx, handle              ; BX = file handle
+        mov     ax, 4202h               ; AH = function #,
+                                        ; AL = move to end of
+        sub     cx, cx                  ;      file plus offset
+        sub     dx, dx                  ; CX:DX = offset (zero)
+        int     21h                     ; Move File Read/Write Pointer
+        mov     ax, dx                  ; Set DX:AX = file size in
+        mov     dx, cx                  ;   bytes, return long int
+        ret
+ 
+GetFileSize ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

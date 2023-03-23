@@ -1,0 +1,56 @@
+<html>
+
+<head>
+<title>Int 20H</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span><a href='20H.html'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Notes<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+  If the program is returning to COMMAND.COM, control transfers to the
+  resident portion, and the transient portion is reloaded if necessary.
+  If a batch file is in progress, the next line of the file is fetched
+  and interpreted; otherwise, a prompt is issued for the next user
+  command.
+ 
+  MS-DOS then takes the following actions:
+ 
+  ■ All memory belonging to the process is released.
+ 
+  ■ File buffers are flushed, and any open handles for files or devices
+    owned by the process are closed.
+ 
+  ■ The termination handler vector (Int 22H) is restored from
+    PSP:000AH.
+ 
+  ■ The CTRL+C handler vector (Int 23H) is restored from
+    PSP:000EH.
+ 
+  ■ The critical-error handler vector (Int 24H) is restored from
+    PSP:0012H (MS-DOS versions 2.0 and later).
+ 
+  ■ Control is transferred to the termination handler.
+ 
+▀ Any files that have been written to using FCBs should be closed
+  before performing this exit call; otherwise, data may be lost.
+ 
+▀ Other methods of performing a final exit are:
+   - Int 21H Function 00H
+   - Int 21H Function 31H
+   - Int 21H Function 4CH
+   - Int 27H
+ 
+▀ [3] If the program is running on a network, it should remove all locks
+  it has placed on file regions before terminating.
+ 
+▀ Int 21H Functions 31H and 4CH are the preferred method for termination
+  because they allow a return code to be passed to the parent process.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

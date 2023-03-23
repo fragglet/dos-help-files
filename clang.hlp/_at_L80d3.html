@@ -1,0 +1,107 @@
+<html>
+
+<head>
+<title>LOCK.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* LOCK.C illustrates network file sharing functions:
+ *      _sopen       _locking
+ *
+ * Also the global variable:
+ *      _osmajor
+ *
+ * The program requires DOS 3.0 or higher. The DOS SHARE command must
+ * be loaded. The locking mechanism will only work if the program is
+ * run from a network drive.
+ */
+ 
+#include &lt;stdio.h&gt;
+#include &lt;conio.h&gt;
+#include &lt;io.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;sys\types.h&gt;
+#include &lt;sys\stat.h&gt;
+#include &lt;sys\locking.h&gt;
+#include &lt;share.h&gt;
+#include &lt;stdlib.h&gt;         /* For _osmajor and exit */
+ 
+void error( char *msg );
+ 
+void main( int argc, char *argv[] )
+{
+    int handle, i;
+    char buf[1], msg[] = "Are any of these bytes locked?";
+ 
+    /* Check for DOS version &gt;= 3.0 */
+    if( _osmajor &lt; 3 )
+        error( "Must be DOS 3.0 or higher" );
+ 
+    /* If no argument, write file and lock some bytes in it. */
+    if( argc == 1 )
+    {
+        /* Open file with deny none sharing. */
+        handle = _sopen( "tmpfil", _O_BINARY | _O_RDWR | _O_CREAT,
+                                  _SH_DENYNO, _S_IREAD | _S_IWRITE );
+        if( handle == -1 )
+            error( "Can't open file\n" );
+ 
+        _write( handle, msg, sizeof( msg ) - 1 );
+ 
+        /* Lock 10 bytes starting at byte 10. */
+        _lseek( handle, 10L, SEEK_SET );
+        if( _locking( handle, _LK_LOCK, 10L ) )
+            error( "Locking failed\n" );
+        printf( "Locked 10 bytes starting at byte 10\n" );
+ 
+        /* Run a copy of ourself with argument to test. */
+        system( "LOCK read" );
+        _getch();
+ 
+        /* Unlock. */
+        _lseek( handle, 10L, SEEK_SET );
+        _locking( handle, _LK_UNLCK, 10L );
+        printf( "\nUnlocked 10 bytes starting at byte 10\n" );
+ 
+        system( "LOCK read" );
+        _getch();
+    }
+ 
+    /* Try to read some locked bytes. This branch taken during test. */
+    else
+    {
+        /* Open file with deny none sharing. */
+        handle = _sopen( "tmpfil", _O_BINARY | _O_RDWR,
+                                  _SH_DENYNO, _S_IREAD | _S_IWRITE );
+        if( handle == -1 )
+            error( "Can't open file\n" );
+ 
+        for( i = 0; i &lt; sizeof( msg ) - 1; i++ )
+        {
+            /* Print characters until locked bytes are reached. */
+            if( _read( handle, buf, 1 ) == -1 )
+                break;
+            else
+                putchar( *buf );
+        }
+    }
+    _close( handle );
+    exit( 0 );
+}
+ 
+void error( char *errmsg )
+{
+    printf( errmsg );
+    exit( 1 );
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

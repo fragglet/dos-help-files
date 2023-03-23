@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>Int 21H Function 31H</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span><a href='21H_dot_31H.html'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Notes<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+  MS-DOS then takes the following actions:
+ 
+▀ Flushes the file buffers and closes any open handles for files or devices
+  owned by the process.
+ 
+▀ Restores the termination handler vector (Int 22H) from PSP:000AH.
+ 
+▀ Restores the CTRL+C handler vector (Int 23H) from PSP:000EH.
+ 
+▀ Restores the critical-error handler vector (Int 24H) from PSP:0012H.
+ 
+▀ Transfers control to the termination handler.
+ 
+▀ If the program is returning to COMMAND.COM, control transfers to the
+  resident portion, and the transient portion is reloaded if necessary. If
+  a batch file is in progress, the next line of the file is fetched and
+  interpreted; otherwise, a prompt is issued for the next user command.
+ 
+▀ This function call is typically used to allow user-written utilities,
+  drivers, or interrupt handlers to be loaded as ordinary .COM or .EXE
+  programs and then remain resident. Subsequent entrance to the code is via
+  a hardware or software interrupt.
+ 
+▀ This function attempts to set the initial memory allocation block to the
+  length in paragraphs specified in register DX. If other memory blocks
+  have been requested by the application using Int 21H Function 48H, they
+  will not be released by this function.
+ 
+▀ Other methods of performing a final exit are:
+  - Int 20H
+  - Int 21H Function 00H
+  - Int 21H Function 4CH
+  - Int 27H
+ 
+▀ The return code may be retrieved by a parent process through Int 21H
+  Function 4DH (Get Return Code). It can also be tested in a batch file
+  with an IF ERRORLEVEL statement. By convention, a return code of zero
+  indicates successful execution, and a non-zero return code indicates an
+  error.
+ 
+▀ This function should not be called by .EXE programs that are loaded at
+  the high end of the transient program area (i.e., linked with the /HIGH
+  switch) because doing so reserves the memory that is normally used by the
+  transient part of COMMAND.COM. If COMMAND.COM cannot be reloaded, the
+  system will fail.
+ 
+▀ This function should be used in preference to Int 27H because it supports
+  return codes, allows larger amounts of memory to be reserved, and does
+  not require CS to contain the segment of the program segment prefix.
+ 
+▀ [3.0+] If the program is running on a network, it should remove all locks
+  it has placed on file regions before terminating.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

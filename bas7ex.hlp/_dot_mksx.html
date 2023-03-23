@@ -1,0 +1,51 @@
+<html>
+
+<head>
+<title>MKSMBF$, MKDMBF$ Functions Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the MKSMBF$ function to store real values in a file as
+'Microsoft-Binary-format numbers.
+ 
+'Read a name and a test score from the console.
+'Store as a record in a random-access file.
+'Scores are written out as
+'Microsoft-Binary-format single-precision values.
+ 
+TYPE Buffer
+   NameField AS STRING * 20
+   ScoreField AS STRING * 4
+END TYPE
+ 
+DIM RecBuffer AS Buffer
+OPEN "TESTDAT.DAT" FOR RANDOM AS #1 LEN=LEN(RecBuffer)
+ 
+PRINT "Enter a name and a score, separated by a comma."
+PRINT "Enter 'END, 0' to end input."
+INPUT NameIn$, Score
+ 
+I=0
+'Read pairs of names and scores from the console
+'until the name is END.
+DO WHILE UCASE$(NameIn$) &lt;&gt; "END"
+   I=I+1
+   RecBuffer.NameField=NameIn$
+ 
+'Convert the score to a string.
+   RecBuffer.ScoreField=MKSMBF$(Score)
+   PUT #1,I,RecBuffer
+   INPUT NameIn$, Score
+LOOP
+ 
+PRINT I;" records written."
+CLOSE #1
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+<html>
+
+<head>
+<title>DelFile</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* DelFile - Deletes a specified file.
+;*
+;* Shows:   DOS Function - 41h (Delete File)
+;*
+;* Params:  fspec - Pointer to ASCIIZ file specification
+;*
+;* Return:  Short integer with error code
+;*          0 if successful
+;*          1 if delete error
+ 
+DelFile PROC \
+        USES ds, \
+        fspec:PTR BYTE
+ 
+        LoadPtr ds, dx, fspec           ; Point DS:DX to file spec
+        mov     ah, 41h                 ; DOS Function 41h
+        int     21h                     ; Delete File
+        mov     ax, 0                   ; Set error code, keep flags
+        jnc     exit                    ; Exit if successful
+        inc     ax                      ; Else set error code to 1
+exit:   ret
+ 
+DelFile ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

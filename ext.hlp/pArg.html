@@ -1,0 +1,68 @@
+<html>
+
+<head>
+<title>Extension Function Arguments</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='argData.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────PWB Extensions─────────────────────────────────────────────────────────
+ 
+     All extension functions exported to PWB must have the same
+     prototype. The first argument (CMDDATA) should be ignored; it is
+     present for historical reasons. The second argument (ARG *pArg) is
+     a pointer to an argument structure. The third argument (flagType
+     fMeta) is a Boolean value that specifies if the Meta state is
+     turned on or off.
+ 
+     The ARG structure contains data about the arguments the user gave
+     when executing the function. It is defined in EXT.H as follows:
+ 
+         struct PWBargType {
+             int   argType;                      //Discriminant
+             union {
+                 struct noargType     noarg;     //No arguments
+                 struct textargType   textarg;   //Text argument
+                 struct nullargType   nullarg;   //Arg count only
+                 struct lineargType   linearg;   //Line
+                 struct streamargType streamarg; //Stream
+                 struct boxargType    boxarg;    //Box
+             } arg;
+             PWND  pwnd;
+             PINS  pins;
+             PFILE pfile;
+             };
+         typedef struct PWBargType ARG;
+ 
+     The argType member specifies which argument is active in the arg
+     union.
+ 
+     The possible argType values for each function are defined by the
+     argType member of the cmdDesc structure in the function's cmdTable
+     entry. Incompatible arguments are intercepted and refused by PWB.
+     PWB does not call the extension function when an incompatibale
+     argument is given.
+     See: <span class='grhilite'>◄</span><a href='cmdDesc.html'>Extension Command Table</a><span class='grhilite'>►</span>
+          <span class='grhilite'>◄</span><a href='NOARG.html'>Extension Argument Types</a><span class='grhilite'>►</span>
+ 
+     The following arg structures can be passed to extension functions:
+ 
+     argType     Description
+ 
+     noarg       No argument or selection
+     nullarg     PWB Arg function executed, but no selection made and no
+                 text typed in the Text Argument dialog box.
+     textarg     Text argument
+     linearg     Lines selected
+     streamarg   Stream selected
+     boxarg      Box selected
+ 
+     See: <span class='grhilite'>◄</span><a href='ext_dot_args.html'>Extension Argument Structure</a><span class='grhilite'>►</span>
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

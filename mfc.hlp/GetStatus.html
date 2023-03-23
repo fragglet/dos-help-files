@@ -1,0 +1,105 @@
+<html>
+
+<head>
+<title>CFile::GetStatus</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='CFile.html'>CFile</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='CFile.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span></i>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  virtual BOOL GetStatus( CFileStatus&amp; rStatus ) const;
+  static BOOL GetStatus( const char* pszFileName, CFileStatus&amp; rStatus );
+ 
+  Parameter     Description
+ 
+  &lt;rStatus&gt;     A reference to a user-supplied CFileStatus structure that
+                will receive the status information. The CFileStatus
+                structure has the following fields:
+ 
+                Field              Meaning
+ 
+                CTime m_ctime      The date and time the file was created
+ 
+                CTime m_mtime      The date and time the file was last
+                                   modified
+ 
+                CTime m_atime      The date and time the file was last
+                                   accessed for reading
+ 
+                LONG m_size        The logical size in bytes of the file,
+                                   as reported by the MS-DOS command dir
+ 
+                BYTE m_attribute   The MS-DOS attribute byte of the file
+ 
+                char m_szFullName[_MAX_PATH]
+                     The absolute filename (_MAX_PATH is
+                                   defined in stdlib.h)
+ 
+  &lt;pszFileName&gt; A string that is the path to the desired file. The path
+                may be relative or absolute, but may not contain a network
+                name.
+ 
+  Remarks
+ 
+  The virtual version of GetStatus retrieves the status of the open file
+  associated with this CFile object. It does not insert a value into the
+  m_szFullName structure member.
+ 
+  The static version gets the status of the named file and copies the
+  filename to m_szFullName. This function obtains the file status from the
+  directory entry without actually opening the file. It is useful for
+  testing the existence and access rights of a file.
+ 
+  The m_attribute is the MS-DOS file attribute. The Microsoft Foundation
+  classes provide an enum type attribute so that you can specify
+  attributes symbolically:
+ 
+      enum Attribute {
+         normal =    0x00,
+         readOnly =  0x01,
+         hidden =    0x02,
+         system =    0x04,
+         volume =    0x08,
+         directory = 0x10,
+         archive =   0x20
+         };
+ 
+  Return Value
+ 
+  TRUE if no error, in which case &lt;rStatus&gt; is valid; otherwise FALSE.
+  FALSE indicates that the file does not exist.
+ 
+  Example
+ 
+  CFileStatus status;
+  extern CFile cfile;
+  if( cfile.GetStatus( status ) )    // virtual member function
+    {
+        #ifdef _DEBUG
+           afxDump &lt;&lt; "File size = " &lt;&lt; status.m_size &lt;&lt; "\n";
+        #endif
+    }
+  char* pFileName = "test.dat";
+  if( CFile::GetStatus( pFileName, status ) )   // static function
+     {
+        #ifdef _DEBUG
+           afxDump &lt;&lt; "Full file name = " &lt;&lt; status.m_szFullName &lt;&lt; "\n";
+        #endif
+     }
+ 
+ 
+  See Also
+ 
+  <span class='grhilite'>◄</span><a href='SetStatus.html'>CFile::SetStatus</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='CTime.html'>CTime</a><span class='grhilite'>►</span>
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

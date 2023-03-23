@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<title>ERDEV, ERDEV$ Function Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#ERDEV'>Syntax</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../bas7ex.hlp/_dot_erdevx.html'>Example</a><span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ERDEV returns an error code from the last device to generate an error.
+ERDEV$ returns the name of the device that generated the error.
+ 
+<b>ERDEV</b>
+<b>ERDEV$</b>
+    ■ ERDEV$ contains the 8-byte character device name if the error is
+      on a character device, such as a printer, or the 2-byte block
+      device name (A:, B:, etc.) if the device is not a character device.
+      It contains the 3-byte block name (COM) if a communications port
+      experiences a timeout.
+ 
+    ■ ERDEV is set by the critical error handler (interrupt 24H) when
+      DOS detects a critical DOS call error from a character or block
+      device. It also is set by a timeout error on a communications
+      port.
+ 
+    ■ ERDEV returns an integer value that contains information
+      about the error.  The format of the information depends upon
+      the source of the error.
+ 
+    ■ For block device errors, bits 0-7 (the low byte) of ERDEV contain the
+      DOS error code. Bits 8-15 (the high byte) contain device-attribute
+      information:
+ 
+      Bit(s)    Value     Meaning
+      ══════    ══════    ═══════════════════════════════════════════════
+      0-7       xxH       Contains DOS error code xxH
+        8        0        Read operation
+                 1        Write operation
+      9-10                Indicate the affected disk area:
+                00            MS-DOS
+                01            File allocation table
+                10            Root directory
+                11            Files area
+        11*      0        Fail response not allowed
+                 1        Fail response allowed
+        12*      0        Retry response not allowed
+                 1        Retry response allowed
+        13*      0        Ignore response not allowed
+                 1        Ignore response allowed
+        14                Not used
+        15       0        Always zero
+ 
+          *bits 11-13 apply only to MS-DOS versions 3.1 and later.
+ 
+    ■ For character device errors, bits 0-7 contain the DOS error code.
+      The upper bits are not significant.
+ 
+    ■ For COM timeout errors, ERDEV returns a value indicating which option
+      in the OPEN COM statement is experiencing the timeout. Therefore, it's
+      not necessary to break ERDEV into low and high bytes.
+ 
+      ERDEV Value        OPEN COM Option Timeout
+      ══════════════     ══════════════════════════════════════════════
+      80H                CS (CTS timeout)
+      81H                DS (DSR timeout)
+      82H                CD (RLSD timeout)
+ 
+Usage Notes
+    ■ Because ERDEV and ERDEV$ return meaningful information only after
+      an error, they usually are used in error handlers specified by an
+      ON ERROR statement.
+ 
+    ■ ERDEV and ERDEV$ cannot be used on the left side of an assignment.
+ 
+    ■ Use ERDEV and ERDEV$ only in DOS.
+ 
+    ■ The following example program lines extract the low and high
+      bytes from the ERDEV value.  DosErrCode stores the block
+      or character device error code. DevAttr stores the block
+      device attribute information.
+ 
+        DosErrCode = ERDEV AND &amp;HFF          'low byte of ERDEV
+        DevAttr = (ERDEV AND &amp;HFF00) \ 256   'high byte of ERDEV
+ 
+    ■ For more information about device attributes, see the Microsoft MS-DOS
+      Programmer's Reference, or books such as The Peter Norton Guide to the
+      IBM PC or Advanced MS-DOS.
+ 
+
+</pre>
+</body>
+
+</html>

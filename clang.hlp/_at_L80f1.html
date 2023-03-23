@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>SYSCALL.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* SYSCALL.C illustrates system calls to DOS and BIOS interrupts using
+ * functions:
+ *      _intdos          _intdosx         _bdos                   (DOS-only)
+ *      _int86           _int86x          _segread
+ *
+ * The _int86x call is not specifically shown in the example, but
+ * it is the same as _intdosx, except that an interrupt number must be
+ * supplied.
+ */
+ 
+#include &lt;dos.h&gt;
+#include &lt;stdio.h&gt;
+#define LPT1 0
+ 
+union _REGS inregs, outregs;
+struct _SREGS segregs;
+ 
+void main()
+{
+    char __far *buffer = "Dollar-sign terminated string\n\r\n\r$";
+    char __far *p;
+ 
+    /* Get DOS version using DOS function 0x30. */
+    inregs.h.ah = 0x30;
+    _intdos( &amp;inregs, &amp;outregs );
+    printf( "\nMajor: %d\tMinor: %d\tOEM number: %d\n\n",
+        outregs.h.al, outregs.h.ah, outregs.h.bh );
+ 
+    /* Print a $-terminated string on the screen using DOS function 0x9. */
+    inregs.h.ah = 0x9;
+    inregs.x.dx = _FP_OFF( buffer );
+    segregs.ds = _FP_SEG( buffer );
+    _intdosx( &amp;inregs, &amp;outregs, &amp;segregs );
+ 
+    _segread( &amp;segregs );
+    printf( "Segments:\n\tCS\t%.4x\n\tDS\t%.4x\n\tES\t%.4x\n\tSS\t%.4x\n\n",
+            segregs.cs, segregs.ds, segregs.es, segregs.ss );
+ 
+    /* Make sure printer is available. Fail if any error bit is on,
+     * or if either operation bit is off.
+     */
+    inregs.h.ah = 0x2;
+    inregs.x.dx = LPT1;
+    _int86( 0x17, &amp;inregs, &amp;outregs );
+    if(  (outregs.h.ah &amp; 0x29) || !(outregs.h.ah &amp; 0x80) ||
+                                  !(outregs.h.ah &amp; 0x10) )
+        printf( "Printer not available." );
+    else
+    {
+        /* Output a string to the printer using DOS function 0x5. */
+        for( p = buffer; *p != '$'; p++ )
+            _bdos( 0x05, *p, 0 );
+ 
+        /* Do print screen. */
+        inregs.h.ah = 0x05;
+        _int86( 0x05, &amp;inregs, &amp;outregs );
+    }
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

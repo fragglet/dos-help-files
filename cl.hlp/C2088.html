@@ -1,0 +1,59 @@
+<html>
+
+<head>
+<title>C2088</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='../clang.hlp/clang_dot_contents.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     Compiler error C2088
+ 
+     'operator' : illegal for 'class-key'
+ 
+     The specified operator was not defined for the class, structure,
+     or union.
+ 
+     This error can be eliminated by defining a conversion to convert
+     the operands to the type for which the operator is defined.
+     Alternatively, an overloaded conversion operator can be defined.
+ 
+     An example of this error and two solutions are:
+ 
+          class A
+          {
+          public:
+             int i;
+          } a;
+          int i = 1 + a;       // this line causes the error
+ 
+          class B
+          {
+          public:
+             operator int() { return i; }
+             int i;
+          } b;
+          int j = 1 + b;       // OK, uses conversion operator
+ 
+          class C
+          {
+          public:
+             int operator+( int j ) { return (j+i); }  // solution
+             int i;
+          } c;
+          int k = c + 1;       // OK, uses overloaded operator+
+          int i = 1 + c;       // still an error, no conversion
+                               // operator defined for class C
+ 
+     Note that the last line requires that a conversion operator be
+     defined since overloaded operators cannot be defined for built-in
+     types.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

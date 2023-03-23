@@ -1,0 +1,85 @@
+<html>
+
+<head>
+<title>STAR.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* STAR.C illustrates functions:                              (DOS-only)
+ *      _polygon        _getwritemode       _setwritemode
+ */
+ 
+#include &lt;conio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;graph.h&gt;
+#include &lt;math.h&gt;
+#include &lt;stdlib.h&gt;
+ 
+short wmodes[5]  = { _GPSET,   _GPRESET, _GXOR,    _GOR,     _GAND    };
+char *wmstr[5]   = { "PSET  ", "PRESET", "XOR   ", "OR    ", "AND   " };
+ 
+void star( double centerx, double centery, double radius,
+           int writemode, int fill );
+ 
+void main()
+{
+    short i, tcolor;
+    double x, y;
+ 
+    if( !_setvideomode( _MAXCOLORMODE ) )    /* Find valid graphics mode */
+        exit( 1 );
+ 
+    _setwindow( 0, -50.0, -40.0, 50.0, 40.0 );
+ 
+    x = y = -10.0;
+    star( x, y, 25.0, _GPSET, _GFILLINTERIOR );
+    _getch();
+    tcolor = _getcolor();
+    _setcolor( 2 );
+    _floodfill_w( x, y, tcolor );
+ 
+    for( i = 0; i &lt; 5; i++ )
+    {
+        _settextposition( 1, 1 );
+        _outtext( wmstr[i] );
+        star( x += 2.0, y += 1.5, 25.0, wmodes[i], _GBORDER );
+        _getch();
+    }
+    _setvideomode( _DEFAULTMODE );
+}
+ 
+#define PI 3.1415
+void star( double centerx, double centery, double radius,
+           int writemode, int fill )
+{
+    int    wm, side;
+    struct _wxycoord polyside[5];
+    double radians;
+ 
+    /* Save write mode and set new. */
+    wm = _getwritemode();
+    _setwritemode( writemode );
+ 
+    /* Calculate points of star every 144 degrees, then connect them. */
+    for( side = 0; side &lt; 5; side++ )
+    {
+        radians = 144 * PI / 180;
+        polyside[side].wx = centerx + (cos( side * radians ) * radius);
+        polyside[side].wy = centery + (sin( side * radians ) * radius);
+    }
+    _polygon_wxy( fill, polyside, 5 );
+ 
+    /* Restore original write mode. */
+    _setwritemode( wm );
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

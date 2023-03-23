@@ -1,0 +1,188 @@
+<html>
+
+<head>
+<title>OPEN</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='iostmnt.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hv'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hvx'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────OPEN───────────────────────────────────────────────────────────────────
+ 
+     Action
+ 
+     Associates a unit number with an external file or device.
+ 
+     Syntax
+ 
+     OPEN ([UNIT=]unitspec
+     [ , ACCESS=access]
+     [ , BLANK=blanks]
+     [ , BLOCKSIZE=blocksize]
+     [ , ERR=errlabel]
+     [ , FILE=file]
+     [ , FORM=form]
+     [ , IOSTAT=iocheck]
+     [ , MODE=mode]
+     [ , RECL=recl]
+     [ , SHARE=share]
+     [ , STATUS=status]
+     [ , IOFOCUS=focus]
+     [ , TITLE=title])
+ 
+     If UNIT= is omitted, &lt;unitspec&gt; must be the first parameter. The
+     parameters can otherwise appear in any order.
+ 
+     Parameter       Description
+ 
+     unitspec        An integer expression specifying an external unit.
+ 
+     access          A character expression indicating file access type.
+                     Valid types are 'APPEND', 'DIRECT', or 'SEQUENTIAL'
+                     (default).
+ 
+     blanks          A character expression indicating how to handle
+                     blanks. Valid values are 'NULL' or 'ZERO'. 'NULL'
+                     (default) ignores blanks; 'ZERO' treats blanks as
+                     zeros.
+ 
+     blocksize       An integer expression specifying internal buffer
+                     size for the unit.
+ 
+     errlabel        The label of an executable statement in the same
+                     program unit. An I/O error causes transfer of
+                     control to the statement at &lt;errlabel&gt;. If
+                     &lt;errlabel&gt; is omitted, the effect of an I/O error
+                     is determined by the presence or absence of
+                     &lt;iocheck&gt;.
+ 
+     file            A character expression for the name of the file to
+                     open. If FILE is omitted, the compiler creates a
+                     scratch file that is deleted when closed or when the
+                     program terminates normally.
+ 
+                     If the file name is blank (FILE=' '), the compiler
+                     draws names from the program's command line or
+                     prompts the user for a file name.
+ 
+                     If the file name is 'USER' (FILE='USER') and
+                     the source file is compiled as a QuickWin
+                     application, the unit is connected to a child
+                     window. Files opened with FILE='USER' can
+                     only specify the same attributes as units
+                     connected to the screen or keyboard.
+ 
+     focus           A logical value. If the value is .TRUE., the
+                     child window receives focus prior to each
+                     READ or WRITE to that unit.
+ 
+     form            A character expression indicating the file's
+                     formatting. Valid formats are: 'FORMATTED',
+                     'UNFORMATTED', or 'BINARY'.
+ 
+                     If access is sequential, the default for &lt;form&gt; is
+                     'FORMATTED'; if access is direct, the default is
+                     'UNFORMATTED'.
+ 
+     iocheck         An integer variable that returns zero if no error
+                     occurs, -1 if end-of-file is encountered, or the
+                     error number if an error occurs.
+ 
+     iofocus         A logical expression specifying whether a new
+                     QuickWin child window will have the current I/O
+                     focus (i.e. is the active window). By default,
+                     &lt;iofocus&gt; is .TRUE.
+ 
+     mode            A character expression for the file mode. Valid
+                     modes are 'READ', 'WRITE', or 'READWRITE' (default).
+ 
+     recl            An integer expression specifying the length of each
+                     record in bytes. Required for direct-access files,
+                     and ignored for sequential files.
+ 
+     share           A character expression for the file-sharing status
+                     for files on multiuser systems. Valid status values
+                     are:
+ 
+                     'COMPAT'   Compatibility mode allows the current
+                                user to open multiple copies of the
+                                file but locks out all other users
+                                (DOS default mode). A file already
+                                open in another mode cannot be
+                                opened again in this mode.
+ 
+                     'DENYRW'   Denies all other reading or writing
+                                access while the file is open. No other
+                                process may open the file.
+ 
+                     'DENYWR'   Denies all other writing access while
+                                the file is open.
+ 
+                     'DENYRD'   Denies all other reading access while
+                                the file is open.
+ 
+                     'DENYNONE' Allows all other forms of access except
+                                'COMPAT' (DENYNONE is the OS/2 default
+                                mode).
+ 
+     status          A character expression for the file's status. Valid
+                     file status values are:
+ 
+                     'OLD'      The file already exists.
+ 
+                     'NEW'      The file does not exist.
+ 
+                     'SCRATCH'  The file is temporary. Scratch files
+                                are automatically deleted when closed.
+ 
+                     'UNKNOWN'  The run-time system first attempts
+                                to open the file as 'OLD', then as
+                                'NEW'. If the file exists, it is
+                                opened; if it does not exist, it is
+                                created.
+ 
+                     These status values affect only disk files. They
+                     are ignored when opening physical devices.
+ 
+     title           A character expression that specifies a child
+                     window's title. The expression can be a
+                     variable or a constant.
+ 
+     Remarks
+ 
+     Opening a file for unit* has no effect.
+ 
+     Opening a file with a unit already connected to another file
+     causes the open file to close and the new file name to be
+     connected to the unit.
+ 
+     If a parameter of the OPEN statement is an expression that calls
+     a function, that function must not cause an I/O statement or the
+     EOF intrinsic function. Calling these functions causes
+     unpredictable results.
+ 
+     Examples
+ 
+     The following example opens a new file:
+ 
+     C     Prompt user for a file name and read it:
+           CHARACTER*64 filename
+           WRITE (*, '(A\)') ' enter file name '
+           READ  (*, '(A)') filename
+     C     Open the file for formatted sequential access as unit 7.
+     C     Note that the specified access need not have been specified,
+     C     since it is the default (as is "formatted").
+           OPEN (7, FILE = filename, ACCESS = 'SEQUENTIAL',
+         +      STATUS = 'NEW')
+ 
+     The following example opens an existing file:
+ 
+     C     Open a file created by an editor, "DATA3.TXT", as unit 3:
+           OPEN (3, FILE = 'DATA3.TXT')
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

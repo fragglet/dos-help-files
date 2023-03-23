@@ -1,0 +1,98 @@
+<html>
+
+<head>
+<title>DRAW Statement Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'The following three examples demonstrate the DRAW statement.
+ 
+'This example uses the DRAW statement to draw a triangle's outline in magenta
+'and to paint the interior cyan.
+ 
+SCREEN 1
+DRAW "C2"             'Set color to magenta.
+DRAW "F60 L120 E60"   'Draw a triangle.
+DRAW "BD30"           'Move down into the triangle.
+DRAW "P1,2"           'Paint interior.
+ 
+ 
+'The following example shows how to use the M macro command with absolute and
+'relative movement, and with string-variable and numeric-variable arguments.
+ 
+SCREEN 2
+PRINT "Press any key to continue..."
+'Absolute movement.
+DRAW "M 50,80"
+DRAW "M 80,50"
+LOCATE 2, 30: PRINT "Absolute movement"
+DO
+LOOP WHILE INKEY$ = ""
+'Relative movement.
+DRAW "M+40,-20"
+DRAW "M-40,-20"
+DRAW "M-40,+20"
+DRAW "M+40,+20"
+LOCATE 3, 30: PRINT "Relative movement"
+DO
+LOOP WHILE INKEY$ = ""
+'Using a string variable.
+X$ = "400": Y$ = "190"
+DRAW "M" + X$ + "," + Y$
+LOCATE 4, 30: PRINT "String variable"
+DO
+LOOP WHILE INKEY$ = ""
+'Using numeric variables (note the two "=" signs).
+A = 300: B = 120
+DRAW "M=" + VARPTR$(A) + ",=" + VARPTR$(B)
+LOCATE 5, 30: PRINT "Numeric variables"
+ 
+ 
+'This example draws a clock on the screen using the TIME$ function.
+ 
+DECLARE SUB Face (Min$)
+SCREEN 2    '640 x 200 pixel high-resolution graphics screen.
+DO
+   CLS
+   'Get string containing minutes value.
+   Min$ = MID$(TIME$, 4, 2)
+   'Draw clock face.
+   Face Min$
+   'Wait until minute changes or a key is pressed.
+   DO
+      'Print time at top of screen.
+      LOCATE 2, 37
+      PRINT TIME$
+      'Test for a key press.
+      Test$ = INKEY$
+   LOOP WHILE Min$ = MID$(TIME$, 4, 2) AND Test$ = ""
+'End program when a key is pressed.
+LOOP WHILE Test$ = ""
+END
+ 
+'Draw the clock face.
+SUB Face (Min$) STATIC
+   LOCATE 23, 30
+   PRINT "Press any key to end"
+   CIRCLE (320, 100), 175
+   'Convert strings to numbers.
+   Hr = VAL(TIME$)
+   Min = VAL(Min$)
+   'Convert numbers to angles.
+   Little = 360 - (30 * Hr + Min / 2)
+   Big = 360 - (6 * Min)
+   'Draw the hands.
+   DRAW "TA=" + VARPTR$(Little) + "NU40"
+   DRAW "TA=" + VARPTR$(Big) + "NU70"
+END SUB
+ 
+ 
+
+</pre>
+</body>
+
+</html>

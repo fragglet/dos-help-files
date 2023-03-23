@@ -1,0 +1,111 @@
+<html>
+
+<head>
+<title>ERROR Handling Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'The program uses the ON ERROR statement to enable error trapping. The
+'program attempts to write a large file to the disk. If an error occurs,
+'control is passed to a handling routine, and the ERR function is used to
+'determine an appropriate message to display.  The ERROR, ERR, and RESUME
+'statements are used to exit the handling routines, and the END, STOP,
+'and SYSTEM statements demonstrate ways to exit a program.
+ 
+DECLARE SUB ErrorMessage (Message$)
+DECLARE SUB WriteBigFile (Filenum%)
+ON ERROR GOTO ErrHandler
+CLS
+PRINT "This program will attempt to write a large file to a disk drive"
+PRINT "you select. The file will be erased when the program ends."
+PRINT
+DO
+    INPUT "Which drive"; DR$
+    DR$ = UCASE$(DR$)
+LOOP UNTIL LEN(DR$) &gt;= 1 AND LEN(DR$) &lt;= 2 AND DR$ &gt;= "A" AND DR$ &lt;= "Z"
+IF LEN(DR$) &gt; 1 THEN
+    IF RIGHT$(DR$, 1) &lt;&gt; ":" THEN
+        DR$ = LEFT$(DR$, 1) + ":"
+    END IF
+ELSE
+    DR$ = DR$ + ":"
+END IF
+'Put together a complete file specification.
+FileSpec$ = DR$ + "BIGFILE.XXX"
+'Get the next available file number.
+Filenum% = FREEFILE
+'Try to open the file.
+OPEN FileSpec$ FOR OUTPUT AS Filenum%
+WriteBigFile Filenum%
+CLOSE Filenum%
+CLS
+PRINT "Everything was OK. No errors occurred."
+PRINT "Deleting the file that was created."
+KILL FileSpec$
+'Same as END, returns to operating system.
+SYSTEM
+ 
+ErrHandler:
+ 
+SELECT CASE ERR
+    CASE 52  'Bad file name or number.
+        END
+    CASE 53  'File not found.
+        RESUME NEXT
+    CASE 57  'Device I/O error.
+        ErrorMessage "You should probably format the diskette."
+        END
+    CASE 64  'Bad File Name.
+        ErrorMessage "The drive name you specified was not correct."
+        END
+    CASE 68  'Device unavailable.
+        ErrorMessage "The drive you named is unavailable."
+        END
+    CASE 71  'Drive not ready.
+        ErrorMessage "The drive was not ready. Check the drive!"
+        END
+    CASE ELSE
+        ErrorMessage "An unexpected FATAL error has occurred."
+        STOP
+END SELECT
+ 
+SUB ErrorMessage (Message$)
+    ON LOCAL ERROR GOTO MessageError
+    CLS
+    PRINT Message$
+    PRINT "Cannot continue."
+    PRINT
+    PRINT "Press any key to exit."
+    DO
+    LOOP WHILE INKEY$ = ""
+    EXIT SUB
+MessageError:
+    RESUME NEXT
+END SUB
+ 
+SUB WriteBigFile (Filenum%)
+    ON LOCAL ERROR GOTO LocalHandler
+    TEXT$ = STRING$(1024, "A")
+    FOR I% = 1 TO 400
+        PRINT #Filenum%, TEXT$
+    NEXT I%
+    EXIT SUB
+LocalHandler:
+    SELECT CASE ERR
+        CASE 61             'Disk full.
+            ErrorMessage ("There is no room remaining on the disk.")
+            KILL "BIGFILE.XXX"
+            END
+        CASE ELSE
+            ERROR ERR
+    END SELECT
+END SUB
+
+</pre>
+</body>
+
+</html>

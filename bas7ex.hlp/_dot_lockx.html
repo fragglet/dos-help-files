@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<title>LOCK...UNLOCK Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example illustrates the use of the LOCK and UNLOCK statements. A sample
+'data record is created in a random-access file containing a customer record.
+'The program allows you to update the file, locking the file while you use it
+'to prevent access from another terminal.
+ 
+'Note: In order to use this program, you must have DOS version 3.1 or
+'later, and you must run the DOS SHARE.EXE to enable locking operations
+'before entering the BASIC programming environment.
+ 
+'Define the record.
+TYPE AccountRec
+   Payer AS STRING * 20
+   Address AS STRING * 20
+   Place AS STRING * 20
+   Owe AS SINGLE
+END TYPE
+ 
+DIM CustRec AS AccountRec
+ 
+'This section creates a sample record to use.
+ON ERROR GOTO ErrHandler
+ 
+OPEN "MONITOR" FOR RANDOM SHARED AS #1 LEN = LEN(CustRec)
+ 
+CustRec.Payer = "George Washington"
+CustRec.Address = "1 Cherry Tree Lane"
+CustRec.Place = "Mt. Vernon, VA"
+CustRec.Owe = 12!
+PUT #1, 1, CustRec          'Put one record in the file.
+CLOSE #1
+ 
+'This sections opens the sample record for updating.
+OPEN "MONITOR" FOR RANDOM SHARED AS #1 LEN = LEN(CustRec)
+DO
+    Number% = 0             'Reset to zero.
+    DO UNTIL Number% = 1    'Force user to input 1.
+        CLS : LOCATE 10, 10
+        INPUT "Customer Number?   #"; Number%
+    LOOP
+    'Lock the current record so another process
+    'doesn't change it while you're using it.
+    LOCK #1, Number%
+    GET #1, Number%, CustRec
+    LOCATE 11, 10: PRINT "Customer: "; CustRec.Payer
+    LOCATE 12, 10: PRINT "Address:  "; CustRec.Address
+    LOCATE 13, 10: PRINT "Currently owes: $"; CustRec.Owe
+    LOCATE 15, 10: INPUT "Change (+ or -)", Change!
+    CustRec.Owe = CustRec.Owe + Change!
+    PUT #1, Number%, CustRec
+    'Unlock the record so others can use it.
+    UNLOCK #1, Number%
+    LOCATE 17, 10: INPUT "Update another? ", Continue$
+    Update$ = UCASE$(LEFT$(Continue$, 1))
+LOOP WHILE Update$ = "Y"
+CLOSE #1
+ 
+'Remove file from disk.
+KILL "MONITOR"
+END
+ 
+ErrHandler:
+IF ERR = 70 THEN        'Permission denied error.
+    CLS
+    PRINT "You must run SHARE.EXE before running this example."
+    PRINT "Exit the programming environment, run SHARE.EXE, and"
+    PRINT "reenter the programming environment to run this"
+    PRINT "example. Do not shell to DOS to run SHARE.EXE or you"
+    PRINT "may not be able to run other programs until you reboot."
+END IF
+END
+
+</pre>
+</body>
+
+</html>

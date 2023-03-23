@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<title>MODES.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='../qc.hlp/examples_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../qc.hlp/qc_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../qc.hlp/qc_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+/* MODES.C illustrates configuration and text window functions including:
+ *    _setvideomoderows   _setvideomode   _getvideoconfig
+ *    _settextwindow      _outtext
+ *
+ * See <a href='TEXT_dot_C.html'>TEXT.C</a> for another use of _outtext. See <a href='SCROLL_dot_C.html'>SCROLL.C</a> for another use
+ * of _settextwindow.
+ */
+ 
+#include &lt;conio.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;graph.h&gt;
+ 
+short modes[] = { _TEXTBW40,     _TEXTC40,      _TEXTBW80,
+                  _TEXTC80,      _MRES4COLOR,   _MRESNOCOLOR,
+                  _HRESBW,       _TEXTMONO,     _HERCMONO,
+                  _MRES16COLOR,  _HRES16COLOR,  _ERESNOCOLOR,
+                  _ERESCOLOR,    _VRES2COLOR,   _VRES16COLOR,
+                  _MRES256COLOR, _ORESCOLOR
+                };
+char *names[] = { "TEXTBW40",    "TEXTC40",     "TEXTBW80",
+                  "TEXTC80",     "MRES4COLOR",  "MRESNOCOLOR",
+                  "HRESBW",      "TEXTMONO",    "HERCMONO",
+                  "MRES16COLOR", "HRES16COLOR", "ERESNOCOLOR",
+                  "ERESCOLOR",   "VRES2COLOR",  "VRES16COLOR",
+                  "MRES256COLOR","ORESCOLOR"
+                 };
+short rows[] = { 60, 50, 43, 30, 25 };  /* Possible number of rows  */
+ 
+void main()
+{
+    short c, i, j, x, y, row, num = sizeof(modes) / sizeof(modes[0]);
+    struct videoconfig vc;
+    char b[500];                        /* Buffer for string        */
+ 
+    _displaycursor( _GCURSOROFF );
+ 
+    /* Try each mode. */
+    for( i = 0; i &lt;= num; i++ )
+    {
+        for (j = 0; j &lt; 5; j++ )
+        {
+            /* Try each possible number of rows. */
+            row = _setvideomoderows( modes[i], rows[j] );
+            if( (!row) || (rows[j] != row) )
+                continue;
+            else
+            {
+                _getvideoconfig( &amp;vc );
+                y = (vc.numtextrows - 12) / 2;
+                x = (vc.numtextcols - 25) / 2;
+ 
+                /* Use text window to place output in middle of screen. */
+                _settextwindow( y, x,
+                                vc.numtextrows - y, vc.numtextcols - x );
+ 
+                /* Write all information to a string, then output string. */
+                c  = sprintf( b,     "Video mode: %s\n", names[i] );
+                c += sprintf( b + c, "X pixels:   %d\n", vc.numxpixels );
+                c += sprintf( b + c, "Y pixels:   %d\n", vc.numypixels );
+                c += sprintf( b + c, "Columns:    %d\n", vc.numtextcols );
+                c += sprintf( b + c, "Rows:       %d\n", vc.numtextrows );
+                c += sprintf( b + c, "Colors:     %d\n", vc.numcolors );
+                c += sprintf( b + c, "Bits/pixel: %d\n", vc.bitsperpixel );
+                c += sprintf( b + c, "Pages:      %d\n", vc.numvideopages );
+                c += sprintf( b + c, "Mode:       %d\n", vc.mode );
+                c += sprintf( b + c, "Adapter:    %d\n", vc.adapter );
+                c += sprintf( b + c, "Monitor:    %d\n", vc.monitor );
+                c += sprintf( b + c, "Memory:     %d",   vc.memory );
+                _outtext( b );
+                getch();
+            }
+        }
+    }
+    _displaycursor( _GCURSORON );
+    _setvideomode( _DEFAULTMODE );
+}
+
+</pre>
+</body>
+
+</html>

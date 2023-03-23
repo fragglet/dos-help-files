@@ -1,0 +1,84 @@
+<html>
+
+<head>
+<title>MSERIES.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='../qc.hlp/examples_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../qc.hlp/qc_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../qc.hlp/qc_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+/* MSERIES.C illustrates presentation graphics multiseries chart
+ * routines using:
+ *    _pg_chartms
+ */
+ 
+#include &lt;conio.h&gt;
+#include &lt;graph.h&gt;
+#include &lt;string.h&gt;
+#include &lt;pgchart.h&gt;
+#include &lt;stdlib.h&gt;
+ 
+/* Note that data are declared as a multidimension array. Since multiseries
+ * chart functions expect single-series data, this array must be cast in
+ * the function call. See the _pg_analyzechartms example for an alternate
+ * method using a single-dimension array.
+ */
+#define TEAMS  4
+#define MONTHS 3
+float _far values[TEAMS][MONTHS] = { { .435F,   .522F,   .671F  },
+                                     { .533F,   .431F,   .590F  },
+                                     { .723F,   .624F,   .488F  },
+                                     { .329F,   .446F,   .401F  } };
+char _far *months[MONTHS] =          { "May",   "June",  "July"  };
+char _far *teams[TEAMS] = { "Reds", "Sox",  "Cubs", "Mets" };
+ 
+void main()
+{
+    chartenv env;
+ 
+    if( !_setvideomode( _MAXRESMODE ) ) /* Find a valid graphics mode */
+        exit( 1 );
+    _pg_initchart();                    /* Initialize chart system    */
+ 
+    /* Multiseries bar chart */
+    _pg_defaultchart( &amp;env, _PG_BARCHART, _PG_PLAINBARS );
+    strcpy( env.maintitle.title, "Little League Records" );
+    _pg_chartms( &amp;env, months, (float _far *)values,
+                 TEAMS, MONTHS, MONTHS, teams );
+    getch();
+    _clearscreen( _GCLEARSCREEN );
+ 
+    /* Multiseries column chart */
+    _pg_defaultchart( &amp;env, _PG_COLUMNCHART, _PG_PLAINBARS );
+    strcpy( env.maintitle.title, "Little League Records" );
+    _pg_chartms( &amp;env, months, (float _far *)values,
+                 TEAMS, MONTHS, MONTHS, teams );
+    getch();
+    _clearscreen( _GCLEARSCREEN );
+ 
+    /* Multiseries line chart */
+    _pg_defaultchart( &amp;env, _PG_LINECHART, _PG_POINTANDLINE );
+    strcpy( env.maintitle.title, "Little League Records" );
+    _pg_chartms( &amp;env, months, (float _far *)values,
+                 TEAMS, MONTHS, MONTHS, teams );
+    getch();
+    _clearscreen( _GCLEARSCREEN );
+ 
+    /* Multiseries line chart showing only two columns out of three
+     * and three series out of four.
+     */
+    _pg_defaultchart( &amp;env, _PG_LINECHART, _PG_POINTANDLINE );
+    strcpy( env.maintitle.title, "Partial Little League Records" );
+    _pg_chartms( &amp;env, &amp;months[1], &amp;values[1][1],
+                 TEAMS - 1, MONTHS - 1, MONTHS, &amp;teams[1] );
+    getch();
+    _setvideomode( _DEFAULTMODE );
+}
+
+</pre>
+</body>
+
+</html>

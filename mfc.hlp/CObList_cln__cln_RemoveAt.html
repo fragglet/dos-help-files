@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>CObList::RemoveAt</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='CObList.html'>CObList</a><span class='grhilite'>►</span>                                     <span class='grhilite'>◄</span><a href='CObList.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span></i>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  void RemoveAt( POSITION position );
+ 
+  Parameter   Description
+ 
+  &lt;position&gt;  The position of the element to be removed from the list.
+ 
+  Remarks
+ 
+  Removes the specified element from this list.
+ 
+  When you remove an element from a CObList, you remove the object pointer
+  from the list. It is your responsibility to delete the objects
+  themselves.
+ 
+  You must ensure that your POSITION value represents a valid position in
+  the list. If it is invalid, then the Debug version of the library
+  asserts.
+ 
+  Example
+ 
+  Be careful when removing an element during a list iteration. The
+  following example shows a removal technique that guarantees a good
+  POSITION value for <span class='grhilite'>◄</span><a href='GetNext.html'>GetNext</a><span class='grhilite'>►</span>:
+ 
+     CObList list;
+     POSITION pos1, pos2;
+     CObject* pa;
+ 
+     list.AddHead( new CAge( 21 ) );
+     list.AddHead( new CAge( 40 ) );
+     list.AddHead( new CAge( 65 ) ); // List now contains (65 40, 21)
+     for( pos1 = list.GetHeadPosition(); ( pos2 = pos1 ) != NULL; )
+     {
+         if( *(CAge*) list.GetNext( pos1 ) == CAge( 40 ) )
+         {
+             pa = list.GetAt( pos2 ); // Save the old pointer for deletion
+             list.RemoveAt( pos2 );
+             delete pa; // Deletion avoids memory leak
+         }
+     }
+  #ifdef _DEBUG
+     afxDump.SetDepth( 1 );
+     afxDump &lt;&lt; "RemoveAt example: " &lt;&lt; &amp;list &lt;&lt; "\n";
+  #endif
+ 
+  The results from this program are as follows:
+ 
+  RemoveAt example: A CObList with 2 elements
+      a CAge at $4C1E 65
+      a CAge at $4B22 21
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

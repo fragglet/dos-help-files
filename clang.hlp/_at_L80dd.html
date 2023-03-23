@@ -1,0 +1,68 @@
+<html>
+
+<head>
+<title>MSB.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* MSB.C illustrates conversion between IEEE floating-point format
+ * and MS Binary format. Functions illustrated include:
+ *      _fieeetomsbin    _fmsbintoieee    _dieeetomsbin    _dmsbintoieee
+ *
+ * Only _fieeetomsbin is specifically used, but the others work the same.
+ */
+ 
+#include &lt;math.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+ 
+char *binstr32( unsigned long num, char *buffer );  /* Prototype */
+ 
+void main()
+{
+    union
+    {
+        float f;            /* As float */
+        unsigned long ul;   /* As unsigned long (for binary conversion) */
+    } msbin, ieee;
+    char tmpmsbin[33], tmpieee[33];
+ 
+    /* Convert an IEEE number to MS binary and show the result in binary. */
+    ieee.f = 4.352;
+    if( _fieeetomsbin( &amp;ieee.f, &amp;msbin.f ) )
+    {
+        printf( "Can't convert\n" );
+        exit( 1 );
+    }
+ 
+    /* Convert to binary string. */
+    binstr32( msbin.ul, tmpmsbin );
+    binstr32( ieee.ul, tmpieee );
+    printf( "%f in MS Binary format:\t%32s\n", ieee.f, tmpmsbin );
+    printf( "%f in IEEE format:\t%32s\n", ieee.f, tmpieee );
+    exit( 0 );
+}
+ 
+/* Converts unsigned long to string of 32 binary characters. */
+char *binstr32( unsigned long num, char *buffer )
+{
+    char tmp[33];
+    unsigned long len;
+ 
+    memset( buffer, '0', 32 );
+    len = strlen( _ultoa( num, tmp, 2 ) );
+    strcpy( buffer + 32 - len, tmp );
+    return buffer;
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,157 @@
+<html>
+
+<head>
+<title>exec Functions</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='exec.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='_at_L828e.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     The exec functions load and execute new child processes. When the
+     call is successful in DOS, the child process is placed in the
+     memory previously occupied by the calling process. Under OS/2,
+     calling an exec function is equivalent to calling the
+     corresponding function with the P_NOWAITO argument specified,
+     followed by a call to the exit function. Sufficient memory must be
+     available for loading and executing the child process.
+ 
+     All of the functions in the exec family use the same exec
+     function. The letter(s) at the end of the function name determine
+     the specific variation, as listed below:
+ 
+     Letter     Variation
+ 
+     p          Uses the PATH environment variable to find the file to
+                be executed.
+ 
+     l          Command-line arguments are passed individually to the
+                exec function.
+ 
+     v          Command-line arguments are passed to the exec function
+                as an array of pointers.
+ 
+     e          An array of pointers to environment arguments is
+                explicitly passed to the child process.
+ 
+     The &lt;cmdname&gt; argument specifies the file to be executed as the
+     child process. It can specify a full path (from the root), a
+     partial path (from the current working directory), or just a file
+     name.
+ 
+     If &lt;cmdname&gt; does not have a file-name extension or does not end
+     with a period (.), the exec function searches for the named file.
+     If the search is unsuccessful, it tries the same base name first
+     with the extension .COM, then with the extension .EXE. If
+     &lt;cmdname&gt; has an extension, only that extension is used in the
+     search. If &lt;cmdname&gt; ends with a period, the exec function
+     searches for &lt;cmdname&gt; with no extension.
+ 
+     The execlp, execlpe, execvp, and execvpe routines search for
+     &lt;cmdname&gt; (using the same procedures) in the directories specified
+     by the PATH environment variable. If &lt;cmdname&gt; contains a drive
+     specifier or any slashes (i.e., if it is a relative path name),
+     the exec call searches only for the specified file and no path
+     searching is done. Note that the DOS APPEND command cannot be used
+     with the EXEC functions.
+ 
+     Arguments are passed to the new process by giving one or more
+     pointers to character strings as arguments in the exec call. These
+     character strings form the argument list for the child process.
+     The combined length of the strings forming the argument list for
+     the new process must not exceed 128 bytes (in real mode only). The
+     terminating null character (\0) for each string is not included
+     in the count, but space characters (inserted automatically to
+     separate the arguments) are counted.
+ 
+     The argument pointers can be passed as separate arguments (execl,
+     execle, execlp, and execlpe) or as an array of pointers (execv,
+     execve, execvp, and execvpe). At least one argument, &lt;arg0&gt;, must
+     be passed to the child process (which sees it as &lt;argv[0]&gt;).
+     Usually, this argument is a copy of the &lt;cmdname&gt; argument. (A
+     different value does not produce an error.)
+ 
+     Under versions of DOS earlier than 3.0, the passed value of &lt;arg0&gt;
+     is not available for use in the child process. However, under OS/2
+     and DOS versions 3.0 and later, the &lt;cmdname&gt; is available as
+     &lt;arg0&gt;.
+ 
+     The execl, execle, execlp, and execlpe calls are typically used
+     when the number of arguments is known in advance. The &lt;arg0&gt;
+     argument is usually a pointer to &lt;cmdname&gt;. The &lt;arg1&gt; through
+     &lt;argn&gt; arguments point to the character strings forming the new
+     argument list. A NULL pointer must follow &lt;argn&gt; to mark the end
+     of the argument list.
+ 
+     The execv, execve, execvp, and execvpe calls are useful when the
+     number of arguments to the new process is variable. Pointers to
+     the arguments are passed as an array, &lt;argv&gt;. The &lt;argv[0]&gt;
+     argument is usually a pointer to &lt;cmdname&gt;. The &lt;argv[1]&gt; through
+     &lt;argv[n]&gt; arguments point to the character strings forming the new
+     argument list. The &lt;argv[n+1]&gt; argument must be a NULL pointer to
+     mark the end of the argument list.
+ 
+     Files that are open when an exec call is made remain open in the
+     new process. In the execl, execlp, execv, and execvp calls, the
+     child process inherits the environment of the parent. The execle,
+     execlpe, execve, and execvpe calls allow you to alter the
+     environment for the child process by passing a list of environment
+     settings through the &lt;envp&gt; argument. The &lt;envp&gt; argument is an
+     array of character pointers, each element of which (except for the
+     final element) points to a null-terminated string defining an
+     environment variable. Such a string usually has the form
+ 
+          NAME=value
+ 
+     where NAME is the name of an environment variable and &lt;value&gt; is
+     the string value to which that variable is set. (Note that &lt;value&gt;
+     is not enclosed in double quotation marks.) The final element of
+     the &lt;envp&gt; array should be NULL. When &lt;envp&gt; itself is NULL, the
+     child process inherits the environment settings of the parent
+     process.
+ 
+     A program executed with one of the exec functions is always loaded
+     into memory as if the "maximum allocation" field in the program's
+     .EXE file header is set to the default value of 0FFFFH. If you use
+     the EXEMOD utility to change the maximum allocation field of a
+     program, the program's behavior when invoked with one of the exec
+     functions may be different from when it is invoked directly from
+     the operating-system command line or with one of the spawn
+     functions.
+ 
+     The exec calls do not preserve the translation modes of open
+     files. If the child process must use files inherited from the
+     parent, the setmode routine should be used to set the translation
+     mode of these files to the desired mode.
+ 
+     You must explicitly flush (using fflush or flushall) or close any
+     stream prior to the exec function call.
+ 
+     Signal settings are not preserved in child processes created by
+     calls to exec routines. The signal settings are reset to the
+     default in the child process.
+ 
+     Because of differences in DOS versions 2.0 and 2.1, child
+     processes generated by the exec family of functions (or by the
+     equivalent spawn functions with the P_OVERLAY argument) can cause
+     fatal system errors when they exit. If you are running DOS 2.0 or
+     2.1, you must upgrade to DOS version 3.0 or later in order to use
+     these functions.
+ 
+     Bound programs cannot use the exec family of functions in real
+     mode.
+ 
+     Return Value
+ 
+     The exec functions do not normally return to the calling process.
+     If an exec function returns, an error has occurred and the return
+     value is -1. The errno variable is set to E2BIG, EACCES, EMFILE,
+     ENOENT, ENOEXEC, or ENOMEM.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

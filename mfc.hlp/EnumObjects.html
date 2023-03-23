@@ -1,0 +1,112 @@
+<html>
+
+<head>
+<title>CDC::EnumObjects</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='CDC.html'>CDC</a><span class='grhilite'>►</span>                                         <span class='grhilite'>◄</span><a href='CDC.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span></i>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  int EnumObjects( int nObjectType,
+                   int ( FAR PASCAL EXPORT* lpfn )( LPSTR, LPSTR ),
+                   LPSTR lpData );
+ 
+  Parameter     Description
+ 
+  &lt;nObjectType&gt; Specifies the object type. It can have the values
+                OBJ_BRUSH or OBJ_PEN.
+ 
+  &lt;lpfn&gt;        Is the procedure-instance address of the
+                application-supplied callback function. See the "Remarks"
+                section below.
+ 
+  &lt;lpData&gt;      Points to the application-supplied data. The data is
+                passed to the callback function along with the object
+                information.
+ 
+  Remarks
+ 
+  Enumerates the pens and brushes available in a device context. For each
+  object of a given type, the callback function that you pass is called
+  with the information for that object. The system calls the callback
+  function until there are no more objects or the callback function
+  returns 0.
+ 
+  Note that new features of Microsoft C/C++ let you use an ordinary
+  function as the function passed to EnumObjects. The address passed to
+  EnumObjects is a FAR pointer to a function exported with __export and
+  with the Pascal calling convention. In protect-mode applications, you do
+  not have to create this function with the Windows <span class='grhilite'>◄</span><a href='../win31qh.hlp/MakeProcInstance.html'>MakeProcInstance</a><span class='grhilite'>►</span>
+  function or free the function after use with <span class='grhilite'>◄</span><a href='../win31qh.hlp/FreeProcInstance.html'>FreeProcInstance</a><span class='grhilite'>►</span>.
+ 
+  You also do not have to export the function name in an EXPORTS statement
+  in your application's module-definition file. You can instead use  the
+  __export function modifier, as in
+ 
+  int FAR PASCAL __export AFunction( LPSTR, LPSTR );
+ 
+  to cause the compiler to emit the proper export record for export by
+  name without aliasing. This works for most needs. For some special
+  cases, such as exporting a function by ordinal or aliasing the export,
+  you still need to use an EXPORTS statement in a module-definition file.
+ 
+  For compiling Foundation programs, you'll normally use the /GA and /GEs
+  compiler options. The /Gw compiler option is not used with the
+  Foundation classes. (If you do use MakeProcInstance, you will need to
+  explicitly cast the returned function pointer from FARPROC to the type
+  needed in this API.) Callback registration interfaces are now type-safe
+  (you must pass in a function pointer that points to the right kind of
+  function for the specific callback).
+ 
+  Also note that all callback functions must trap Foundation exceptions
+  before returning to Windows, since exceptions cannot be thrown across
+  callback boundaries. For more information about exceptions, see Chapter
+  12 in the &lt;Class Libraries User's Guide&gt;.
+ 
+  Callback Function
+ 
+  The callback function passed to EnumObjects must use the Pascal calling
+  convention and must be declared FAR.
+ 
+  int FAR PASCAL __export ObjectFunc( LPSTR &lt;lpLogObject&gt;,
+                                        LPSTR* &lt;lpData&gt; );
+ 
+  The &lt;ObjectFunc&gt; name is a placeholder for the application-supplied
+  function name. The actual name must be exported as described in the
+  "Remarks" section above.
+ 
+  Parameter       Description
+ 
+  &lt;lpLogObject&gt;   Points to a <span class='grhilite'>◄</span><a href='../win31qh.hlp/LOGPEN.html'>LOGPEN</a><span class='grhilite'>►</span> or <span class='grhilite'>◄</span><a href='../win31qh.hlp/LOGBRUSH.html'>LOGBRUSH</a><span class='grhilite'>►</span> data structure that
+                  contains information about the logical attributes of the
+                  object.
+ 
+  &lt;lpData&gt;        Points to the application-supplied data passed to the
+                  EnumObjects function.
+ 
+  Return Value
+ 
+  The callback function returns an int. The value of this return is
+  user-defined. If the callback function returns 0, EnumObjects stops
+  enumeration early.
+ 
+  Return Value
+ 
+  Specifies the last value returned by the callback function. Its meaning
+  is user-defined.
+ 
+  See Also
+ 
+  <span class='grhilite'>◄</span><a href='../win31qh.hlp/FreeProcInstance.html'>::FreeProcInstance</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='../win31qh.hlp/MakeProcInstance.html'>::MakeProcInstance</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='../win31qh.hlp/EnumObjects.html'>::EnumObjects</a><span class='grhilite'>►</span>
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

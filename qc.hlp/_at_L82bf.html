@@ -1,0 +1,46 @@
+<html>
+
+<head>
+<title>TEMPNAME.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+/* TEMPNAME.C illustrates:
+ *      tmpnam          tempnam
+ */
+ 
+#include &lt;stdio.h&gt;
+ 
+void main()
+{
+    char *name1, name2[L_tmpnam], *name3;
+    int c;
+ 
+    /* Create several temporary file names using internal buffer. */
+    for( c = 0; c &lt; 5; c++ )
+        if( (name1 = tmpnam( NULL )) != NULL )
+            printf( "%s is a safe temporary file name.\n", name1 );
+ 
+    /* Create a temporary file name using external buffer. */
+    if( tmpnam( name2 ) != NULL )
+        printf( "%s is a safe temporary file name.\n", name2 );
+ 
+    /* Create a temporary file name with prefix TEMP and place it in
+     * the first of these directories that exists:
+     *   1. TMP environment directory
+     *   2. C:\TEMPFILE
+     *   3. P_tmpdir directory (defined in stdio.h)
+     */
+    if( (name3 = tempnam( "C:\\TEMPFILE", "TEMP" )) != NULL )
+        printf( "%s is a safe temporary file name.\n", name3 );
+}
+
+</pre>
+</body>
+
+</html>

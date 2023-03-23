@@ -1,0 +1,107 @@
+<html>
+
+<head>
+<title>Int 21H Function 38H</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Summary<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='_at_L8296.html'>Notes</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+  Description:  Get or Set Country Information
+ 
+  Obtains internationalization information for the current country.
+  [3.0+] Obtains internationalization information for the current or
+  specified country, or sets the current country code.
+ 
+  Input                                     Output
+  ══════════════════════════════            ══════════════════════════════
+  If getting internationaliza-              If function successful
+   tion information                         Carry Flag=clear
+  AH=38H                                    and, if getting international-
+  AL=0  to get "current" coun-              ization information
+         try information                    BX=country code
+  DS:DX=segment:offset of buffer            DS:DX=segment:offset of buffer
+         for returned information            holding internationalization
+  [3.0+]                                     information filled in as
+  AH=38H                                     follows:
+  AL=0  to get "current" coun-               (for PC-DOS 2.0 and 2.1)
+         try information                    Byte(s)   Contents
+     1-FEH  to get information              00H-01H   date format
+             for countries with                       0=USA    m d y
+             code &lt; 255                               1=Europe d m y
+     FFH    to get information                        2=Japan  y m d
+             for countries with             02H-03H   ASCIIZ currency
+             code &gt;= 255                               symbol
+  BX=country code, if AL = FFH              04H-05H   ASCIIZ thousands
+  DS:DX=segment:offset of buffer                       separator
+         for returned information           06H-07H   ASCIIZ decimal
+  If setting current country code                      separator
+   (MS-DOS versions 3.0 and later)          08H-1FH  reserved
+  AH=38H                                    (for MS-DOS versions 2.0 and
+  AL=1-0FEH  country code for coun-          later, PC-DOS versions 3.0
+              tries with code &lt; 255          and later)
+     0FFH  for countries with code          Byte(s)   Contents
+            &gt;= 255                          00H-01H   date format
+  BX=country code, if AL = 0FFH                       0=USA    m d y
+  DX=FFFFH                                            1=Europe d m y
+                                                      2=Japan  y m d
+                                            02H-06H   ASCIIZ currency
+                                                       symbol string
+                                            07H-08H   ASCIIZ thousands
+                                                       separator char-
+                                                       acter
+                                            09H-0AH   ASCIIZ decimal
+                                                       separator char-
+                                                       acter
+                                            0BH-0CH   ASCIIZ date sep-
+                                                       arator charactor
+                                            0DH-0EH   ASCIIZ time sep-
+                                                       arator charactor
+                                            0FH       currency format
+                                                      bit 0=0 if cur-
+                                                       rency symbol
+                                                       precedes value
+                                                      bit 0=1 if cur-
+                                                       rency symbol
+                                                       follows value
+                                                      bit 1=0 if no
+                                                       space between
+                                                       value and cur-
+                                                       rency symbol
+                                                      bit 1=1 if one
+                                                       space between
+                                                       value and cur-
+                                                       rency symbol
+                                                      bit 2=0 if cur-
+                                                       rency symbol
+                                                       and decimal are
+                                                       separate
+                                                      bit 2=1 if cur-
+                                                       rency symbol
+                                                       replaces dec-
+                                                       imal separator
+                                             10H      number of digits
+                                                       after decimal in
+                                                       currency
+                                             11H      time format
+                                                      bit0=0 if 12-hour
+                                                       clock
+                                                      bit0=1 if 24-hour
+                                                       clock
+                                             12H-15H  case-map call
+                                                       address
+                                             16H-17H  ASCIIZ data-list
+                                                       separator
+                                             18H-21H  reserved
+                                             If function unsuccessful
+                                             Carry flag=set
+                                             AX=error code
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

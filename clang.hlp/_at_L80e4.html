@@ -1,0 +1,105 @@
+<html>
+
+<head>
+<title>RECORDS1.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* RECORDS1.C illustrates reading and writing of file records using seek
+ * functions including:
+ *      fseek       rewind      ftell
+ *
+ * Other general functions illustrated include:
+ *      tmpfile     _rmtmp      fread       fwrite
+ *
+ * Also illustrated:
+ *      struct
+ *
+ * See <a href='_at_L80e5.html'>RECORDS2.C</a> for a version of this program using fgetpos and fsetpos.
+ */
+ 
+#include &lt;stdio.h&gt;
+#include &lt;io.h&gt;
+#include &lt;string.h&gt;
+ 
+/* File record */
+struct RECORD
+{
+    int     integer;
+    long    doubleword;
+    double  realnum;
+    char    string[15];
+} filerec = { 0, 1, 10000000.0, "eel sees tar" };
+ 
+void main()
+{
+    int c, newrec;
+    size_t recsize = sizeof( filerec );
+    FILE *recstream;
+    long recseek;
+ 
+    /* Create and open temporary file. */
+    recstream = tmpfile();
+ 
+    /* Write 10 unique records to file. */
+    for( c = 0; c &lt; 10; c++ )
+    {
+        ++filerec.integer;
+        filerec.doubleword *= 3;
+        filerec.realnum /= (c + 1);
+        _strrev( filerec.string );
+ 
+        fwrite( &amp;filerec, recsize, 1, recstream );
+    }
+ 
+    /* Find a specified record. */
+    do
+    {
+        printf( "Enter record betweeen 1 and 10 (or 0 to quit): " );
+        scanf( "%d", &amp;newrec );
+ 
+        /* Find and display valid records. */
+        if( (newrec &gt;= 1) &amp;&amp; (newrec &lt;= 10) )
+        {
+            recseek = (long)((newrec - 1) * recsize);
+            fseek( recstream, recseek, SEEK_SET );
+ 
+            fread( &amp;filerec, recsize, 1, recstream );
+ 
+            printf( "Integer:\t%d\n", filerec.integer );
+            printf( "Doubleword:\t%ld\n", filerec.doubleword );
+            printf( "Real number:\t%.2f\n", filerec.realnum );
+            printf( "String:\t\t%s\n\n", filerec.string );
+        }
+    } while( newrec );
+ 
+    /* Starting at first record, scan each for specific value. The following
+     * line is equivalent to:
+     *      fseek( recstream, 0L, SEEK_SET );
+     */
+    rewind( recstream );
+ 
+    do
+    {
+        fread( &amp;filerec, recsize, 1, recstream );
+    } while( filerec.doubleword &lt; 1000L );
+ 
+    recseek = ftell( recstream );
+    /* Equivalent to: recseek = fseek( recstream, 0L, SEEK_CUR ); */
+    printf( "\nFirst doubleword above 1000 is %ld in record %d\n",
+            filerec.doubleword, recseek / recsize );
+ 
+    /* Close and delete temporary file. */
+    _rmtmp();
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

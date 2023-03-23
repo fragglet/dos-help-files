@@ -1,0 +1,41 @@
+<html>
+
+<head>
+<title>OpenFile</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* OpenFile - Opens specified file for reading or writing. See the CopyFile
+;* procedure for another example of using DOS Function 3Dh to open files.
+;*
+;* Shows:   DOS Function - 3Dh (Open File)
+;*
+;* Params:  access - Access code:  0 = read    1 = write    2 = read/write
+;*          fspec - Pointer to ASCIIZ file specification
+;*
+;* Return:  Short integer with file handle or -1 for error
+ 
+OpenFile PROC \
+        USES ds, \
+        access:WORD, fspec:PTR BYTE
+ 
+        LoadPtr ds, dx, fspec           ; Point DS:DX to file spec
+        mov     ax, access              ; AL = access code
+        mov     ah, 3Dh                 ; AH = function number
+        int     21h                     ; Open file
+        jnc     exit                    ; If ok, return AX = handle
+        mov     ax, -1                  ; Else set error code
+exit:   ret
+ 
+OpenFile ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,94 @@
+<html>
+
+<head>
+<title>CVx and MKx$ Families Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the MKS$ and CVS functions to convert values to and from
+'strings for storage in a random-access file.
+ 
+'If you run this program, you will be prompted to enter an account number.
+'The account numbers in the sample data file ACCOUNT.INF are 1 through 5.
+ 
+'Define a user type for the data records.
+TYPE Buffer
+   AccName AS STRING * 25
+   Check   AS STRING * 4
+END TYPE
+'Define a variable of the variable type.
+DIM BankBuffer AS Buffer
+OPEN "ACCOUNT.INF" FOR RANDOM AS #1 LEN = 29
+CLS
+RESTORE
+READ AccName$, Check
+I% = 0
+DO WHILE UCASE$(AccName$) &lt;&gt; "END"
+   I% = I% + 1
+   BankBuffer.AccName = AccName$
+   BankBuffer.Check = MKS$(Check)
+   PUT #1, I%, BankBuffer
+   READ AccName$, Check$
+   IF AccName$ = "END" THEN EXIT DO
+LOOP
+CLOSE #1
+ 
+DATA "Bob Hartzell", 300
+DATA "Alice Provan", 150
+DATA "Alex Landow", 75
+DATA "Walt Riley", 50
+DATA "Georgette Gump", 25
+DATA "END", 0
+ 
+ 
+OPEN "ACCOUNT.INF" FOR RANDOM AS #2 LEN = 29
+FIELD #2, 25 AS AccName$, 4 AS Check$
+DollarFormat$ = "$$#####.##"
+DO
+   PRINT
+   DO
+      CLS
+      INPUT "Enter account # to update: ", Rec%
+      GET #2, Rec%                               'Get the record
+      PRINT : PRINT "This is the account for "; AccName$
+      PRINT : INPUT "Is this the account you wanted"; R$
+   LOOP WHILE UCASE$(MID$(R$, 1, 1)) &lt;&gt; "Y"
+   'Convert string to single-precision value.
+   Checkamt! = CVS(Check$)
+   PRINT
+   PRINT "The opening balance for this account is";
+   PRINT USING DollarFormat$; Checkamt!
+   PRINT : PRINT "Enter the checks and cash withdrawals for this"
+   PRINT "account below. Enter 0 when finished."
+   PRINT
+   DO
+      INPUT "Enter amount -&gt; ", Checkout!
+      Checkamt! = Checkamt! - Checkout!
+   LOOP UNTIL Checkout! = 0
+   PRINT
+   PRINT "Enter the deposits for this account below."
+   PRINT "Enter 0 when finished."
+   PRINT
+   DO
+      INPUT "Enter amount -&gt;", Checkin!: Checkamt! = Checkamt! + Checkin!
+   LOOP UNTIL Checkin! = 0
+   PRINT
+   PRINT "The closing balance for this account is";
+   PRINT USING DollarFormat$; Checkamt!
+   'Convert single-precision number to string.
+   LSET Check$ = MKS$(Checkamt!)
+   PUT #2, Rec%                                  'Store the record.
+   PRINT : INPUT "Update another"; R$
+LOOP UNTIL UCASE$(MID$(R$, 1, 1)) &lt;&gt; "Y"
+CLOSE #2
+KILL "ACCOUNT.INF"
+END
+
+</pre>
+</body>
+
+</html>

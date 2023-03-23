@@ -1,0 +1,160 @@
+<html>
+
+<head>
+<title>Case<t></title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                              <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──P-Code Instructions───────────────────────────────────────────────────────
+ 
+  Syntax
+ 
+  Case&lt;t&gt;
+ 
+  /* Perform Switch/Case operation using top word/long of stack */
+ 
+  Description
+ 
+  Implement case statements. Each case instruction is followed by one or
+  more case entries. Each entry starts with a one- or two-byte control
+  header. The remaining bytes in a case entry describe a case value or
+  range of case values and list target addresses for each case value. The
+  target addresses are pc-relative to the first byte following the Case&lt;t&gt;
+  instruction ("pc" refers to the p-code instruction pointer).
+ 
+  Each case value can be either a byte or a word. For the CaseL
+  instruction, the value can be a long. Each pc-relative address can be
+  either a byte or word.
+ 
+  The control header record determines how and entry is decoded. The
+  structure below describes the control header format, assuming an 80x86
+  memory layout:
+ 
+  struct caseEntry
+           {
+           word cShortRange    : 5;
+           word fNear          : 1;
+           word fWord          : 1;
+           word fEnd           : 1;
+           word cExtendedRange : 7;
+           word fLong          : 1;
+           } caseEntry;
+ 
+      caseIP = IP;        // Get current IP
+      nextIP = PopW();    // Get break address
+      swexp&lt;t&gt; = Pop&lt;t&gt;();     // Get switch expression
+      PushW(nextIP);      // Push break address
+ 
+      for(;;)
+           {
+ 
+           // Get first byte of case entry and determine
+           // if it is a short or long entry.
+ 
+           *((byte *) caseEntry) = *IP++;
+           if (caseEntry.cShortRange == 0x1f)
+                {
+ 
+                // Get value and range of long case
+                // entry.
+ 
+                *(((byte *) caseEntry)+1)  = *IP++;
+                if (caseEntry.fLong)
+                     {
+                     val&lt;t&gt; = (&lt;t&gt;) *((long *) IP);
+                     IP += sizeof(long);
+                     }
+                else if (caseEntry.fWord)
+                     {
+                     val&lt;t&gt; = (&lt;t&gt;) *((word *) IP);
+                     IP += sizeof(word);
+                     }
+                else
+                     {
+                     val&lt;t&gt; = (&lt;t&gt;) *((byte *) IP);
+                     IP += sizeof(byte);
+                     }
+ 
+                range = caseEntry.cExtendedRange;
+ 
+                }
+           else
+                {
+ 
+                // Get value and range of short case
+                // entry.
+ 
+                if (caseEntry.fWord)
+                     {
+                     val&lt;t&gt; = (&lt;t&gt;) *((word *) IP);
+                     IP += sizeof(word);
+                     }
+                else
+                     {
+                     val&lt;t&gt; = (&lt;t&gt;) *((byte *) IP);
+                     IP += sizeof(byte);
+                     }
+ 
+                range = caseEntry.cShortRange;
+ 
+                }
+ 
+           // Determine if the switch value falls
+           // within this case range.
+ 
+           if ((val&lt;t&gt; &lt;= swval&lt;t&gt;)
+           &amp;&amp; (swval&lt;t&gt; &lt;= (val&lt;t&gt; + range))
+                {
+ 
+                // Get word or byte target address
+ 
+                i = swval&lt;t&gt; - val&lt;t&gt;;
+                if (caseEntry.fNear)
+                     IP = ((word *)IP)[i];
+                else
+                     IP = ((byte *)IP)[i]
+ 
+                // Make address relative to Case
+                // instruction.
+ 
+                IP += caseIP;
+ 
+                // Entry found, IP updated so stop.
+ 
+                break;
+ 
+                }
+ 
+           // Case entry does not match, advance IP.
+ 
+           if (caseEntry.fNear)
+                IP += (range+1) * sizeof(word);
+           else
+                IP += (range+1) * sizeof(byte);
+ 
+           // Test for last entry.
+ 
+           if (caseEntry.fEnd)
+                    break;
+           }
+ 
+  NOTE: It is assumed that a PushIP instruction is placed immediately
+        before the Case&lt;t&gt; instruction, and that a PopIP instruction is
+        placed immediately after the case entry table if no default has
+        been specified.
+ 
+        Each case sequence that ends in a break statment is terminated by
+        PopIP. The target of the PushIP instruction must be the first
+        instruction following the Case entry table.
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

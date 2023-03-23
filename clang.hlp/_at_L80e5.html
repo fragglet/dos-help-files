@@ -1,0 +1,89 @@
+<html>
+
+<head>
+<title>RECORDS2.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* RECORDS2.C illustrates reading and writing of file records with the
+ * following functions:
+ *      fgetpos     fsetpos
+ *
+ * See <a href='_at_L80e4.html'>RECORDS1.C</a> for a version using fseek, rewind, and ftell.
+ */
+ 
+#include &lt;stdio.h&gt;
+#include &lt;io.h&gt;
+ 
+/* File record */
+struct RECORD
+{
+    int     integer;
+    long    doubleword;
+    double  realnum;
+} filerec = { 0, 1, 10000000.0 };
+ 
+void main()
+{
+    int c, newrec;
+    size_t recsize = sizeof( filerec );
+    FILE *recstream;
+    fpos_t recpos;
+ 
+    /* Create and open temporary file. */
+    recstream = tmpfile();
+ 
+    /* Write 10 unique records to file. */
+    for( c = 0; c &lt; 10; c++ )
+    {
+        ++filerec.integer;
+        filerec.doubleword *= 3;
+        filerec.realnum /= (c + 1);
+ 
+        fwrite( &amp;filerec, recsize, 1, recstream );
+    }
+ 
+    /* Find a specified record. */
+    do
+    {
+        printf( "Enter record betweeen 1 and 10 (or 0 to quit): " );
+        scanf( "%d", &amp;newrec );
+ 
+        /* Find and display valid records. */
+        if( (newrec &gt;= 1) &amp;&amp; (newrec &lt;= 10) )
+        {
+            recpos = (fpos_t)((newrec - 1) * recsize);
+            fsetpos( recstream, &amp;recpos );
+            fread( &amp;filerec, recsize, 1, recstream );
+ 
+            printf( "Integer:\t%d\n", filerec.integer );
+            printf( "Doubleword:\t%ld\n", filerec.doubleword );
+            printf( "Real number:\t%.2f\n", filerec.realnum );
+        }
+    } while( newrec );
+ 
+    /* Starting at first record, scan each for specific value. */
+    recpos = (fpos_t)0;
+    fsetpos( recstream, &amp;recpos );
+    do
+        fread( &amp;filerec, recsize, 1, recstream );
+    while( filerec.doubleword &lt; 1000L );
+ 
+    fgetpos( recstream, &amp;recpos );
+    printf( "\nFirst doubleword above 1000 is %ld in record %d\n",
+            filerec.doubleword, recpos / recsize );
+ 
+    /* Close and delete temporary file. */
+    _rmtmp();
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

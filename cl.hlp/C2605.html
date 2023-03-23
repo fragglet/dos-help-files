@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<title>C2605</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='../clang.hlp/clang_dot_contents.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     Compiler error C2605
+ 
+     overloaded functions 'class::function' do not have same access
+ 
+     The specified overloaded functions have different access but
+     but were named in an access declaration.
+ 
+     Access cannot be adjusted for overloaded functions that do not
+     have the same access.
+ 
+     The following are examples of this error:
+ 
+          struct X
+          {
+          private:
+             int f();
+          protected:
+             int f(int);
+          public:
+             int f(int,int);
+          };
+ 
+          struct A : public X
+          {
+          protected:
+             X::f;       // error
+          public:
+             X::f;       // error
+          };
+ 
+          struct B : protected X
+          {
+          protected:
+             X::f;       // error
+          public:
+             X::f;       // error
+          };
+ 
+          struct C : private X
+          {
+          protected:
+             X::f;       // error
+          public:
+             X::f;       // error
+          };
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

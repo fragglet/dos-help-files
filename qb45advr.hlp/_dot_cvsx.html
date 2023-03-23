@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>CVSMBF Function Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#CVSMBF'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='_dot_cvsr.html'>Details<span class='grhilite'>►</span></a>     <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>CVSMBF Function Programming Example</b>
+ 
+The following program reads records from a random-access file containing
+Microsoft Binary format real numbers stored as strings. Each record
+contains a student's name and a test score.
+ 
+'
+' Define a user type for the data records.
+'
+TYPE StudentRec
+   NameField AS STRING * 20
+   Score AS STRING * 4
+END TYPE
+' Define a variable of the user type.
+DIM Rec AS StudentRec
+'********************************************************************
+' This part of the program is an insert whose only function is to
+' create a random-access file to be used by the second part of the
+' program, which demonstrates the CVSMBF function
+'********************************************************************
+OPEN "TESTDAT1.DAT" FOR RANDOM AS #1 LEN = LEN(Rec)
+CLS
+RESTORE
+READ NameField$, Score$
+I = 0
+DO WHILE UCASE$(NameField$) &lt;&gt; "END"
+   I = I + 1
+   Rec.NameField = NameField$
+   Rec.Score = Score$
+   PUT #1, I, Rec
+   READ NameField$, Score$
+   IF NameField$ = "END" THEN EXIT DO
+LOOP
+CLOSE #1
+'
+  DATA "John Simmons","100"
+  DATA "Allie Simpson","95"
+  DATA "Tom Tucker","72"
+  DATA "Walt Wagner","90"
+  DATA "Mel Zucker","92"
+  DATA "END","0"
+'********************************************************************
+' This part of the program demonstrates the CVSMBF function
+'********************************************************************
+' Open the file for input.
+OPEN "TESTDAT1.DAT" FOR RANDOM AS #1 LEN=LEN(Rec)
+Max = LOF(1) / LEN(Rec)
+' Read and print all of the records.
+FOR I = 1 TO Max
+   ' Read a record into the user-type variable Rec.
+   GET #1, I, Rec
+   ' Convert the score from a string containing a Microsoft
+   ' Binary format number to an IEEE-format number.
+   ScoreOut = CVSMBF(Rec.Score)
+   ' Display the name and score.
+   PRINT Rec.NameField, ScoreOut
+NEXT I
+CLOSE #1
+KILL "TESTDAT1.DAT"
+END
+ 
+
+</pre>
+</body>
+
+</html>

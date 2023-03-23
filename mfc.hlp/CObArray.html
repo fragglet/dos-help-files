@@ -1,0 +1,122 @@
+<html>
+
+<head>
+<title>class CObArray</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='CObject.html'>CObject</a><span class='grhilite'>►</span>                                     <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span></i>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  Description
+ 
+  The CObArray class supports arrays of CObject pointers. These object
+  arrays are similar to C arrays, but they can dynamically shrink and grow
+  as necessary.
+ 
+  Array indexes always start at position 0. You can decide whether to fix
+  the upper bound or allow the array to expand when you add elements past
+  the current bound. Memory is allocated contiguously to the upper bound,
+  even if some elements are null.
+ 
+  The elements of a CObArray object must fit in one 64K segment together
+  with approximately 100 allocation overhead bytes. If CObject pointers
+  are 16-bit near pointers (as they are in the small and medium memory
+  models), then an array size limit is about 32,000 elements, but because
+  there is only one data segment, the objects themselves will probably
+  exhaust memory before the array does. If CObject pointers are 32-bit far
+  pointers (as they are in the compact and large memory models), then an
+  array size limit is about 16,000 elements.
+ 
+  As with a C array, the access time for a CObArray indexed element is
+  constant and is independent of the array size.
+ 
+  CObArray incorporates the IMPLEMENT_SERIAL macro to support
+  serialization and dumping of its elements. If an array of CObject
+  pointers is stored to an archive, either with the overloaded insertion
+  operator or with the Serialize member function, each CObject element is,
+  in turn, serialized along with its array index.
+ 
+  If you need a dump of individual CObject elements in an array, you must
+  set the depth of the CDumpContext object to 1 or greater.
+ 
+  When a CObArray object is deleted, or when its elements are removed,
+  only the CObject pointers are removed, not the objects they reference.
+ 
+  #include &lt;afxcoll.h&gt;
+ 
+  See Also
+ 
+  <span class='grhilite'>◄</span><a href='CStringArray.html'>CStringArray</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='CPtrArray.html'>CPtrArray</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='CByteArray.html'>CByteArray</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='CWordArray.html'>CWordArray</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='CDWordArray.html'>CDWordArray</a><span class='grhilite'>►</span>
+ 
+  Derivation
+ 
+  Array class derivation is similar to list derivation. For details on the
+  derivation of a special-purpose list class, see the tutorial in the
+  &lt;Class Library User's Guide&gt;.
+ 
+  NOTE: You must use the IMPLEMENT_SERIAL macro in the implementation of
+        your derived class if you intend to serialize the array.
+ 
+  Public Members
+ 
+  Construction/Destruction
+ 
+  <span class='grhilite'>◄</span><a href='CObArray_cln__cln_CObArray.html'>CObArray</a><span class='grhilite'>►</span>   Constructs an empty array for CObject pointers.
+ 
+  <span class='grhilite'>◄</span><a href='~CObArray.html'>~CObArray</a><span class='grhilite'>►</span>   Destroys a CObArray object.
+ 
+  Bounds
+ 
+  <span class='grhilite'>◄</span><a href='GetSize.html'>GetSize</a><span class='grhilite'>►</span>         Gets the number of elements in this array.
+ 
+  <span class='grhilite'>◄</span><a href='GetUpperBound.html'>GetUpperBound</a><span class='grhilite'>►</span>   Returns the largest valid index.
+ 
+  <span class='grhilite'>◄</span><a href='SetSize.html'>SetSize</a><span class='grhilite'>►</span>         Sets the number of elements to be contained in this
+                    array.
+ 
+  Operations
+ 
+  <span class='grhilite'>◄</span><a href='FreeExtra.html'>FreeExtra</a><span class='grhilite'>►</span>   Frees all unused memory above the current upper bound.
+ 
+  <span class='grhilite'>◄</span><a href='CObArray_cln__cln_RemoveAll.html'>RemoveAll</a><span class='grhilite'>►</span>   Removes all the elements from this array.
+ 
+  Element Access
+ 
+  <span class='grhilite'>◄</span><a href='CObArray_cln__cln_GetAt.html'>GetAt</a><span class='grhilite'>►</span>       Returns the value at a given index.
+ 
+  <span class='grhilite'>◄</span><a href='CObArray_cln__cln_SetAt.html'>SetAt</a><span class='grhilite'>►</span>       Sets the value for a given index; array not allowed to
+                grow.
+ 
+  <span class='grhilite'>◄</span><a href='ElementAt.html'>ElementAt</a><span class='grhilite'>►</span>   Returns a temporary reference to the element pointer
+                within the array.
+ 
+  Growing the Array
+ 
+  <span class='grhilite'>◄</span><a href='SetAtGrow.html'>SetAtGrow</a><span class='grhilite'>►</span>   Sets the value for a given index; grows the array if
+                necessary.
+ 
+  <span class='grhilite'>◄</span><a href='Add.html'>Add</a><span class='grhilite'>►</span>         Adds an element to the end of the array; grows the array
+                if necessary.
+ 
+  Insertion/Removal
+ 
+  <span class='grhilite'>◄</span><a href='InsertAt.html'>InsertAt</a><span class='grhilite'>►</span>   Inserts an element (or all the elements in another array)
+               at a specified index.
+ 
+  <span class='grhilite'>◄</span><a href='CObArray_cln__cln_RemoveAt.html'>RemoveAt</a><span class='grhilite'>►</span>   Removes an element at a specific index.
+ 
+  Operators
+ 
+  <span class='grhilite'>◄</span><a href='CObArray_cln__cln_operator_[].html'>operator []</a><span class='grhilite'>►</span>   Sets or gets the element at the specified index.
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

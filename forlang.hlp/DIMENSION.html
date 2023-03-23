@@ -1,0 +1,153 @@
+<html>
+
+<head>
+<title>DIMENSION</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='specstmnt.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hv'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hvx'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────DIMENSION──────────────────────────────────────────────────────────────
+ 
+     Action
+ 
+     Declares a variable as an array and specifies its dimensions and
+     bounds.
+ 
+     Syntax
+ 
+     DIMENSION array [ [attrs] ] ({ [lower:] upper | : }
+     [,{[lower:]upper | :}... ])
+ 
+     Parameter          Description
+ 
+     array              Array name. Separate multiple arrays with commas.
+ 
+     [attrs]            A list of attributes separated by commas. Valid
+                        attributes are: ALIAS, ALLOCATABLE, C, EXTERN,
+                        FAR, HUGE, NEAR, PASCAL, REFERENCE, VALUE.
+ 
+     lower              Lower dimension bound. Default is one.
+ 
+     upper              Upper dimension bound. Greater than or equal to
+                        &lt;lower&gt; bound.
+ 
+     Remarks
+ 
+     You can use any of the following as dimension bounds:
+ 
+     Bound                      Description
+ 
+     Arithmetic constant        Produces an array with a constant size.
+                                The arithmetic value is truncated to an
+                                integer.
+ 
+     Nonarray-integer formal    Produces an adjustable-size array with
+     argument or nonarray-      dimensions equal to the initial value
+     integer variable in a      of the variable upon entry to the
+     common block in the same   subprogram.
+     program unit
+ 
+     An arithmetic              Produces an adjustable-size array with
+     expression                 dimensions equal to the expression. The
+                                expression is truncated to an integer.
+                                Expressions cannot contain references
+                                to functions or array elements.
+ 
+     An asterisk (*)            Produces an assumed-size array in a
+                                subprogram with dimension size the same
+                                as the array in the calling program. Can
+                                only be used as &lt;upper&gt; in the last
+                                dimension of &lt;array&gt;. If &lt;upper&gt; is
+                                an asterisk, then array is an "assumed-
+                                size" array. The following DIMENSION
+                                statement defines an assumed-size array
+                                in a subprogram:
+ 
+                                    DIMENSION data (19,*)
+ 
+                               At execution time, the array data is
+                               given the size of the corresponding
+                               array in the calling program.
+ 
+     Within noncharacter arrays, all elements begin on even-byte
+     (word) addresses. Within character arrays (and arrays of
+     INTEGER*1 or LOGICAL*1 variables), elements always begin at the
+     next available byte (odd or even).
+ 
+     All adjustable- and assumed-size arrays, as well as the bounds
+     for adjustable-size arrays, must be formal arguments to the
+     program unit in which they appear. Allocatable arrays must not be
+     formal arguments.
+ 
+     Examples
+ 
+     The following program dimensions two arrays:
+ 
+           DIMENSION a(2,3), v(10)
+           CALL Subr (a, 2, v)
+           .
+           .
+           .
+           END
+ 
+           SUBROUTINE Subr (matrix, rows, vector)
+           REAL MATRIX, VECTOR
+           INTEGER ROWS
+           DIMENSION MATRIX (ROWS,*), VECTOR (10),
+        +  LOCAL (2,4,8)
+           MATRIX (1,1) = VECTOR (5)
+           .
+           .
+           .
+           END
+ 
+     The following program uses assumed- and adjustable-size arrays:
+ 
+           REAL     magnitude, minimum
+           INTEGER  vecs, space, vec
+ 
+     C     Array data values are assigned in column-major order
+           DIMENSION  vecs(3, 4)
+           DATA       vecs /1,1,1,2, 1,0,3,4, 7,-2,2,1 /
+ 
+     C     Find minimum magnitude
+           minimum = 1E10
+           DO 100 vec = 1, 4
+ 
+     C     Call the function magnitude to calculate the magnitude of
+     C     vector vec.
+              minimum = AMIN1(minimum, magnitude(vecs, 3, vec))
+       100 CONTINUE
+ 
+           WRITE (*, 110) minimum
+       110 FORMAT (' Vector closest to origin has a magnitude of',
+          +          F12.6)
+           END
+ 
+     C     Function returns the magnitude of the j-th column vec in a
+     C     matrix. Note that, because of the assumed-size array, the
+     C     subroutine does not need to know the number of columns in
+     C     the matrix. It only requires that the specified column
+     C     vector be a valid column in the matrix. The number of rows
+     C     must be passed so the function can do the sum.
+ 
+           REAL FUNCTION Magnitude (matrix, rows, j)
+ 
+           REAL       sum
+           INTEGER    matrix, rows, i, j
+           DIMENSION  matrix (rows,*)
+ 
+           sum = 0.0
+           DO 100 i = 1, rows
+           sum = sum + matrix(i,j)**2
+           100  CONTINUE
+           magnitude = SQRT (sum)
+           END
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

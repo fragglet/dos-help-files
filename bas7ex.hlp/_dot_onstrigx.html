@@ -1,0 +1,115 @@
+<html>
+
+<head>
+<title>Joystick Event Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the EVENT and STRIG statements to enable joystick event
+'trapping for two buttons on each of two joysticks.  The ON STRIG statement
+'passes control to an event-handling routine when a button is pressed.
+'The STRIG function is used to determine which button was pressed, and
+'the STICK function returns the position of both joysticks.
+ 
+CLS
+'Turn on event processing.
+EVENT ON
+ 
+'Enable the upper and lower buttons on both joysticks.
+STRIG(0) ON  'Lower button, joystick A
+STRIG(2) ON  'Lower button, joystick B
+STRIG(4) ON  'Upper button, joystick A
+STRIG(6) ON  'Upper button, joystick B
+ 
+'Set up joystick event processing for each button.
+ON STRIG(0) GOSUB JoyButtonHandler
+ON STRIG(2) GOSUB JoyButtonHandler
+ON STRIG(4) GOSUB JoyButtonHandler
+ON STRIG(6) GOSUB JoyButtonHandler
+ 
+LOCATE 22, 6
+PRINT "Press a button on either joystick to see a complete joystick report."
+LOCATE 23, 20
+PRINT "Press ANY keyboard key to end the program."
+ 
+'Infinite loop waiting for a Joystick event or keyboard key input.
+DO
+LOOP WHILE INKEY$ = ""
+ 
+WrapItUp:
+    CLS
+    STRIG(0) OFF
+    STRIG(2) OFF
+    STRIG(4) OFF
+    STRIG(6) OFF
+    END
+ 
+JoyButtonHandler:
+    'Print a label on screen.
+    LOCATE 10, 14: PRINT "Joystick A"
+    LOCATE 10, 45: PRINT "Joystick B"
+    LOCATE 22, 1: PRINT STRING$(80, 32)
+    DO
+        'Button 1, Joystick A.
+        IF STRIG(1) THEN
+                ButtonStatus$ = "DOWN"
+        ELSE
+                ButtonStatus$ = "UP  "
+        END IF
+        EVENT OFF
+        LOCATE 16, 10: PRINT "Button 1 is "; ButtonStatus$
+        EVENT ON
+        'Button 1, Joystick B.
+        IF STRIG(3) THEN
+                ButtonStatus$ = "DOWN"
+        ELSE
+                ButtonStatus$ = "UP  "
+        END IF
+        EVENT OFF
+        LOCATE 16, 42: PRINT "Button 1 is "; ButtonStatus$
+        EVENT ON
+ 
+        'Button 2, Joystick A.
+        IF STRIG(5) THEN
+                ButtonStatus$ = "DOWN"
+        ELSE
+                ButtonStatus$ = "UP  "
+        END IF
+        EVENT OFF
+        LOCATE 18, 10: PRINT "Button 2 is "; ButtonStatus$
+        EVENT ON
+ 
+        'Button 2, Joystick B.
+        IF STRIG(7) THEN
+                ButtonStatus$ = "DOWN"
+        ELSE
+                ButtonStatus$ = "UP  "
+        END IF
+        EVENT OFF
+        LOCATE 18, 42: PRINT "Button 2 is "; ButtonStatus$
+        EVENT ON
+        GOSUB UpdateXY
+    LOOP WHILE INKEY$ = ""
+    RETURN WrapItUp
+ 
+UpdateXY:
+    EVENT OFF
+    LOCATE 12, 10: PRINT USING "X Position = ###"; STICK(0)
+    LOCATE 14, 10: PRINT USING "Y Position = ###"; STICK(1)
+    LOCATE 12, 42: PRINT USING "X Position = ###"; STICK(2)
+    LOCATE 14, 42: PRINT USING "Y Position = ###"; STICK(3)
+    EVENT ON
+    RETURN
+ 
+ 
+ 
+ 
+
+</pre>
+</body>
+
+</html>

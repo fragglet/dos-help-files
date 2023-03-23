@@ -1,0 +1,144 @@
+<html>
+
+<head>
+<title>VIDMODES.PAS</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.index'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM vidmodes;
+ 
+{ VIDMODES.PAS illustrates configuration and text window functions
+  including:
+ 
+      _GetTextPosition    _SetTextPosition    _SetVideoMode
+      _GetVideoConfig     _SetTextWindow      _SetVideoModeRows
+      _OutText
+}
+ 
+USES
+    MSGraph;
+ 
+TYPE
+    rowtype  = ARRAY [0..4] OF Integer;
+    modetype = ARRAY [0..16] OF Integer;
+    nametype = ARRAY [0..16] OF STRING[12];
+ 
+CONST
+    rows  : rowtype  = ( 60, 50, 43, 30, 25 );
+ 
+    modes : modetype = ( _TextBW40,
+           _TextC40,     _TextBW80,    _TextC80,      _MRes4Color,
+           _MResNoColor, _HResBW,      _TextMono,     _HercMono,
+           _MRes16Color, _HRes16Color, _EResNoColor,  _EResColor,
+           _VRes2Color,  _VRes16Color, _MRes256Color, _OResColor );
+ 
+    names : nametype = ( 'TEXTBW40',
+           'TEXTC40',     'TEXTBW80',    'TEXTC80',      'MRES4COLOR',
+           'MRESNOCOLOR', 'HRESBW',      'TEXTMONO',     'HERCMONO',
+           'MRES16COLOR', 'HRES16COLOR', 'ERESNOCOLOR',  'ERESCOLOR',
+           'VRES2COLOR',  'VRES16COLOR', 'MRES256COLOR', 'ORESCOLOR' );
+ 
+VAR
+    error_code,
+    i, j, row   : Integer;
+    vc          : _VideoConfig;
+    r, c        : Integer;
+    old         : Boolean;
+ 
+{================================ itos =================================
+  The itos function returns a string representing its integer parameter.
+}
+ 
+FUNCTION itos( VAR Int : Integer ) : STRING;
+ 
+VAR
+    tp : STRING;
+ 
+BEGIN
+    Str( Int, tp );
+    itos := tp;
+END;
+ 
+{============================ main program ============================}
+ 
+BEGIN
+ 
+    old := _DisplayCursor( False );
+ 
+    { Try each mode. }
+    FOR i := 0 TO 16 DO
+        BEGIN
+        FOR j := 0 TO 4 DO
+            BEGIN
+            { Try each possible number of rows. }
+            row := _SetVideoModeRows( modes[i], rows[j] );
+            IF ( row = rows[j] ) THEN
+                BEGIN
+                _GetVideoConfig( vc );
+                _SetTextWindow( 2, 5, vc.NumTextRows - 2,
+                                      vc.NumTextCols - 2);
+                _GetTextPosition( r, c );
+                _OutText( 'Video mode:   ' );
+                _OutText( names[i] );
+                Inc( r );
+                _SetTextPosition( r, c );
+                _OutText( 'X pixels:     ' );
+                _OutText( itos( vc.NumXPixels ) );
+                Inc( r );
+                _SetTextPosition( r, c );
+                _OutText( 'Y pixels:     ' );
+                _OutText( itos( vc.NumYPixels ) );
+                Inc( r );
+                _SetTextPosition( r, c );
+                _OutText( 'Text columns: ' );
+                _OutText( itos( vc.NumTextCols ) );
+                Inc( r );
+                _SetTextPosition( r, c );
+                _OutText( 'Text rows:    ' );
+                _OutText( itos( vc.NumTextRows ) );
+                Inc( r );
+                _SetTextPosition( r, c );
+                _OutText( 'Colors:       ' );
+                _OutText( itos( vc.NumColors ) );
+                Inc( r );
+                _SetTextPosition( r, c );
+                _OutText( 'Bits/pixel:   ' );
+                _OutText( itos( vc.BitsPerPixel ) );
+                Inc( r );
+                _SetTextPosition( r, c );
+                _OutText( 'Video pages:  ' );
+                _OutText( itos( vc.NumVideoPages ) );
+                Inc( r );
+                _SetTextPosition( r, c );
+                _OutText( 'Mode:         ' );
+                _OutText( itos( vc.Mode ) );
+                Inc( r );
+                _SetTextPosition( r, c );
+                _OutText( 'Adapter:      ' );
+                _OutText( itos( vc.Adapter ) );
+                Inc( r );
+                _SetTextPosition( r, c );
+                _OutText( 'Monitor:      ' );
+                _OutText( itos( vc.Monitor ) );
+                Inc( r );
+                _SetTextPosition( r, c );
+                _OutText( 'Memory:       ' );
+                _OutText( itos( vc.Memory ) );
+                Readln;
+                END;
+            END;
+        END;
+    old := _DisplayCursor( True );
+    error_code := _SetVideoMode( _DefaultMode );
+ 
+END.
+ 
+
+</pre>
+</body>
+
+</html>

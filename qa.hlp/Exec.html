@@ -1,0 +1,102 @@
+<html>
+
+<head>
+<title>Exec</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* Exec - Executes a child process.  Exec handles the usual chores associated
+;* with spawning a process:  (1) parsing the command line tail and loading the
+;* FCBs with the first two arguments; (2) setting and restoring the vectors
+;* for Interrupts 1Bh, 23h, and 24h; and (3) querying DOS for the child's
+;* return code.
+;*
+;* Shows:   DOS Functions - 29h (Parse Filename)
+;*                          25h (Set Interrupt Vector)
+;*                          35h (Get Interrupt Vector)
+;*                          4Bh (Execute Program)
+;*                          4Dh (Get Return Code)
+;*
+;* Params:  spec - Pointer to ASCIIZ specification for program file
+;*                 (must include .COM or .EXE extension)
+;*          block - Pointer to parameter block structure
+;*          break - Pointer to new Ctrl-Break (Interrupt 1Bh) handler
+;*          ctrlc - Pointer to new Ctrl-C (Interrupt 23h) handler
+;*          criterr - Pointer to new Critical Error (Interrupt 24h) handler
+;*
+;* Return:  Short integer with child return code, or -1 for EXEC error
+ 
+Exec    PROC \
+        USES ds si di, \
+        spec:PTR BYTE, block:PTR parmblk, break:PTR BYTE, \
+        ctrlc:PTR BYTE, criterr:PTR BYTE
+ 
+        jmp     SHORT @F                ; Jump over data area
+ 
+old_1Bh DD      WORD PTR ?              ; Keep vectors for Interrupts
+old_23h DD      WORD PTR ?              ;   1Bh, 23h, and 24h in
+old_24h DD      WORD PTR ?              ;   code segment
+old_stk DD      WORD PTR ?              ; Keep stack pointer
+ 
+@@:     Vector 1Bh, cs:old_1Bh, break   ; Save, replace Int 1Bh vector
+        Vector 23h, cs:old_23h, ctrlc   ; Save, replace Int 23h vector
+        Vector 24h, cs:old_24h, criterr ; Save, replace Int 24h vector
+ 
+        LoadPtr ds, bx, block           ; Point DS:BX to parameter block
+        push    ds                      ; Save segment address
+        les     di, [bx].fcb1           ; Point ES:DI to first FCB
+        lds     si, [bx].taddr          ; Point DS:SI to command line tail
+        inc     si                      ; Skip over count byte
+ 
+        mov     ax, 2901h               ; Set AH to request Function 29h
+                                        ; AL = flag to skip leading blanks
+        int     21h                     ; Parse command-line into first FCB
+        pop     es                      ; Recover seg addr of parameter block
+        les     di, es:[bx].fcb2        ; Point ES:DI to second FCB
+        mov     ax, 2901h               ; Request DOS Function #29h again
+        int     21h                     ; Parse command-line into second FCB
+ 
+        push    bp                      ; Save only important register
+        mov     WORD PTR cs:old_stk[0], sp
+        mov     WORD PTR cs:old_stk[2], ss
+        LoadPtr es, bx, block           ; ES:BX points to param block
+        LoadPtr ds, dx, spec            ; DS:DX points to path spec
+        mov     ax, 4B00h               ; AH = DOS Function 4Bh
+                                        ; AL = 0 for load and execute
+        int     21h                     ; Execute Program
+        mov     sp, WORD PTR cs:old_stk[0] ; Reset stack pointers
+        mov     ss, WORD PTR cs:old_stk[2]
+        pop     bp                      ; Recover saved register
+ 
+; Restore vectors for Interrupts 1Bh, 23h, and 24h.
+ 
+        mov     ax, 251Bh               ; AH = DOS Function 25h
+                                        ; AL = interrupt number
+        lds     dx, cs:old_1Bh          ; DS:DX = original vector
+        int     21h                     ; Set Interrupt 1Bh Vector
+        mov     al, 23h                 ; AL = interrupt number
+        lds     dx, cs:old_23h          ; DS:DX = original vector
+        int     21h                     ; Set Interrupt 23h Vector
+        mov     al, 24h                 ; AL = interrupt number
+        lds     dx, cs:old_24h          ; DS:DX = original vector
+        int     21h                     ; Set Interrupt 24h Vector
+ 
+        mov     ax, -1                  ; Set error code
+        jc      exit                    ; If EXEC error, exit
+        mov     ah, 4Dh                 ; Else request child's code
+        int     21h                     ; Get Return Code
+        sub     ah, ah                  ; Make short integer
+exit:   ret
+ 
+Exec    ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<title>MIRR# Function Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the MIRR# function to determine the modified internal
+'rate of return for a series of periodic cash flows represented in an
+'array of values.
+ 
+'Note: To run this example you must use a Quick library that includes the
+'procedures contained in one of the financial function library files.
+'The following include file must also be present.
+ 
+'$INCLUDE: 'FINANC.BI'
+ 
+OPTION BASE 1
+CONST PERCENTFORMAT$ = "##.##"
+DEFDBL A-Z
+DIM Status  AS INTEGER, NumFlows  AS INTEGER
+NumFlows% = 6
+DIM Values(NumFlows%) AS DOUBLE
+LoanAPR = .1
+InvestAPR = .12
+ 
+'Read cash flows into Values# array.
+FOR I = 1 TO NumFlows%
+    READ Values#(I)
+NEXT I
+ 
+CLS
+ 
+'Calculate the internal rate of return.
+ReturnRate = MIRR#(Values#(), NumFlows%, LoanAPR, InvestAPR, Status%)
+ 
+'Examine Status% to determine success or failure of MIRR#.
+IF Status% THEN
+ 
+    'If unsuccessful, announce a problem.
+    PRINT "There was an error in calculating the internal rate of return."
+ 
+ELSE
+ 
+    'Display the internal rate of return.
+    PRINT "Suppose you're a commercial fisherman and you've just completed"
+    PRINT "your fifth year of operation. When you started your business,"
+    PRINT "you borrowed $120,000 at 10% annual interest to buy a boat."
+    PRINT
+    PRINT "Your catch yielded $39,000, $30,000, $21,000, 37,000, and $46,000"
+    PRINT "for each of the first five years.  During the first 5 years you"
+    PRINT "reinvested your profits, earning 12% annually."
+    PRINT
+    PRINT "The modified internal rate of return for these cash flow figures"
+    PRINT "is ";
+    PRINT USING PERCENTFORMAT$; ReturnRate * 100;
+    PRINT "%."
+    PRINT
+ 
+END IF
+ 
+'Cost of buying a commercial fishing boat (Negative cash flow).
+DATA -120000
+ 
+'Net income each year for 5 successive years (Positive cash flow).
+DATA 39000,30000,21000,37000,46000
+
+</pre>
+</body>
+
+</html>

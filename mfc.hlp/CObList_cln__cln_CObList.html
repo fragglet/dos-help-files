@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>CObList::CObList</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='CObList.html'>CObList</a><span class='grhilite'>►</span>                                     <span class='grhilite'>◄</span><a href='CObList.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span></i>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  CObList( int nBlockSize = 10 );
+ 
+  Parameter    Description
+ 
+  &lt;nBlockSize&gt; The memory-allocation granularity for extending the list.
+ 
+  Remarks
+ 
+  Constructs an empty CObject pointer list. As the list grows, memory is
+  allocated in units of &lt;nBlockSize&gt; entries. If a memory allocation
+  fails, a CMemoryException is thrown.
+ 
+  Example
+ 
+  Below is a listing of the CObject-derived class CAge used in all the
+  collection examples:
+  // Simple CObject-derived class for CObList examples
+  class CAge : public CObject
+  {
+      DECLARE_SERIAL( CAge )
+  private:
+      int m_years;
+  public:
+      CAge() { m_years = 0; }
+      CAge( int age ) { m_years = age; }
+      CAge( const CAge&amp; a ) { m_years = a.m_years; } // Copy constructor
+      void Serialize( CArchive&amp; ar);
+      void AssertValid() const;
+      const CAge&amp; operator=( const CAge&amp; a )
+      {
+          m_years = a.m_years; return *this;
+      }
+      BOOL operator==(CAge a)
+      {
+          return m_years == a.m_years;
+      }
+   #ifdef _DEBUG
+      void Dump( CDumpContext&amp; dc ) const
+      {
+          CObject::Dump( dc );
+          dc &lt;&lt; m_years;
+      }
+   #endif
+  };
+ 
+  Below is an example of CObList constructor usage:
+  CObList list( 20 );  // List on the stack with blocksize = 20
+ 
+  CObList* plist = new CObList; // List on the heap with default blocksize
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

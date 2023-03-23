@@ -1,0 +1,41 @@
+<html>
+
+<head>
+<title>MakeDir</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* MakeDir - Creates a specified subdirectory.
+;*
+;* Shows:   DOS Function - 39h (Create Directory)
+;*
+;* Params:  pspec - Pointer to ASCIIZ pathname of new subdirectory
+;*
+;* Return:  Short integer with error code
+;*          0 if successful
+;*          1 if create error
+ 
+MakeDir PROC \
+        USES ds, \
+        pspec:PTR BYTE
+ 
+        LoadPtr ds, dx, pspec           ; Point DS:DX to path spec
+        mov     ah, 39h                 ; DOS Function 39h
+        int     21h                     ; Create Directory
+        mov     ax, 0                   ; Set error code, keep flags
+        jnc     exit                    ; Exit if successful
+        inc     ax                      ; Else set error code to 1
+exit:   ret
+ 
+MakeDir ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

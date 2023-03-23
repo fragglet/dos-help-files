@@ -1,0 +1,202 @@
+<html>
+
+<head>
+<title>COMMON Statement Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#COMMON'>Syntax</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../bas7ex.hlp/_dot_chainx.html'>Example</a><span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+COMMON defines global variables for sharing between modules or for chaining
+to another program.
+ 
+<b>COMMON [SHARED][/blockname/] variablelist</b>
+    ■ SHARED indicates that the variables are shared with all SUB or
+      FUNCTION procedures in the module. The SHARED attribute can eliminate
+      the need for a SHARED statement inside SUB or FUNCTION procedures.
+    ■ The blockname is a valid BASIC identifier (up to 40 characters) that
+      identifies a group of variables. Use blockname to share only
+      specific groups of variables. You cannot use a type-declaration
+      character (%, &amp;, !, #, @, $) in the identifier.
+    ■ When a blockname is used, the COMMON block is a named COMMON block.
+      When blockname is omitted, the block is a blank COMMON block. Items
+      in a named COMMON block are not preserved across a chain to a new
+      program. See "Using Named COMMON" and "Using COMMON With CHAIN,"
+      below.
+    ■ The variablelist is a list of variables to be shared between modules
+      or chained-to programs. The same variable may not appear in more than
+      one COMMON statement in a module. The syntax of variablelist is:
+ 
+         variable[()] [AS type] [, variable[()] [AS type]]...
+ 
+          variable    Any valid BASIC variable name.
+          AS type     Declares the type of the variable. The type may be
+                          INTEGER, LONG, SINGLE, DOUBLE, STRING (for
+                          variable-length strings), STRING * length (for
+                          fixed-length strings), CURRENCY, or a user-defined
+                          type.
+ 
+Usage Notes
+    ■ Older versions of BASIC required the number of dimensions to
+      appear after the name of a dynamic array in a COMMON statement. The
+      number of dimensions is no longer required, although the current
+      version of BASIC accepts the older syntax to maintain compatibility
+      with earlier versions.
+    ■ A COMMON statement establishes storage for variables in a special
+      area that allows them to be shared between modules or with other
+      programs invoked with a CHAIN statement.
+   ■  Because COMMON statements establish global variables for an entire
+      program, they must appear before any executable statements. All
+      statements are executable, except the following:
+ 
+        COMMON   ║  DEFtype          ║  OPTION BASE     ║  STATIC
+        CONST    ║  DIM (for static  ║  REM             ║  TYPE...END TYPE
+        DATA     ║    arrays)        ║  SHARED          ║  All metacommands
+        DECLARE  ║                   ║                  ║
+ 
+    ■ Variables in COMMON blocks are matched by position and type, not by
+      name. Thus, variable order is significant in COMMON statements.
+      In the following fragment, it is the order of the variables in the
+      COMMON statements that links the variables, not the names:
+ 
+        ' Main program.
+        COMMON A, D, E
+        A = 5 : D = 8 : E = 10
+        .
+        .
+        .
+ 
+        ' Common statement in another module.
+        COMMON A, E, D          'A = 5, E = 8, D = 10
+        .
+        .
+        .
+ 
+    ■ Both static and dynamic arrays are placed in COMMON by using the
+      array name followed by parentheses. The dimensions for a static
+      array must be set with integer-constant subscripts in a DIM statement
+      preceding the COMMON statement. The dimensions for a dynamic array
+      must be set in a later DIM or REDIM statement. The elements of a
+      dynamic array are not allocated in the COMMON block. Only an array
+      descriptor is placed in common. For more information about static and
+      dynamic arrays, see Appendix B, "Data Types, Constants, Variables, and
+      Arrays" in the Programmer's Guide.
+    ■ The size of a common area can be different from that in another
+      module or chained program if a blank COMMON block has been used. When
+      a BASIC program shares COMMON blocks with a routine in the user
+      library, the calling program may not redefine the COMMON block to a
+      larger size.
+    ■ Errors caused by mismatched COMMON statements are subtle and
+      difficult to find. An easy way to avoid mismatched COMMON statements
+      is to place COMMON declarations in a single include file and use
+      the $INCLUDE metacommand in each module.
+    ■ The following program fragment shows how to use the $INCLUDE
+      metacommand to share a file containing COMMON statements among
+      programs:
+ 
+        'This file is menu.bas.
+        '$INCLUDE:'comdef.bi'
+        .
+        .
+        .
+        CHAIN "PROG1"
+        END
+ 
+ 
+        'This file is prog1.bas.
+        '$INCLUDE:'comdef.bi'
+        .
+        .
+        .
+        END
+ 
+ 
+       'This file is comdef.bi.
+       DIM A(100),B$(200)
+       COMMON I,J,K,A()
+       COMMON A$,B$(),X,Y,Z
+       'End comdef.bi.
+ 
+Using Named COMMON
+    ■ A named COMMON block provides a convenient way to group variables
+      so that different modules have access only to the common variables
+      that they need.
+    ■ The following program fragment, which calculates the volume and
+      density of a rectangular prism, uses named COMMON blocks to share
+      different sets of data with two SUB procedures. The SUB procedure
+      Volume needs to share only the variables representing the lengths of
+      the sides (in COMMON block Sides). The SUB procedure Density also
+      needs variables representing the weight (in COMMON block Weight).
+ 
+        'Main program.
+        DIM S(3)
+        COMMON /Sides/ S()
+        COMMON /Weight/ C
+ 
+        C=52
+        S(1)=3:S(2)=3:S(3)=6
+        CALL Volume
+        CALL Density
+        END
+ 
+        'SUB procedure VOLUME in a separate module.
+        DIM S(3)
+        COMMON SHARED /Sides/ S()
+ 
+        SUB Volume STATIC
+            Vol=S(1)*S(2)*S(3)
+            .
+            .
+            .
+        END SUB
+ 
+ 
+        'SUB procedure DENSITY in a separate module.
+        DIM S(3)
+        COMMON SHARED /Sides/ S()
+        COMMON SHARED /Weight/ W
+ 
+        SUB Density STATIC
+            Vol=S(1)*S(2)*S(3)
+            Dens=W/Vol
+            .
+            .
+            .
+        END SUB
+ 
+    ■ Named COMMON blocks are not preserved across chained programs. Use
+      blank COMMON blocks to pass variables to a chained program.
+ 
+Using COMMON with CHAIN
+    ■ The COMMON statement provides the only way to pass the values of
+      variables directly to a chained program. To pass variables, both
+      programs must contain COMMON statements. Remember that variable
+      order and type are significant, not variable names. The order and
+      type of variables must be the same for all COMMON statements
+      communicating between chaining programs.
+    ■ Although the order and type of variables is critical for making sure
+      the right values are passed, the COMMON blocks do not have to be the
+      same size. If the COMMON block in the chained-to program is smaller
+      than the COMMON block in the chaining program, the extra COMMON
+      variables in the chaining program are discarded. If the size of the
+      COMMON block in the chained-to program is larger, then additional
+      COMMON numeric variables are initialized to zero. Additional string
+      variables are initialized to null strings.
+    ■ Static arrays passed in a COMMON block by the chaining program must
+      be declared as static in the chained-to program. Similarly, dynamic
+      arrays placed in common by the chaining program must be dynamic in
+      the chained-to program.
+ 
+Important
+    ■ When you compile a program with the /O option, common variables are
+      not preserved across the chain. To preserve values across a chain,
+      you must compile without the /O option (using BC) or by selecting
+      "EXE Requiring BRT Module" from the "Make EXE File" dialog box
+      (using QBX).
+
+</pre>
+</body>
+
+</html>

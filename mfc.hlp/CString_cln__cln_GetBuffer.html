@@ -1,0 +1,89 @@
+<html>
+
+<head>
+<title>CString::GetBuffer</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='CString.html'>CString</a><span class='grhilite'>►</span>                                     <span class='grhilite'>◄</span><a href='CString.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span></i>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  char* GetBuffer( int nMinBufLength )
+  throw( CMemoryException );
+ 
+  Parameter       Description
+ 
+  &lt;nMinBufLength&gt; The minimum size of the CString character buffer in
+                  bytes. You do not need to allow space for a null
+                  terminator.
+ 
+  Remarks
+ 
+  Returns a pointer to the internal character buffer for the CString
+  object. The returned pointer to char is not const and thus allows direct
+  modification of CString contents.
+ 
+  If you use the pointer returned by GetBuffer to change the string
+  contents, you must call ReleaseBuffer before using any other CString
+  member functions.
+ 
+  The address returned by GetBuffer is invalid after the call to
+  ReleaseBuffer or any other CString operation.
+ 
+  The buffer memory will be freed automatically when the CString object is
+  destroyed.
+ 
+  NOTE: If you keep track of the string length yourself, you need not
+        append the terminating null byte. You must, however, specify the
+        final string length when you release the buffer with
+        ReleaseBuffer, or you can pass -1 for the length and ReleaseBuffer
+        will perform a strlen on the buffer to determine its length.
+ 
+  Return Value
+ 
+  A char pointer to the object's (usually null-terminated) ASCII character
+  buffer.
+ 
+  Example
+ 
+     CString s;
+     char* p = s.GetBuffer(10); // Allocate space for 10 characters
+     s = "abcdefg"; // p is still valid because length of s is 7
+                    // characters
+     p[1] = 'B'; // Change 'b' to 'B'
+  #ifdef _DEBUG
+     afxDump &lt;&lt; "char* p " &lt;&lt; (void*) p &lt;&lt; ":" &lt;&lt; p &lt;&lt; "\n";
+  #endif
+     char* q = s.GetBuffer(12);  // Get a new, larger buffer
+     // q is a different address than p, but the string is the same.
+  #ifdef _DEBUG
+     afxDump &lt;&lt; "char* q " &lt;&lt; (void*) q &lt;&lt; ":" &lt;&lt; q &lt;&lt; "\n";
+  #endif
+     s += "hij";  // String length is still smaller than 12
+  #ifdef _DEBUG
+     afxDump &lt;&lt; "char* q " &lt;&lt; (void*) q &lt;&lt; ":" &lt;&lt; q &lt;&lt; "\n";
+  #endif
+     s += "klmnop";  // Now it is larger than 12, so the characters
+                     // Are moved, and q is no longer valid
+  #ifdef _DEBUG
+     afxDump &lt;&lt; "char* q " &lt;&lt; (void*) q &lt;&lt; ":" &lt;&lt; q &lt;&lt; "\n";
+     afxDump &lt;&lt; "CString s " &lt;&lt; s &lt;&lt; "\n"; // s contains
+                                           // "aBcdefghijklmnop"
+  #endif
+     s.ReleaseBuffer();
+ 
+ 
+  See Also
+ 
+  <span class='grhilite'>◄</span><a href='CString_cln__cln_GetBufferSetLength.html'>CString::GetBufferSetLength</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='ReleaseBuffer.html'>CString::ReleaseBuffer</a><span class='grhilite'>►</span>
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

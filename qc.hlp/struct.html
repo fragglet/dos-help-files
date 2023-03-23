@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<title>struct</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8008.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Keyword:  struct
+ 
+  Syntax:   struct [tag] {member-declaration-list} [declarators];
+            struct tag declarators;
+ 
+  Summary:  Declares a structure type and/or a structure variable.
+ 
+     If braces are given, a structure type is defined. Items in
+     &lt;member-declaration-list&gt; can be any valid declaration (including
+     other structures), or they can be bit fields in the following
+     form:
+ 
+          int-type-specifier [identifier] : constant-expression
+ 
+     The &lt;int-type-specifier&gt; must be a signed or unsigned integer or
+     long integer. The &lt;constant-expression&gt; specifies the number of
+     bits in the field. Unnamed bit fields can be used for alignment.
+     If an unnamed field has width 0, the next field is aligned on the
+     current packing boundary as defined by /zp or #pragma pack.
+ 
+     A non-ANSI extension allows the last member of the structure to be
+     a zero-length array.
+ 
+     If braces are not given, the struct keyword is used to define a
+     structure variable. The tag identifies the type.
+ 
+     Structure variables can be initialized. The initialization for
+     each variable must be enclosed in braces. For example,
+ 
+     struct POINT            // Declare POINT structure
+     {
+         int x;              // Define members x and y
+         int y;
+     } here = { 20, 40 };    // Variable here has valued x = 20, y = 40
+     struct POINT there;     // Variable there has POINT type
+     struct CELL             // Declare COLOR bit field
+     {
+         unsigned character  : 8;                  // 00000000 ????????
+         unsigned foreground : 3;                  // 00000??? 00000000
+         unsigned intensity  : 1;                  // 0000?000 00000000
+         unsigned background : 3;                  // 0???0000 00000000
+         unsigned blink      : 1;                  // ?0000000 00000000
+     } screen[25][80];       // Array of bit fields
+ 
+     A non-ANSI extension allows structs to be defined without
+     declarators when they are members of another struct or a union.
+     This allows the members to be referenced as if they were declared
+     directly in the containing struct or union. For example,
+ 
+          struct phone
+          {
+             int  areacode;
+             long number;
+          };
+ 
+          struct person
+          {
+             char   name[30];
+             char   sex;
+             int    age;
+             int    weight;
+             struct phone;
+          } Jim;
+ 
+          Jim.number = 1234567;
+ 
+     Another non-ANSI extension allows the last member of a struct to
+     be a variable-length array, by declaring it to be an unsized (or
+     zero sized) array. Such a struct may appear in other structs, as
+     long as it is the last member declared in the enclosing struct.
+ 
+     If a variable declared as such a struct is uninitialized, or if no
+     initializer is present for the unsized array member, no space is
+     allocated for the array, and references to it give undefined
+     results. If an initializer is present, enough space is allocated
+     to store the elements specified. If the initializer is a string
+     literal, space for the trailing \0 is included; if it is a list
+     of character constants, no extra character is added.
+ 
+     When the sizeof operator is applied to such a struct, it assumes
+     the array to be of length 0, so the full size of the struct must
+     be determined by other means. When allocating new structs of this
+     type using malloc, the number of bytes requested must be equal to
+     or greater than the value returned by sizeof. For structs
+     allocated in this manner, the length of the array is determined
+     by the amount of additional memory requested.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

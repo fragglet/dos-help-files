@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<title>VAL Function Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#VAL'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='_dot_valr.html'>Details<span class='grhilite'>►</span></a>     <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>VAL Function Programming Example</b>
+ 
+The following program prints the names and addresses of people with
+specific telephone area codes.
+ 
+' Example program for the VAL function
+'
+' ***This part of the program builds a sample data file
+'
+OPEN "PHONE.DAT" FOR OUTPUT AS #1
+CLS
+RESTORE
+READ FuName$, ACPhone$
+I = 0
+DO WHILE UCASE$(FuName$) &lt;&gt; "END"
+   I = I + 1
+   WRITE #1, FuName$, ACPhone$
+   READ FuName$, ACPhone$
+   IF FuName$ = "END" THEN EXIT DO
+LOOP
+CLOSE #1
+'
+   DATA "Bob Hartzell ","206-378-3223"
+   DATA "Alice Provan ","213-884-9700"
+   DATA "Alex Landow ","213-456-3111"
+   DATA "Walt Riley ","503-248-0048"
+   DATA "Georgette Gump ","213-222-2222"
+   DATA "END",0,0,0,0,0
+'
+' *** This part of the program demonstrates the VAL function
+'
+INPUT "Search for which area (206, 213, or 503): ", Targetarea
+OPEN "PHONE.DAT" FOR INPUT AS #1
+DO WHILE NOT EOF(1)
+   INPUT #1, Nm$, Phonenum$
+   'VAL reads everything up to the first non-numeric
+   'character ("-" in this case).
+   Area = VAL(Phonenum$)
+   IF Area = Targetarea THEN
+      PRINT
+      PRINT Nm$;
+      PRINT Phonenum$
+   END IF
+LOOP
+CLOSE
+KILL "PHONE.DAT"
+END
+
+</pre>
+</body>
+
+</html>

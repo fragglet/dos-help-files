@@ -1,0 +1,111 @@
+<html>
+
+<head>
+<title>READ</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='iostmnt.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hv'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hvx'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────READ ──────────────────────────────────────────────────────────────────
+ 
+     Action
+ 
+     Transfers data from a file to the items in the &lt;iolist&gt;. READ
+     continues until all values have been read, until the end-of-file
+     is reached, or an error occurs.
+ 
+     Syntax
+ 
+     READ { { formatspec, | nmlspec } |
+     ([UNIT=]unitspec
+     [ ,[{[FMT=] formatspec] | [NML=]nmlspec}]
+     [ , END=endlabel]
+     [ , ERR=errlabel]
+     [ , IOSTAT=iocheck]
+     [ , REC=rec])}
+     iolist
+ 
+     If UNIT= is omitted, &lt;unitspec&gt; must be the first parameter. If
+     FMT= or NML= is omitted, &lt;fmtspec&gt; or &lt;nmlspec&gt; must be the
+     second parameter. The parameters can otherwise appear in any
+     order.
+ 
+     Parameter          Description
+ 
+     unitspec           The unit to read from.
+ 
+                        For an external file, &lt;unitspec&gt; is an integer
+                        expression. For an internal file, &lt;unitspec&gt; is
+                        a string.
+ 
+                        Calling READ with a unit not explicitly
+                        associated with a file causes an implicit open.
+ 
+     formatspec         A format specifier. It can be the label of a
+                        FORMAT statement, or the format specification
+                        itself.
+ 
+                        &lt;formatspec&gt; is required for a formatted read,
+                        and must not appear in an unformatted read.
+ 
+     nmlspec            A group name declared in a NAMELIST statement.
+                        If given, &lt;iolist&gt; must be omitted. Available
+                        only for sequential access.
+ 
+     endlabel           The label of a statement in the same program
+                        unit.
+ 
+                        Reading the end-of-file record transfers control
+                        to the executable statement at &lt;endlabel&gt;.
+ 
+     errlabel           The label of an executable statement in the same
+                        program unit. An I/O error causes transfer of
+                        control to the statement at &lt;errlabel&gt;. If
+                        &lt;errlabel&gt; is omitted, the effect of an I/O
+                        error is determined by the presence or absence
+                        of &lt;iocheck&gt;.
+ 
+     iocheck            An integer variable that returns zero if there
+                        is no error, -1 if end-of-file is encountered,
+                        or the error number if an error occurs.
+ 
+     rec                Record number to read (direct access files only).
+ 
+     iolist             Names of entities to receive values read from
+                        the file, separated by commas. &lt;iolist&gt; cannot
+                        contain structure variables, but will accept
+                        structure elements.
+ 
+     Remarks
+ 
+     Reading an unwritten record in a direct-access file returns an
+     undefined value.
+ 
+     If a parameter of the READ statement is an expression that calls
+     a function, that function must not execute an I/O statement or
+     the EOF intrinsic function. Calling these functions can cause
+     unpredictable results.
+ 
+     See Also:  <span class='grhilite'>◄</span>NAMELIST<span class='grhilite'>►</span>
+                <span class='grhilite'>◄</span>OPEN<span class='grhilite'>►</span>
+                <span class='grhilite'>◄</span>CLOSE<span class='grhilite'>►</span>
+                <span class='grhilite'>◄</span>WRITE<span class='grhilite'>►</span>
+ 
+     Example
+ 
+     C     Define a two-dimensional array:
+           DIMENSION ia(10,20)
+     C     Read in the bounds for the array. These bounds should
+     C     be less than or equal to 10 and 20, respectively.
+     C     Then read in the array in nested implied-DO lists
+     C     with input format of 8 columns of width 5 each.
+           READ   (3, 990) il, jl, ((ia(i,j), j = 1, jl), i =1, il)
+       990 FORMAT (2I5, /, (8I5))
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,219 @@
+<html>
+
+<head>
+<title>OPEN COM Statement Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#.opcom'>Syntax</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../bas7ex.hlp/_dot_oncomx.html'>Example</a><span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+Opens and initializes a communications channel for I/O. The OPEN COM
+statement must be executed before a device can be used for communication
+using an RS232 interface.
+ 
+Optimization Note
+    ■ If there is not an OPEN COM statement in your program, you can
+      reduce the size of the .EXE file by linking with the stub file
+      NOCOM.OBJ.
+ 
+<b>OPEN "COMn: optlist1 optlist2" [FOR mode] AS [#]filenum% [LEN=reclen%]</b>
+    ■ If there are syntax errors in the OPEN COM statement, BASIC generates
+      the error message, "Bad file name."
+    ■ The argument filenum% is the number used to open the file.
+    ■ The OPEN COM statement has many options, which can be separated into
+      two option lists:
+        - optlist1 contains the most general and often-used parameters;
+        - optlist2 contains options used in special situations.
+    ■ optlist1 specifies the communication line parameters and
+      has the following syntax:
+ 
+       [speed] [,[parity] [,[data] [,[stop]]]]
+ 
+    ■ Following are the valid values for optlist1 options:
+ 
+      Option    Description                     Range (default in bold)
+      ═══════   ══════════════════════════════  ═══════════════════════════
+      speed     Baud rate (bits per second)     75, 110, 150, 300, 600,
+                                                1200, 1800, 2400, 9600
+      parity    Method of parity checking       N, E, O, S, M, PE
+                (none, even, odd, space,
+                mark, error checking)
+      data      Number of data bits per byte    5, 6, 7, or 8
+      stop      Number of stop bits             1, 1.5, or 2(1)
+      ──────────────────────────────────────────────────────────────────────
+      (1) The default value is 1 for baud rates greater than 110. For
+          baud rates less than or equal to 110, the default value is
+          1.5 when data is 5; otherwise, the value is 2.
+ 
+    ■ Options in this list must be entered in the order shown. Use
+      comma placeholders for defaults. For example,
+ 
+        OPEN "COM1: ,N,8," FOR INPUT AS #1
+ 
+    ■ Only the baud rates shown are supported. Any other value for speed
+      is invalid.
+    ■ The PE parity value turns on error checking for parity errors.
+    ■ If you set data to eight bits per byte, you must specify no
+      parity (N).
+ 
+Important
+    ■ Because BASIC uses complete bytes (8 bits) for numbers, you must
+      specify 8 data bits when transmitting or receiving numeric data.
+    ■ If any options from optlist2 are chosen, comma placeholders must
+      still be used even if all of the optlist1 options are defaults.
+      For example:
+ 
+        OPEN "COM1: ,,,,CD1500" FOR INPUT AS #1
+ 
+    ■ The optlist2 options can be specified in any order, and must
+      be separated from one another by commas. There are three types
+      of options: data mode, buffer size, and handshaking.
+    ■ The data-mode options (ASC, BIN, and LF):
+ 
+      Option     Description                                     Default
+      ══════     ═════════════════════════════════════════       ════════
+      ASC or     Specifies treatment of tabs, carriage           BIN
+      BIN        returns, and Ctrl+Z in the data stream:
+ 
+                                                 ASC   BIN
+                                                 ═══   ═══
+                 Tabs expanded to blanks         Yes    No
+                 CR forced at end of line        Yes    No
+                 Ctrl+Z means end-of-file        Yes    No
+                 Ctrl+Z sent when device closed  Yes    No
+ 
+      LF         Effective only with the ASC option.             Ignored
+                 Used to enable communication files              (as part
+                 to be printed on a serial line printer.         of BIN
+                 Causes a LF character (0AH) to be               default)
+                 automatically sent after each CR (0DH).
+ 
+                 Note that the carriage return may be sent as
+                 a result of the width setting for the device.
+ 
+                 Note also that INPUT and LINE INPUT, when used
+                 from a COM file that was opened with the LF
+                 option, ignore the line feed.
+ 
+    ■ The buffer-size options for sequential modes (RB and TB):
+ 
+      Option     Description
+      ══════     ══════════════════════════════════════════════════════
+      RB[n]      Receive buffer size (in bytes)
+ 
+                 If the RB option is not used or n is omitted, the
+                 default is 512 bytes, unless overridden by the /C option
+                 in the BC or QBX command line. Maximum receive buffer size
+                 is 32,767 bytes.
+ 
+      TB[n]      Transmit buffer size (in bytes)
+ 
+                 If the TB option is not used or n is omitted, the
+                 default is 512 bytes.
+ 
+    ■ Handshake and timing options (RS, CD, CS, DS, and OP):
+ 
+      Option     Description
+      ══════     ══════════════════════════════════════════════════════
+      RS         Suppresses detection of Request To Send (RTS).
+ 
+      CD[m]      Specifies the timeout period on the Data Carrier Detect
+                 line (DCD). If no signal appears on the DCD line (the
+                 DCD line remains low) for more than m milliseconds, a
+                 device timeout occurs. If a CD timeout occurs, ERDEV
+                 contains 130 (82H).
+ 
+                 Default if CD option not used,
+                 m is omitted, or m = 0            Range, if m specified
+                 ──────────────────────────────    ───────────────────────
+                 m = 0, which means ignore the     0 - 65,535 milliseconds
+                        state of the DCD line.
+ 
+      CS[m]      Specifies the timeout period on the Clear To Send line
+                 (CTS). If no signal appears on the CTS line (the CTS
+                 line remains low) for more than m milliseconds, a device
+                 timeout occurs. If a CS timeout occurs, ERDEV contains
+                 128 (80H).
+ 
+                 Default if CS option not used
+                 or m is omitted                   Range, if m specified
+                 ──────────────────────────────    ───────────────────────
+                 m = 1000 milliseconds             0 - 65,535 milliseconds
+                                                   (m = 0 means ignore the
+                                                   state of the CTS line)
+ 
+ 
+      DS[m]      Specifies the timeout period on the Data Set Ready line
+                 (DSR). If no signal appears on the DSR line (the DSR line
+                 remains low) for more than m milliseconds, a device
+                 timeout occurs. If a DS timeout occurs, ERDEV contains
+                 129 (81H).
+ 
+                 Default if DS option not used
+                 or m is omitted                   Range, if m specified
+                 ──────────────────────────────    ───────────────────────
+                 m = 1000 milliseconds             0 - 65,535 milliseconds
+                                                   (m = 0 means ignore the
+                                                   state of the DSR line)
+ 
+      OP[m]      Specifies how long the OPEN statement waits
+                 for all communications lines to become active:
+ 
+                                       Default if
+                 Default if OP         OP used, but
+                 not used              m omitted     Range, if m specified
+                 ───────────────────   ──────────    ───────────────────────
+                 10 times the CD or    10 seconds    0 - 65,535 milliseconds
+                 DS timeout value,
+                 whichever is greater
+ 
+Usage Notes
+    ■ Specifying the argument reclen% is effective only in random-access
+      mode. You can use any of the random-access I/O statements, such as
+      GET and PUT, to treat the device as if it were a random-access
+      file.
+    ■ Use a relatively large value for the OP option compared to the CS,
+      DS, or CD options.
+    ■ The argument mode is one of the following string expressions:
+ 
+      Mode       Description
+      ══════     ═════════════════════════════════
+      OUTPUT     Specifies sequential output mode.
+      INPUT      Specifies sequential input mode.
+      RANDOM     Specifies random-access mode.
+ 
+      If mode is omitted, it is assumed to be random-access input/output.
+ 
+    ■ The OPEN COM statement performs the following steps in opening a
+      communications device:
+      1. The communications buffers are allocated and interrupts are
+         enabled.
+      2. The Data Terminal Ready line (DTR) is set high.
+      3. If either of the OP or DS options is nonzero, the statement waits
+         for the timeout period for the Data Set Ready line (DSR) to go
+         high. If a timeout occurs, the process goes to step 6.
+      4. If the RS option is not specified, the Request To Send line
+         (RTS) is set high.
+      5. If either of the OP or CD options is nonzero, the statement waits
+         for the timeout period for the Data Carrier Detect line (DCD)
+         to go high. If a timeout occurs, the process goes to step 6.
+         Otherwise, the RS232 device has been successfully opened.
+      6. If there is a timeout, the open fails. The process deallocates
+         the buffers, disables interrupts, clears all of the control
+         lines, and generates the message, "Device timeout." In addition,
+         for DOS, the process sets the value of ERDEV$ to COM and sets ERDEV
+         to a value that indicates the signal line that timed out, according
+         to the following table:
+ 
+           ERDEV value    Signal line
+           ═══════════    ═════════════════════════════════
+           128 (80H)      Clear to Send (CTS) timeout
+           129 (81H)      Data Set Ready (DSR) timeout
+           130 (82H)      Data Carrier Detect (DCD) timeout
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>Inference Rule Search Paths</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8045.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────NMAKE──────────────────────────────────────────────────────────────────
+ 
+     When you define an inference rule, you can specify directories to
+     be searched when NMAKE looks for matching files. The syntax for an
+     inference rule that specifies search paths is as follows:
+ 
+          {frompath}.fromext{topath}.toext:
+            commands
+ 
+     No spaces are allowed. If you use a path on one extension in the
+     inference rule, you must use paths on both. To use the current
+     directory, either specify a period (.) or leave the braces empty.
+ 
+     Only one directory can be specified in each pair of braces. To
+     specify more than one search path, create a separate inference
+     rule for each path.
+ 
+     Macros can be invoked to represent &lt;frompath&gt; and &lt;topath&gt;. The
+     macros are expanded during preprocessing.
+     See: <span class='grhilite'>◄</span><a href='_at_L8039.html'>Using Macros</a><span class='grhilite'>►</span>
+ 
+     In a rule that uses paths, &lt;frompath&gt; and &lt;topath&gt; must exactly
+     match the directories specified for a dependent and a target.
+ 
+     Example 1
+ 
+          {..\proj}.exe{..\proj}.obj:
+ 
+     If the current directory is called PROJ, this inference rule does
+     not apply to the following dependency:
+ 
+          project1.exe : project1.obj
+ 
+     However, it applies to the following dependency:
+ 
+          ..\proj\project1.exe : ..\proj\project1.obj
+ 
+     Example 2
+ 
+     {.}.c{c:\objects}.obj:
+       cl /c $&lt;;
+ 
+     This rule compares a .C file in the current directory with the
+     corresponding .OBJ file in another directory. The path for the .C
+     file is represented by a period. A path for the dependent is
+     required because one is specified for the target. The rule matches
+     dependencies with the same path combination, such as:
+ 
+          c:\objects\test.obj : test.c
+ 
+     The rule does not match a dependency line such as:
+ 
+          test.obj : test.c
+ 
+     For this dependency, NMAKE uses the predefined .c.obj rule.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

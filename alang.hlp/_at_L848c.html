@@ -1,0 +1,66 @@
+<html>
+
+<head>
+<title>StrCompare</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L83fe.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* StrCompare - Compares two strings for equality. See StrWrite, StrFindChar,
+;* WinOpen, and WinClose procedures for other examples of string instructions.
+;*
+;* Shows:   Instructions - cmpsb     cmpsw     repe     jcxz
+;*
+;* Params:  Sptr1 - Pointer to first string
+;*          Sptr2 - Pointer to second string
+;*          Len  - Length in bytes for comparison. Strings need not be of
+;*                 equal length; however if len is an even number, comparison
+;*                 is made on a word-by-word basis and thus is more efficient.
+;*
+;* Return:  Null pointer if strings match; else pointer to string #1 where
+;*          match failed.
+ 
+StrCompare PROC USES ds di si,
+        Sptr1:PBYTE,
+        Sptr2:PBYTE,
+        Len:WORD
+ 
+        LoadPtr es, di, Sptr1           ; ES:DI points to string #1
+        LoadPtr ds, si, Sptr2           ; DS:SI points to string #2
+        mov     cx, Len                 ; Length of search in bytes
+        and     al, 0                   ; Set ZR flag in case CX = 0
+        .IF     cx != 0                 ; If length is not 0:
+        .IF     !(cl &amp; 1)               ; If not even number:
+        repe    cmpsb                   ; Compare byte-by-byte
+        .ELSE                           ; Else compare word-by-word
+        shr     cx, 1                   ; Decrease count by half
+        repe    cmpsw                   ; Compare word-by-word
+        sub     di, 2                   ; Back up 2 characters
+        sub     si, 2
+        cmpsb                           ; Match?
+        .IF     zero?                   ; No?  Then failure
+        cmpsb                           ; Compare last characters
+        .ENDIF  ; zero
+        .ENDIF  ; cl &amp; 1
+        .ENDIF  ; cx != 0
+ 
+        mov     ax, 0                   ; Set null pointer without
+        mov     dx, 0                   ;   disturbing flags
+        .IF     !zero?                  ; If no match:
+        dec     di                      ; Point to failure
+        mov     ax, di
+        mov     dx, es
+        .ENDIF
+        ret
+ 
+StrCompare ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<title>PUTSTR.ASM</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* PUTSTR.ASM illustrates multiple-modules and memory model independent
+;* techniques. To create the program, paste this module and <a href='HELLOM_dot_ASM.html'>HELLOM.ASM</a>
+;* (get help on <a href='HELLOM_dot_ASM.html'>HELLOM.ASM</a> to open it) into separate program files. In
+;* the environment, you must also create a program list for the program
+;* and define a model in the Defines field of the Assembler Flags dialog
+;* box. For example, use "model=large". Alternately, you could assemble
+;* outside the environment with the following command line:
+;*      qcl /Dmodel=large hellom.asm putstr.asm
+;*
+;* Shows:   Directives - PUBLIC    PROC     ENDP   PTR
+;*          DOS function - 02h (Character Output)
+ 
+; Model is symbol passed from command line or environment. Note that the %
+; operator is required to receive external constant symbols.
+%       .MODEL  model, c
+ 
+; With simplified segment directives, procedures such as PutStr are
+; automatically PUBLIC. Data is not automatically public and must be
+; declared with PUBLIC in order to be accessed from other modules. With
+; full segment directives, the following line would be required to make
+; PutStr known to other modules.
+        ;PUBLIC PutStr
+ 
+        .CODE                           ; Address of string (near or far
+PutStr  PROC    str:PTR BYTE            ;   depending on model) is passed on
+                                        ;   the stack
+        mov     ah, 02h                 ; Character output function
+ 
+        IF      @DataSize               ; If data is far (compact, large,
+        les     di, str                 ;   or huge), address is ES:DI
+next:   mov     dl, es:[di]             ; Load each character through ES:[DI]
+        ELSE                            ; If data is near (tiny, small,
+        mov     di, str                 ;   or medium), address is DI only
+next:   mov     dl, [di]                ; Load each character through [DI]
+        ENDIF
+ 
+        or      dl, dl                  ; Check to see if character is zero
+        jz      exit                    ; If zero, done
+        int     21h                     ; DOS displays character
+        inc     di                      ; Point to next character
+        jmp     SHORT next              ; Loop back to load character
+ 
+exit:   ret
+ 
+PutStr  ENDP
+ 
+        END
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

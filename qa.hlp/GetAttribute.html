@@ -1,0 +1,45 @@
+<html>
+
+<head>
+<title>GetAttribute</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* GetAttribute - Gets the attribute(s) of a specified file.
+;*
+;* Shows:   DOS Function - 43h (Get or Set File Attributes)
+;*
+;* Params:  fspec - Pointer to ASCIIZ file specification
+;*
+;* Return:  Short integer with file attribute bits set as follows:
+;*             bit 0 = read-only                bit 3 = volume label
+;*             bit 1 = hidden                   bit 4 = subdirectory
+;*             bit 2 = system                   bit 5 = archive
+;*           0 indicates normal data file
+;*          -1 indicates error
+ 
+GetAttribute PROC \
+        USES ds, \
+        fspec:PTR BYTE
+ 
+        LoadPtr ds, dx, fspec           ; DS:DX = file specification
+        mov     ax, 4300h               ; AH = function #
+                                        ; AL = 0 (return attribute)
+        int     21h                     ; Get File Attributes
+        mov     ax, -1                  ; Set code, keep flags
+        jc      exit                    ; If read error, exit
+        mov     ax, cx                  ; Else return with
+exit:   ret                             ;   file attribute bits
+ 
+GetAttribute ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

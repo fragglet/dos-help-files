@@ -1,0 +1,41 @@
+<html>
+
+<head>
+<title>ChangeDir</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L83fe.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* ChangeDir - Changes current (default) directory.
+;*
+;* Shows:   DOS Function - 3Bh (Set Current Directory)
+;*
+;* Params:  Pspec - Pointer to ASCIIZ pathname of target subdirectory
+;*
+;* Return:  Short integer with error code
+;*          0 if successful
+;*          1 if delete error or subdirectory not empty
+ 
+ChangeDir PROC USES ds,
+        Pspec:PBYTE
+ 
+        LoadPtr ds, dx, Pspec           ; Point DS:DX to path spec
+        mov     ah, 3Bh                 ; DOS Function 3Bh
+        int     21h                     ; Set Current Directory
+        mov     ax, 0                   ; Set error code, keep flags
+        .IF     carry?
+        inc     ax                      ; Set error code to 1
+        .ENDIF
+        ret
+ 
+ChangeDir ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

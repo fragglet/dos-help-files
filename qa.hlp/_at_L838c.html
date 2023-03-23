@@ -1,0 +1,60 @@
+<html>
+
+<head>
+<title>JMP</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span><a href='JMP.html'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Detail<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#jump.asm'>Example</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='timings.html'>Timings Key</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='encoding.html'>Encodings Key</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+ 11101011       disp (1)
+──────────────────┬─────────────────────────┬───────────────────────────────
+ JMP  label       │ jmp   SHORT exit        │ 88/86 15
+                  │                         │ 286   7+m
+                  │                         │ 386   7+m
+──────────────────┴─────────────────────────┴───────────────────────────────
+ 
+ 11101001    disp (2)
+ 
+──────────────────┬─────────────────────────┬───────────────────────────────
+ JMP  label       │ jmp   close             │ 88/86 15
+                  │ jmp   NEAR PTR distant  │ 286   7+m
+                  │                         │ 386   7+m
+──────────────────┴─────────────────────────┴───────────────────────────────
+ 
+ 11101010    disp (4)
+─────────────────┬─────────────────────────┬───────────────────────────────
+ JMP  label      │ jmp   FAR PTR close     │ 88/86 15
+                 │ jmp   distant           │ 286   11+m*
+                 │                         │ 386   12+m*
+─────────────────┴─────────────────────────┴───────────────────────────────
+ 
+*  Timings for jumps through call or task gates are not shown, since they
+   are normally used only in operating systems.
+ 
+ 11111111    mod,100,r/m      disp(0 or 2)
+──────────────────┬─────────────────────────┬───────────────────────────────
+ JMP  reg16       │ jmp   ax                │ 88/86 11
+                  │                         │ 286   7+m
+                  │                         │ 386   7+m
+──────────────────┼─────────────────────────┼───────────────────────────────
+ JMP  mem16       │ jmp   WORD [bx]         │ 88/86 18+EA
+                  │ jmp   table[di]         │ 286   11+m
+                  │ jmp   DWORD [si]        │ 386   10+m
+──────────────────┴─────────────────────────┴───────────────────────────────
+ 
+ 11111111    mod,101,r/m      disp(4)
+──────────────────┬─────────────────────────┬───────────────────────────────
+ JMP  mem32       │ jmp   fpointer[si]      │ 88/86 24+EA
+                  │                         │ 286   15+m
+                  │                         │ 386   12+m
+──────────────────┴─────────────────────────┴───────────────────────────────
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

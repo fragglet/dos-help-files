@@ -1,0 +1,110 @@
+<html>
+
+<head>
+<title>INCLUDE</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='ctrlstmnt.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hv'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hvx'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────INCLUDE────────────────────────────────────────────────────────────────
+ 
+     Action
+ 
+     Inserts the contents of a specified text file at the location of
+     the INCLUDE statement.
+ 
+     Syntax
+ 
+     INCLUDE 'filename'
+ 
+     Parameter          Description
+ 
+     filename           The name of the text file to include, surrounded
+                        by apostrophes.
+ 
+     Remarks
+ 
+     The &lt;filename&gt; must be a valid text file specification.
+ 
+     The compiler considers the contents of the include file to be
+     part of the program file.
+ 
+     Include files are primarily used for data or program units that
+     appear in more than one program.
+ 
+     FORTRAN allows nesting of up to 10 include files. The operating
+     system may impose further restrictions.
+ 
+     See Also: <span class='grhilite'>◄</span><a href='unknown#floptinc'>/I</a><span class='grhilite'>►</span>
+               <span class='grhilite'>◄</span><a href='$INCLUDE.html'>$INCLUDE</a><span class='grhilite'>►</span>
+ 
+     Example
+ 
+     C     This program implements a stack by declaring the common stack
+     C     data in an include file. The contents of the file STKVARS.FOR
+     C     (shown below in the following program) are inserted in the
+     C     source code in place of every INCLUDE statement. This
+     C     guarantees that all references to common storage for stack
+     C     variables are consistent.
+ 
+           INTEGER i
+           REAL    x
+           INCLUDE 'stkvars.for'
+ 
+     C     read in five real numbers:
+           DO 100 i = 1, 5
+              READ (*, '(F10.5)') x
+              CALL Push (x)
+       100 CONTINUE
+ 
+     C     write out the numbers in reverse order:
+           WRITE (*, *) ' '
+           DO 200 i = 1, 5
+              CALL Pop (x)
+              WRITE (*, *) x
+       200 CONTINUE
+           END
+ 
+           SUBROUTINE Push (x)
+     C     Pushes an element x onto the top of the stack.
+ 
+           REAL x
+           INCLUDE 'stkvars.for'
+ 
+           top = top + 1
+           IF (top .GT. stacksize)  STOP 'Stack overflow'
+           stack(top) = x
+           END
+ 
+           SUBROUTINE pop(x)
+     C     Pops an element from the top of the stack into x.
+ 
+           REAL x
+           INCLUDE 'stkvars.for'
+ 
+           IF (top .LE. 0)  STOP 'Stack underflow'
+              x   = stack(top)
+              top = top - 1
+           END
+ 
+     The following is the text file STKVARS.FOR:
+ 
+     C     This file contains the declaration of the common block
+     C     for a stack implementation. Because this file contains an
+     C     assignment statement, it must be included only after all
+     C     other specification statements in each program unit.
+ 
+           REAL     stack(500)
+           INTEGER  top, stacksize
+ 
+           COMMON  /stackbl/ stack, top
+ 
+           stacksize = 500
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

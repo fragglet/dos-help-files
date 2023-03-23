@@ -1,0 +1,115 @@
+<html>
+
+<head>
+<title>CDC::SetAbortProc</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='CDC.html'>CDC</a><span class='grhilite'>►</span>                                         <span class='grhilite'>◄</span><a href='CDC.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span></i>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  int SetAbortProc( short ( FAR PASCAL EXPORT* lpfn )( HDC, short ) );
+ 
+  Parameter   Description
+ 
+  &lt;lpfn&gt;      A pointer to the abort function to install as the abort
+              procedure. For more about this callback function, see
+              below.
+ 
+  Remarks
+ 
+  Installs the abort procedure for the print job.
+ 
+  If an application is to allow the print job to be canceled during
+  spooling, it must set the abort function before the print job is started
+  with the <span class='grhilite'>◄</span><a href='StartDoc.html'>StartDoc</a><span class='grhilite'>►</span> member function or the STARTDOC escape, which are
+  equivalent. Print Manager calls the abort function during spooling to
+  allow the application to cancel the print job or to process
+  out-of-disk-space conditions. If no abort function is set, the print job
+  will fail if there is not enough disk space for spooling.
+ 
+  Note that new features of Microsoft C/C++ let you use an ordinary
+  function as the function passed to SetAbortProc. The address passed to
+  EnumObjects is a FAR pointer to a function exported with __export and
+  with the Pascal calling convention. In protect-mode applications, you do
+  not have to create this function with the Windows <span class='grhilite'>◄</span><a href='../win31qh.hlp/MakeProcInstance.html'>MakeProcInstance</a><span class='grhilite'>►</span>
+  function or free the function after use with <span class='grhilite'>◄</span><a href='../win31qh.hlp/FreeProcInstance.html'>FreeProcInstance</a><span class='grhilite'>►</span>.
+ 
+  You also do not have to export the function name in an EXPORTS statement
+  in your application's module-definition file. You can instead use  the
+  __export function modifier, as in
+ 
+  short FAR PASCAL __export AFunction( HDC, short );
+ 
+  to cause the compiler to emit the proper export record for export by
+  name without aliasing. This works for most needs. For some special
+  cases, such as exporting a function by ordinal or aliasing the export,
+  you still need to use an EXPORTS statement in a module-definition file.
+ 
+  For compiling Foundation programs, you'll normally use the /GA and /GEs
+  compiler options. The /Gw compiler option is not used with the
+  Foundation classes. (If you do use MakeProcInstance, you will need to
+  explicitly cast the returned function pointer from FARPROC to the type
+  needed in this API.) Callback registration interfaces are now type-safe
+  (you must pass in a function pointer that points to the right kind of
+  function for the specific callback).
+ 
+  Also note that all callback functions must trap Foundation exceptions
+  before returning to Windows, since exceptions cannot be thrown across
+  callback boundaries. For more information about exceptions, see Chapter
+  12 in the &lt;Class Libraries User's Guide&gt;.
+ 
+  Callback Function
+ 
+  The callback function must use the Pascal calling convention, must be
+  exported with __export, and must be declared FAR.
+ 
+  short FAR PASCAL __export AbortFunc( HDC &lt;hPr&gt;, short &lt;code&gt; );
+ 
+  The name &lt;AbortFunc&gt; is a placeholder for the application-supplied
+  function name. The actual name must be exported as described in the
+  "Remarks" section above.
+ 
+  Parameter   Description
+ 
+  &lt;hPr&gt;       Identifies the device context.
+ 
+  &lt;code&gt;      Specifies whether an error has occurred. It is 0 if no error
+              has occurred. It is SP_OUTOFDISK if Print Manager is
+              currently out of disk space and more disk space will become
+              available if the application waits. If &lt;code&gt; is
+              SP_OUTOFDISK, the application does not have to abort the
+              print job. If it does not, it must yield to Print Manager by
+              calling the PeekMessage or GetMessage function.
+ 
+  Return Value
+ 
+  The return value of the abort-handler function is nonzero if the print
+  job is to continue, and 0 if it is canceled.
+ 
+  Return Value
+ 
+  Specifies the outcome of the SetAbortProc function. Some of the
+  following values are more probable than others, but all are possible.
+ 
+  Value            Meaning
+ 
+  SP_ERROR         General error.
+ 
+  SP_OUTOFDISK     Not enough disk space is currently available for
+                   spooling, and no more space will become available.
+ 
+  SP_OUTOFMEMORY   Not enough memory is available for spooling.
+ 
+  SP_USERABORT     User terminated the job through the Print Manager.
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

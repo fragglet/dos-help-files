@@ -1,0 +1,84 @@
+<html>
+
+<head>
+<title>Disk Data Memory</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L843a.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Address
+  (hex)       Size     Description
+ 
+  0000:043E   1 byte   Flags for disk drive recalibration. Bits 0-3
+                       correspond to disk drives A, B, C, and D,
+                       respectively. If bit = 0, corresponding drive (if
+                       it exists) requires recalibration. Determine number
+                       of disk drives attached to system by invoking
+                       <a href='11h_dot_des.html'>Int 11h (Get Equipment Configuration)</a>.
+ 
+  0000:043F   1 byte   Flags for disk drive motor activity. Bits 0-3
+                       correspond to disk drives A, B, C, and D,
+                       respectively. If bit = 1, corresponding drive
+                       motor is running.
+ 
+                       After accessing a drive, the disk controller does
+                       not turn off the drive motor. Instead, the timer
+                       routine (<a href='8h.html'>interrupt 08h</a>) turns off the active
+                       motor only after a certain time elapses, ensuring
+                       that the motor remains running during the brief
+                       intervals between rapid disk accesses. This reduces
+                       wear on the motor mechanism and eliminates time
+                       spent waiting for the motor to regain operating
+                       speed.
+ 
+  0000:0440   1 byte   Count for disk drive motor shut-off. Default is 37
+                       timer ticks, approximately 2 seconds. The disk
+                       routine (<a href='13h.html'>interrupt 13h</a>) sets this value
+                       from second byte of the Disk Drive Parameter Table
+                       after accessing the disk drive.
+ 
+                       The timer routine (<a href='8h.html'>interrupt 08h</a>) continually
+                       decrements the count at 0000:0440h. When the count
+                       reaches 0, the timer routine shuts off the motor
+                       and clears bits 0-3 at 0000:43Fh (see above).
+ 
+  0000:0441   1 byte   Status byte from most recent disk operation,
+                       indicated as follows:
+ 
+                       Value   Meaning
+ 
+                       0       No error
+                       1       Invalid command
+                       2       Address mark not found
+                       3       Attempt to write on write-protected
+                               disk
+                       4       Requested sector not found
+                       8       DMA overrun
+                       9       Attempt to use DMA across 64K
+                               boundary
+                       10h     Error in cyclical redundancy check on
+                               read
+                       20h     Disk controller failed
+                       40h     Seek operation failed
+                       80h     Drive failed to respond; not ready
+ 
+                       <a href='13h.html'>Interrupt 13h</a> disk functions except
+                       <a href='_at_L80ec.html'>01h (Get</a> <a href='_at_L80ec.html'>Disk Status</a>) update the disk status byte
+                       at completion. <a href='_at_L80ea.html'>Function 00h (Reset disk)</a>
+                       reinitializes the status byte to 0. Other disk
+                       functions return the status in AH.
+ 
+  See also: <a href='8h.html'>Interrupt 08h (Timer Interrupt)</a>,
+            <a href='13h.html'>Interrupt 13h (Disk Services)</a>,
+            <a href='1Eh.html'>Interrupt 1Eh (Pointer to Disk Drive Parameter Table)</a>,
+            <a href='_at_L8408.html'>Single Drive Alias</a>
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

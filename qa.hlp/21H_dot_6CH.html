@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<title>Int 21H Function 6CH</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Summary<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='_at_L830e.html'>Notes</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+  Description:  Extended Open File
+ 
+  Given an ASCIIZ pathname, opens, creates, or replaces a file in the
+  designated or default directory on the designated or default disk drive.
+  Returns a handle that can be used by the program for subsequent access
+  to the file.
+ 
+  Input                                       Output
+  ════════════════════════════════            ════════════════════════════
+  AH=6CH                                      If function successful
+  AL=00H                                      Carry flag=clear
+  BX=open mode                                AX=handle
+     Bit(s)  Significance                     CX=action taken
+     0-2     access type                         1=file existed and was
+             000=read-only                         opened
+             001=write-only                      2=file did not exist and
+             010=read/write                        was created
+     3       reserved (0)                     If function unsuccessful
+                                              Carry flag=set
+     Bit(s)  Significance (if set)            AX=error code
+     4-6     sharing mode
+             000=compatibility
+             001=deny read/write
+              (deny all)
+             010=deny write
+             011=deny read
+             100 = deny none
+     7       inheritance
+  0=child process inherits handle
+  1=child does not inherit handle
+     8-12    reserved (0)
+     13      critical error hand-
+              ling
+  0=execute Int 24H
+  1=return error to process
+     14      write-through
+  0=writes may be buffered and
+     deferred
+  1=physical write at request time
+     15      reserved (0)
+  CX=file attribute (bits may be
+   combined; ignored if open)
+     Bit(s)  Significance (if set)
+     0       read-only
+     1       hidden
+     2       system
+     3       volume label
+     4       reserved (0)
+     5       archive
+     6-15    reserved (0)
+  DX=open flag
+     Bits    Significance
+     0-3     action if file exists
+             0000 = fail
+             0001 = open file
+             0010 = replace file
+     4-7     action if file
+              doesn't exist
+             0000 = fail
+             0001 = create file
+     8-15    reserved (0)
+  DS:SI=segment:offset of ASCIIZ
+   pathname
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

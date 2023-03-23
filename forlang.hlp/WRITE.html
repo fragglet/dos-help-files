@@ -1,0 +1,94 @@
+<html>
+
+<head>
+<title>WRITE</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='iostmnt.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hv'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hvx'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────WRITE──────────────────────────────────────────────────────────────────
+ 
+     Action
+ 
+     Transfers data into a file.
+ 
+     Syntax
+ 
+     WRITE ([UNIT=] unitspec
+     [ , [{[ FMT=] formatspec] |[ NML=] nmlspec} ]]
+     [ , ERR=errlabel]
+     [ , IOSTAT=iocheck]
+     [ , REC=rec] )
+     iolist
+ 
+     If UNIT= is omitted, &lt;unitspec&gt; must be the first parameter. If
+     FMT= or NML= is omitted, &lt;fmtspec&gt; or &lt;nmlspec&gt; must be the
+     second parameter. The parameters can otherwise appear in any
+     order.
+ 
+     Parameter          Description
+ 
+     unitspec           The unit to read from.
+ 
+                        For an external file, &lt;unitspec&gt; is an integer
+                        expression. For an internal file, &lt;unitspec&gt;
+                        is a string.
+ 
+                        Calling READ with a unit not explicitly
+                        associated with a file causes an implicit open.
+ 
+     formatspec         A format specifier. It can be the label of a
+                        FORMAT statement, or the format specification
+                        itself.
+ 
+                        &lt;formatspec&gt; is required for a formatted read,
+                        and must not appear in an unformatted read.
+ 
+     nmlspec            A group name declared in a NAMELIST statement.
+                        If given, &lt;iolist&gt; must be omitted. Available
+                        only for sequential access.
+ 
+     errlabel           The label of an executable statement in the
+                        same program unit. An I/O error causes transfer
+                        of control to the statement at &lt;errlabel&gt;. If
+                        &lt;errlabel&gt; is omitted, the effect of an I/O
+                        error is determined by the presence or absence
+                        of &lt;iocheck&gt;.
+ 
+     iocheck            An integer variable that is set to zero if
+                        there is no error, -1 if end-of-file is
+                        encountered, or the error number if an error
+                        occurs.
+ 
+     rec                Record number to read (direct access files only).
+ 
+     iolist             Variables to receive values read from the file,
+                        separated by commas. &lt;Iolist&gt; cannot contain
+                        structure variables, but will accept structure
+                        elements.
+ 
+     Remarks
+ 
+     If you write to a sequential file, you delete any records that
+     exist beyond the newly written record.
+ 
+     If a parameter of the WRITE statement is an expression that calls
+     a function, that function must not execute an I/O statement or
+     the EOF intrinsic function. Calling these functions can cause
+     unpredictable results.
+ 
+     Example
+ 
+     C     Generate a table of square and cube roots
+     C     of the whole numbers from 1-100
+           WRITE (*, 10) (n, SQRT(FLOAT(n)), FLOAT(n)**(1.0/3.0),
+          +       n = 1, 100)
+           10 FORMAT (I5, F8.4, F8.5)
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

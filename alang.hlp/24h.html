@@ -1,0 +1,62 @@
+<html>
+
+<head>
+<title>Interrupt 24h</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L8329.html'>Detail</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='_at_L8475.html'>Example</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='_at_L8255.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Interrupt:   24h
+ 
+  Title:       Critical-Error Handler Address
+ 
+  See also:    <a href='psp.html'>Program Segment Prefix</a>, <a href='22h.html'>CTRL+C Handler</a>
+ 
+  Description:
+ 
+     The machine interrupt vector for Int 24h (memory locations
+     0000:0090h through 0000:0093h) contains the address of the routine
+     that receives control when a critical error (usually a hardware
+     error) is detected. This address is also copied into locations 12h
+     through 15h of the program segment prefix (PSP) when a program is
+     loaded but before it begins executing, and is restored from the
+     PSP (in case it was modified by the application) as part of
+     MS-DOS's termination handling.
+ 
+     When a disk I/O error occurs, MS-DOS automatically retries the
+     operation before issuing a critical-error Int 24h. The number of
+     retries varies in different versions of MS-DOS but is typically in
+     the range three to five.
+ 
+     On entry to the critical-error interrupt handler, bit 7 of
+     register AH is clear (0) if the error was a disk I/O error;
+     otherwise, it is set (1). BP:SI contains the address of a
+     device-driver header from which additional information can be
+     obtained. Interrupts are disabled. The registers will be set up
+     for a retry operation, and an error code will be in the lower half
+     of the DI register, with the upper half undefined.
+ 
+     If the Int 24h handler returns control directly to the application
+     program rather than to MS-DOS, it must restore the program's
+     registers, removing all but the last three words from the stack,
+     and issue an IRET. Control returns to the instruction immediately
+     following the function call that caused the error. This option
+     leaves MS-DOS in an unstable state until a call to an Int 21h
+     function higher than Function 0Ch is made.
+ 
+     COMMAND.COM provides the default critical-error handler,
+     which displays a message about the error and, after displaying a
+     question such as ABORT, RETRY, FAIL, or IGNORE?, prompts
+     the user for a response.
+ 
+     This interrupt should never be issued directly.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

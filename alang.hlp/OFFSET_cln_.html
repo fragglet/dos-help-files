@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<title>Offset Relative to Segment/Group</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='OPTION.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Syntax:   OPTION OFFSET:offsettype
+ 
+  See also: <a href='_at_L8004.html'>MASM 5.1 Compatibility</a>, OFFSET, GROUP, SEGMENT,
+            <a href='_at_L84be.html'>FLAT memory model</a>
+ 
+  Description:
+ 
+     Controls whether the OFFSET operator returns offsets relative to
+     the current segment or group. OPTION OFFSET:GROUP causes OFFSET
+     to return a group-relative offset if the label is in a segment
+     that is part of a group. OPTION OFFSET:SEGMENT causes OFFSET
+     to return a segment-relative offset. OPTION OFFSET:GROUP is the
+     default.
+ 
+     The FLAT option causes fixups to be relative to the FLAT group.
+ 
+     OPTION M510 sets OPTION OFFSET:GROUP if a .MODEL directive has been
+     used and OPTION OFFSET:SEGMENT otherwise. With previous versions of
+     the assembler, the OFFSET type was SEGMENT with <a href='_at_L841a.html'>complete segment</a>
+     <a href='_at_L841a.html'>directives</a> and GROUP with <a href='_at_L8419.html'>simplified segment directives</a>.
+ 
+     The &lt;offsettype&gt; can be GROUP, SEGMENT, or FLAT.
+ 
+     When programming for the 80386 or 80486, the size of an OFFSET expression
+     can be 2 bytes for a symbol in a USE16 segment, or 4 bytes for a symbol
+     in a USE32 or FLAT segment. With OPTION M510, you can use a 32-bit
+     OFFSET expression in a 16-bit context. Without OPTION M510, you must
+     use the LOWWORD operator to convert the offset size.
+ 
+     With no .MODEL, MASM 5.1 computes offsets from the start of the segment,
+     whereas MASM 6.1 computes offsets from the start of the group. (With
+     .MODEL, MASM 5.1 also computes offsets from the start of the group.)
+ 
+     To force MASM 6.1 to emulate 5.1 behavior, specify either OFFSET:SEGMENT
+     or OPTION M510. Both directives cause the assembler to compute offsets
+     relative to the segment if you do not include .MODEL.
+ 
+     To selectively enable MASM 6.1 behavior, place the directive OPTION
+     OFFSET:GROUP after OPTION M510. In this case, you should ensure each
+     OFFSET statement has a segment override where appropriate.
+ 
+     When not in compatibility mode, the OPTION OFFSET directive determines
+     whether the SEG operator returns a value relative to the group or
+     segment. With OPTION M510, SEG is always segment-relative by default,
+     regardless of the current value of OPTION OFFSET.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

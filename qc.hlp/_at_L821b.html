@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>open</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='open.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='_at_L8285.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     The open function opens the file specified by &lt;filename&gt; and
+     prepares the file for subsequent reading or writing, as defined
+     by &lt;oflag&gt;. The &lt;oflag&gt; argument is an integer expression formed
+     by combining one or more of the following manifest constants
+     (defined in FCNTL.H):
+ 
+     O_APPEN      O_EXCL       O_TEXT
+     O_BINARY     O_RDONLY     O_TRUNC
+     O_CREAT      O_RDWR       O_WRONLY
+ 
+     When more than one manifest constant is given, the constants are
+     combined with the bitwise-OR operator (|).
+ 
+     See <span class='grhilite'>◄</span><a href='_at_L8075.html'>BINMODE.OBJ</a><span class='grhilite'>►</span> for a discussion of binary (O_BINARY) and text
+     (O_TEXT) modes.
+ 
+     Use the O_TRUNC flag with care, as it destroys the complete
+     contents of an existing file.
+ 
+     Either O_RDONLY, O_RDWR, or O_WRONLY must be given to specify the
+     access mode. There is no default value for the access mode.
+ 
+     The &lt;pmode&gt; argument is required only when O_CREAT is specified.
+     If the file exists, &lt;pmode&gt; is ignored. Otherwise, &lt;pmode&gt;
+     specifies the file's permission settings, which are set when the
+     new file is closed for the first time. The &lt;pmode&gt; argument is an
+     integer expression containing one or both of the manifest
+     constants S_IWRITE and S_IREAD (defined in SYS\STAT.H). When
+     both constants are given, they are joined with the bitwise-OR
+     operator (|).
+ 
+     If write permission is not given, the file is read-only. Under
+     DOS and OS/2, all files are readable; it is not possible to
+     give write-only permission. Thus, the modes S_IWRITE and
+     S_IREAD | S_IWRITE are equivalent.
+ 
+     The open function applies the current file-permission mask to
+     &lt;pmode&gt; before setting the permissions (see umask).
+ 
+     The &lt;filename&gt; used in the open function is affected by the DOS
+     APPEND command.
+ 
+     Under DOS versions 3.0 and later with SHARE installed, a
+     problem occurs when opening a new file with &lt;oflag&gt; set to
+     O_CREAT | O_RDONLY or O_CREAT | O_WRONLY and &lt;pmode&gt; set to
+     S_IREAD. In this case, the operating system prematurely closes
+     the file during system calls made within open.
+ 
+     To get around the problem, open the file with &lt;pmode&gt; set to
+     S_IWRITE. After closing the file, call chmod and change the mode
+     back to S_IREAD. Another possibility is to open the file with
+     &lt;pmode&gt; set to S_IREAD and &lt;oflag&gt; set to O_CREAT | O_RDWR.
+ 
+     Return Value
+ 
+     The open function returns a file handle for the opened file. A
+     return value of -1 indicates an error, and errno is set to EACCES,
+     EEXIST, EINVAL, EMFILE, or ENOENT.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

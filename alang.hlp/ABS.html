@@ -1,0 +1,85 @@
+<html>
+
+<head>
+<title>Define External Variables, Labels, and Symbols</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L8463.html'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='_at_L8418.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Syntax:   EXTERNDEF [langtype] name:qualifiedtype
+            [, [langtype] name:qualifiedtype]...
+ 
+            EXTERN [langtype] name[(altID)]:qualifiedtype
+            [, [langtype] name[(altID)]:qualifiedtype]...
+ 
+  See also: <a href='_at_L81a2.html'>EXTERNDEF Diagram</a>, PUBLIC, COMM, PROTO, <a href='../ml.hlp/_sl_Cx.html'>/C&lt;x&gt;</a>, <a href='../ml.hlp/_sl_H.html'>/H</a>, <a href='../ml.hlp/_sl_Zf.html'>/Zf</a>,
+            <a href='_at_L800a.html'>MASM 5.1 Compatibility</a>
+ 
+  Description:
+ 
+     The EXTERNDEF directive tells the assembler that one or more
+     variables, symbols, data structures, or labels are defined in
+     other modules. The behavior of the EXTERNDEF directive is
+     determined by its context:
+ 
+        ■ If &lt;name&gt; is used in the current module but is not defined,
+          &lt;name&gt; is made external.
+        ■ If &lt;name&gt; is defined in the current module, it is made
+          PUBLIC.
+        ■ If &lt;name&gt; is neither used nor defined, the directive is
+          ignored.
+ 
+     The EXTERNDEF directive allows you to put global data declarations
+     in an include file without forcing the linker to pull in unneeded
+     modules. Usually, you define &lt;name&gt; in one module and put the
+     EXTERNDEF directive in a file that is included in all program
+     modules. The PROTO directive automatically generates an EXTERNDEF
+     for its related procedure.
+ 
+     EXTERN is a less flexible version of EXTERNDEF. It declares
+     &lt;name&gt; as external whether or not it is used in the module.
+     EXTRN is a synonym for EXTERN and is included for compatibility
+     with previous versions of the assembler.
+ 
+     With the EXTERN directive, &lt;name&gt; can be followed by (altID),
+     which allows the linker to select an alternate resolution for
+     &lt;name&gt;. This is useful when creating library files.
+ 
+     Parameter     Description
+ 
+     langtype      A language type appropriate to &lt;name&gt;.
+                   See: <span class='grhilite'>◄</span><a href='C.html'>language type</a><span class='grhilite'>►</span>
+ 
+     name          A unique global symbolic name. Case mapping is
+                   overridden by <a href='ALL.html'>OPTION CASEMAP</a>.
+ 
+     qualifiedtype The qualified type to be given to &lt;name&gt;. Can
+                   also be ABS, which causes &lt;name&gt; to be imported
+                   as a constant. Does not have to match type given
+                   to &lt;name&gt; in original definition.
+                   See: <span class='grhilite'>◄</span><a href='qualtype.html'>qualified type</a><span class='grhilite'>►</span>
+ 
+     altID         A unique global symbolic name to use as an alternate
+                   for &lt;name&gt;. Must be of the same type as &lt;name&gt;. The
+                   &lt;altID&gt; parameter cannot be declared as a &lt;name&gt;
+                   with an altID in an EXTERN statement in this or any
+                   other module.
+ 
+     In MASM 5.1, you must place an EXTRN directive for a variable in the
+     same segment that holds the variable. For far data, this often entails
+     opening and closing a segment just to place the EXTRN statement.
+ 
+     In MASM 6.1, this same-segment requirement does not apply with the
+     EXTERN and EXTERNDEF statements. The only requirement is that
+     they aren't located in the wrong segment. In compatibility mode,
+     however, MASM 6.1 emulates the behavior of MASM 5.1.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

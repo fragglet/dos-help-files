@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<title>Unsized Arrays in Structures</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='struct.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────C/C++ Language─────────────────────────────────────────────────────────
+ 
+     A Microsoft extension allows the last member of a C or C++
+     structure or class to be a variable-sized array. These are called
+     unsized arrays. The unsized array at the end of the structure
+     allows you to append a variable-sized string or other array, thus
+     avoiding the run-time execution cost of a pointer dereference.
+ 
+     For example, you can declare the following:
+ 
+          struct PERSON
+          {
+              unsigned number;
+              char     name[];    // Unsized array
+          };
+ 
+     If you apply the sizeof operator to this structure, the ending
+     array size is considered to be 0. The size of this array is 2
+     bytes, which is the size of the unsigned member. To get the true
+     size of a variable of type PERSON, you would need to obtain the
+     array size separately.
+ 
+     The size of the structure is added to the size of the array to
+     get the total size to be allocated. After allocation, the array
+     is copied to the array member of the structure, as shown below:
+ 
+          struct PERSON *ptr;
+          char who[40];
+ 
+          printf( "Enter name: " );
+          gets( who );
+ 
+          // Allocate space for structure, name, and terminating null
+          ptr = malloc( sizeof( struct PERSON ) + strlen( who ) + 1 );
+ 
+          // Copy the string to the name member
+          strcpy( ptr-&gt;name, who );
+ 
+     Even after the structure variable's array is initialized, the
+     sizeof operator returns the size of the variable without the
+     array.
+ 
+     Structures with unsized arrays can be initialized, but arrays
+     of such structures cannot be initialized. For example:
+ 
+          struct PERSON me  = { 6, "Me" };        // Legal
+          struct PERSON you = { 7, "You" };
+ 
+          struct PERSON us[2] = { { 8, "Them" },  // Error
+                                  { 9, "We" } };
+ 
+     An array of characters initialized with a string literal gets
+     space for the terminating null; an array initialized with
+     individual characters (for example, {'a', 'b', 'c'}) does not.
+ 
+     A structure with an unsized array can appear in other structures,
+     as long as each is the last member declared in its enclosing
+     structure. Classes or structures with unsized arrays cannot have
+     direct or indirect virtual bases.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

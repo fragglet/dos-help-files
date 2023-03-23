@@ -1,0 +1,245 @@
+<html>
+
+<head>
+<title>PALETTE1.PAS</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.index'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM palette1;
+ 
+{ PALETTE1.PAS demonstrates the following routines:
+ 
+      _GrStatus    _RemapAllPalette    _SetColor
+      _OutText     _RemapPalette
+}
+ 
+USES
+    MSGraph, Crt;
+ 
+VAR
+    tmp         : LongInt;
+    pal         : ARRAY [0..255] OF LongInt;
+    red         : Integer;
+    blue        : Integer;
+    green       : Integer;
+    mode        : Integer;
+    i           : Integer;
+    incr, cells : Integer;
+    x, y        : Integer;
+    xinc, yinc  : Integer;
+    errorcode   : Integer;
+    buf         : STRING;
+    vc          : _VideoConfig;
+    ch          : Char;
+    continue    : Boolean;
+ 
+{================================= rgb =================================
+  The rgb function makes a LongInt rgb value from three integers.
+}
+ 
+FUNCTION rgb( r, g, b : Integer ) : LongInt;
+ 
+BEGIN
+    rgb := (LongInt((b) SHL 8 OR (g)) SHL 8) OR (r);
+END; { rgb }
+ 
+{================================ itos =================================
+  The itos function returns a string representing an integer.
+}
+ 
+FUNCTION itos( i : Integer ) : STRING;
+ 
+VAR
+    s : STRING;
+ 
+BEGIN
+    Str( i, s );
+    itos := s
+END; { itos }
+ 
+{================================ gr_check ==============================
+  The gr_check procedure identifies the error  returned by the _GrStatus
+  function and displays a message before halting, or displays the
+  warning message before program execution continues.
+}
+ 
+PROCEDURE gr_check;
+ 
+VAR
+    result  : Integer;
+    message : STRING;
+ 
+    PROCEDURE exit_proc;
+    BEGIN
+        _UnRegisterFonts;
+        result := _SetVideomode( _Defaultmode );
+        GotoXY( 2, 2 );
+        Writeln( Message );
+        Writeln( 'Program terminated due to error given above.' );
+        Writeln( 'Press any key.' );
+        Readln;
+        Halt( 1 );
+    END;
+ 
+BEGIN
+    CASE _GrStatus OF
+        _GrOK : ; {nothing}
+        _GrError : exit_proc;
+        _GrmodeNotSupported : BEGIN
+            message := 'mode not supported';
+            exit_proc;
+            END;
+        _GrNotInPropermode : BEGIN
+            message := 'Not in proper mode';
+            exit_proc;
+            END;
+        _GrInvalidParameter : BEGIN
+            message := 'Invalid Parameter';
+            exit_proc;
+            END;
+        _GrFontFileNotFound : BEGIN
+            message := 'Font file not found';
+            exit_proc;
+            END;
+        _GrInvalidFontFile : BEGIN
+            message := 'Invalid font file';
+            exit_proc;
+            END;
+        _GrCorruptedFontFile : BEGIN
+            message := 'Corrupted font file';
+            exit_proc;
+            END;
+        _GrInsufficientMemory : BEGIN
+            message := 'Insufficient memory';
+            exit_proc;
+            END;
+        _GrInvalidImagebuffer : BEGIN
+            message := 'Invalid image buffer';
+            exit_proc;
+            END;
+        _GrNoOutPut : _OutText('No output');
+        _GrClipped : _OutText('Image clipped');
+        _GrParameterAltered : _OutText('Parameter truncated');
+        END; { CASE }
+END; { procedure gr_check }
+ 
+{============================ main program ============================}
+ 
+BEGIN
+ 
+    FOR i := 0 TO 255 DO
+        pal[i] := _Black;
+ 
+    FOR mode := _MRes4Color TO _MRes256Color DO
+        BEGIN
+        continue := True;
+        IF mode = _EResNoColor THEN Inc( mode );
+ 
+        IF (_SetVideomode( mode ) &lt;&gt; 0) THEN
+            BEGIN
+            _GetVideoConfig( vc );
+            gr_check;
+            CASE vc.NumColors OF
+                256 : BEGIN
+                    cells := 13;
+                    incr := 12;
+                    END;
+                16 : BEGIN
+                    cells := 4;
+                    IF (vc.mode = _EResColor) OR
+                       (vc.mode = _VRes16Color) THEN
+                        incr := 16
+                    ELSE
+                        incr := 32;
+                    END;
+                4 : BEGIN
+                    cells := 2;
+                    incr := 32;
+                    END;
+                ELSE
+                    continue := False;
+                END; { CASE }
+ 
+            IF continue THEN
+                BEGIN
+                xinc := Round( vc.NumXPixels / cells );
+                yinc := Round( vc.NumYPixels / cells );
+                i := 0;
+                blue := 0;
+ 
+                REPEAT
+                    green := 0;
+                    REPEAT
+                        red := 0;
+                        REPEAT
+                            pal[i] := rgb( red, green, blue );
+                            IF (incr = 32) THEN
+                                pal[i+8] := (pal[i]) OR (pal[i] SHR 1);
+                            Inc( i );
+                            Inc( red, incr )
+                        UNTIL (red &gt;= 64);
+                        Inc( green, incr );
+                    UNTIL (green &gt;= 64);
+                    Inc( blue, incr )
+                UNTIL (blue &gt;= 64);
+ 
+                _RemapAllPalette( pal );
+                gr_check;
+                i := 0;
+                x := 0;
+                REPEAT
+                    y := 0;
+                    REPEAT
+                        _SetColor( i );
+                        Inc( i );
+                        _Rectangle( _GFillInterior, x, y,
+                                    x + xinc, y + yinc );
+                        Inc( y, yinc )
+                    UNTIL (y &gt;= yinc * cells);
+                    Inc( x, xinc )
+                UNTIL (x &gt;= xinc * cells);
+ 
+                buf := 'Mode ' + itos( vc.mode ) + ' has ' +
+                       itos( vc.NumColors ) + ' colors';
+                _OutText( buf );
+                ch := ReadKey;
+ 
+                i := 0;
+                green := 0;
+                REPEAT
+                    red := 0;
+                    REPEAT
+                        blue := 0;
+                        REPEAT
+                            tmp := rgb( red, green, blue );
+                            errorcode := _RemapPalette( i, tmp );
+                            IF incr= 32 THEN
+                               errorcode := _RemapPalette( i + 8,
+                                            tmp OR (tmp SHR 1) );
+                            Inc( i );
+                            Inc( blue, incr )
+                        UNTIL (blue &gt;= 64);
+                    Inc( red, incr )
+                    UNTIL (red &gt;= 64);
+                    Inc( green, incr )
+                UNTIL (green &gt;= 64);
+ 
+                ch := ReadKey;
+                END; { IF continue }
+ 
+            END; { IF _SetVideomode &lt;&gt; 0 }
+ 
+        END; { FOR }
+    i := _SetVideomode( _Defaultmode );
+ 
+END.
+ 
+
+</pre>
+</body>
+
+</html>

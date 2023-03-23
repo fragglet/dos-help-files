@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<title>FRE Function Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#FRE'>Syntax</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../bas7ex.hlp/_dot_frex.html'>Example</a><span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+FRE returns several types of information about available memory. See "Usage
+Notes" for complete details.
+ 
+<b>FRE(stringexpression$)</b>
+<b>FRE(numeric-expression%)</b>
+    ■ The argument stringexpression$ can be a string literal or a string
+      variable.
+ 
+Usage Notes
+    ■ The values returned for different types of arguments depend on whether
+      you are using near strings or far strings:
+ 
+      Function               Near strings            Far strings
+      ═════════════════════  ═════════════════════   ═══════════════════════
+      FRE(a$)                Remaining space in      Remaining space in
+                             DGROUP (in bytes)       a$'s segment (in bytes)
+      FRE("string literal")  Remaining space in      Remaining space for
+                             DGROUP (in bytes)       temporary strings (in
+                                                     bytes)
+      FRE(0)                 Remaining space in      Error message: "Illegal
+                             DGROUP (in bytes)       function call"
+      FRE(-1)                Remaining space in      Remaining space in
+                             far memory for DOS      far memory for DOS
+                             (in bytes);             (in bytes);
+                             long integer            long integer
+                             2147483647 (for OS/2)   2147483647 (for OS/2)
+      FRE(-2)                Remaining stack space   Remaining stack space
+                             (in bytes)              (in bytes)
+      FRE(-3)                Remaining space in      Remaining space in
+                             expanded memory         expanded memory
+                             (in kilobytes)          (in kilobytes).
+      FRE(any other number)  Error message:          Error message:
+                             "Illegal function       "Illegal function
+                             call"                   call"
+ 
+Using FRE(-3) and Expanded Memory
+    ■ If expanded memory is not available, FRE(-3) returns the message
+      "Feature unavailable."
+    ■ If you start QBX without the /E:n switch, you will be using all
+      expanded memory available on your computer.
+    ■ If you start QBX with the /E:n switch, you can limit the amount of
+      expanded memory available to your program. For example, if your
+      computer has 5 megabytes of expanded memory but you want to use
+      only 4 megabytes of expanded memory, you would start QBX with this:
+ 
+        QBX /E:4096
+ 
+      If you have specified 4 megabytes of expanded memory as shown above,
+      and then you use 2 megabytes of expanded memory in your program,
+      FRE(-3) will return 2048.
+    ■ If you are using BC to run a program with expanded-memory overlays,
+      the value returned by FRE(-3) is based on the total amount of
+      expanded memory available. (When using overlays, you cannot limit
+      the amount of expanded memory used by your program.)
+    ■ For more information on using expanded memory, see
+      <span class='grhilite'>◄</span><a href='../bas7qck.hlp/_dot_ems_dot_mm.html'>Using Expanded Memory</a><span class='grhilite'>►</span>.
+    ■ For more information on memory allocation, see Chapter 15,
+      "Optimizing Program Size and Speed" in the Programmer's Guide.
+ 
+Important
+    ■ FRE(-2) returns meaningful values only when a program is
+      executing. Values returned by FRE(-2) are not accurate when the
+      function is called from the Immediate window, during program
+      tracing, or when watching a variable. The unused stack space
+      indicates how much stack is needed so that DGROUP can be reclaimed.
+
+</pre>
+</body>
+
+</html>

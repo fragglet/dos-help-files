@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<title>/PACKC Option</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='link_dot_options.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────/PACKC Option──────────────────────────────────────────────────────────
+ 
+     Syntax:  /PACKC[ODE][:number]
+ 
+     The /PACKC option turns on code-segment packing.
+ 
+     LINK packs code segments by grouping together neighboring code
+     segments that have the same attributes. Segments in the same group
+     are assigned the same segment address; offset addresses are
+     adjusted accordingly. All items have the same physical address
+     whether or not the /PACKC option is used. However, /PACKC changes
+     the segment and offset addresses so that all items in a group
+     share the same segment.
+ 
+     Specify &lt;number&gt; to set the maximum size of groups formed by
+     /PACKC. The default without &lt;number&gt; or /PACKC is 64K - 36. When
+     LINK cannot add another segment without exceeding &lt;number&gt;, it
+     forms a new group.
+     See: <span class='grhilite'>◄</span><a href='_at_L803e.html'>Entering Numeric Arguments</a><span class='grhilite'>►</span>
+ 
+     /PACKC produces slightly faster and more compact code. It affects
+     only programs with multiple code segments.
+ 
+     Code-segment packing provides more opportunities for far-call
+     optimization (enabled with the /FARCALL option). /PACKC and
+     /FARCALL together produce faster and more compact code. However,
+     this combination is not recommended for Windows applications.
+     See: <span class='grhilite'>◄</span><a href='_at_L8021.html'>/FARCALL Option</a><span class='grhilite'>►</span>
+ 
+     Code-segment packing is off by default. However, if an environment
+     variable (such as LINK or FL) includes /PACKC, you can use the
+     /NOPACKC option to override /PACKC. /NOPACKC overrides /PACKC if
+     /PACKC is specified first.
+     See: <span class='grhilite'>◄</span><a href='_at_L8018.html'>LINK Environment Variable</a><span class='grhilite'>►</span>
+          <span class='grhilite'>◄</span><a href='_at_L802f.html'>/NOPACKC Option</a><span class='grhilite'>►</span>
+ 
+     Caution
+ 
+     /PACKC can be unsafe when used with assembly-language programs
+     that make assumptions about the relative order of code segments.
+ 
+     For example, the following assembly code attempts to calculate the
+     distance between CSEG1 and CSEG2. This produces incorrect results
+     when used with /PACKC, because /PACKC causes the two segments to
+     share the same segment address. The procedure always returns zero.
+ 
+     CSEG1      SEGMENT PUBLIC 'CODE'
+     .
+     .
+     .
+     CSEG1      ENDS
+ 
+     CSEG2      SEGMENT PARA PUBLIC 'CODE'
+                ASSUME  cs:CSEG2
+ 
+     ; Return the length of CSEG1 in AX.
+ 
+     codesize   PROC  NEAR
+                mov   ax, CSEG2  ; Load para address of CSEG1
+                sub   ax, CSEG1  ; Load para address of CSEG2
+                mov   cx, 4      ; Load count
+                shl   ax, cl     ; convert distance from paragraphs
+                                 ;  to bytes
+     codesize   ENDP
+     CSEG2      ENDS
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

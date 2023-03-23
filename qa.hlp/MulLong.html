@@ -1,0 +1,66 @@
+<html>
+
+<head>
+<title>MulLong</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* MulLong - Multiplies two unsigned double-word (long) integers. The
+;* procedure allows for a product of twice the length of the multipliers,
+;* thus preventing overflows. The result is copied into a 4-word data area
+;* and a pointer to the data area is returned.
+;*
+;* Shows:   Instruction - mul
+;*
+;* Params:  long1 - First integer (multiplicand)
+;*          long2 - Second integer (multiplier)
+;*
+;* Return:  Pointer to quadword result
+ 
+        .DATA
+        PUBLIC result
+result  DQ      WORD PTR ?              ; Result from MulLong
+ 
+        .CODE
+MulLong PROC \
+        long1:DWORD, long2:DWORD
+ 
+        mov     ax, WORD PTR long2[2]   ; Multiply long2 high word
+        mul     WORD PTR long1[2]       ;   by long1 high word
+        mov     WORD PTR result[4], ax
+        mov     WORD PTR result[6], dx
+ 
+        mov     ax, WORD PTR long2[2]   ; Multiply long2 high word
+        mul     WORD PTR long1[0]       ;   by long1 low word
+        mov     WORD PTR result[2], ax
+        add     WORD PTR result[4], dx
+        adc     WORD PTR result[6], 0   ; Add any remnant carry
+ 
+        mov     ax, WORD PTR long2[0]   ; Multiply long2 low word
+        mul     WORD PTR long1[2]       ;   by long1 high word
+        add     WORD PTR result[2], ax
+        adc     WORD PTR result[4], dx
+        adc     WORD PTR result[6], 0   ; Add any remnant carry
+ 
+        mov     ax, WORD PTR long2[0]   ; Multiply long2 low word
+        mul     WORD PTR long1[0]       ;   by long1 low word
+        mov     WORD PTR result[0], ax
+        add     WORD PTR result[2], dx
+        adc     WORD PTR result[4], 0   ; Add any remnant carry
+ 
+        mov     ax, OFFSET result       ; Return pointer
+        mov     dx, @data               ;   to result
+        ret
+ 
+MulLong ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

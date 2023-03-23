@@ -1,0 +1,118 @@
+<html>
+
+<head>
+<title>Variable-Length Argument Functions</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='va_arg.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='_at_L80fa.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+     The va_start, va_arg, and va_end macros provide a portable way to
+     access the arguments to a function when it takes a variable number
+     of arguments. Two versions of the macros are available: the macros
+     defined in STDARG.H conform to the ANSI C standard, and the macros
+     defined in VARARGS.H are compatible with the UNIX System V
+     definition. The macros are listed below:
+ 
+     Macro        Description
+ 
+     va_alist     Name of parameter to called function (UNIX version
+                  only)
+     va_arg       Macro to retrieve current argument
+     va_dcl       Declaration of va_alist (UNIX version only)
+     va_end       Macro to reset &lt;arg_ptr&gt;
+     va_list      The typedef for the pointer to list of arguments
+     va_start     Macro to set &lt;arg_ptr&gt; to beginning of list of
+                  optional arguments (UNIX version only)
+ 
+     Both versions of the macros assume that the function takes a fixed
+     number of required arguments, followed by a variable number of
+     optional arguments. The required arguments are declared as
+     ordinary parameters to the function and can be accessed through
+     the parameter names. The optional arguments are accessed through
+     the STDARG.H or VARARGS.H macros, which set a pointer to the first
+     optional argument in the argument list, retrieve arguments from
+     the list, and reset the pointer when argument processing is
+     completed.
+ 
+     The ANSI C standard macros (defined in STDARG.H) are used as
+     follows:
+ 
+       1. All required arguments to the function are declared as
+          parameters in the usual way.
+ 
+       2. The va_start macro sets &lt;arg_ptr&gt; to the first optional
+          argument in the list of arguments passed to the function.
+          The argument &lt;arg_ptr&gt; must have va_list type. The argument
+          &lt;prev_param&gt; is the name of the required parameter immediately
+          preceding the first optional argument in the argument list.
+          If &lt;prev_param&gt; is declared with the register storage class,
+          the macro's behavior is undefined. The va_start macro must be
+          used before va_arg is used for the first time.
+ 
+       3. The va_arg macro does the following:
+ 
+             ■ Retrieves a value of &lt;type&gt; from the location given by
+               &lt;arg_ptr&gt;
+ 
+             ■ Increments &lt;arg_ptr&gt; to point to the next argument in
+               the list, using the size of &lt;type&gt; to determine where
+               the next argument starts
+ 
+          The va_arg macro can be used any number of times within the
+          function to retrieve arguments from the list.
+ 
+       4. After all arguments have been retrieved, va_end resets the
+          pointer to NULL.
+ 
+     The UNIX System V macros, defined in VARARGS.H, operate in a
+     slightly different manner, as follows:
+ 
+       1. Any required arguments to the function can be declared as
+          parameters in the usual way.
+ 
+       2. The last (or only) parameter to the function represents the
+          list of optional arguments. This parameter must be named
+          va_alist (not to be confused with va_list, which is defined
+          as the type of va_alist).
+ 
+       3. The va_dcl macro appears after the function definition and
+          before the opening left brace of the function. This macro is
+          defined as a complete declaration of the va_alist parameter,
+          including the terminating semicolon; therefore, no semicolon
+          should follow va_dcl.
+ 
+       4. Within the function, the va_start macro sets &lt;arg_ptr&gt; to the
+          beginning of the list of optional arguments passed to the
+          function. The va_start macro must be used before va_arg is
+          used for the first time. The argument &lt;arg_ptr&gt; must have
+          va_list type.
+ 
+       5. The va_arg macro does the following:
+ 
+             ■ Retrieves a value of &lt;type&gt; from the location given by
+               &lt;arg_ptr&gt;
+ 
+             ■ Increments &lt;arg_ptr&gt; to point to the next argument in
+               the list, using the size of &lt;type&gt; to determine where
+               the next argument starts
+ 
+          The va_arg macro can be used any number of times within the
+          function to retrieve the arguments from the list.
+ 
+       6. After all arguments have been retrieved, va_end resets the
+          pointer to NULL.
+ 
+     Return Value
+ 
+     The va_arg macro returns the current argument; va_start and va_end
+     do not return values.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

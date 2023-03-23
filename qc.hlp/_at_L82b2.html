@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>SCANF.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+/* SCANF.C illustrates formatted input. Functions illustrated include:
+ *          scanf           fflush          flushall
+ *
+ * For other examples of formatted input, see <a href='_at_L82be.html'>TABLE.C</a> (fscanf) and
+ * <a href='_at_L82b5.html'>SETTIME.C</a> (sscanf).
+ */
+ 
+#include &lt;stdio.h&gt;
+#include &lt;conio.h&gt;
+ 
+void main()
+{
+    int result, integer;
+    float fp;
+    char string[81];
+ 
+    /* Get numbers. */
+    printf( "Enter an integer and a floating point number: " );
+    scanf( "%d %f", &amp;integer, &amp;fp );
+    printf( "%d + %f = %f\n\n", integer, fp, integer + fp );
+ 
+    /* Read each word as a string. */
+    printf( "Enter a sentence of four words with scanf: " );
+    for( integer = 0; integer &lt; 4; integer++ )
+    {
+        scanf( "%s", string );
+        printf( "%s\n", string );
+    }
+ 
+    /* Clear the input buffer and get with gets. */
+    fflush( stdin );
+    printf( "Enter the same sentence with gets: " );
+    gets( string );
+    printf( "%s\n", string );
+ 
+    /* Specify delimiters. The ^ inside the brackets says accept any
+     * character except the following other characters in brackets (tab
+     * and newline in the example).
+     */
+    printf( "Enter the same sentence with scanf and delimiters: " );
+    scanf( "%[^\n\t]s", string );
+    printf( "%s\n", string );
+ 
+    /* Loop until input value is 0. */
+    printf( "\n\nEnter numbers in C decimal (num), hex (0xnum), " );
+    printf( "or octal (0num) format.\nEnter 0 to quit\n\n" );
+    do
+    {
+        printf( "Enter number: " );
+        result = scanf( "%i", &amp;integer );
+        if( result )
+            /* Display valid integers. */
+            printf( "Decimal: %i  Octal: 0%o  Hexadecimal: 0x%X\n\n",
+                    integer, integer, integer );
+        else
+        {   /* Read invalid characters. Then flush and continue. */
+            scanf( "%s", string );
+            printf( "Invalid number: %s\n\n", string );
+            flushall();
+            integer = 1;
+        }
+    } while( integer );
+}
+
+</pre>
+</body>
+
+</html>

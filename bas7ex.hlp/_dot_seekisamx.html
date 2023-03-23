@@ -1,0 +1,125 @@
+<html>
+
+<head>
+<title>ISAM Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the CREATETABLE statement to create a new table in an
+'ISAM file and uses the SEEK, RETRIEVE, UPDATE, and INSERT statements to
+'insert records into it.  It uses the LOF function to display the number of
+'records in the new table and then destroys the table with DELETETABLE.
+ 
+'Note: To run this program, you must load the ISAM TSR program PROISAMD.EXE.
+'Also, this program assumes a file called BOOKS.MDB exists in the current
+'directory. BOOKS.MDB is a sample ISAM file that SETUP copies to your disk.
+ 
+'If this program is interrupted before the database is closed, the file
+'BOOKS.MDB may be left in an inconsistent state.
+ 
+DEFINT A-Z
+TYPE BookRec
+    IDNum AS DOUBLE             'Unique ID number for each book.
+    Price AS CURRENCY           'Book's price.
+    Edition AS INTEGER          'Book's Edition
+    Title AS STRING * 50        'Book's title.
+    Publisher AS STRING * 50    'Book's publisher.
+    Author AS STRING * 36       'Book's author.
+END TYPE
+ 
+CONST Database = "BOOKS.MDB"    'Name of the disk file.
+CONST tablename = "BookStock"   'Name of the table.
+DIM Library AS BookRec          'Variable for current record.
+DIM MinPrice AS CURRENCY        'SEEK criteria.
+ 
+    CLS
+    'Open existing table.
+    LibraryFile = FREEFILE
+    OPEN Database FOR ISAM BookRec tablename AS LibraryFile
+    CREATEINDEX LibraryFile, "Library", 0, "Price"
+    SETINDEX LibraryFile, "Library"
+ 
+    'Create and open a new table.
+    NewFile = FREEFILE
+    OPEN Database FOR ISAM BookRec "PricyBooks" AS NewFile
+ 
+    'Fill new table with records for all books with price &gt;= MinPrice.
+    DO
+        DO
+            INPUT "Display books that cost as much or more than "; MinPrice
+            IF MinPrice &lt; 0 THEN PRINT "Positive values only, please."
+        LOOP UNTIL MinPrice &gt;= 0
+ 
+        SEEKGE LibraryFile, MinPrice
+        IF EOF(LibraryFile) THEN
+            PRINT "There are no books greater than"; MinPrice
+        END IF
+    LOOP WHILE EOF(LibraryFile)
+ 
+    DO
+        RETRIEVE LibraryFile, Library
+        INSERT NewFile, Library
+        MOVENEXT LibraryFile
+    LOOP UNTIL EOF(LibraryFile)
+ 
+    'Loop through new table twice: first time ask for price increase;
+    'second time display new price.
+    FOR count = 1 TO 2
+        CLS
+        PRINT SPC(18); "There are"; LOF(NewFile); "books that cost at least ";
+        PRINT USING ("$###.##"); MinPrice
+        PRINT " ID Number"; SPC(3); "Title"; SPC(20); "Author";
+        PRINT SPC(11); "Publisher"; SPC(10); "Price"
+        VIEW PRINT 3 TO 20
+        MOVEFIRST NewFile
+        DO
+            RETRIEVE NewFile, Library
+            PRINT Library.IDNum; " "; LEFT$(Library.Title, 20);
+            IF LEN(RTRIM$(Library.Title)) &gt; 20 THEN
+                PRINT "...  ";
+            ELSE
+                PRINT "     ";
+            END IF
+            PRINT LEFT$(Library.Author, 15); "  ";
+            PRINT LEFT$(Library.Publisher, 16); "  ";
+            PRINT USING ("$###.##"); Library.Price
+            MOVENEXT NewFile
+        LOOP UNTIL EOF(NewFile)
+ 
+        IF count = 1 THEN
+            VIEW PRINT 20 TO 24: LOCATE 20, 1
+            DO
+                INPUT "Increase cost by how much (0-100%)"; increase
+                IF increase &lt; 0 OR increase &gt; 100 THEN PRINT "Illegal value"
+            LOOP UNTIL increase &gt;= 0 AND increase &lt;= 100
+ 
+            'Update records in PricyBooks.
+            MOVEFIRST NewFile
+            DO
+                RETRIEVE NewFile, Library
+                Library.Price = (Library.Price * (100 + increase)) / 100
+                'Overwrite record with increased price.
+                UPDATE NewFile, Library
+                'Force ISAM to flush the buffer to disk.
+                CHECKPOINT
+                MOVENEXT NewFile
+            LOOP UNTIL EOF(NewFile)
+        END IF
+        VIEW PRINT 1 TO 19
+    NEXT count
+ 
+    'Destroy index and temporary table, close files.
+    DELETEINDEX LibraryFile, "Library"
+    CLOSE
+    DELETETABLE Database, "PricyBooks"
+    END
+ 
+
+</pre>
+</body>
+
+</html>

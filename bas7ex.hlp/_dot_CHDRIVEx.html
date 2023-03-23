@@ -1,0 +1,55 @@
+<html>
+
+<head>
+<title>CHDRIVE and CURDIR$ Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the CURDIR$ function and the CHDRIVE statement within
+'the ChangeDataDrive SUB procedure. CURDIR$ is used to determine the current
+'drive from a given file specification. CHDRIVE changes to a new default
+'drive if the one specified is different from the current drive.
+ 
+DECLARE SUB ChangeDataDrive (filespec$)
+ 
+ON ERROR RESUME NEXT
+ 
+filespec$ = "A:"
+ChangeDataDrive filespec$
+ 
+filespec$ = "C:\DOS"
+ChangeDataDrive filespec$
+ 
+SUB ChangeDataDrive (filespec$)
+'This SUB procedure evaluates a file specification and changes the
+'currently logged drive to the specified drive (if any). The procedure
+'contains no error handling.
+ 
+    curdrive$ = LEFT$(CURDIR$, 2)        'Get the current drive.
+ 
+    'Determine if there is a drive name on the filespec.
+    IF INSTR(1, filespec$, ":") = 2 THEN
+        newdrive$ = LEFT$(filespec$, 2)
+    ELSE
+        newdrive$ = curdrive$
+    END IF
+ 
+    'Ensure that the new drive is different from the
+    'currently logged drive.
+    IF newdrive$ &lt;&gt; curdrive$ THEN
+        CHDRIVE newdrive$                'It isn't, so change it.
+        PRINT "Logged drive changed from "; curdrive$; " to "; newdrive$
+    ELSE                                 'It is, so don't change it.
+        PRINT "New drive same as logged drive. No change occurred."
+    END IF
+ 
+END SUB
+
+</pre>
+</body>
+
+</html>

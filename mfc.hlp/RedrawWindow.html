@@ -1,0 +1,137 @@
+<html>
+
+<head>
+<title>RedrawWindow</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='CWnd.html'>CWnd</a><span class='grhilite'>►</span>                                        <span class='grhilite'>◄</span><a href='CWnd.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span></i>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  Windows 3.1 only
+ 
+  BOOL RedrawWindow( const RECT FAR* lpRectUpdate = NULL,
+                     CRgn* prgnUpdate = NULL,
+                     UINT flags = RDW_INVALIDATE | RDW_UPDATENOW );
+ 
+  Parameter      Description
+ 
+  &lt;lpRectUpdate&gt; Points to a RECT structure containing the coordinates of
+                 the update rectangle. This parameter is ignored if
+                 &lt;prgnUpdate&gt; contains a valid region handle.
+ 
+  &lt;prgnUpdate&gt;   Identifies the update region. If both &lt;prgnUpdate&gt; and
+                 &lt;lpRectUpdate&gt; are NULL, the entire client area is added
+                 to the update region.
+ 
+  &lt;flags&gt;        The following flags are used to invalidate the window:
+ 
+                 Value               Meaning
+ 
+                 RDW_ERASE           Causes the window to receive a
+                                     WM_ERASEBKGND message when the window
+                                     is repainted. The RDW_INVALIDATE flag
+                                     must also be specified; otherwise,
+                                     RDW_ERASE has no effect.
+ 
+                 RDW_FRAME           Causes any part of the nonclient area
+                                     of the window that intersects the
+                                     update region to receive a WM_NCPAINT
+                                     message. The RDW_INVALIDATE flag must
+                                     also be specified; otherwise,
+                                     RDW_FRAME has no effect.
+ 
+                 RDW_INTERNALPAINT   Causes a WM_PAINT message to be
+                                     posted to the window regardless of
+                                     whether the window contains an
+                                     invalid region.
+ 
+                 RDW_INVALIDATE      Invalidate &lt;lpRectUpdate&gt; or
+                                     &lt;hrgnUpdate&gt; (only one may be not
+                                     NULL). If both are NULL, the entire
+                                     window is invalidated.
+ 
+                 The following flags are used to validate the window:
+ 
+                 Value                 Meaning
+ 
+                 RDW_NOERASE           Suppresses any pending
+                                       WM_ERASEBKGND messages.
+ 
+                 RDW_NOFRAME           Suppresses any pending WM_NCPAINT
+                                       messages. This flag must be used
+                                       with RDW_VALIDATE and is typically
+                                       used with RDW_NOCHILDREN. This
+                                       option should be used with care, as
+                                       it could prevent parts of a window
+                                       from painting properly.
+ 
+                 RDW_NOINTERNALPAINT   Suppresses any pending internal
+                                       WM_PAINT messages. This flag does
+                                       not affect WM_PAINT messages
+                                       resulting from invalid areas.
+ 
+                 RDW_VALIDATE          Validates &lt;lpRectUpdate&gt; or
+                                       &lt;prgnUpdate&gt; (only one may be not
+                                       NULL). If both are NULL, the entire
+                                       window is validated. This flag does
+                                       not affect internal WM_PAINT
+                                       messages.
+ 
+                 The following flags control when repainting occurs.
+                 Painting is not performed by the RedrawWindow function
+                 unless one of these bits is specified.
+ 
+                 Value           Meaning
+ 
+                 RDW_ERASENOW    Causes the affected windows (as specified
+                                 by the RDW_ALLCHILDREN and RDW_NOCHILDREN
+                                 flags) to receive WM_NCPAINT and
+                                 WM_ERASEBKGND messages, if necessary,
+                                 before the function returns. WM_PAINT
+                                 messages are deferred.
+ 
+                 RDW_UPDATENOW   Causes the affected windows (as specified
+                                 by the RDW_ALLCHILDREN and RDW_NOCHILDREN
+                                 flags) to receive WM_NCPAINT,
+                                 WM_ERASEBKGND, and WM_PAINT messages, if
+                                 necessary, before the function returns.
+ 
+                 By default, the windows affected by the RedrawWindow
+                 function depend on whether the specified window has the
+                 WS_CLIPCHILDREN style. The child windows of
+                 WS_CLIPCHILDREN windows are not affected. However, those
+                 windows that are not WS_CLIPCHILDREN windows are
+                 recursively validated or invalidated until a
+                 WS_CLIPCHILDREN window is encountered. The following
+                 flags control which windows are affected by the
+                 RedrawWindow function:
+ 
+                 Value             Meaning
+ 
+                 RDW_ALLCHILDREN   Includes child windows, if any, in the
+                                   repainting operation.
+ 
+                 RDW_NOCHILDREN    Excludes child windows, if any, from
+                                   the repainting operation.
+ 
+  Remarks
+ 
+  Updates the specified rectangle or region in the given window's client
+  area.
+ 
+  When the RedrawWindow member function is used to invalidate part of the
+  desktop window, that window does not receive a <span class='grhilite'>◄</span><a href='../win31qh.hlp/WM_PAINT.html'>WM_PAINT</a><span class='grhilite'>►</span> message. To
+  repaint the desktop, an application should use the <span class='grhilite'>◄</span><a href='ValidateRgn.html'>CWnd::ValidateRgn</a><span class='grhilite'>►</span>,
+  <span class='grhilite'>◄</span><a href='InvalidateRgn.html'>CWnd::InvalidateRgn</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='UpdateWindow.html'>CWnd::UpdateWindow</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='../win31qh.hlp/RedrawWindow.html'>::RedrawWindow</a><span class='grhilite'>►</span>
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

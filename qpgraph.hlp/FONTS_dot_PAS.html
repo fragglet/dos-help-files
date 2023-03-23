@@ -1,0 +1,134 @@
+<html>
+
+<head>
+<title>FONTS.PAS</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.index'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM fonts;
+ 
+{ FONTS.PAS illustrates font functions including:
+ 
+    _GetFontInfo       _RegisterFonts    _SetGTextVector
+    _GetGTextExtent    _SetFont          _UnregisterFonts
+    _OutGText
+ 
+  It also sets up an exit procedure,  using the standard variable
+  ExitProc.
+}
+ 
+USES
+    MSGraph, Crt, Dos;
+ 
+CONST
+    crlf : CSTRING[2] = #$0d#$0a;
+ 
+VAR
+    nfonts   : Integer;
+    list     : STRING[20];
+    fondir   : STRING[128];
+    vc       : _VideoConfig;
+    fi       : _FontInfo;
+    fontnum  : Byte;
+    x, y     : Word;
+    ch       : Char;
+    result   : Integer;
+    exitsave : POINTER;
+ 
+{============================= exit_fonts ==============================
+  This exit procedure will be called automatically upon any type of exit
+  from the program.  It cleans up after font usage by resetting the
+  video mode and returning font memory.
+}
+{$F+}
+PROCEDURE exit_fonts;
+{$F-}
+BEGIN
+    ExitProc := exitsave;
+    result := _SetVideoMode( _DefaultMode );
+    _UnRegisterFonts;
+END;
+ 
+{=============================== int2str ===============================
+  This function returns a CSTRING containing its integer argument.
+}
+FUNCTION int2str( x : Integer ) : CSTRING;
+VAR cs : CSTRING;
+BEGIN
+    Str( x, cs );
+    int2str := cs;
+END;
+ 
+{============================ main program ============================}
+ 
+BEGIN
+    exitsave := ExitProc;
+    ExitProc := @exit_fonts;
+ 
+    { Read header info from all .FON files available. }
+    fondir :=  '*.FON';
+    nfonts := _RegisterFonts( fondir );
+    IF (nfonts &lt;= 0) THEN
+        BEGIN
+        _OutText( 'Enter full path where .FON files are located: ' );
+        Readln( fondir );
+        IF fondir[Length( fondir )] &lt;&gt; '\' THEN fondir := fondir + '\';
+        fondir := fondir + '*.FON';
+        nfonts := _RegisterFonts( fondir );
+        IF (nfonts &lt;= 0) THEN
+            BEGIN
+            _OutText( 'Error: can''t register fonts' );
+            Halt( 1 );    { Abort }
+            END;
+        END; { if fonts can't be found }
+ 
+    { Set highest available graphics mode and get configuration. }
+    IF (_SetVideoMode( _MaxResMode ) = 0) THEN Halt( 1 );
+    _GetVideoConfig( vc );
+ 
+    { Display each font name centered on screen. }
+    FOR fontnum := 1 TO nfonts DO
+        BEGIN
+        { Build options CString. }
+        list := 'n' + int2str( fontnum );
+        _ClearScreen( _GClearScreen );
+        _OutText( 'Font index  ' + int2str( _SetFont( list ) ) + crlf );
+        IF (_GetFontInfo( fi ) &lt; 0) THEN
+            BEGIN
+            _OutText( 'Error: Can''t get font information' );
+            ch := ReadKey;
+            END;
+ 
+        { Use length of text and height of font to center text. }
+        x := (vc.NumXPixels DIV 2) -
+             (_GetGTextExtent( fi.FaceName ) DIV 2);
+        y := (vc.NumYPixels DIV 2) - (fi.Ascent DIV 2);
+        _MoveTo( x, y );
+        IF (vc.NumColors &gt; 2) THEN _SetColor( fontnum + 1 );
+        _SetGTextVector( 1, 0 );
+        _OutGText( fi.FaceName );
+ 
+        { Demonstrate rotated text }
+        IF (vc.NumColors &gt; 2) THEN _SetColor( fontnum + 1 );
+        _MoveTo( x - (2 * fi.Ascent), y );
+        _SetGTextVector( 0, 1 );
+        _OutGText( fi.FaceName );
+        _MoveTo( x + _GetGTextExtent( fi.FaceName ) +
+                 (2 * fi.Ascent), y );
+        _SetGTextVector( 0, -1);
+        _OutGText( fi.FaceName );
+        ch := ReadKey;
+ 
+        END; { FOR loop }
+ 
+END.
+ 
+
+</pre>
+</body>
+
+</html>

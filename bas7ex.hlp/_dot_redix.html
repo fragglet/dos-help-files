@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>REDIM Statement Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'Example 1 uses the REDIM statement to allocate an array of records. It
+'then frees the memory that the records use with the ERASE statement.
+'
+'Example 2 uses the PRESERVE keyword in the REDIM statement to
+'add records to an existing array as more data is entered.
+'
+'***********************************************************************
+'* Example 1
+'***********************************************************************
+ 
+TYPE KeyElement
+   Word AS STRING * 20
+   Count AS INTEGER
+END TYPE
+ 
+'Allocate an array of records when you need it.
+REDIM Keywords(100) AS KeyElement
+Keywords(99).Word = "ERASE"
+Keywords(99).Count = 2
+CLS
+PRINT "Keyword 99 is "; Keywords(99).Word
+PRINT "Count is"; Keywords(99).Count
+'Free the space taken by Keywords when you're finished.
+ERASE Keywords
+END
+ 
+'Sample Output
+'
+'Keyword 99 is ERASE
+'Count is 2
+'
+'***********************************************************************
+'* Example 2
+'***********************************************************************
+DATA 23, -45, 6, 5, 1,12, 7, 1, -9,0
+ 
+CLS
+REDIM X(1 TO 10) AS INTEGER                          ' Create dynamic array.
+ 
+FOR I% = 1 TO 10                                     ' Read in data.
+  READ X(I%)
+NEXT I%
+ 
+DO
+  INPUT "Item to add to list (ENTER to finish)"; a$  ' Resize
+  IF LEN(a$) THEN                                    ' array X() as items
+    REDIM PRESERVE X(1 TO UBOUND(X) + 1) AS INTEGER  ' are added using
+    X(UBOUND(X)) = VAL(a$)                           ' REDIM PRESERVE.
+  END IF
+LOOP WHILE LEN(a$)
+ 
+ 
+FOR I% = 1 TO UBOUND(X)                              ' Print array.
+  PRINT X(I%)
+NEXT I%
+
+</pre>
+</body>
+
+</html>

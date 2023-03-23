@@ -1,0 +1,69 @@
+<html>
+
+<head>
+<title>StrWrite</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* StrWrite - Writes ASCIIZ string to video memory at specified row/column.
+;*
+;* Shows:   Instructions - lodsb     stosb
+;*
+;* Uses:    vconfig - Video configuration structure, declared in the
+;*          DEMO.INC include file. The structure must first be
+;*          initialized by calling the GetVidConfig procedure.
+;*
+;* Params:  row - Row coordinate
+;*          col - Column coordinate
+;*          str - Pointer to string
+;*
+;* Return:  None
+ 
+StrWrite PROC \
+        USES ds di si, \
+        row:WORD, col:WORD, str:PTR BYTE
+ 
+        GetVidOffset row, col           ; Get offset in video segment
+        mov     di, ax                  ; Copy to DI
+        LoadPtr ds, si, str             ; DS:SI points to string
+        mov     es, vconfig.sgmnt       ; ES:DI points to video RAM
+loop1:  lodsb                           ; Get 1 character from string
+        or      al, al                  ; Null terminator?
+        jz      exit                    ; Yes?  Exit loop
+        cmp     vconfig.adapter, CGA    ; CGA adapter?
+        jne     pchar                   ; No?  Skip next 10 lines
+ 
+; For CGA systems, StrWrite waits for the video to begin a horizontal
+; retrace before writing a character to memory. This avoids the problem
+; of video snow inherent with some (though not all) color/graphics adapters.
+; It also demonstrates a somewhat different approach to the problem than the
+; one taken in the WinOpen and WinClose procedures.
+ 
+        push    ax                      ; Save character
+        mov     dx, 3dah                ; Address of status register
+        cli                             ; Disallow interruptions
+wait1:  in      al, dx                  ; Read current video status
+        test    al, 1                   ; Horizontal retrace active?
+        jnz     wait1                   ; Yes?  Wait for it to end
+wait2:  in      al, dx                  ; No?  Read status again
+        test    al, 1                   ; Wait for retrace to start
+        jz      wait2
+        pop     ax                      ; Recover character
+pchar:  stosb                           ; Write char to video buffer
+        sti                             ; Reenable interrupts
+        inc     di                      ; Skip attribute byte
+        jmp     SHORT loop1             ; Loop back
+exit:   ret
+ 
+StrWrite ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

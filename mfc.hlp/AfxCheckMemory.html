@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>AfxCheckMemory</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                              <span class='grhilite'>◄</span><a href='diagFuncs.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  BOOL PASCAL AfxCheckMemory();
+ 
+  Remarks
+ 
+  Iterates through all memory blocks currently allocated on the heap.
+  These blocks include those allocated by new, but not those allocated by
+  direct calls to underlying memory allocators such as malloc or
+::GlobalAlloc. If any block is found to have corrupt guard bytes, a
+  message is printed on stderr.
+ 
+  If the block contains an object of a class derived from CObject, then
+  the function reports an Object, otherwise it reports a Non-Object. It
+  always reports an address that corresponds to the address printed by
+  <span class='grhilite'>◄</span><a href='DumpAllObjectsSince.html'>DumpAllObjectsSince</a><span class='grhilite'>►</span>.
+ 
+  Additionally, the function validates the free memory pool, printing
+  error messages as required.
+ 
+  If the function detects no memory corruption, it prints nothing.
+ 
+  If you include the line
+ 
+      #define new DEBUG_NEW
+ 
+  in a program module, then subsequent calls to AfxCheckMemory show the
+  filename and line number where the memory was allocated.
+ 
+  NOTE: If your module contains one or more implementations of
+        serializable classes, then you must put the new redefinition
+        statement after the last IMPLEMENT_SERIAL macro invocation.
+ 
+  Return Value
+ 
+  TRUE if no memory errors; otherwise FALSE.
+ 
+  Example
+ 
+  CAge* pcage = new CAge( 21 ); // CAge is derived from CObject
+  Age* page = new Age( 22 );    // Age is NOT derived from CObject
+  *(((char*) pcage) - 1) = 99;  // Corrupt preceding guard byte
+  *(((char*) page) - 1) = 99;   // Corrupt preceding guard byte
+  AfxCheckMemory();
+ 
+  /*   T Y P I C A L    R E S U L T S
+  memory check error at $0067495F = $63, should be $FD
+  DAMAGE: before Non-Object block at $00674960
+  Non-Object allocated at file test02.cxx(48)
+  Non-Object located at $00674960 is 2 bytes long
+ 
+  memory check error at $00674905 = $63, should be $FD
+  DAMAGE: before Object block at $00674906
+  Object allocated at file test02.cxx(47)
+  Object located at $00674906 is 4 bytes long
+  */
+ 
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

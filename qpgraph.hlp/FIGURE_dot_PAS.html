@@ -1,0 +1,108 @@
+<html>
+
+<head>
+<title>FIGURE.PAS</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.index'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM figure;
+ 
+{ FIGURE.PAS illustrates graphics drawing functions including:
+ 
+      _Arc           _LineTo    _Rectangle
+      _GetArcInfo    _MoveTo    _SetPixel
+      _Ellipse       _Pie       _SetWriteMode
+ 
+  See VIEWS.PAS and GEDIT.PAS for window versions of graphics drawing
+  functions.
+}
+ 
+USES
+    MSGraph, Crt;
+ 
+VAR
+    errorcode       : Integer;
+    x,y             : Integer;
+    vidmode         : Integer;
+    startpt, endpt,
+    fillpt          : _XYCoord;
+    f               : Boolean;
+    c               : Char;
+ 
+BEGIN
+ 
+    { Set graphics mode with greatest number of colors. }
+    IF (_SetVideoMode( _MaxColorMode) = 0) THEN
+        Halt( 1 );
+    _SetColor( 1 );
+ 
+    { Draw pixels. }
+    x := 10;
+    y := 50;
+    WHILE (y &lt; 90) DO
+        BEGIN
+        _SetPixel( x, y );
+        x := x + 2;
+        y := y + 3;
+       END;
+ 
+    { Draw lines. }
+    x := 60;
+    y := 50;
+    WHILE (y &lt; 90) DO
+        BEGIN
+        _MoveTo( x, y );
+        _LineTo( x + 20, y );
+        y := y + 3;
+        END;
+ 
+    { Draw rectangles. }
+    x := 110;
+    y :=  70;
+    _Rectangle( _GBorder,       x - 20, y - 20, x, y );
+    _Rectangle( _GFillInterior, x + 20, y + 20, x, y );
+ 
+    { Draw ellipses. }
+    x := 160;
+    _Ellipse( _GBorder, x - 20, y - 20, x, y );
+    _Ellipse( _GFillInterior, x + 20, y + 20, x, y );
+ 
+    { Draw arcs. }
+    x := 210;
+    _Arc( x - 20, y - 20, x, y, x, y - 10, x - 10, y );
+    _Arc( x + 20, y + 20, x, y, x + 10, y + 20, x + 20, y + 10 );
+ 
+    { Draw pies. }
+    x := 260;
+    _Pie( _GBorder, x - 20, y - 20, x, y, x, y - 10, x - 10, y );
+    _Pie( _GBorder, x, y, x + 20, y + 20,
+          x + 10, y + 20, x + 20, y + 10 );
+    f := _GetArcInfo( startpt, endpt, fillpt );
+    _SetColor( 7 );
+    _FloodFill( fillpt.XCoord, fillpt.YCoord, 1 );
+ 
+    { Demonstrate _SetWriteMode. }
+    _Rectangle( _GFillInterior, 100, 100, 150, 150 );
+    _SetColor( 1 );
+    _SetWriteMode( _GXOR );
+    _Rectangle( _GBorder, 110, 110, 160, 160 );
+    _SetWriteMode( _GOR );
+    _Rectangle( _GBorder, 120, 120, 170, 170 );
+ 
+    { Save screen until a key is pressed. }
+    c := ReadKey;
+ 
+    { Restore video mode. }
+    errorcode := _SetVideoMode( _DefaultMode );
+ 
+END.
+ 
+
+</pre>
+</body>
+
+</html>

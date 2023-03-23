@@ -1,0 +1,57 @@
+<html>
+
+<head>
+<title>ON ERROR Statement Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='_dot_onerr.html'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='_at_L812a.html'>Details<span class='grhilite'>►</span></a>     <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>    <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>ON ERROR Statement Programming Example</b>
+ 
+The following program gets a file name from the user and displays the
+file on the screen. If the file cannot be opened, an error-handling
+routine traps the error and starts the program again at the prompt
+for the file name.
+ 
+DEFINT A-Z
+ 
+' establish the error-handling routine
+ON ERROR GOTO ErrorHandler
+ 
+CLS
+' get a file name
+INPUT "Enter the file to display: ",filename$
+' open the file
+OPEN filename$ FOR INPUT AS #1
+ 
+' display the file on the screen
+DO WHILE NOT EOF(1)
+   LINE INPUT #1, aline$
+   PRINT aline$
+LOOP
+END
+'
+' error handling routine handles only "Bad File Name";
+' aborts on any other error
+'
+CONST BADFILENAME = 53
+ 
+ErrorHandler:
+   IF ERR = BADFILENAME THEN
+      ' get another file name
+      PRINT "File " UCASE$(filename$) " not found."
+      INPUT "Enter the file to display: ",filename$
+      RESUME
+   ELSE
+      ' some other error, so print message and abort
+      PRINT "Unrecoverable error--"; ERR
+      ON ERROR GOTO 0
+   END IF
+
+</pre>
+</body>
+
+</html>

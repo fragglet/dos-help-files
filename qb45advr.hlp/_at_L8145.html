@@ -1,0 +1,156 @@
+<html>
+
+<head>
+<title>OPEN (Communications) Statement Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='_dot_opcom.html'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='_at_L8146.html'>Example<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>OPEN (Communications) Statement Details</b>
+ 
+<b>Syntax</b>
+  OPEN "COMn: optlist1 optlist2" [FOR mode] AS [#]filenum [LEN=reclen]
+ 
+COMn: is the name of the device to be opened. The n argument is the
+number of a legal communications device, such as COM1: or COM2:. The
+first list of options, optlist1, has the following form:
+ 
+  [speed][,[parity] [,[data][,[stop]]]]
+ 
+The following list describes the possible options:
+ 
+  Option   Description
+  speed    The "baud" rate (baud means "bits per second") of the
+           device to be opened. Valid speeds are 75, 110, 150, 300,
+           600, 1200, 1800, 2400 and 9600.
+  parity   The parity of the device to be opened. Valid entries for
+           parity are: N (none), E (even), O (odd), S (space), or
+           M (mark).
+  data     The number of data bits per byte. Valid entries are 5,
+           6, 7, or 8.
+  stop     The number of stop bits. Valid entries are 1, 1.5, or 2.
+ 
+Options from this list must be entered in the order shown; moreover,
+if any options from optlist2 are chosen, comma placeholders must
+still be used even if none of the options from optlist1 are
+chosen. For example:
+ 
+  OPEN "COM1: ,,,,CD1500" FOR INPUT AS #1
+ 
+If you set the data bits per byte to eight, you must specify no parity
+(N). Because QuickBASIC uses complete bytes (eight bits) for numbers,
+you must specify eight data bits when transmitting or receiving
+numeric data.
+ 
+The choices for optlist2 are described in the following list. The
+argument m is given in milliseconds; the default value for m is 1000.
+ 
+  Option   Description
+  ASC      Opens the device in ASCII mode. In ASCII mode, tabs are
+           expanded to spaces, carriage returns are forced at the
+           end-of-line, and CTRL+Z is treated as end-of-file. When
+           the channel is closed, CTRL+Z is sent over the RS-232 line.
+  BIN      Opens the device in binary mode. This option supersedes
+           the LF option. BIN is selected by default unless ASC is
+           specified.
+           In the BIN mode, tabs are not expanded to spaces, a
+           carriage return is not forced at the end-of-line, and
+           CTRL+Z is not treated as end-of-file. When the channel is
+           closed, CTRL+Z will not be sent over the RS-232 line.
+  CD[m]    Controls the timeout on the Data Carrier Detect line (DCD).
+           If DCD is low for more than m milliseconds, a device
+           timeout occurs.
+  CS[m]    Controls the timeout on the Clear To Send line (CTS). If
+           CTS is low (there is no signal) for more than m
+           milliseconds, a device timeout occurs.
+  DS[m]    Controls the timeout on the Data Set Ready line (DSR). If
+           DSR is low for more than m milliseconds, a device timeout
+           occurs.
+  LF       Allows communication files to be printed on a serial line
+           printer. When LF is specified, a line-feed character (0AH)
+           is automatically sent after each carriage-return character
+           (0DH). This includes the carriage return sent as a result
+           of the width setting. Note that INPUT and LINE INPUT, when
+           used to read from a COM file that was opened with the LF
+           option, stop when they see a carriage return, ignoring the
+           line feed.
+  OP[m]    Controls how long the statement waits for the open to be
+           successful. The parameter m is a value in the range 0 to
+           65,535 representing the number of milliseconds to wait for
+           the communications lines to become active. If OP is
+           specified without a value, the statement waits for ten
+           seconds. If OP is omitted, OPEN COM waits for ten times
+           the maximum value of the CD or DS timeout values.
+  RB[n]    Sets the size of the receive buffer to n bytes. If n is
+           omitted, or the option is omitted, the current value is
+           used. The current value can be set by the /C option on the
+           QuickBASIC or BC command line. The default is 512 bytes.
+           The maximum size is 32,767 bytes.
+  RS       Suppresses detection of Request To Send (RTS).
+  TB[n]    Sets the size of the transmit buffer to n bytes. If n is
+           omitted, or the option is omitted, the current value is
+           used. The default size is 512 bytes.
+ 
+The options from the list above can be entered in any order, but they
+must be separated from one another by commas. For CS[m], DS[m], and
+CD[m], if there is no signal within m milliseconds, a timeout occurs.
+The value for m may range from 0 to 65,535, with 1000 as the default
+value. The CD default is 0.) If m is equal to 0 for any of these
+options the option is ignored. The CTS line is checked whenever there
+is data in the transmit buffer if the CS option is specified. The
+DSR and DCD lines are continuously checked for timeouts if the
+corresponding options (DS, CD) are specified.
+ 
+The mode argument is one of the following string expressions:
+ 
+  Mode     Description
+  OUTPUT   Specifies sequential output mode
+  INPUT    Specifies sequential input mode
+  RANDOM   Specifies random-access mode
+ 
+If the mode expression is omitted, it is assumed to be random-access
+input/output. The filenum is the number used to open the file. The
+OPEN COM statement must be executed before a device can be used for
+communication using an RS-232 interface.
+ 
+If the device is opened in RANDOM mode, the LEN option specifies the
+length of an associated random-access buffer. The default value for
+length is 128. You can use any of the random-access I/O statements,
+such as GET and PUT, to treat the device as if it were a random-
+access file.
+ 
+The OPEN COM statement performs the following steps in opening a
+communications device:
+ 
+  1. The communications buffers are allocated and interrupts are
+     enabled.
+  2. The Data Terminal Ready line (DTR) is set high.
+  3. If either of the OP or DS options is nonzero, the statement waits
+     up to the indicated time for the Data Set Ready line (DSR) to be
+     high. If a timeout occurs, the process goes to step 6.
+  4. The Request To Send line (RTS) is set high if the RS option is
+     not specified.
+  5. If either of the OP or CD options is nonzero, OPEN COM waits up
+     to the indicated time for the Data Carrier Detect line (DCD) to
+     be high. If a timeout occurs, the process goes to step 6.
+     Otherwise, OPEN COM has succeeded.
+  6. The open has failed due to a timeout. The process deallocates
+     the buffers, disables interrupts, and clears all of the control
+     lines.
+ 
+  Note: Use a relatively large value for the OP option compared to the
+        CS, DS, or CD options. If two programs are attempting to establish
+        a communications link, they both need to attempt an OPEN during at
+        least half of the time they are executing.
+ 
+Any syntax errors in the OPEN COM statement produce an error message that
+reads "Bad file name."
+ 
+
+</pre>
+</body>
+
+</html>

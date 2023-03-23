@@ -1,0 +1,84 @@
+<html>
+
+<head>
+<title>Int 21h Function 59h</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L8304.html'>Detail</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='_at_L8250.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Interrupt:   21h     Function:   59h
+ 
+  Title:       Get Extended Error Information [Version 3.0+]
+ 
+  See also:    <a href='_at_L8323.html'>Set Extended Error Information</a>
+ 
+  Description:
+ 
+     Obtains detailed error information after a previous unsuccessful
+     Int 21h function call, including the recommended remedial action.
+ 
+     Input        Output
+ 
+     AH = 59h     AX = Extended error code
+     BX = 00h     See: <span class='grhilite'>◄</span><a href='_at_L8258.html'>Error codes</a><span class='grhilite'>►</span>
+                  BH = Error class
+                       01h (if out of resource (such as storage
+                            or handles))
+                       02h (if not error, but temporary situation
+                            (such as locked region in file) that
+                            can be expected to end)
+                       03h (if authorization problem)
+                       04h (if internal error in system software)
+                       05h (if hardware failure)
+                       06h (if system software failure not the
+                            fault of the active process (such
+                            as missing configuration files)
+                       07h (if application program error)
+                       08h (if file or item not found)
+                       09h (if file or item of invalid type or
+                            format)
+                       0Ah (10) (if file or item interlocked)
+                       0Bh (11) (if wrong disk in drive, bad spot on
+                                 disk, or storage medium problem)
+                       0Ch (12) (if other error)
+                  BL = Recommended action
+                       01h Retry reasonable number of times,
+                           then prompt user to select abort or
+                           ignore
+                       02h Retry reasonable number of times
+                           with delay between retries, then
+                           prompt user to select abort or
+                           ignore
+                       03h Get corrected information from user
+                           (typically caused by incorrect
+                            filename or drive specification)
+                       04h Abort application with cleanup
+                           (terminate the program in as
+                            orderly a manner as possible,
+                            releasing locks, closing files,
+                            ...)
+                       05h Perform immediate exit without
+                           cleanup
+                       06h Ignore error
+                       07h Retry after user intervention to
+                           remove cause of error
+                  CH = Error locus
+                       01h Unknown
+                       02h Block device (disk or disk
+                           emulator)
+                       03h Network
+                       04h Serial device
+                       05h Memory
+                  And for MS-DOS versions 3.0+
+               ES:DI = ASCIIZ volume label of disk to insert, if
+                       AX = 0022h (invalid disk change)
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

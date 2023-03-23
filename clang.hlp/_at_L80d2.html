@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>KEYBRD.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* KEYBRD.C illustrates:
+ *      _bios_keybrd                                              (DOS-only)
+ */
+ 
+#include &lt;bios.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;ctype.h&gt;
+ 
+/* Macro to peek at a specified memory address */
+#define peek( addr )        (*(unsigned char __far *)addr)
+ 
+void main()
+{
+    unsigned key, shift, scan, ascii = 0;
+    int kread = _KEYBRD_READ;
+    int kready = _KEYBRD_READY;
+    int kshiftstatus = _KEYBRD_SHIFTSTATUS;
+ 
+    /* If bit 4 of the byte at 0x0040:0x0096 is set, the new keyboard
+     * is present.
+     */
+    if( peek( 0x00400096 ) &amp; 0x10 )
+    {
+        kread = _NKEYBRD_READ;
+        kready = _NKEYBRD_READY;
+        kshiftstatus = _NKEYBRD_SHIFTSTATUS;
+    }
+    printf( "New keyboard %s\n",
+            (kread == _NKEYBRD_READ) ? "present" : "not present" );
+ 
+    /* Read and display keys until ESC is pressed. */
+    while( ascii != 27 )
+    {
+        /* Drain any keys in the keyboard type-ahead buffer, then get
+         * the current key. If you want the last key typed rather than
+         * the key currently being typed, omit the initial loop.
+         */
+        while( _bios_keybrd( kready ) )
+            _bios_keybrd( kread );
+        key = _bios_keybrd( kread );
+ 
+        /* Get shift state. */
+        shift = _bios_keybrd( kshiftstatus );
+ 
+        /* Split key into scan and ascii parts. */
+        scan = key &gt;&gt; 8;
+        ascii = key &amp; 0x00ff;
+ 
+        /* Categorize key. */
+        if( (ascii == 0) || (ascii == 0xE0 ) )
+            printf( "ASCII: no\tChar: NA\t" );
+        else if( ascii &lt; 32 )
+            printf( "ASCII: yes\tChar: ^%c\t", ascii + '@' );
+        else
+            printf( "ASCII: yes\tChar: %c \t", ascii );
+        printf( "Code: %.2X\tScan: %.2X\t Shift: %.4X\n",
+                ascii, scan, shift );
+    }
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

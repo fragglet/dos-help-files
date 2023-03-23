@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>FindSwitch</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='ext_dot_functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────PWB Extensions─────────────────────────────────────────────────────────
+ 
+  Syntax:  PSWI FindSwitch( char far *SwitchName );
+ 
+  Returns: A pointer to the specified switch, or NULL if no switch is
+           found.
+ 
+  See:     NameToKeys, NameToFunc
+ 
+     FindSwitch finds the switch called &lt;SwitchName&gt; and returns a PSWI
+     value, which points to a switch structure that describes the
+     switch. The switch structure that has the following members:
+ 
+     Member Type    Name   Description
+ 
+     char far *     name   Switch name
+     int            type   Switch type
+     swiAct         act    Switch data
+ 
+     The last member varies depending on the value of the type field, as
+     follows:
+ 
+     type           Switch Data
+ 
+     SWI_NUMERIC    int      far *ival
+     SWI_BOOLEAN    flagType far *fval
+     SWI_EXTTEXT    PIF           pExtFunc
+     SWI_SPECIAL    PIF_S         pFunc
+     SWI_SPECIAL2   PIF_S2        pFunc2
+     (other)        The switch data is not available to extensions.
+ 
+     You can use FindSwitch to find the value of a predefined numeric
+     or Boolean switch. For example:
+ 
+          PSWI pswi = FindSwitch( "rmargin" );
+          RightMargin = *(pswi-&gt;act.ival);
+ 
+     To get the value of a SWI_EXTTEXT text switch, call the switch
+     function with the arguments NULL and TRUE. For example:
+ 
+          PSWI pswi = FindSwitch( "ExString" );
+          pszExStrVal = (pswi-&gt;act.pExtFunc)( NULL, TRUE );
+ 
+     For SWI_SPECIAL and SWI_SPECIAL2 text switches, FindSwitch returns
+     a pointer to a function that sets the switch. The actual value of
+     the switch cannot be found.
+ 
+     You cannot get the value of certain PWB switches. These switches
+     have a type that is not one of the SWI_... constants shown
+     previously. The values of the following switches are unavailable to
+     extensions through the use of FindSwitch:
+ 
+     Backup       Defwinstyle    Height       Printcmd    Traillinesdisp
+     Build        Enablealtgr    Hike         Readonly    User
+     Color        Enterselmode   Infodialog   Tabdisp     Vscroll
+     Cursormode   Factor         Load         Tabstops    Width
+     Dblclick     Fastfunc       Markfile     Traildisp   Word
+     Deflang      Filetab        Mousemode
+ 
+     Color values may be found indirectly by using GetColor.
+ 
+     See
+ 
+     <span class='grhilite'>◄</span><a href='swiDesc.html'>Switch Table</a><span class='grhilite'>►</span>
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

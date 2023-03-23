@@ -1,0 +1,94 @@
+<html>
+
+<head>
+<title>Hellom</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L843f.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* <a href='_at_L8467.html'>HELLOM.ASM</a> illustrates multiple-modules and memory model
+;* independent techniques. It illustrates many new features of
+;* MASM 6.1. To build the program, paste <a href='_at_L8467.html'>HELLOM.ASM</a>, <a href='../$asmex:putstr.inc/.html'>PUTSTR.INC</a>,
+;* and <a href='_at_L847c.html'>PUTSTR.ASM</a> into separate files, compile both, and link.
+;*
+;* For a similar example that uses older assembly techniques such
+;* as full segments, explicit stack frames, and the PUBLIC and EXTERN
+;* directives, see <a href='_at_L8468.html'>HELLOMO.ASM</a>.
+;*
+;* Shows:   Equates      - @DataSize  @CodeSize
+;*          Directives   - PROTO      INVOKE    IFNDEF
+;*                         PROC       ENDP
+;*          DOS function - 02h (Display Character)
+ 
+; Model symbol can be passed from command line or environment.
+IFNDEF  model
+model   TEXTEQU  &lt;small&gt;                ; Default small if no command line
+ENDIF
+        .MODEL  model, c, os_dos
+        .DOSSEG
+        INCLUDE putstr.inc
+        .STACK                          ; Stack segment
+        .DATA                           ; Data segment
+msg     BYTE    "Hello, world.", 13, 10, 0      ; Null-terminated string
+ 
+        .CODE
+        .STARTUP                        ; Initialize data and stack segments
+ 
+        INVOKE  putstr,                 ; Call putstr
+                ADDR msg                ;  with msg as argument
+ 
+        .EXIT                           ; Exit program
+ 
+        END
+ 
+;---------------------------- cut here ----------------------------------
+;* PUTSTR.INC is an include file to be used with HELLOM.ASM and
+;* PUTSTR.ASM. It defines a prototype to be included by both
+;* caller (HELLOM) and callee (PUTSTR) so that both get the same
+;* procedure definition. PROTO also makes the procedure public
+;* for the callee and external for the callee.
+ 
+putstr  PROTO   string:PTR BYTE
+;---------------------------- cut here ----------------------------------
+;* PUTSTR.ASM is a program module containing a procedure to be
+;* called by HELLOM.ASM. It includes PUTSTR.INC.
+ 
+IFNDEF  model
+model   TEXTEQU  &lt;small&gt;                ; Default small model
+ENDIF
+        .MODEL  model, c, os_dos
+        INCLUDE putstr.inc              ; Prototype for PutStr
+ 
+        .CODE                           ; Address of string (near or far
+putstr  PROC    string:PTR BYTE         ;   depending on model)
+        mov     ah, 02h                 ; Display character function
+ 
+        IF      @DataSize               ; If data is far (compact, large,
+        les     di, string              ;   or huge), address is ES:DI
+        .WHILE  1
+        mov     dl, es:[di]             ; Load each character through ES:[DI]
+        ELSE                            ; If data is near (tiny, small,
+        mov     di, string              ;   or medium), address is DI only
+        .WHILE  1
+        mov     dl, [di]                ; Load each character through [DI]
+        ENDIF
+        .BREAK  .IF dl == 0             ; If character is zero, done
+        int     21h                     ; DOS displays character
+        inc     di                      ; Point to next character
+        .ENDW                           ; Load next character
+        ret
+ 
+putstr  ENDP
+ 
+        END
+→
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

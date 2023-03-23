@@ -1,0 +1,66 @@
+<html>
+
+<head>
+<title>$FLOATCALLS and $NOFLOATCALLS</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='metacommands.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hv'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hvx'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────$FLOATCALLS and $NOFLOATCALLS──────────────────────────────────────────
+ 
+     Action
+ 
+     <a href='$FLOATCALLS.html'>$FLOATCALLS</a> causes floating-point operations to be processed by
+     calls to library subroutines; <a href='$FLOATCALLS.html'>$NOFLOATCALLS</a> causes floating-point
+     operations to be processed by compiler-generated, inline
+     coprocessor instructions.
+ 
+     Syntax  $[NO]FLOATCALLS
+ 
+     Remarks
+ 
+     <a href='$FLOATCALLS.html'>$NOFLOATCALLS</a> is the default.
+ 
+     Example
+ 
+     $FLOATCALLS
+           REAL  x, sine
+ 
+           WRITE  (*, 100)
+       100 FORMAT (1X, 'ENTER x: '\)
+           READ   (*, '(F10.5)') x
+ 
+           WRITE  (*, 200) x, SINE (x, .00001)
+           200  FORMAT (1X, 'THE SINE OF ', F10.5, ' = ', F9.6)
+           END
+ 
+     C     The function calculates the sine of X using a power series.
+     C     Successive terms are calculated until less than eps.
+ 
+     C     Library calls are generated instead of in-line instructions,
+     C     letting this routine run on machines without a coprocessor.
+ 
+           REAL FUNCTION SINE (x, eps)
+ 
+           REAL x, y, z, next, i, eps
+ 
+           z    = AMOD (x, 6.2831853)
+           y    = z
+           i    = 4.0
+           next = -z * z * z / 6.0
+       100 IF (ABS (next) .GE. eps) THEN
+               y    =  y + next
+               next = -next * z * z / (i * (i + 1.0))
+               i    =  i + 2.0
+               GOTO 100
+           END IF
+           SINE = y
+           END
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

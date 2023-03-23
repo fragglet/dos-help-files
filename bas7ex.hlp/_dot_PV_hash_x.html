@@ -1,0 +1,68 @@
+<html>
+
+<head>
+<title>PV# Function Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the PV# function to return the present value of an
+'annuity.
+ 
+'Note: To run this example you must use a Quick library that includes the
+'procedures contained in the date/time/format and financial function library
+'files. The following include files must also be present.
+ 
+'$INCLUDE: 'FINANC.BI'
+'$INCLUDE: 'FORMAT.BI'
+ 
+CONST ENDPERIOD = 0
+CONST BEGINPERIOD = 1
+CONST DOLLARFORMAT$ = "$#,###,##0.00"
+ 
+DEFDBL A-Z
+DIM APR AS SINGLE
+DIM Status AS INTEGER
+ 
+APR = .102
+Period = 20
+YearlyIncome = 50000
+FutureValue = 1000000
+ 
+'Explain the premise.
+CLS
+PRINT "It seems you've won a million dollar lottery and you're going to"
+PRINT "get $50,000.00 each year for the next 20 years."
+PRINT
+PRINT "You're curious about how much it's actually costing the people who"
+PRINT "run the lottery to pay you that $1,000,000.00 over 20 years."
+PRINT
+PRINT "Assume that the prevailing interest rate is 10.2% compounded annually."
+PRINT
+ 
+'Calculate the present value of an annuity.
+PresentValue = PV#(APR, 20, -YearlyIncome, FutureValue, BEGINPERIOD, Status)
+ 
+'Examine Status to determine success or failure of PV#.
+IF Status THEN
+ 
+    'If unsuccessful, announce a problem.
+    PRINT "There was an error in calculating the present value of an annuity."
+ 
+ELSE
+ 
+    'If successful, display the results.
+    PresentValue$ = FormatD$(PresentValue, DOLLARFORMAT$)
+    PRINT "Calculations show that the lottery people only have to deposit ";
+    PRINT PresentValue$; ""
+    PRINT "to ensure that you get your money."
+ 
+END IF
+
+</pre>
+</body>
+
+</html>

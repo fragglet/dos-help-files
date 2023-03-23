@@ -1,0 +1,110 @@
+<html>
+
+<head>
+<title>SIGNAL.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* SIGNAL.C illustrates setting up signal interrupt routines. Functions
+ * illustrated include signal and raise.
+ *
+ * Since C I/O functions are not safe inside signal routines, the code
+ * uses conditionals to use system-level DOS services. Another option
+ * is to set global flags and do any I/O operations outside the
+ * signal handler.
+ */
+ 
+#include &lt;stdio.h&gt;
+#include &lt;conio.h&gt;
+#include &lt;signal.h&gt;
+#include &lt;process.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;dos.h&gt;
+#include &lt;bios.h&gt;
+ 
+void ctrlchandler( int sig );          /* Prototypes */
+void safeout( char *str );
+int  safein( void );
+ 
+void main( void )
+{
+   int ch;
+   /* Install signal handler to modify CTRL+C behavior. */
+   if( signal( SIGINT, ctrlchandler ) == SIG_ERR )
+   {
+      fprintf( stderr, "Couldn't set SIGINT\n" );
+      abort();
+   }
+ 
+   /* Loop prints message to screen asking user to
+    * enter Cntl+C--at which point the ctrlchandler
+    * signal handler takes control.
+    */
+   do
+   {
+      printf( "Press Ctrl+C to enter handler.\n" );
+   }
+   while( ch = _getch());   /* Discard keystokes */
+}
+ 
+/* A signal handler must take a single argument. The argument can be
+ * tested within the handler and thus allows a single signal handler
+ * to handle several different signals. In this case, the parameter
+ * is included to keep the compiler from generating a warning but is
+ * ignored because this signal handler only handles one interrupt:
+ * SIGINT (Ctrl+C).
+ */
+void ctrlchandler( int sig )
+{
+   int c;
+   char str[] = " ";
+ 
+   /* Disallow CTRL+C during handler. */
+   signal( SIGINT, SIG_IGN );
+ 
+   safeout( "User break - abort processing (y|n)? " );
+   c = safein();
+   str[0] = c;
+   safeout( str );
+   safeout( "\r\n" );
+   if( (c == 'y') || (c == 'Y') )
+      abort();
+   else
+   {
+      /* The CTRL+C interrupt must be reset to our handler since
+       * by default it is reset to the system handler.
+       */
+      signal( SIGINT, ctrlchandler );
+      safeout( "Press Ctrl+C to enter handler.\r\n" );
+   }
+}
+ 
+/* Outputs a string using system level calls. */
+void safeout( char *str )
+{
+   union _REGS inregs, outregs;
+ 
+   inregs.h.ah = 0x0e;
+   while( *str )
+   {
+      inregs.h.al = *str++;
+      _int86( 0x10, &amp;inregs, &amp;outregs );
+   }
+}
+ 
+/* Inputs a character using system level calls. */
+int safein()
+{
+   return _bios_keybrd( _KEYBRD_READ ) &amp; 0xff;
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

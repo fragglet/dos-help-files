@@ -1,0 +1,224 @@
+<html>
+
+<head>
+<title>UNDELETE--Notes</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='UNDELETE--Example.html'>Examples</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='UNDELETE.html'>Syntax</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                              UNDELETE──Notes
+ 
+<b>CAUTION:</b>  Once you delete a file from your disk, you may not be able
+          retrieve it. Although the UNDELETE command can recover deleted
+          files, it can do so with certainty only if no other files have
+          been created or changed on the disk. If you accidentally delete a
+          file that you want to keep, stop what you are doing and
+          immediately use the UNDELETE command to retrieve the file.
+ 
+<b>Levels of protection</b>
+ 
+MS-DOS provides three levels of protection against accidental file
+deletion──Delete Sentry, Delete Tracker, and standard.
+ 
+Delete Sentry provides the highest level of protection. Delete Sentry
+requires a small amount of memory and disk space. The next level of
+protection is Delete Tracker, which requires the same amount of memory as
+Delete Sentry, but minimal disk space. The lowest level of protection,
+standard, requires neither memory nor disk space, but still allows you to
+recover deleted files, provided that their location on the disk has not been
+taken by other files.
+ 
+For more details, see the notes that follow about each level of protection.
+ 
+<b>Delete Sentry</b>
+ 
+Delete Sentry provides the highest level of protection to ensure that you
+can recover deleted files. This level of protection creates a hidden
+directory named SENTRY. When you delete a file, UNDELETE moves the file from
+its current location to the SENTRY directory without changing the record of
+the file's location in the file allocation table (FAT). If you undelete the
+file, MS-DOS moves the file back to its original location.
+ 
+The size of the SENTRY directory and its files is limited to approximately 7
+percent of your hard disk space. If you delete a file and the directory and
+its files exceed this limit, UNDELETE purges the oldest files until enough
+space has been freed to accommodate the newly deleted file.
+ 
+In addition to the disk space needed for the SENTRY directory, Delete Sentry
+requires 13.5K of memory for the memory-resident portion of the UNDELETE
+program.
+ 
+<b>Delete Tracker</b>
+ 
+Delete Tracker provides an intermediate level of protection. It uses a
+hidden file named PCTRACKER.DEL to record the location of deleted files.
+When you delete a file, MS-DOS changes the file allocation table (FAT) to
+indicate that the location of the file is now available for another file.
+You can recover the deleted file provided that another file has not been
+placed in that location. If another file has been placed there, you may be
+able to partially recover the deleted file.
+ 
+Delete Tracker requires 13.5K of memory for the memory-resident portion of
+the UNDELETE program and a minimal amount of disk space for the
+PCTRACKER.DEL file.
+ 
+<b>Standard</b>
+ 
+The standard level of protection is automatically available when you switch
+on your computer. Of the three levels of guarding against accidental file
+deletion, it provides the lowest level of protection. However, it does not
+require you to load a memory-resident program. It also has the advantage of
+requiring neither memory nor disk space.
+ 
+Using this level of protection, you can recover a deleted file, provided
+MS-DOS has not placed another file in the deleted file's location. If a file
+has been placed there, you may be unable to recover all or part of the
+deleted file.
+ 
+<b>Method used to recover files</b>
+ 
+Use any one of the following switches: /DOS, /DT, or /DS. If you do not
+specify a switch, UNDELETE uses Delete Sentry, if it is available. If Delete
+Sentry is not available, UNDELETE uses the Delete Tracker file, if
+available. If a deletion-tracking file is not available, UNDELETE attempts
+to recover files by using MS-DOS.
+ 
+<b>CAUTION:</b>  UNDELETE cannot restore a directory that has been removed, and it
+          cannot retrieve a file if you have removed the directory that
+          contained the file. If the directory was an immediate subdirectory
+          of the root directory, you may be able to retrieve the directory
+          and its files if you first use the UNFORMAT command to restore the
+          directory and then use UNDELETE to retrieve the files. You must
+          use caution because you can lose data if you use UNFORMAT
+          incorrectly. Usually, UNFORMAT can restore only immediate
+          subdirectories of the root directory. However, when you use
+          UNFORMAT to recover an accidentally formatted disk, UNFORMAT
+          recovers all root-level files and subdirectory names.
+ 
+<b>The UNDELETE.INI file</b>
+ 
+UNDELETE uses the UNDELETE.INI file to define values when UNDELETE is loaded
+into memory. If the file does not exist when you load UNDELETE into memory,
+UNDELETE creates an UNDELETE.INI file that contains the following values:
+ 
+♦  Use the Delete Sentry method of file tracking on the current drive.
+ 
+♦  Save all files except *.TMP, *.VM?, *.WOA, *.SWP, *.SPL, *.RMG, *.IMG,
+   *.THM, and *.DOV files.
+ 
+♦  Do not save files that have the archive bit set.
+ 
+♦  Purge files after 7 days.
+ 
+♦  Restrict the amount of disk space available for deleted files to 20
+   percent of total disk space.
+ 
+The UNDELETE.INI file has five sections: [sentry.drives], [sentry.files],
+[mirror.drives], [configuration], and [defaults].
+ 
+The [sentry.drives] section specifies the drives protected by the Delete
+Sentry method, if used.
+ 
+The [sentry.files] section specifies the files protected from deletion using
+either Delete Tracker or Delete Sentry. A hypen (-) before a filename
+indicates that the file is not saved. The default values defined in the
+[sentry.files] section are as follows:
+ 
+    [sentry.files]
+    *.* -*.TMP -*.VM? -*.WOA -*.SWP -*.SPL  -*.RMG -*.IMG -*.THM -*.DOV
+ 
+The [mirror.drives] section specifies the drives protected by the Delete
+Tracker method, if used.
+ 
+The [configuration] section defines the following values:
+ 
+♦  Whether files with the archive bit set are protected. If files with the
+   archive bit set are not protected (the default value), the entry is as
+   follows:
+ 
+       archive=FALSE
+ 
+   A TRUE value saves files with the archive bit set.
+ 
+♦  The number of days files are saved. The following entry defines the
+   default value:
+ 
+       days=7
+ 
+♦  The amount of total disk space reserved for deleted files. The following
+   entry defines the default value:
+ 
+       percentage=20
+ 
+The [defaults] section specifies the method of file tracking. The following
+defines the default Delete Sentry method:
+ 
+    [defaults]
+    d.sentry=TRUE
+    d.tracker=FALSE
+ 
+<b>Changing the method of file protection</b>
+ 
+You can use only one method of file protection at a time. If you want to
+change the method, carry out the following procedure:
+ 
+1  Unload the memory-resident portion of the Undelete program by typing the
+   following at the command prompt:
+ 
+       undelete /u
+ 
+2  Enable the new level of protection and reload the memory-resident portion
+   of the Undelete program. For example, to enable the Delete Sentry level
+   of protection on your current drive, type the following at the command
+   prompt:
+ 
+       undelete /s
+ 
+<b>Drives protected</b>
+ 
+The Undelete program protects all drives specified in the UNDELETE.INI file,
+regardless of the drives you specify when you start the program. For
+example, suppose your UNDELETE.INI file contains the following entry:
+ 
+    [sentry.drives]
+    C=
+    D=
+ 
+The following command enables the Delete Sentry level of protection on both
+drives C and D:
+ 
+    undelete /sc
+ 
+To enable protection only on drive C, you would do the following:
+ 
+1  Using any text editor, open your UNDELETE.INI file.
+ 
+2  Delete the following line from the [sentry.drives] section of the file:
+ 
+       D=
+ 
+3  Save changes you made to the file.
+ 
+4  Exit your text editor.
+ 
+5  Enable Delete Sentry protection by typing the following at the command
+   line:
+ 
+       undelete /sc
+ 
+<b>Network drives and delete protection</b>
+ 
+To protect files on a network drive from accidental deletion, you must
+enable the Delete Sentry level of protection and have read, write, create,
+and delete file access in the drive's root directory.
+ 
+                                      ♦
+
+</pre>
+</body>
+
+</html>

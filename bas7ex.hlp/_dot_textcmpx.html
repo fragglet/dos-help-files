@@ -1,0 +1,50 @@
+<html>
+
+<head>
+<title>TEXTCOMP Function Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'The following example uses TEXTCOMP to compare titles in a table named
+'BookStock and then prints each title that begins with the word QuickBASIC.
+'Because the comparison performed by TEXTCOMP is not case-sensitive, all
+'variations of titles whose first word is QuickBASIC will be printed.
+ 
+'Note: To run this program, you must load the ISAM TSR program PROISAM.EXE.
+'Also, this program assumes files called BOOKS.MDB and BOOKLOOK.BI exist in
+'the current directory. BOOKS.MDB is a sample ISAM file that SETUP copies
+'to your disk.
+ 
+'$INCLUDE: 'booklook.bi'                          'RecStruct structure.
+ 
+DIM BigRec AS RecStruct                           'Define record variable.
+OPEN "books.mdb" FOR ISAM Books "BookStock" AS 1  'Open the ISAM file.
+SETINDEX 1, "TitleIndexBS"                        'Set the index.
+ 
+'Make first record with "quickbasic" as first word of title current.
+SEEKGE 1, "quickbasic"
+IF NOT EOF(1) THEN                                'Quit if no match.
+   DO
+      IF EOF(1) THEN END                          'Quit if end of table.
+      RETRIEVE 1, BigRec.Inventory                'Fetch record into BigRec.
+      'Compare retrieved record to "quickbasic" in same way comparisons
+      'are done by ISAM. If they don't compare equal, Quit program.
+      IF TEXTCOMP(LEFT$(BigRec.Inventory.Title, 10), "quickbasic") &lt;&gt; 0 THEN
+         END
+      END IF
+      LPRINT BigRec.Inventory.Title               'Print valid titles to
+                                                  'the line printer.
+      MOVENEXT 1                                  'Make next record current.
+   LOOP
+ELSE
+   PRINT "Sorry, SEEK for 'quickbasic' failed in BOOKS.MDB"
+END IF
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,122 @@
+<html>
+
+<head>
+<title>CBL_JOIN_FILENAME Details    (↑ File-name Routines)</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L80c8.html'>Key</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='CBL_JOIN_FILENAME.html'>Summary</a><span class='grhilite'>►</span>                             <span class='grhilite'>◄</span><a href='file-names.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Description:
+ 
+     The new file-name is formed by concatenating:
+ 
+      o  the first device-length bytes (starting from device-offset) of
+         device-buffer
+      o  the first basename-length bytes (starting from basename-offest)
+         of basename-buffer
+      o  the first extension-length bytes (starting from extension-offset)
+         of extension-buffer
+ 
+     and is placed in join-buffer with length total-length.
+ 
+     This routine can be made to fold to upper case by setting the least
+     significant bit (bit 0) of split-join-flag1. If this bit is not set,
+     the case will be preserved.
+ 
+     This routine can accept either null-terminated or space-terminated
+     strings. Setting the second least significant bit (bit 1) of
+     split-join-flag1 results in the routine expecting null-terminated
+     strings. If this bit is not set, space-terminated strings are
+     expected.
+ 
+     The device, basename, and extension fields can be shorter than the
+     lengths specified by device-length, basename-length, and
+     extension-length respectively, if they are terminated with either a
+     space or a null, depending on the setting bit 1 of split-join-flag1.
+ 
+     Device-buffer, basename-buffer, extension-buffer, and join-buffer do
+     not have to be four distinct buffers. This means that this routine can
+     be used with CBL_SPLIT_FILENAME to replace one component of a
+     file-name.
+ 
+ 
+     If device-buffer is not empty and does not have a trailing "\" or
+     "/" or colon, and basename-buffer is not empty, the routine inserts
+     a "\" between the device and basename in join-buffer.
+ 
+     If extension is ".", the string returned in join-buffer has an
+     extension of spaces; that is, the file-name has a trailing dot.
+ 
+     If total-length is less than join-buf-len, the characters after
+     the end of the file-name are nulls or spaces depending on bit 1
+     of split-join-flag1.
+ 
+     If device consists of a valid drive letter, but no colon, the
+     routine adds one. It does not do this for a device (for example,
+     LPT1) that does not need one. You cannot join a device (for example,
+     LPT1, as opposed to a drive letter) to a non-empty basename.
+ 
+     See also <span class='grhilite'>◄</span><a href='_at_L80cf.html'>Introduction to File-name Routines</a><span class='grhilite'>►</span>
+              <span class='grhilite'>◄</span><a href='CBL_SPLIT_FILENAME.html'>CBL_SPLIT_FILENAME</a><span class='grhilite'>►</span>
+ 
+  Parameters on Entry:
+ 
+     param-length            Length of split-join-params in bytes,
+                             including the two bytes for param-length. The
+                             normal value for param-length is 24.
+ 
+     split-join-flag1        bit 1 - if set, specifies that the strings are
+                                     null-terminated, otherwise they are
+                                     space-terminated.
+                             bit 0 - if set, specifies that the new
+                                     file-name will be folded to uppercase,
+                                     otherwise the original case will be
+                                     preserved.
+ 
+     device-offset           Offset of the start of the device in
+                             device-buffer, indexed from one.
+ 
+     device-length           Length of device if not space- or null-
+                             terminated.
+ 
+     basename-offset         Offset of the start of the basename in
+                             basename-buffer, indexed from one.
+ 
+     basename-length         Length of basename if not space- or null-
+                             terminated.
+ 
+     extension-offset        Offset of the start of the extension in
+                             extension-buffer, indexed from one.
+ 
+     extension-length        Length of extension if not space- or null-
+                             terminated.
+ 
+     device-buffer           Device-name.
+ 
+     basename-buffer         Basename.
+ 
+     extension-buffer        Extension.
+ 
+     join-buf-len            Length of join-buffer.
+ 
+  Parameters on Exit:
+ 
+     total-length            Total number of characters in the file-name.
+ 
+     join-buffer             The joined-up file-name.
+ 
+     status-code             Return status:
+ 
+                               0 = success
+                               1 = file-name too big for join-buffer
+                               4 = illegal file-name
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

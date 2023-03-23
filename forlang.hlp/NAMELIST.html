@@ -1,0 +1,117 @@
+<html>
+
+<head>
+<title>NAMELIST</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='specstmnt.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hv'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hvx'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────NAMELIST───────────────────────────────────────────────────────────────
+ 
+     Action
+ 
+     Groups a set of variables together under a single name. Allows
+     namelist-directed I/O.
+ 
+     Syntax
+ 
+     NAMELIST /namlst/ varlist [ /namlst/ varlist]
+ 
+     Parameter          Description
+ 
+     namlst             Name for a group of variables
+ 
+     varlist            List of variables. May not include structure
+                        variables or formal arguments.
+ 
+     Remarks
+ 
+     A variable name may appear in more than one namelist.
+ 
+     If the same group name appears in more than one NAMELIST, the new
+     list of variables is treated as a continuation of the previous
+     list.
+ 
+     Example
+ 
+           INTEGER    i1*1, i2*2, i4*4, iarray(3)
+           LOGICAL    11*1, l2*2, l4*4
+           REAL       r4*4, r8*8
+           COMPLEX    z8*8, z16*16
+           CHARACTER  c1*1, c10*10
+ 
+           NAMELIST /example/ i1, i2, i4, 11, l2, l4, r4, r8,
+          +                   z8, z16, c1, c10, iarray
+ 
+           i1  =  11
+           i2  =  12
+           i4  =  14
+           11  = .TRUE.
+           l2  = .TRUE.
+           l4  = .TRUE.
+           r4  =  24.0
+           r8  =  28.0d0
+           z8  = (38.0, 0.0)
+           z16 = (316.0d0, 0.0d0)
+           c1  = 'A'
+           c10 = '0123456789'
+           iarray(1) = 41
+           iarray(2) = 42
+           iarray(3) = 43 /
+ 
+           WRITE (*, example)
+ 
+     The following output is produced:
+ 
+     &amp;EXAMPLE
+     I1 =           11
+     I2 =           12
+     I4 =           14
+     L1 =  T
+     L2 =  T
+     L4 =  T
+     R4 =        24.000000
+     R8 =        28.000000000000000
+     Z8 =           (38.000000, 0.000000E+00)
+     Z16 =         (316.000000000000000, 0.000000000000000E+000)
+     C1 = 'A'
+     C10 = '0123456789'
+     IARRAY =           41          42          43
+ 
+     If a namelist-directed read is performed using READ (*, example) with
+     the following input:
+ 
+     &amp;example
+     I1=99
+     L1=F
+     R4=99.0
+     Z8=(99.0, 0.0)
+     C1='Z'
+     IARRAY(1)=99
+     /
+ 
+     a second WRITE (*, example) statement produces the following output:
+ 
+     &amp;EXAMPLE
+     I1 =           99
+     I2 =           12
+     I4 =           14
+     L1 =  F
+     L2 =  T
+     L4 =  T
+     R4 =        99.000000
+     R8 =        28.000000000000000
+     Z8 =           (99.000000, 0.000000E+00)
+     Z16 =         (316.000000000000000, 0.000000000000000E+000)
+     C1 = 'Z'
+     C10 = '0123456789'
+     IARRAY =           99          42          43
+     /
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

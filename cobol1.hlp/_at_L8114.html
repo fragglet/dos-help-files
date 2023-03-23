@@ -1,0 +1,115 @@
+<html>
+
+<head>
+<title>CBL_LOCATE_FILE Details    (↑ Library of Routines)</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L80c8.html'>Key</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='CBL_LOCATE_FILE.html'>Summary</a><span class='grhilite'>►</span>                             <span class='grhilite'>◄</span><a href='files.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Parameters on Entry:
+ 
+     user-file-spec          Contains the file-name specification; this can
+                             include an embedded environment variable or
+                             library name.
+ 
+                             For example:
+ 
+                             standard file-name:
+                                   device\file-name.ext
+ 
+                             embedded environment variable:
+                                   $envname\file-name.ext
+ 
+                             embedded library name:
+                                   device\library-name.LBR\file-name.ext
+ 
+     user-mode               Specifies what to do with user-file-spec:
+ 
+                               0 = Check whether the file exists in a
+                                   library or as a separate disk file.
+ 
+                                   If user-file-spec includes an embedded
+                                   library-name, that library is opened (if
+                                   it exists) and searched for the file. The
+                                   library is left open afterwards.
+ 
+                                   If user-file-spec includes an embedded
+                                   environment variable, the file will be
+                                   searched for along each path specified in
+                                   that variable. If it is found,
+                                   actual-file-spec on exit contains the
+                                   file specification with the environment
+                                   variable expanded to the successful path.
+ 
+                                   Otherwise, actual-file-spec on exit
+                                   contains the file specification with the
+                                   environment variable expanded to the
+                                   first path it contained.
+ 
+                               1 = If user-file-spec includes an environment
+                                   variable, actual-file-spec on exit
+                                   contains the file specification with the
+                                   environment variable expanded to the
+                                   first path it contained. The file is not
+                                   searched for.
+ 
+                               2 = If user-file-spec includes an environment
+                                   variable, actual-file-spec on exit
+                                   contains the file specification with the
+                                   environment variable expanded to the next
+                                   path it contained. The file is not
+                                   searched for. This option should only be
+                                   used after a successful call with
+                                   user-mode = 1 or 2. See path-flag below.
+ 
+     path-flag               If user-mode = 2, this data item should contain
+                             the value that was returned in this item from
+                             the previous user-mode = 1 or 2 call.
+ 
+  Parameters on Exit:
+ 
+     buffer-len              Size of following buffer.
+ 
+     buffer                  Buffer to contain the resolved file
+                             specification, as described under user-mode.
+ 
+     exist-flag              If user-mode = 0, this data item on exit shows
+                             whether the file specified in user-file-spec
+                             exists.
+ 
+                               0 = file not found or not searched for
+                               1 = file was found in a library that was
+                                   already open
+                               2 = file was found in a library specified in
+                                   user-file-spec
+                               3 = file was found as a separate disk file
+ 
+                             If user-mode is not 0 this data item is always
+                             0 on exit.
+ 
+     path-flag               Shows whether user-file-spec contained
+                             an embedded environment variable that has been
+                             expanded in actual-file-spec.
+ 
+                               0 = actual-file-spec does not include an
+                                   expanded environment variable
+ 
+                               1 = actual-file-spec contains an expanded
+                                   environment variable
+ 
+     status-code             Return status:
+ 
+                               0 =  success
+                               1 =  the environment variable does not exist
+                               4 =  resulting file-name is illegal
+                             255 =  other error
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

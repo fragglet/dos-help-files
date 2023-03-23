@@ -1,0 +1,179 @@
+<html>
+
+<head>
+<title>Vector</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L83fc.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* Vector - Macro to read current interrupt vector, store it, and replace it.
+;*
+;* Shows:   Equates - @CodeSize     @code
+;*
+;* Params:  num - Vector number
+;*          old - Pointer to doubleword for storing old vector
+;*          new - Pointer to new handler
+ 
+Vector MACRO num, old, new              ;; Macro definition
+    push ds                             ;; Save DS and ES registers
+    push es
+    mov  ah, 35h                        ;; AH = DOS function number
+    mov  al, num                        ;; AL = interrupt number
+    int  21h                            ;; Get Interrupt Vector
+    mov  WORD PTR old[0], bx            ;; Store it
+    mov  WORD PTR old[2], es
+    IF @CodeSize                        ;; If medium or large model,
+        lds dx, new                     ;;    load DS from parameter
+    ELSE
+        mov bx, @code                   ;; Else ensure DS points to
+        mov ds, bx                      ;;    to code segment
+        mov dx, WORD PTR new            ;; DS:DX equals new vector
+    ENDIF
+    mov ah, 25h                         ;; AH = DOS function number
+    int 21h                             ;; Set Interrupt Vector
+    pop es                              ;; Restore ES and DS
+    pop ds
+ENDM
+ 
+PBYTE   TYPEDEF      PTR BYTE   ; Type for pointer to bytes
+PWORD   TYPEDEF      PTR WORD   ; Type for pointer to words
+PSWORD  TYPEDEF      PTR SWORD  ; Type for pointer to integers
+PDWORD  TYPEDEF      PTR DWORD  ; Type for pointer to integers
+NPBYTE  TYPEDEF NEAR PTR BYTE   ; Type for near pointer to bytes
+FPBYTE  TYPEDEF FAR  PTR BYTE   ; Type for far pointer to bytes
+FPVOID  TYPEDEF FAR  PTR        ; Type for far pointer to void
+PSEG    TYPEDEF WORD            ; Type for segment value
+ 
+; Structure for video configuration.
+VIDCONFIG       STRUCT
+  mode          BYTE    ?
+  dpage         BYTE    ?
+  rows          BYTE    ?
+  cols          BYTE    ?
+  display       BYTE    ?
+  adapter       BYTE    ?
+  sgmnt         WORD    ?
+VIDCONFIG       ENDS
+PVIDCONFIG      TYPEDEF PTR VIDCONFIG
+ 
+; Structure for FindFirst and FindNext
+FILEINFO        STRUCT
+  pad           BYTE    21 DUP (?)      ; pad to 43 bytes
+  attrib        BYTE    ?               ; file attribute
+  time          WORD    ?               ; file time
+  date          WORD    ?               ; file date
+  count         DWORD   ?               ; file size
+  filename      BYTE    13 DUP (?)      ; file name
+FILEINFO        ENDS
+PFILEINFO       TYPEDEF PTR FILEINFO
+ 
+; Structure for disk statistics
+DISKSTAT        STRUCT
+  total         WORD    ?               ; Total clusters
+  avail         WORD    ?               ; Available clusters
+  sects         WORD    ?               ; Sectors per cluster
+  bytes         WORD    ?               ; Bytes per sector
+DISKSTAT        ENDS
+PDISKSTAT       TYPEDEF PTR DISKSTAT
+ 
+; Structure for parameter block
+PARMBLK         STRUCT
+  env           PSEG    ?               ; Segment of environment block
+  taddr         FPBYTE  ?               ; Segment:offset address of tail
+  fcb1          FPBYTE  ?               ; Segment:offset address of 1st FCB
+  fcb2          FPBYTE  ?               ; Segment:offset address of 2nd FCB
+PARMBLK         ENDS
+PPARMBLK        TYPEDEF PTR PARMBLK
+ 
+; Prototypes from COMMON.ASM
+ 
+GetVer          PROTO PASCAL
+GetVidConfig    PROTO PASCAL
+StrWrite        PROTO PASCAL Row:WORD, Col:WORD, Sptr:PBYTE
+ClearBox        PROTO PASCAL Attr:WORD, Row1:WORD, Col1:WORD,
+                                        Row2:WORD, Col2:WORD
+DisableCga      PROTO PASCAL
+EnableCga       PROTO PASCAL
+SetCurPos       PROTO PASCAL Row:WORD, Col:WORD
+GetCurPos       PROTO PASCAL
+StrInput        PROTO PASCAL Row:WORD, Col:WORD, Max:WORD, Sptr:PBYTE
+ 
+; Prototypes from MISC.ASM
+ 
+WinOpen         PROTO PASCAL Row1:WORD, Col1:WORD,
+                             Row2:WORD, Col2:WORD, Attr:WORD
+WinClose        PROTO PASCAL Adr:WORD
+SetCurSize      PROTO PASCAL Scan1:WORD, Scan2:WORD
+GetCurSize      PROTO PASCAL
+GetShift        PROTO PASCAL
+GetMem          PROTO PASCAL
+GetKeyClock     PROTO PASCAL Row:WORD, Col:WORD
+VeriAnsi        PROTO PASCAL
+VeriPrint       PROTO PASCAL
+VeriCop         PROTO PASCAL
+SetLineMode     PROTO PASCAL Line:WORD
+Pause           PROTO PASCAL Duration:WORD
+Sound           PROTO PASCAL Freq:WORD, Duration:WORD
+WriteTTY        PROTO PASCAL Sptr:PBYTE, icolor:WORD
+Colors          PROTO PASCAL Logic:WORD, Attr:WORD,
+                             Row1:WORD, Col1:WORD, Row2:WORD, Col2:WORD
+Exec            PROTO PASCAL Spec:PBYTE, Block:PPARMBLK,
+                             CtrBrk:PTR FAR,
+                             CtrlC:PTR FAR,
+                             Criterr:PTR FAR
+BinToHex        PROTO PASCAL Num:WORD, Sptr:PBYTE
+NewBlockSize    PROTO PASCAL Adr:WORD, Resize:WORD
+Initialize      PROTO PASCAL
+                EXTERNDEF    IntToAsc:PROC
+ 
+; Prototypes from MATH.ASM
+AddLong         PROTO PASCAL Long1:SDWORD, Long2:SDWORD
+SubLong         PROTO PASCAL Long1:SDWORD, Long2:SDWORD
+ImulLong        PROTO PASCAL Long1:SDWORD, Long2:SDWORD
+MulLong         PROTO PASCAL Long1:DWORD, Long2:DWORD
+IdivLong        PROTO PASCAL Long1:SDWORD, Short2:SWORD, Remn:PSWORD
+DivLong         PROTO PASCAL Long1:DWORD, Short2:WORD, Remn:PWORD
+Quadratic       PROTO PASCAL aa:DWORD, bb:DWORD, cc:DWORD,
+                             r1:PDWORD, r2:PDWORD
+ 
+; Prototypes from FILE.ASM
+ChangeDrive     PROTO PASCAL Drive:WORD
+GetDiskSize     PROTO PASCAL Drive:WORD, Disk:PDISKSTAT
+SetDta          PROTO PASCAL Dta:FPBYTE
+GetDta          PROTO PASCAL Dta:FPBYTE
+ReadCharAttr    PROTO PASCAL Attr:PWORD
+GetCurDir       PROTO PASCAL Spec:PBYTE
+GetCurDrive     PROTO PASCAL
+CopyFile        PROTO PASCAL Imode:WORD, Fspec1:PBYTE, Fspec2:PBYTE
+DelFile         PROTO PASCAL Fspec:PBYTE
+MakeDir         PROTO PASCAL Pspec:PBYTE
+RemoveDir       PROTO PASCAL Pspec:PBYTE
+ChangeDir       PROTO PASCAL Pspec:PBYTE
+GetAttribute    PROTO PASCAL Fspec:PBYTE
+SetAttribute    PROTO PASCAL Attr:WORD, Fspec:PBYTE
+RenameFile      PROTO PASCAL Fspec1:PBYTE, Fspec2:PBYTE
+GetFileTime     PROTO PASCAL Handle:WORD, Sptr:PBYTE
+FindFirst       PROTO PASCAL Attr:WORD, Fspec:PBYTE, Finfo:PFILEINFO
+FindNext        PROTO PASCAL Finfo:PFILEINFO
+UniqueFile      PROTO PASCAL Attr:WORD, Pspec:PBYTE
+OpenFile        PROTO PASCAL Access:WORD, Fspec:PBYTE
+CloseFile       PROTO PASCAL Handle:WORD
+CreateFile      PROTO PASCAL Attr:WORD, Fspec:PBYTE
+CreateNewFile   PROTO PASCAL Attr:WORD, Fspec:PBYTE
+ReadFile        PROTO PASCAL Handle:WORD, Len:WORD, Pbuff:PBYTE
+WriteFile       PROTO PASCAL Handle:WORD, Sptr:PBYTE
+Rewind          PROTO PASCAL Handle:WORD
+GetFileSize     PROTO PASCAL Handle:WORD
+GetStr          PROTO PASCAL Strbuf:PBYTE, Maxlen:WORD
+StrCompare      PROTO PASCAL Sptr1:PBYTE, Sptr2:PBYTE, Len:WORD
+StrFindChar     PROTO PASCAL Ichar:SBYTE, Sptr:PBYTE, Direct:WORD
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

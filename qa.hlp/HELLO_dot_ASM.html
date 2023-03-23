@@ -1,0 +1,48 @@
+<html>
+
+<head>
+<title>HELLO.ASM</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* HELLO.ASM - Illustrates simplified segment directives.
+;*
+;* Shows:  Directives - TITLE     .MODEL    DOSSEG      .STACK
+;*                      .DATA     .CODE     .STARTUP    OFFSET
+;*                      .EXIT     END
+;*         DOS Functions - 09h (Display String)
+;*
+;* See <a href='HELLOF_dot_ASM.html'>HELLOF.ASM</a> for a full-segment .EXE file version or <a href='HELLOC_dot_ASM.html'>HELLOC.ASM</a>
+;* for a full-segment .COM file version.
+ 
+        TITLE   HELLO
+        .MODEL  small, c                ; Small model (could be any model)
+        DOSSEG                          ; Force DOS segment order
+ 
+        .STACK  100h                    ; 256-byte stack
+ 
+        .DATA                           ; Data segment
+msg     DB      "Hello, world.", 13, 10, "$"
+ 
+        .CODE                           ; Code segment
+        .STARTUP                        ; Initialize data segment and
+                                        ;   set SS = DS
+        mov     ah, 9h                  ; Request DOS Function 9
+        mov     dx, OFFSET msg          ; Load DX with offset of string
+                                        ;   (segment already in DS)
+        int     21h                     ; Display String
+ 
+        .EXIT   0                       ; Exit  with return code 0
+ 
+        END
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

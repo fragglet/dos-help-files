@@ -1,0 +1,149 @@
+<html>
+
+<head>
+<title>CMenu::AppendMenu</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='CMenu.html'>CMenu</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='CMenu.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span></i>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  BOOL AppendMenu( UINT nFlags, UINT nIDNewItem = 0,
+                   const char FAR* lpNewItem = NULL );
+  BOOL AppendMenu( UINT nFlags, UINT nIDNewItem, const CBitmap* pBmp );
+ 
+  Parameter    Description
+ 
+  &lt;nFlags&gt;     Specifies information about the state of the new menu item
+               when it is added to the menu. It consists of one or more of
+               the values listed in the Remarks section.
+ 
+  &lt;nIDNewItem&gt; Specifies either the command ID of the new menu item or, if
+               &lt;nFlags&gt; is set to MF_POPUP, the menu handle (HMENU) of a
+               pop-up menu. The &lt;nIDNewItem&gt; parameter is ignored (not
+               needed) if &lt;nFlags&gt; is set to MF_SEPARATOR.
+ 
+  &lt;lpNewItem&gt;  Specifies the content of the new menu item. The
+               interpretation of &lt;lpNewItem&gt; depends on the setting of
+               &lt;nFlags&gt; as shown below:
+ 
+               &lt;nFlags&gt;       Interpretation of &lt;lpNewItem&gt;
+ 
+               MF_OWNERDRAW   Contains an application-supplied 32-bit
+                              value that the application can use to
+                              maintain additional data associated with the
+                              menu item. This 32-bit value is available to
+                              the application when it processes
+                              WM_MEASUREITEM and WM_DRAWITEM messages.
+ 
+               MF_STRING      Contains a pointer to a null-terminated
+                              string. This is the default interpretation.
+ 
+               The &lt;lpNewItem&gt; parameter is ignored (not needed) if
+               &lt;nFlags&gt; is set to MF_SEPARATOR.
+ 
+  &lt;pBmp&gt;       Points to a CBitmap object that will be used as the menu
+               item.
+ 
+  Remarks
+ 
+  Appends a new item to the end of a menu. The application can specify the
+  state of the menu item by setting values in &lt;nFlags&gt;. When &lt;nIDNewItem&gt;
+  specifies a pop-up menu, it becomes part of the menu to which it is
+  appended. If that menu is destroyed, the appended menu will also be
+  destroyed. An appended menu should be detached from a CMenu object to
+  avoid conflict.
+ 
+  NOTE: MF_STRING and MF_OWNERDRAW are not valid for the bitmap version of
+        AppendMenu.
+ 
+  The following list describes the flags that may be set in &lt;nFlags&gt;:
+ 
+  Value             Interpretation of &lt;nFlags&gt;
+ 
+  MF_CHECKED        Acts as a toggle in conjunction with MF_UNCHECKED to
+                    place the default check mark next to the item. When
+                    the application supplies check-mark bitmaps (see
+                    SetMenuItemBitmaps), the "check mark on" bitmap is
+                    displayed.
+ 
+  MF_DISABLED       Disables the menu item so that it cannot be selected,
+                    but does not dim it.
+ 
+  MF_ENABLED        Enables the menu item so that it can be selected, and
+                    restores it from its dimmed state.
+ 
+  MF_GRAYED         Disables the menu item so that it cannot be selected,
+                    and dims it.
+ 
+  MF_MENUBARBREAK   Places item on a new line in static menus or in a new
+                    column in pop-up menus. The new pop-up menu column
+                    will be separated from the old column by a vertical
+                    dividing line.
+ 
+  MF_MENUBREAK      Places item on a new line in static menus or in a new
+                    column in pop-up menus. No dividing line is placed
+                    between the columns.
+ 
+  MF_OWNERDRAW      Specifies that the item is an owner-draw item. When
+                    the menu is displayed for the first time, the window
+                    that owns the menu receives a WM_MEASUREITEM message,
+                    which retrieves the height and width of the menu item.
+                    The WM_DRAWITEM message is the one sent whenever the
+                    owner must update the visual appearance of the menu
+                    item. This option is not valid for a top-level menu
+                    item.
+ 
+  MF_POPUP          Specifies that the menu item has a pop-up menu
+                    associated with it. The ID parameter specifies a
+                    handle to a pop-up menu that is to be associated with
+                    the item. This is used for adding either a top-level
+                    pop-up menu or a hierarchical pop-up menu to a pop-up
+                    menu item.
+ 
+  MF_SEPARATOR      Draws a horizontal dividing line. Can only be used in
+                    a pop-up menu. This line cannot be dimmed, disabled,
+                    or highlighted. Other parameters are ignored.
+ 
+  MF_STRING         Specifies that the menu item is a character string.
+ 
+  MF_UNCHECKED      Acts as a toggle in conjunction with MF_CHECKED to
+                    remove a check mark next to the item. When the
+                    application supplies check-mark bitmaps (see
+                    SetMenuItemBitmaps), the "check mark off" bitmap is
+                    displayed.
+ 
+  Each of the following groups lists flags that are mutually exclusive and
+  cannot be used together:
+ 
+  MF_DISABLED, MF_ENABLED, and MF_GRAYED
+ 
+  MF_STRING, MF_OWNERDRAW, MF_SEPARATOR, and the bitmap version
+ 
+  MF_MENUBARBREAK and MF_MENUBREAK
+ 
+  MF_CHECKED and MF_UNCHECKED
+ 
+  Whenever a menu that resides in a window is changed (whether or not the
+  window is displayed), the application should call CWnd::DrawMenuBar.
+ 
+  Return Value
+ 
+  TRUE if the function is successful; otherwise FALSE.
+ 
+  See Also
+ 
+  <span class='grhilite'>◄</span><a href='DrawMenuBar.html'>CWnd::DrawMenuBar</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='InsertMenu.html'>CMenu::InsertMenu</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='RemoveMenu.html'>CMenu::RemoveMenu</a><span class='grhilite'>►</span>,
+  <span class='grhilite'>◄</span><a href='SetMenuItemBitmaps.html'>CMenu::SetMenuItemBitmaps</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='CMenu_cln__cln_Detach.html'>CMenu::Detach</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='~CMenu.html'>CMenu::~CMenu</a><span class='grhilite'>►</span>,
+  <span class='grhilite'>◄</span><a href='../win31qh.hlp/AppendMenu.html'>::AppendMenu</a><span class='grhilite'>►</span>
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

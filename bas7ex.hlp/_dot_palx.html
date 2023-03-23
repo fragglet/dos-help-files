@@ -1,0 +1,49 @@
+<html>
+
+<head>
+<title>PALETTE, PALETTE USING Statements Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example illustrates the use of the PALETTE and PALETTE USING
+'statements.
+ 
+DEFINT A-Z
+DIM SHARED PaletteArray(15)
+ 
+CONST ASPECT = 1 / 3
+ 
+'640 x 200, 16 color resolution.
+SCREEN 8
+'Initialize PaletteArray.
+FOR I = 0 TO 15
+    PaletteArray(I) = I
+NEXT I
+'Draw and paint concentric ellipses.
+FOR ColorVal = 15 TO 1 STEP -1
+    Radius = 20 * ColorVal
+    CIRCLE (320, 100), Radius, ColorVal, , , ASPECT
+    PAINT (320, 100), ColorVal
+NEXT
+'Shift the palette until a key is pressed.
+DO
+    FOR I = 1 TO 15
+        PaletteArray(I) = (PaletteArray(I) MOD 15) + 1
+    NEXT I
+    PALETTE USING PaletteArray(0)
+    'Map the black background to some random color.
+    PALETTE 0, PaletteArray(INT(RND * 15))
+ 
+LOOP WHILE INKEY$ = ""
+END
+ 
+ 
+
+</pre>
+</body>
+
+</html>

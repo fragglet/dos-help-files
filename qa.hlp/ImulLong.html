@@ -1,0 +1,102 @@
+<html>
+
+<head>
+<title>ImulLong</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* ImulLong - Multiplies two signed double-word integers. Because the imul
+;* instruction (illustrated here) treats each word as a signed number, its
+;* use is impractical when multiplying multi-word values. Thus the technique
+;* used in the MulLong procedure can't be adopted here. Instead, ImulLong
+;* is broken into three sections arranged in ascending order of computational
+;* overhead. The procedure tests the values of the two integers and selects
+;* the section that involves the minimum required effort to multiply them.
+;*
+;* Shows:   Instruction - imul
+;*
+;* Params:  long1 - First integer (multiplicand)
+;*          long2 - Second integer (multiplier)
+;*
+;* Return:  Result as long integer
+ 
+ImulLong PROC \
+        USES si, \
+        long1:DWORD, long2:DWORD
+ 
+; Section 1 tests for integers in the range of 0 to 65,535. If both
+; numbers are within these limits, they're treated as unsigned short
+; integers.
+ 
+sect1:  mov     ax, WORD PTR long2[0]   ; AX = low word of long2
+        mov     dx, WORD PTR long2[2]   ; DX = high word of long2
+        mov     bx, WORD PTR long1[0]   ; BX = low word of long1
+        mov     cx, WORD PTR long1[2]   ; CX = high word of long1
+        or      dx, dx                  ; Both high words zero?
+        jnz     sect2                   ; No?  Go to section 2
+        or      cx, cx
+        jnz     sect2
+        mul     bx                      ; Yes?  Multiply the low words
+        jmp     SHORT exit              ;   and exit section 1
+ 
+; Section 2 tests for integers in the range of -32,768 to 32,767. If
+; both numbers are within these limits, they're treated as signed short
+; integers.
+ 
+sect2:  push    ax                      ; Save long2 low word
+        push    bx                      ; Save long1 low word
+        or      dx, dx                  ; High word of long2 = 0?
+        jnz     @F                      ; No?  Test for negative
+        test    ah, 80h                 ; Low word of long2 in range?
+        jz      skip1                   ; Yes?  long2 ok, so test long1
+        jmp     SHORT sect3             ; No?  Go to section 3
+@@:     cmp     dx, 0FFFFh              ; Empty with sign flag set?
+        jne     sect3                   ; No?  Go to section 3
+        test    ah, 80h                 ; High bit set in low word?
+        jz      sect3                   ; No?  Low word is too high
+ 
+skip1:  or      cx, cx                  ; High word of long1 = 0?
+        jnz     @F                      ; No?  Test for negative
+        test    bh, 80h                 ; Low word of long1 in range?
+        jz      skip2                   ; Yes?  long1 ok, so use sect 2
+        jmp     SHORT sect3             ; No?  Go to section 3
+@@:     cmp     cx, 0FFFFh              ; Empty with sign flag set?
+        jne     sect3                   ; No?  Go to section 3
+        test    bh, 80h                 ; High bit set in low word?
+        jz      sect3                   ; No?  Low word is too high
+ 
+skip2:  imul    bx                      ; Multiply low words
+        pop     bx                      ; Clean stack
+        pop     bx
+        jmp     SHORT exit              ; Exit section 2
+ 
+; Section 3 involves the most computational overhead. It treats the two
+; numbers as signed long (double-word) integers.
+ 
+sect3:  pop     bx                      ; Recover long1 low word
+        pop     ax                      ; Recover long2 low word
+        mov     si, dx                  ; SI = long2 high word
+        push    ax                      ; Save long2 low word
+        mul     cx                      ; long1 high word x long2 low word
+        mov     cx, ax                  ; Accumulate products in CX
+        mov     ax, bx                  ; AX = low word of long1
+        mul     si                      ; Multiply by long2 high word
+        add     cx, ax                  ; Add to previous product
+        pop     ax                      ; Recover long2 low word
+        mul     bx                      ; Multiply by long1 low word
+        add     dx, cx                  ; Add to product high word
+ 
+exit:   ret                             ; Return result as DX:AX
+ 
+ImulLong ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

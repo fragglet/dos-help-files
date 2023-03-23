@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<title>CString Exception Cleanup</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='CString.html'>CString</a><span class='grhilite'>►</span>                                     <span class='grhilite'>◄</span><a href='CString.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span></i>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  Memory Leaks
+ 
+  If you notice that the Microsoft Foundation diagnostic memory allocator
+  is reporting leaks for non-CObject memory blocks, check your
+  exception-processing logic to see if CString objects are being cleaned
+  up properly.
+ 
+  The CString class is typical in that its  constructor and member
+  functions allocate memory that must be freed by the destructor. CString
+  is unique, however, in that instances are often allocated on the frame
+  rather than on the heap. When a frame-allocated CString object goes out
+  of scope, its destructor is called "invisibly" without need for a delete
+  statement.
+ 
+  Whether you explicitly destroy an object or not, you must be sure that
+  the destructor call isn't bypassed by uncaught exceptions. For
+  frame-allocated (and heap-allocated) CString objects, use a CATCH
+  statement to channel execution through the end of the function that
+  contains the CString allocation.
+ 
+  Example
+ 
+  This is an example of incorrect programming.
+  void TestFunction1()
+  {
+      CString s1 = "test";
+      OtherFunction();   // OtherFunction may raise an exception
+         // This point not passed if an exception occurred.
+         // s1's destructor called here (frees character storage for
+         // "test")
+  }
+ 
+ 
+  You must add TRY/CATCH code to free the string character data in
+  response to memory exceptions.
+ 
+  Now the program has been improved to properly handle exceptions.
+ 
+  void TestFunction2()
+  {
+      CString s1;
+      TRY
+      {
+          s1 = "test";
+          OtherFunction(); // OtherFunction may raise an exception
+      }
+      CATCH( CException, e )
+      {
+          s1.Empty();                // Frees up associated data
+          THROW_LAST()
+      }
+      END_CATCH
+  }
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

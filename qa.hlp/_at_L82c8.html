@@ -1,0 +1,113 @@
+<html>
+
+<head>
+<title>Int 21H Function 44H Subfunction 0CH</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span><a href='21H_dot_44H_dot_0CH.html'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Notes<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+▀ If the minor code is 45H (Set Iteration Count) or 65H (Get Iteration
+  Count), the parameter block is simply a 2-byte buffer containing or re-
+  ceiving the iteration count for the printer. This call is valid only for
+  printer drivers that support Output Until Busy, and determines the number
+  of times the device driver will wait for the device to signal ready be-
+  fore returning from the output call.
+ 
+▀ For MS-DOS version 3.3, the parameter block for minor codes 4AH (Select
+  Code Page), 4DH (End Code Page Preparation), or 6AH (Query Code Page)
+  has the following format:
+ 
+  dw     2          ; length of following data
+  dw     ?          ; code page ID
+ 
+▀ For MS-DOS version 4.0, minor codes 4AH and 6AH also set or get the
+  double-byte character set (DBCS) lead byte table, and the following for-
+  mat is used:
+ 
+  dw     (n+2)*2+1  ; length of following data
+  dw     ?          ; code page ID
+  db     start,end  ; DBCS lead byte range 1
+  (vertical 3-ellipsis symbol)
+  db     start,end  ; DBCS lead byte range n
+  db     0,0
+ 
+▀ The parameter block for minor code 4CH (Start Code Page Preparation)
+  has the following format:
+ 
+  dw     0          ; font type
+                    ; bit 0 = 0 downloaded
+                    ;       = 1 cartridge
+                    ; bits 1-15 = reserved (0)
+  dw     (n+1)*2    ; length of remainder of
+                    ;  parameter block
+  dw     n          ; number of code pages in
+                    ;  the following list
+  dw     ?          ; code page 1
+  dw     ?          ; code page 2
+  (vertical 3-ellipsis symbol)
+  dw     ?          ; code page n
+ 
+▀ The parameter block for minor code 6BH (Query Prepare List) has the fol-
+  lowing format, assuming n hardware code pages and m prepared code pages
+  (n &lt;= 12, m &lt;= 12):
+ 
+  dw     (n+m+2)*2  ; length of following data
+  dw     n          ; no. of hardware code pages
+  dw     ?          ; hardware code page 1
+  dw     ?          ; hardware code page 2
+  (vertical 3-ellipsis symbol)
+  dw     ?          ; hardware code page n
+  dw     m          ; no. of prepared code pages
+  dw     ?          ; prepared code page 1
+  dw     ?          ; prepared code page 2
+  (vertical 3-ellipsis symbol)
+  dw     ?          ; prepared code page m
+ 
+▀ After a minor code 4CH (Start Code Page Preparation) call, the data de-
+  fining the code page font is written to the driver using one or more
+  calls to the IOCTL Write Control Data subfunction (Interrupt 21H, Func-
+  tion 44H, Subfunction 03H). The format of the data is device- and driver-
+  specific. After the font data has been written to the driver, a minor
+  code 4DH (End Code Page Preparation) call must be issued. If no data is
+  written to the driver between the minor code 4CH and 4DH calls, the
+  driver interprets the newly prepared code pages as hardware code pages.
+ 
+▀ A special variation of the minor code 4CH (Start Code Page Preparation)
+  call, called "Refresh," is required to actually load the peripheral de-
+  vice with the prepared code pages. The refresh operation is obtained by
+  requesting minor code 4CH with each code page position in the parameter
+  block set to -1, followed by an immediate call for minor code 4DH (End
+  Code Page Preparation).
+ 
+▀ [4.0+] For minor codes 5FH (Set Display Information) and 7FH (Get Display
+  Information), the parameter block is formatted as follows:
+ 
+  db     0          ; level (0 in MS-DOS 4.0)
+  db     0          ; reserved (must be 0)
+  dw     14         ; length of following data
+  dw     ?          ; control flags
+                    ; bit 0  = 0 intensity
+                    ;        = 1 blink
+                    ; bits 1-15 = reserved (0)
+  db     ?          ; mode type (1 = text, 2 = APA)
+  db     0          ; reserved (must be 0)
+  dw     ?          ; colors
+                    ; 0 = monochrome compatible
+                    ; 1 = 2 colors
+                    ; 2 = 4 colors
+                    ; 4 = 16 colors
+                    ; 8 = 256 colors
+  dw     ?          ; pixel columns
+  dw     ?          ; pixel rows
+  dw     ?          ; character columns
+  dw     ?          ; character rows
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

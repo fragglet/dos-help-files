@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>Defining Constants and Macros (/D)</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8048.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────C/C++ Compiler─────────────────────────────────────────────────────────
+ 
+     Syntax:  /Didentifier[=|#[value]]
+ 
+     Use the /D option to define constants or macros for your source
+     file. The &lt;identifier&gt; is the name of the constant or macro. No
+     space can separate /D and the &lt;identifier&gt;. The &lt;value&gt; can be
+     either a string or a number. If the &lt;value&gt; is a string and
+     includes spaces, enclose it in quotes. If you leave out both the
+     equal sign and the &lt;value&gt;, the identifier is assumed to be
+     defined, and its value is set to 1. For example, entering /DSET
+     defines a macro named SET with a value of 1. Note that the
+     &lt;identifier&gt; argument is case sensitive. For example, the /D
+     option above would have no effect on a constant named set that is
+     defined in the source file.
+ 
+     Note that with Microsoft C/C++ you can substitute a number sign
+     (#) for an equal sign (=) when setting &lt;identifier&gt; to a value.
+     From either the DOS command line or from a batch file, you cannot
+     set an environment variable, such as CL, to a string that contains
+     an equal sign. Environment variables do, however, accept the
+     number sign. Now that the CL driver allows the substitution of #
+     for = with the /D option, you can use the CL environment variable
+     to define preprocessor constants:
+ 
+          SET CL="/DTEST#0"
+ 
+     Use the /D option in combination with either the #if or #ifdef
+     directive to compile source files conditionally.
+ 
+     Using the /D option with a keyword, identifier, or a numeric
+     constant and appending an equal sign followed by a space replaces
+     the keyword, identifier, or a numeric constant with no text in the
+     source file. For example, use the following command to remove all
+     occurrences of RELEASE from TEST.C:
+ 
+          CL /DRELEASE= TEST.C
+ 
+     Similarly, use the following command to remove all occurrences of
+     the keyword __far in TEST.C:
+ 
+          CL /D__far=  TEST.C
+ 
+     Defining macros and constants with the /D option has the same
+     effect as using a #define preprocessor directive at the beginning
+     of your source file. The identifier is defined until either an
+     #undef directive in the source file removes the definition or the
+     compiler reaches the end of the file.
+ 
+     If an identifier defined in a /D option is also defined within the
+     source file, CL uses the definition on the command line until it
+     encounters the redefinition of the identifier in the source file.
+ 
+     Example
+ 
+          #if !defined(RELEASE)&lt;R&gt;
+              _nheapchk();&lt;R&gt;
+          #endif
+ 
+     This code fragment calls a function to check the near heap unless
+     the constant RELEASE is defined. While developing the program, you
+     can leave RELEASE undefined and perform heap checking to find bugs.
+     Assuming the program name is BIG.C, you would compile with the
+     following command:
+ 
+          CL BIG.C
+ 
+     After you have found all of the bugs in the program, you can define
+     RELEASE in a /D option so the program runs faster, as follows:
+ 
+          CL /DRELEASE BIG.C
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

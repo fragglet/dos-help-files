@@ -1,0 +1,51 @@
+<html>
+
+<head>
+<title>PUT and TYPE Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example use the PUT statement to store test scores in a
+'random-access file. The TYPE statement is used to create a
+'user-defined variable type.
+ 
+'Define record fields.
+TYPE TestRecord
+   NameField  AS STRING * 20
+   ScoreField AS SINGLE
+END TYPE
+ 
+ 
+DIM FileBuffer AS TestRecord
+DIM I AS LONG
+ 
+'Open the test data file.
+OPEN "TESTDAT.DAT" FOR RANDOM AS #1 LEN = LEN(FileBuffer)
+ 
+ 
+'Read pairs of names and scores from the console.
+CLS    'Clear screen.
+I = 0
+DO
+    I = I + 1
+    INPUT "Name ? ", FileBuffer.NameField
+    INPUT "Score? ", FileBuffer.ScoreField
+    INPUT "--&gt;More (y/n)? ", Resp$
+    PUT #1, I, FileBuffer
+LOOP UNTIL UCASE$(MID$(Resp$, 1, 1)) = "N"
+ 
+PRINT I; " records written."
+ 
+CLOSE #1
+ 
+'Remove file from disk.
+KILL "TESTDAT.DAT"
+
+</pre>
+</body>
+
+</html>

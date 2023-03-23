@@ -1,0 +1,202 @@
+<html>
+
+<head>
+<title>GEDIT.PAS</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.index'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM gedit;
+ 
+{ GEDIT.PAS illustrates translation between window, view, and physical
+  coordinates. Functions used include:
+ 
+      _GetColor                  _GetViewCoord_wxy      _SetColor
+      _GetCurrentPosition_wxy    _GetWindowCoord        _SetWindow
+      _GetPhysCoord              _LineTo_w
+      _GetPixel_w                _MoveTo_w
+ 
+  Similar functions not used in the example include:
+ 
+      _GetViewCoord_w            _GetCurrentPosition    _GetPixel
+ 
+  See VIEWS.PAS for another example of _SetWindow.
+}
+ 
+USES
+    MSGraph, Crt;
+ 
+TYPE
+    display = ( move, draw, erase_pixel );
+ 
+VAR
+    vc             : _VideoConfig;
+    phys, view     : _XYCoord;
+    oldwin, newwin : _WXYCoord;
+    xunit, xinc    : Double;
+    yunit, yinc    : Double;
+    fintersect     : Boolean;
+    fdisplay       : display;
+    color, error   : Integer;
+    oldmode, Mode  : Integer;
+    key            : Char;
+ 
+BEGIN
+ 
+    Writeln( 'GEDIT, a drawing program.  Press any key to start.' );
+    Writeln( 'Commands:' );
+    Writeln( ' SPACE    Move' );
+    Writeln( ' INS      Draw white' );
+    Writeln( ' DEL      Draw black' );
+    Writeln( '  -       Less granularity' );
+    Writeln( '  +       More granularity' );
+    Writeln( 'R Arrow   +X' );
+    Writeln( 'L Arrow   -X' );
+    Writeln( 'U Arrow   -Y' );
+    Writeln( 'D Arrow   +Y' );
+    Writeln( ' PGUP     +X, -Y ' );
+    Writeln( ' PGDN     +X, +Y ' );
+    Writeln( ' END      -X, +Y ' );
+    Writeln( ' HOME     -X, -Y ' );
+    Writeln( ' ESC      Quit ' );
+    key := ReadKey;
+ 
+    IF (_SetVideoMode( _MaxResMode ) = 0) THEN
+        Halt ( 1 );
+ 
+    _GetVideoConfig( vc );
+ 
+    { Set a window using real numbers. }
+    _SetWindow( False, -25.0, -10.0, 25.0, 10.0 );
+ 
+    { Calculate the size of one pixel in window coordinates.
+      Then get the current window coordinates and color.
+    }
+    _GetWindowCoord( 0, 0, oldwin );
+    _GetWindowCoord( 1, 1, newwin );
+ 
+    xunit := newwin.wx - oldwin.wx;
+    yunit := newwin.wy - oldwin.wy;
+    xinc := xunit;
+    yinc := yunit;
+ 
+    _GetCurrentPosition_wxy( newwin );
+    oldwin := newwin;
+ 
+    color := _GetColor;
+    fdisplay := draw;
+ 
+    WHILE( True ) DO
+        BEGIN
+        { Set flag according to whether current pixel is on, then
+          turn pixel on.
+        }
+        fintersect := (_GetPixel_w( oldwin.wx, oldwin.wy ) = color);
+        _SetColor( color );
+        _SetPixel_w( oldwin.wx, oldwin.wy );
+ 
+        { Get and test key. }
+        key := ReadKey;
+        CASE Ord( key ) OF
+            27 :    { ESC -- Quit }
+                BEGIN
+                error := _SetVideoMode( _DefaultMode );
+                Halt( 0 );
+                END;
+            45 :    { MINUS -- More granularity }
+                BEGIN
+                IF( xinc &gt; xunit ) THEN
+                    BEGIN
+                    yinc := yinc - yunit;
+                    xinc := xinc - xunit;
+                    END
+                END;
+            43 :    { PLUS -- Less granularity }
+                BEGIN
+                yinc := yinc + yunit;
+                xinc := xinc + xunit;
+                END;
+            32 :    { SPACE -- Move no color }
+                fdisplay := Move;
+            0  :    { Extended code -- get next }
+                BEGIN
+                key := ReadKey;
+                CASE Ord( key ) OF
+                    82 :    { INS   -- Draw white       }
+                        fdisplay := draw;
+                    83 :    { DEL   -- Draw black       }
+                        fdisplay := erase_pixel;
+                    77 :    { RIGHT -- (+x,  0)         }
+                        newwin.wx := newwin.wx + xinc;
+                    75 :    { LEFT  -- (-x,  0)         }
+                        newwin.wx := newwin.wx - xinc;
+                    80 :    { DOWN  -- ( 0, +y)         }
+                        newwin.wy := newwin.wy + yinc;
+                    72 :    { UP    -- ( 0, -y)         }
+                        newwin.wy := newwin.wy - yinc;
+                    81 :    { PGDN  -- (+x, +y)         }
+                        BEGIN
+                        newwin.wx := newwin.wx + xinc;
+                        newwin.wy := newwin.wy + yinc;
+                        END;
+                    73 :    { PGUP  -- (+x, -y)         }
+                        BEGIN
+                        newwin.wx := newwin.wx + xinc;
+                        newwin.wy := newwin.wy - yinc;
+                        END;
+                    79 :    { END   -- (-x, +y)         }
+                        BEGIN
+                        newwin.wx := newwin.wx - xinc;
+                        newwin.wy := newwin.wy + yinc;
+                        END;
+                    71 :    { HOME  -- (-x, -y)         }
+                        BEGIN
+                        newwin.wx := newwin.wx - xinc;
+                        newwin.wy := newwin.wy - yinc;
+                        END;
+                    END;
+                END;
+            END;
+ 
+        { Translate window coordinates to view, view to physical. Then
+          check physical to make sure we're on the screen. Update screen
+          and position if we are. Ignore if not.
+        }
+        _GetViewCoord_wxy( newwin, view );
+        _GetPhysCoord( view.xcoord, view.ycoord, phys );
+ 
+        IF ((phys.xcoord &gt;= 0) AND (phys.xcoord &lt; vc.NumXPixels) AND
+            (phys.ycoord &gt;= 0) AND (phys.ycoord &lt; vc.NumYPixels)) THEN
+            BEGIN
+            { If display on, draw to new position, else move to new. }
+            IF( fdisplay &lt;&gt; Move ) THEN
+                BEGIN
+                IF( fdisplay = erase_pixel ) THEN _SetColor( 0 );
+                _LineTo_w( newwin.wx, newwin.wy );
+                END
+            ELSE
+                BEGIN
+                _SetColor( 0 );
+                _MoveTo_w( newwin.wx, newwin.wy );
+ 
+                { If there was no intersect, erase old pixel. }
+                IF (NOT fintersect) THEN
+                    _SetPixel_w( oldwin.wx, oldwin.wy );
+                END;
+ 
+            oldwin := newwin;
+            END
+        ELSE
+            newwin := oldwin;
+        END;
+ 
+END.
+ 
+
+</pre>
+</body>
+
+</html>

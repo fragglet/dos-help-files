@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>$FREEFORM and $NOFREEFORM</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='metacommands.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hv'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hvx'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────$FREEFORM and $NOFREEFORM──────────────────────────────────────────────
+ 
+     Action
+ 
+     <a href='$FREEFORM.html'>$NOFREEFORM</a> specifies that a source file is in standard FORTRAN
+     format; <a href='$FREEFORM.html'>$FREEFORM</a> specifies that a source file is in free-form
+     format.
+ 
+     Syntax  $[NO]FREEFORM
+ 
+     Remarks
+ 
+     This metacommand must precede any FORTRAN statements.
+ 
+     <a href='$FREEFORM.html'>$FREEFORM</a> allows source code to use the following format:
+ 
+        ■ A double quotation mark (") in column 1 indicates a comment
+          line. An exclamation point outside a character or Hollerith
+          constant indicates the beginning of an in-line comment.
+ 
+        ■ Initial lines may start in any column.
+ 
+        ■ The first nonblank character of an initial line may be a
+          digit (the first digit in a statement number). The statement
+          number may be from one to five decimal digits.
+ 
+        ■ If the last nonblank, noncomment character of a line is a
+          minus sign, it is discarded and the next line is taken to
+          be a continuation line.
+ 
+        ■ Alphabetic characters and asterisks are not allowed as
+          comment markers in column 1.
+ 
+     The $[NO]FREEFORM metacommand is equivalent to the /4{Y | N}f
+     compiler option.
+ 
+     Example
+ 
+     $FREEFORM
+ 
+     "The sine of the number x is calculated using a power series.
+     "Successive terms are calculated until one is less than epsi.
+ 
+     REAL x, epsi, z, sine, next
+     epsi = 0.0001
+ 
+     WRITE  (*, 100)
+     100  FORMAT (1X, 'ENTER x: ' \)
+     READ   (*, '(F10.5)') x
+ 
+     z    =  AMOD (x, 6.2831853)
+     sine =  z
+     i    =  4.0
+     next = -z * z * z / 6.0
+ 
+     200  IF (ABS (next) .GE. epsi) THEN
+     sine =  sine + next
+     next = -next * z * z / (i * (i + 1.0))
+     i    =  i + 2.0
+     GOTO 200
+     ENDIF
+ 
+     WRITE  (*, 300) x, sine
+     300  FORMAT (1X, 'THE SINE OF ', F10.5, -
+              ' = ', F12.10)
+     END
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

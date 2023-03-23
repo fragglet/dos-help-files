@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<title>JCOND.ASM</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* JCOND.ASM (conditional jump) shows how to transfer execution conditionally
+;* with jump instructions. The code is arranged as a program so that you can
+;* trace through it and change registers to test alternate results. Many (but
+;* not all) of the conditional jump instructions are illustrated.
+;*
+;* See <a href='JUMP_dot_ASM.html'>JUMP.ASM</a> for an example of the related JMP instruction and
+;* StrCompare for an example of JCXZ.
+;*
+;* Shows:   jb/jnae    jae/jnb    jbe/jna    ja/jnbe    (unsigned)
+;*          jl/jnge    jge/jnl    jle/jng    jg/jnle    (signed)
+;*          je/jz      js         jns                   (equality and sign)
+;*          jc         jnc        jo         jno        (carry and overflow)
+;*          jp/jpe     jnp/jpo                          (parity)
+ 
+        .MODEL small
+        .STACK
+        .CODE
+        .STARTUP
+ 
+        mov     ax, 1   ; Initialize arbitrary registers for comparisons
+        mov     bx, 2
+        mov     cx, 3
+ 
+        cmp     ax, bx  ; Compare unsigned relative values
+        jb      below   ; Jump if unsigned AX is below unsigned BX
+        je      equal
+above:  add     cx, 2   ; If not below and not equal, must be above
+equal:  add     cx, 2   ; Jump to here if equal
+below:  add     cx, 2   ; Jump here if below
+ 
+        cmp     ax, bx  ; Compare signed relative values
+        jl      less    ; Jump if signed AX is less than signed BX
+        jg      more
+        add     cx, 2   ; If not less or more, must be equal
+less:   add     cx, 2   ; Jump here if less
+more:   add     cx, 2   ; Jump here if more
+ 
+        sub     ax, 2   ; Set flags for sign test
+        js      sign    ; Jump if sign flag is set
+nosign: add     cx, 1   ; Sign not set, so positive number
+sign:   add     cx, -1  ; Sign set for negative.
+ 
+        sub     bx, 3   ; Set flags for carry test (make BX = -1)
+        jc      carry   ; Jump if carry flag is set
+nocarry:add     cx, 1   ; Subtraction causes carry
+carry:  add     cx, -1  ; Subtraction doesn't cause carry
+ 
+        mov     al, 254 ; Prepare for multiply
+        mul     bl      ; Set flags with multiply of AL x BL
+        jo      over    ; Jump if overflow flag is set
+ok:     add     cx, 2   ; No overflow
+over:   add     cx, 2   ; Jump not taken, so this line is executed
+ 
+        cmp     ax, bx  ; Set flags for parity check
+        jp      peven   ; Jump if parity flag is set (parity even)
+podd:   add     cx, 2   ; Odd number of set bits in low byte of result
+peven:  add     cx, 2   ; Even number of set bits in low byte of result
+ 
+exit:   .EXIT           ; Terminate program
+ 
+        END
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

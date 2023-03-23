@@ -1,0 +1,58 @@
+<html>
+
+<head>
+<title>RWFILE.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='cfy_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+/* RWFILE.C: Reads and writes a file. */
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;sys\types.h&gt;
+#include &lt;sys\stat.h&gt;
+#include &lt;io.h&gt;
+ 
+#define BUFF 512
+ 
+main()
+{
+   char inbuffer[BUFF];
+   char outbuffer[BUFF];
+   int infile, outfile, length, num;
+ 
+   strcpy( outbuffer, "Happy Birthday." );
+   length = strlen( outbuffer );
+   length++;
+ 
+   if( (outfile = open( "testfile.bin",
+      O_CREAT | O_WRONLY | O_BINARY,  S_IWRITE )) != -1 )
+   {
+      if( (num = write( outfile, outbuffer, length )) == -1 )
+         perror( "Error in writing" );
+      printf( "\nBytes written to file: %d\n", num );
+      close( outfile );
+   }
+   else
+      perror( "Error opening outfile" );
+ 
+   if( (infile = open( "testfile.bin", O_RDONLY | O_BINARY )) != -1  )
+   {
+      while( length = read( infile, inbuffer, BUFF ) )
+         printf( "%d bytes received so far.\n", length );
+      close( infile );
+      printf( "%s\n", inbuffer );
+   }
+   else
+      perror( "Error opening infile" );
+}
+
+</pre>
+</body>
+
+</html>

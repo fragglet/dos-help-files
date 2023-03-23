@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>Introduction to Heap Routines</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>                                      <span class='grhilite'>◄</span><a href='heap.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+   There are four library routines available for handling heaps. A heap is
+   a byte-stream file which is buffered in available memory. Each heap is
+   associated with a status word specified when the heap is created, which
+   is written to when an operation on the heap fails. Each heap is thereby
+   attached to a particular program, namely the program which contains the
+   heap's status word, and is automatically deallocated (unless it has
+   already been explicitly deallocated by a call to CBL_CLOSE_VFILE) when
+   that program is canceled.
+ 
+   Each heap is paged, if necessary, onto a separate disk-file with name
+   progname.Vnn, where progname is the root name of the program to which
+   the heap is attached and 'nn' is an integer from 1 to 99. Once nn
+   reaches 99, the V will be overwritten. The maximum number allowed for
+   the extension is 384. Each program is limited to 384 local heaps.
+ 
+   Heaps are accessed by means of heap identifier words, which may be
+   passed around between programs so that any heap may be read or written
+   by any program. However, in order to check for failure, the program
+   needs to have access (using a pointer variable, for example, or via
+   normal linkage section mapping) to the associated status word.
+   Alternatively the RETURN-CODE register can be examined to catch a
+   general heap function failure, or the ON OVERFLOW/EXCEPTION syntax
+   can also be used on the CALL statement to trap any error. In these two
+   cases, the specific error can then be determined by examining the heap
+   status word.
+ 
+ 
+   General Notes on Virtual Heaps
+ 
+    o  You can use reference modification to declare a buffer in the
+       middle of a COBOL record. This is compiled efficiently provided
+       the length is given as fixed; since the length is ignored by the
+       call interface, you can give it as one.
+ 
+    o  If the read/write succeeds, the return code is zero. If it fails,
+       the return code is non zero and the heap status byte is 9, with
+       detail in the second byte.
+ 
+    o  There is a general restriction that the heap status word used by
+       CBL_READ_VFILE/CBL_WRITE_VFILE, must reside within the first 64K of
+       some COBOL program: note that it can be in the Linkage Section of
+       the current program, as long as it is within the first 64K of some
+       other COBOL program.
+ 
+    o  The CBL_xxxxx_VFILE routines have been introduced to replace
+       existing _HPxxxxx routines. The _HPxxxxx routines are documented
+       in the on-disk document MFCOMPAT.DOC.
+ 
+    o  The general restriction on the buffer for both COBOL_READ_VFILE and
+       COBOL_WRITE_VFILE in previous versions of this COBOL system no longer
+       exists. The buffer can reside anywhere within the Data or Linkage
+       Section, and it can be dynamically allocated using the CBL_ALLOC_MEM
+       routine. The buffer must not cross a 64K boundary; use of the
+       FLAG-CHIP directive will highlight those data items that do cross a
+       64K boundary.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

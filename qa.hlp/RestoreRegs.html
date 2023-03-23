@@ -1,0 +1,64 @@
+<html>
+
+<head>
+<title>RestoreRegs</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* RestoreRegs - Macro to generate a pop instruction for registers saved
+;* by the SaveRegs macro.  Restores the group of registers most recently
+;* pushed -- that is, RestoreRegs pops the group of registers saved by the
+;* last use of SaveRegs.
+;*
+;* Shows:   Directives - INSTR     SUBSTR     SIZESTR
+;*          Operators - GT
+;*
+;* Params:  None
+ 
+RestoreRegs MACRO
+    numloc  INSTR  regpushed, "#"       ;; Find location of # marker
+    reglist SUBSTR regpushed, 1, numloc - 1     ;; Get list of registers
+    reglen  SIZSTR regpushed            ;; Adjust numloc if # marker is
+    IF reglen GT numloc                 ;;  not last item in string
+        numloc = numloc + 1
+    ENDIF
+    regpushed SUBSTR regpushed, numloc  ;; Remove list from regpushed
+    IRP reg, &lt;reglist&gt;                  ;; Generate pop for each register
+        IFNB &lt;reg&gt;
+           pop reg
+        ENDIF
+    ENDM                                ;; Terminator for IRP
+ENDM                                    ;; Terminator for MACRO
+ 
+ 
+;* WordStore - Macro to define a series of word storage locations with
+;* labels consisting of a name followed by a sequential number.  Each
+;* defined word is initialized to 0.
+;*
+;* Shows:   Directive - REPT
+;*          Operators - &amp;     %
+;*
+;* Params:  slabel - Base name for labels
+;*          s1 - Starting number for labels
+;*          s2 - Ending number for labels
+ 
+WordStore MACRO slabel, s1, s2
+    maxct = s2 - s1 + 1                 ;; Determine number of locations
+    count = s1                          ;; Begin with first number
+    REPT maxct
+        lbl CATSTR &lt;&amp;slabel&gt;, %count    ;; Create label.  The % operator
+        count = count + 1               ;;   forces evaluation of count
+        lbl DW 0                        ;; Create word storage location
+    ENDM                                ;; Terminator for REPT
+ENDM                                    ;; Terminator for MACRO
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

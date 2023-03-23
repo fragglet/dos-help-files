@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>Specifying Text and Data Segments</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='pragma.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────C/C++ Language─────────────────────────────────────────────────────────
+ 
+  Pragma:    alloc_text, same_seg
+ 
+  Syntax:    #pragma alloc_text( textsegment, function1, ... )
+             #pragma same_seg( variable1, ...)
+ 
+  Summary:   The alloc_text pragma specifies the name of the segment
+             where the specified function definitions are to reside.
+             The alloc_text pragma does not handle C++ member functions
+             or overloaded functions. Use of the __based keyword is
+             preferred when it is necessary to specify the segment in
+             which a function resides. The alloc_text pragma is supported
+             for compatibility with previous versions of Microsoft C.
+ 
+  NOTE: The same_seg pragma is no longer supported. In previous
+        versions of Microsoft C, the same_seg pragma instructed the
+        compiler to assume that the specified external variables were
+        allocated in the same data segment. Use of the __based keyword
+        is preferred when it is necessary to specify the segment in
+        which external variables reside.
+ 
+  See also:  __based, check_stack
+ 
+     The alloc_text pragma gives you source-level control over the
+     segment in which particular functions are allocated.
+ 
+     If you use overlays or swapping techniques to handle large
+     programs, alloc_text allows you to tune the contents of their text
+     segments for maximum efficiency. The alloc_text pragma must appear
+     after the declarations of any of the specified functions and
+     before the definitions of these functions.
+ 
+     Functions referenced in an alloc_text pragma should be defined in
+     the same module as the pragma. If this is not done and an
+     undefined function is later compiled into a different text
+     segment, the error may or may not be caught. Although the program
+     will usually run correctly, the function will not be allocated in
+     the intended segments.
+ 
+     Other limitations on alloc_text are as follows:
+ 
+        ■ It cannot be used inside a function.
+ 
+        ■ It must be used after the function has been declared, but
+          before the function has been defined.
+ 
+     Functions given in an alloc_text pragma can be implicitly near
+     (because the small or compact memory model is used) or explicitly
+     near (declared with the near keyword), provided they are
+     called only by functions in the same segment.
+ 
+     The following example shows code that may result in these
+     problems:
+ 
+           // Module 1
+          #pragma  alloc_text( SEG1, sample, example )
+          int sample( int i )
+          {
+              i = example( 10 );
+          }
+ 
+          // Module 2
+          int example( int i )
+          {
+              return i * i;
+          }
+ 
+     You can prevent problems in the preceding code by placing the
+     definitions of the functions sample and example in the same
+     module.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

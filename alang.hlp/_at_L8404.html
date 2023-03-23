@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<title>Keyboard Data Memory</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L843a.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Address
+  (hex)       Size       Description
+ 
+  0000:0417   1 word     Current keyboard shift status (not always
+                         related to the character at the top of the
+                         buffer) in the following format:
+ 
+                         Bit   Meaning (if set)
+ 
+                         0     Right SHIFT key pressed
+                         1     Left SHIFT key pressed
+                         2     CTRL key pressed
+                         3     ALT key pressed
+                         4     SCROLL LOCK active
+                         5     NUM LOCK active
+                         6     CAPS LOCK active
+                         7     INSERT active
+                         8     Left CTRL key pressed
+                         9     Left ALT key pressed
+                         10    SYS REQ key pressed
+                         11    Hold active (CTRL+NUM LOCK or PAUSE)
+                         12    SCROLL LOCK key pressed
+                         13    NUM LOCK key pressed
+                         14    CAPS LOCK key pressed
+                         15    INS key pressed
+ 
+  0000:041A   1 word     Points to location of least recent keystroke at
+                         head of circular keyboard buffer. When keyboard
+                         service (<a href='16h.html'>Interrupt 16h</a>) receives a request for a
+                         request for a key, it retrieves the key codes
+                         from the buffer head, then changes the value in
+                         0000:041Ah to point to the next key code pair in
+                         buffer.
+ 
+  0000:041C   1 word     Points to tail of circular keyboard buffer. When
+                         the keyboard handler (<a href='9h.html'>interrupt 09h</a>) detects a
+                         keystroke, it places a word identifying the key
+                         into the buffer at this position. The value at
+                         0000:041Ch is then reset to point to the next
+                         open position in the buffer.
+ 
+                         If no available space remains, the buffer is
+                         full, and the handler beeps the speaker to alert
+                         the user. Since the tail is not reset in this
+                         case, the most recent keystroke is effectively
+                         ignored.
+ 
+  0000:041E   16 words   Default circular keyboard buffer. Holds up to 15
+                         keystroke identifiers, each of which comprises a
+                         1-byte scan code and a 1-byte ASCII code. The
+                         keyboard handler (<a href='9h.html'>interrupt 09h</a>) places the most
+                         recent key identifier at buffer tail; <a href='16h.html'>interrupt 16h</a>
+                         reads the least recent key identifier from the
+                         buffer head. When head = tail, buffer is empty.
+ 
+  0000:0471   1 byte     Set to 80h when keyboard routine (<a href='9h.html'>interrupt 09h</a>)
+                         detects CTRL+BREAK key combination.
+ 
+  0000:0480   1 word     Points to start of circular keyboard buffer.
+ 
+  0000:0482   1 word     Points to end of circular keyboard buffer.
+ 
+  0000:0496   1 word     If bit 4 set, indicates extended keyboard
+                         installed.
+ 
+  See also: <a href='9h.html'>Interrupt 09h (Keyboard Interrupt)</a>,
+            <a href='16h.html'>Interrupt 16h (Keyboard Services)</a>,
+            <a href='1Bh.html'>Interrupt 1Bh (CTRL+BREAK Handler)</a>
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

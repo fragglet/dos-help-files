@@ -1,0 +1,44 @@
+<html>
+
+<head>
+<title>GetPSP</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* GetPSP - Gets address of Program Segment Prefix. For DOS 3.0 or higher.
+;*
+;* Shows:   DOS Function - 62h (Get PSP Address)
+;*          Instruction - call (See the MISCDEMO.ASM example program
+;*                        for an example of a call dispatch table)
+;*
+;* Params:  None
+;*
+;* Return:  Short integer with PSP segment address
+;*          or 0 if DOS version below 3.0
+ 
+        EXTRN GetVer:PROC
+ 
+GetPSP  PROC
+ 
+        call    GetVer                  ; Get DOS version number
+        cmp     ax, 300                 ; Version 3.0 or higher?
+        jb      dos2                    ; No?  Return error code
+        mov     ah, 62h                 ; Yes?  Query DOS for PSP
+        int     21h                     ; Get PSP Address
+        mov     ax, bx                  ; Put in AX
+        jmp     SHORT exit              ; Exit
+dos2:   sub     ax, ax                  ; For version 2, return 0
+exit:   ret
+ 
+GetPSP  ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

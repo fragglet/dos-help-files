@@ -1,0 +1,112 @@
+<html>
+
+<head>
+<title>Define Procedure</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L8449.html'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='_at_L8417.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Syntax:   label PROC [distance] [langtype] [visibility]
+            [&lt;prologuearg&gt;]
+            [USES reglist] [,parameter [:tag]]...
+                    [LOCAL varlist]
+                    statements
+            label ENDP
+ 
+  See also: <a href='_at_L81d9.html'>Procedure Diagram</a>, USES, INVOKE, PROTO, LOCAL, RET,
+            .MODEL, <a href='PROLOGUE.html'>OPTION PROLOGUE</a>, <a href='_at_L81d4.html'>OPTION PROC</a>,
+            <a href='_at_L84b0.html'>Using VARARG in Procedures</a>, <a href='_at_L8005.html'>MASM 5.1 Compatibility</a>
+ 
+  Description:
+ 
+     Defines a procedure called &lt;label&gt;. To use &lt;parameter&gt;, you must
+     have previously specified a language type or used the &lt;langtype&gt;
+     parameter. You should use a PROTO prototype before each procedure
+     defined with the PROC directive. This ensures proper type checking
+     and allows you to call the procedure with the INVOKE directive.
+ 
+     Procedures usually end with the RET instruction. You can remove
+     data from the stack by specifying the number of bytes as a
+     parameter of the RET instruction.
+ 
+     The assembler automatically generates PROLOGUE and EPILOGUE code
+     to pass stack arguments properly to the procedure and clean up the
+     stack after completion of the procedure. You can override the
+     default prologue and epilogue code with user-defined macros by
+     using the <a href='PROLOGUE.html'>OPTION PROLOGUE: and OPTION EPILOGUE:</a> directives.
+     The RETF or IRETF instructions do not cause the assembler to
+     generate epilogue code.
+ 
+     Procedures can be nested if they do not have parameters, local
+     variables or the USES parameter and do not generate a new segment
+     or group. You can avoid having to nest procedures by using the RETN
+     and RETF instructions.
+ 
+     Local variables must be declared (using the LOCAL directive)
+     before any instructions. There can be several LOCAL statements in
+     a procedure.
+     See: <span class='grhilite'>◄</span><a href='_at_L81b9.html'>LOCAL directive</a><span class='grhilite'>►</span>
+ 
+     Parameter      Description
+ 
+     label          Defines name for the procedure. Follows naming
+                    convention of &lt;langtype&gt;.
+ 
+     prologuearg    Arguments to pass to the prologue procedure. With
+                    the default PROLOGUE and EPILOGUE, the FORCEFRAME
+                    argument generates a stack segment, even if one is
+                    not necessary. LOADDS causes the DS register to be
+                    saved in the PROLOGUE and restored in the EPILOGUE.
+                    Parameters must be separated by commas. Angle brackets
+                    are required but not passed.
+ 
+     distance       NEAR, FAR, NEAR16, NEAR32, FAR16, or FAR32. Indicates
+                    the call distance of this procedure. If you choose
+                    NEAR or FAR, the assembler will select 16- or 32-bit
+                    NEAR or FAR depending on the current segment size. If
+                    you do not specify this option, the assembler
+                    determines the distance from the memory model and
+                    processor type. NEAR is the default if you do not use
+                    the .MODEL directive.
+ 
+     langtype       Any valid language type. Determines naming style
+                    and calling convention.
+                    See: <span class='grhilite'>◄</span><a href='C.html'>language type</a><span class='grhilite'>►</span>
+ 
+     visibility     PRIVATE, PUBLIC, or EXPORT. Determines how the
+                    procedure is made available to other modules. PUBLIC
+                    is the standard default, but the default can be reset
+                    with the <a href='_at_L81d4.html'>OPTION PROC</a> directive. EXPORT implies PUBLIC
+                    and FAR and informs the linker that the procedure
+                    should be placed in the export entry table.
+ 
+     reglist        List of registers that the prologue preserves on the
+                    stack and the epilogue restores on exit. Separate
+                    multiple registers with spaces.
+ 
+     parameter      Procedure parameter. The assembler translates
+                    argument references into a direct reference to the
+                    stack location. Separate multiple arguments with
+                    commas.
+ 
+     tag            Either a qualified type or <a href='_at_L84b0.html'>VARARG</a>. <a href='_at_L84b0.html'>VARARG</a> allows a
+                    variable number of arguments to be passed as a
+                    comma separated list to &lt;argument&gt;. If <a href='_at_L84b0.html'>VARARG</a> is
+                    used, it must be applied to the last parameter of
+                    the PROC directive. <a href='_at_L84b0.html'>VARARG</a> is only allowed with
+                    the C, SYSCALL, and STDCALL language types. If &lt;tag&gt;
+                    is omitted, the assembler defaults to WORD in a 16-bit
+                    segment or DWORD in a 32-bit segment.
+                    See: <span class='grhilite'>◄</span><a href='qualtype.html'>qualified type</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='_at_L84b0.html'>VARARG</a><span class='grhilite'>►</span>
+ 
+     statements     Assembly-language statements and directives.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

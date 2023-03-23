@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<title>CWnd::OnSysKeyUp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='CWnd.html'>CWnd</a><span class='grhilite'>►</span>                                        <span class='grhilite'>◄</span><a href='CWnd.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span></i>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  afx_msg void OnSysKeyUp( UINT  nChar, UINT  nRepCnt, UINT  nFlags  );
+ 
+  Parameter   Description
+ 
+  &lt;nChar&gt;     Specifies the virtual-key code of the key being pressed.
+ 
+  &lt;nRepCnt&gt;   Specifies the repeat count.
+ 
+  &lt;nFlags&gt;    Specifies the scan code, key-transition code, previous key
+              state, and context code, as shown in the following list:
+ 
+              Value   Description
+ 
+              0-7     Scan code (OEM-dependent value). Low byte of
+                      high-order word.
+ 
+              8       Extended key, such as a function key or a key on the
+                      numeric keypad (1 if it is an extended key;
+                      otherwise 0).
+ 
+              9-10    Not used.
+ 
+              11-12   Used internally by Windows.
+ 
+              13      Context code (1 if the ALT key is held down while
+                      the key is pressed, 0 otherwise).
+ 
+              14      Previous key state (1 if the key is down before the
+                      message is sent, 0 if the key is up).
+ 
+              15      Transition state (1 if the key is being released, 0
+                      if the key is being pressed).
+ 
+              For OnSysKeyUp calls, the key-transition bit (bit 15) is 1.
+              The context-code bit (bit 13) is 1 if the ALT key is down
+              while the key is pressed; it is 0 if the message is sent to
+              the active window because no window has the input focus.
+ 
+  Remarks
+ 
+  If the CWnd has the focus, the OnSysKeyUp member function is called when
+  the user releases a key that was pressed while the ALT key was held
+  down. If no window currently has the input focus, the active window's
+  OnSysKeyUp member function is called. The CWnd that receives the call
+  can distinguish between these two contexts by checking the context code
+  in &lt;nFlags&gt;.
+ 
+  When the context code is 0, the WM_SYSKEYUP message received by
+  OnSysKeyUp can be passed to the <span class='grhilite'>◄</span><a href='../win31qh.hlp/TranslateAccelerator.html'>TranslateAccelerator</a><span class='grhilite'>►</span> Windows function,
+  which will handle it as though it were a normal key message instead of a
+  system-key message. This allows accelerator keys to be used with the
+  active window even if the active window does not have the input focus.
+ 
+  For IBM Enhanced 101- and 102-key keyboards, enhanced keys are the right
+  ALT and the right CONTROL keys on the main section of the keyboard; the
+  INSERT, DELETE, HOME, END, PAGE UP, PAGE DOWN, and ARROW keys in the
+  clusters to the left of the numeric keypad; and the slash (/) and ENTER
+  keys in the numeric keypad. Some other keyboards may support the
+  extended-key bit in &lt;nFlags&gt;.
+ 
+  For non-USA Enhanced 102-key keyboards, the right ALT key is handled as
+  a CONTROL-ALT key. The following shows the sequence of messages and
+  calls that result when the user presses and releases this key:
+ 
+  Sequence   Function            Message passed
+<b>             accessed</b>
+<b> </b>
+  1.         <span class='grhilite'>◄</span><a href='OnKeyDown.html'>WM_KEYDOWN</a><span class='grhilite'>►</span>        VK_CONTROL
+ 
+  2.         <span class='grhilite'>◄</span><a href='OnKeyDown.html'>WM_KEYDOWN</a><span class='grhilite'>►</span>        VK_MENU
+ 
+  3.         <span class='grhilite'>◄</span><a href='OnKeyUp.html'>WM_KEYUP</a><span class='grhilite'>►</span>          VK_CONTROL
+ 
+  4.         <span class='grhilite'>◄</span><a href='../win31qh.hlp/WM_SYSKEYUP.html'>WM_SYSKEYUP</a><span class='grhilite'>►</span>       VK_MENU
+ 
+  This message-handler member function calls the <span class='grhilite'>◄</span><a href='Default.html'>Default</a><span class='grhilite'>►</span> member
+  function. Override this member function in your derived class to handle
+  the <span class='grhilite'>◄</span><a href='../win31qh.hlp/WM_SYSKEYUP.html'>WM_SYSKEYUP</a><span class='grhilite'>►</span> message.
+ 
+  See Also
+ 
+  <span class='grhilite'>◄</span><a href='../win31qh.hlp/TranslateAccelerator.html'>::TranslateAccelerator</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='OnSysKeyDown.html'>WM_SYSKEYDOWN</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='Default.html'>CWnd::Default</a><span class='grhilite'>►</span>,
+  <span class='grhilite'>◄</span><a href='../win31qh.hlp/WM_SYSKEYUP.html'>WM_SYSKEYUP</a><span class='grhilite'>►</span>
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

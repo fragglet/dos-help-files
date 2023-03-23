@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<title>ALIVE.PAS</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.index'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM alive;
+ 
+{ ALIVE.PAS illustrates animation functions including:
+ 
+      _ImageSize    _GetImage    _PutImage
+ 
+  It also uses the following:
+ 
+      FreeMem       _OutText     _SetTextPosition    _SetVideoMode
+      GetMem        MaxAvail
+}
+ 
+{$M 16384, 0, 655350}
+ 
+USES
+    Crt, MSGraph;
+ 
+TYPE
+    actiontype  = ARRAY [0..4] OF Byte;
+    descriptype = ARRAY [_GOR.._GXOR] OF STRING;
+ 
+CONST
+ 
+    action  : actiontype  = (_GOR, _GAND, _GPRESET, _GPSET, _GXOR);
+    descrip : descriptype = ('OR    ', 'AND   ', 'PRESET', 'PSET  ',
+                             'XOR   ');
+    max_buffer = 65520;
+ 
+VAR
+    x, y, i   : Integer;
+    vidmode   : Integer;
+    buffer    : ^Byte;
+    imsize    : LongInt;
+    bufsize   : Word;
+    errorcode : Integer;
+    c         : Char;
+ 
+BEGIN
+ 
+    x := 30;
+    y := 30;
+    IF (_SetVideoMode( _MaxResMode ) = 0) THEN
+        Halt( 1 );
+    _SetColor( 2 );
+ 
+    FOR i := _GOR TO _GXOR DO
+        BEGIN
+        x := 50;
+        y := y + 40;
+        _SetTextPosition( 1, 1 );
+        _OutText( descrip[i] );
+        _Ellipse( _GFillInterior, x - 15, y - 15, x + 15, y + 15 );
+ 
+        imsize := _ImageSize( x - 15, y - 15, x + 16, y + 16 );
+        IF ((imsize &gt; max_buffer) OR (imsize &gt; MaxAvail)) THEN
+            BEGIN
+            errorcode := _SetVideoMode( _DefaultMode );
+            Writeln( 'Image too big.' );
+            Halt( 0 );
+            END
+        ELSE
+            bufsize := imsize;
+ 
+        GetMem( buffer, bufsize );
+        IF (buffer = NIL) THEN
+            BEGIN
+            errorcode := _SetVideoMode( _DefaultMode );
+            FreeMem( buffer, bufsize );
+            Writeln( 'Not enough memory for image buffer.' );
+            Halt( 0 );
+            END;
+        _GetImage( x - 16, y - 16, x + 16, y + 16, buffer^ );
+ 
+        { Display action type and copy a row of ellipses with that type. }
+        WHILE (x &lt; 260) DO
+            BEGIN
+            x := x + 5;
+            _PutImage( x - 16, y - 16, buffer^, action[i] );
+            END;
+        c := ReadKey;
+ 
+        FreeMem( buffer, bufsize );
+        END;
+ 
+    errorcode := _SetVideoMode( _DefaultMode );
+ 
+END.
+ 
+
+</pre>
+</body>
+
+</html>

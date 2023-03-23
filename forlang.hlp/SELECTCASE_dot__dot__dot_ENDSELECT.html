@@ -1,0 +1,94 @@
+<html>
+
+<head>
+<title>SELECT CASE...END SELECT</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='ctrlstmnt.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hv'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hvx'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────SELECT CASE...END SELECT───────────────────────────────────────────────
+ 
+     Action
+ 
+     Transfers program control to a selected block statement, determined
+     by the value of a test expression.
+ 
+     Syntax
+ 
+     SELECT CASE (testexpr)
+ 
+          CASE (expressionlist)
+            [statementblock]
+ 
+          [CASE (expressionlist)
+            [statementblock]]
+                .
+                .
+                .
+          [CASE DEFAULT
+            [statementblock]]
+ 
+     END SELECT
+ 
+     Parameter          Description
+ 
+     testexpr           An INTEGER, LOGICAL, or CHARACTER*1
+                        expression.
+ 
+     expressionlist     A list of values, which must be constant and
+                        must match the data type of &lt;testexpr&gt;. If
+                        &lt;testexpr&gt; matches one of the values, the
+                        following &lt;statementblock&gt; is executed.
+ 
+     statementblock     One or more executable statements.
+ 
+     Remarks
+ 
+     &lt;Expressionlist&gt; can include an individual value, a range of
+     values separated by a colon, or a combination of the two.
+     Separate multiple entries with commas. In a range, the lower
+     bound must be smaller than the upper bound. Omitting the lower
+     bound includes all values less than or equal to the upper bound.
+     Omitting the upper bound includes all values greater than or
+     equal to the lower bound.
+ 
+     The compiler allows only one CASE DEFAULT in a SELECT CASE block.
+ 
+     If &lt;testexpr&gt; does not match any &lt;expressionlist&gt; value, execution
+     passes to the next statement after END SELECT.
+ 
+     It is illegal to branch into a SELECT CASE block from outside, or
+     to branch from one CASE section to another.
+ 
+     Example
+ 
+           CHARACTER*1  cmdchar
+           .
+           .
+           .
+           SELECT CASE (cmdchar)
+              CASE ('0')
+                 WRITE (*, *) "Must retrieve one to nine files"
+              CASE ('1':'9')
+                 CALL RetrieveNumFiles (cmdchar)
+              CASE ('A', 'd')
+                  CALL AddEntry
+              CASE ('D', 'd')
+                 CALL DeleteEntry
+              CASE ('H', 'h')
+                 CALL Help
+              CASE ('R':'T', 'r':'t')
+                 WRITE (*, *) "REDUCE, SPREAD and TRANSFER commands ",
+          +      "not yet supported"
+              CASE DEFAULT
+                 WRITE (*, *) "Command not recognized; please "
+          +      "re-enter"
+           END SELECT
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,60 @@
+<html>
+
+<head>
+<title>_alloca</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='alloca.html'>Summary</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+     The _alloca routine allocates &lt;size&gt; bytes from the program's
+     stack. The allocated space is automatically freed when the calling
+     function is exited.
+ 
+     Observe the following restrictions when using _alloca:
+ 
+        ■ When you compile with optimization on (either by default or
+          by using one of the /O options), the stack pointer may not be
+          restored properly in functions that have no local variables
+          and that also reference the _alloca function. (This
+          restriction does not apply to DOS32X.) The following program
+          demonstrates the problem:
+ 
+               /* Compile with CL /AM /Ox /Fc */
+               #include &lt;malloc.h&gt;
+ 
+               void main( void )
+               {
+                  func( 10 );
+               }
+               void func( register int i )
+               {
+                  _alloca( i );
+               }
+ 
+        ■ To ensure that the stack pointer is properly restored, make
+          sure that any function referencing _alloca declares at least
+          one local variable.
+ 
+        ■ The pointer value returned by _alloca should never be passed
+          as an argument to free.
+ 
+        ■ The _alloca function should never be used in an expression
+          that is an argument to a function.
+ 
+     Return Value
+ 
+     The _alloca routine returns a void pointer to the allocated space,
+     which is guaranteed to be suitably aligned for storage of any type
+     of object. To get a pointer to a type other than void, use a type
+     cast on the return value. The return value is NULL if the space
+     cannot be allocated.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

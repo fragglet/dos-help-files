@@ -1,0 +1,64 @@
+<html>
+
+<head>
+<title>CvtWuQ<n></title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                              <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──P-Code Instructions───────────────────────────────────────────────────────
+ 
+  Syntax
+ 
+  CvtWuQ&lt;n&gt;
+ 
+  /* Convert word to unsigned bit field. */
+ 
+  Possible Instructions
+ 
+  CvtWuQb
+ 
+  Description
+ 
+  Used to extract an unsigned bit field from the top word of the stack.
+  The top word is popped, shifted, and masked, and the resulting value is
+  pushed as a word back onto the stack. The one-byte parameter &lt;n&gt;
+  specifies the shift count (0-15) and the width (minus 1) of the bit
+  field (0-15).
+ 
+  See also: <span class='grhilite'>◄</span><a href='CvtWQb.html'>CvtWQb</a><span class='grhilite'>►</span>
+ 
+  Pseudocode equivalent:
+ 
+  unsigned int w, width, shift
+  width = (&lt;n&gt; &gt;&gt; 4) + 1;
+  shift = &lt;n&gt; &amp; 0xf;
+  w = PopW();
+  w &gt;&gt;= shift;
+  w &amp;= (2 ** width) - 1;
+  PushW(w);
+ 
+  Assigning a variable to the value of a structure's bit field will
+  generate this instruction, as in
+ 
+  typedef struct
+  {
+  unsigned uT1:2;
+  unsigned uT2:4;
+  unsigned uT3:8;
+  } BF;
+  BF *pbf;
+ 
+  pbf-&gt;uT1 = 55;
+  pbf-&gt;uT2 = pbf-&gt;uT1;     /* generate CvtWuQ&lt;b&gt; */
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

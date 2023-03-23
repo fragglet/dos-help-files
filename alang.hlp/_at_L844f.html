@@ -1,0 +1,48 @@
+<html>
+
+<head>
+<title>DisableCGA</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L8401.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* DisableCga - Disables CGA video by reprogramming the control register.
+;*
+;* Shows:   Instructions - cli     sti
+;*
+;* Params:  None
+;*
+;* Return:  None
+ 
+DisableCga PROC USES ax cx dx           ; Preserve registers
+ 
+        mov     cx, -1                  ; Set maximum loop count
+        mov     dx, 03DAh               ; Address of status register
+ 
+        .REPEAT
+        in      al, dx                  ; Get video status
+        .UNTILCXZ !(al &amp; 8)             ; Until retrace end/timeout
+        cli                             ; Disallow interruptions
+        mov     cx, -1                  ; Reset loop count
+ 
+        .REPEAT
+        in      al, dx                  ; Get video status
+        .UNTILCXZ al &amp; 8                ; Until retrace start/timeout
+ 
+        sub     dx, 2                   ; DX = address of control reg
+        mov     al, 1                   ; Value to disable CGA video
+        out     dx, al                  ; Disable video
+        sti                             ; Reenable interrupts
+        ret
+ 
+DisableCga ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

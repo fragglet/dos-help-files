@@ -1,0 +1,66 @@
+<html>
+
+<head>
+<title>_expand Functions</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_expand.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='_at_L80e3.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+     The _expand family of functions changes the size of a previously
+     allocated memory block by attempting to expand or contract the
+     block without moving its location in the heap. The &lt;memblock&gt;
+     argument points to the beginning of the block. The &lt;size&gt; argument
+     gives the new size of the block, in bytes. The contents of the
+     block are unchanged up to the shorter of the new and old sizes.
+ 
+     The &lt;memblock&gt; argument can also point to a block that has been
+     freed, as long as there has been no intervening call to calloc,
+     _expand, malloc, or realloc. If &lt;memblock&gt; points to a freed
+     block, the block remains free after the call to _expand.
+ 
+     The &lt;segment&gt; argument is the segment address of a based heap.
+ 
+     In large data models (compact-, large-, and huge-model programs),
+     _expand maps to _fexpand. In small data models (tiny-, small-, and
+     medium-model programs), _expand maps to _nexpand.
+ 
+     The various _expand functions change the size of the storage block
+     in the data segments shown below:
+ 
+     Function     Data Segment
+ 
+     _expand      Depends on data model of program
+     _bexpand     Based heap specified by &lt;seg&gt;, or in all based heaps
+                  if &lt;seg&gt; is zero
+     _fexpand     Far heap (outside default data segment)
+     _nexpand     Near heap (inside default data segment)
+ 
+     Return Value
+ 
+     The _expand family of functions returns a void pointer to the
+     reallocated memory block. Unlike realloc, _expand cannot move a
+     block to change its size. This means the &lt;memblock&gt; argument to
+     _expand is the same as the return value if there is sufficient
+     memory available to expand the block without moving it.
+ 
+     The return value is NULL if there is insufficient memory available
+     to expand the block to the given size without moving it. The
+     _bexpand function returns _NULLOFF if insufficient memory is
+     available. In this case, the item pointed to by &lt;memblock&gt; will
+     have been expanded as much as possible in its current location.
+ 
+     The storage space pointed to by the return value is guaranteed to
+     be suitably aligned for storage of any type of object. The new
+     size of the item can be checked with one of the _msize functions.
+     To get a pointer to a type other than void, use a type cast on the
+     return value.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

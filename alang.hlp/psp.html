@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>Program Segment Prefix (PSP)</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+       0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+     ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+  00 │ int20 │  mem  │rsv│      calldisp     │     adr22     │adr23∙∙│
+     ├───────┼───────┴───┴───┬───────────────┴───────────────┴───────┤
+  10 │ ∙∙∙   │     adr24     │                                       │
+     ├───────┴───────────────┘                       ┌───────┐       ┤
+  20 │                                               │  env  │       │
+     ├                                               └───────┘       ┤
+  30 │                             rsv                               │
+     ├                                                               ┤
+  40 │                                                               │
+     ├───────┬───┐                                   ┌───────────────┤
+  50 │ int21 │far│                                   │      fcb1∙∙∙  │
+     ├───────┴───┴───────────────────────────────────┼───────────────┤
+  60 │ ∙∙∙                                           │      fcb2∙∙∙  │
+     ├───────────────────────────────────────────────┼───────────────┤
+  70 │ ∙∙∙                                           │      rsv      │
+     ├───┬───────────────────────────────────────────┴───────────────┤
+  80 │num│                                                           │
+     ├───┘                                                           ┤
+  90 │                                                               │
+     ∙                                                               ∙
+     ∙                            command                            ∙
+     ∙                                                               ∙
+  F0 │                                                               │
+     └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+ 
+  Field      Description
+ 
+  int20      Opcode for Int 20h (CDh 20h).
+  mem        Segment address of next free memory block.
+  rsv        Reserved.
+  calldisp   Opcode for far call to DOS function dispatcher.
+  adr22      Far address of terminate routine (interrupt 22h).*
+  adr23      Far address of Ctrl+C Handler routine (interrupt 23h).*
+  adr24      Far address of Critical Error Handler routine (interrupt 24h).*
+  env        Segment address of program's environment table.
+  int21      Opcode for Int 21h (CDh 21h).
+  far        Opcode for RETF (CBh).
+  fcb1       Initial 16 bytes of first file control block (FCB #1).£
+  fcb2       Initial 20 bytes of second file control block (FCB #2).£
+  num        Number of characters in command line. Also begins default
+             128-byte disk transfer area (DTA).
+  command    Command-line arguments as entered from keyboard.
+ 
+  *  DOS copies these addresses from the interrupt vector table to the PSP
+     when the program is loaded. When the program terminates, DOS restores
+     the addresses (or "vectors") from the program's PSP back to the
+     interrupt vector table.
+ 
+  £  Each FCB is 37 bytes wide, but can be preceded by a 7-byte extension.
+     The FCBs cannot be open at the same time, since each overwrites the
+     other.
+ 
+  See also: <a href='20h.html'>Interrupt 20h (Program Terminate)</a>,
+            <a href='22h.html'>Interrupt 22h (Terminate Address)</a>,
+            <a href='23h.html'>Interrupt 23h (Ctrl+C Handler)</a>,
+            <a href='24h.html'>Interrupt 24h (Critical Error Handler)</a>, <a href='_at_L84b5.html'>FCB Diagram</a>
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

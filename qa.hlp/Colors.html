@@ -1,0 +1,107 @@
+<html>
+
+<head>
+<title>Colors</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* Colors - Alters screen colors within a specified area by using bit
+;* or move operations on display attribute bytes in video memory.
+;*
+;* Shows:   Instructions - not     rol     ror     and     xor     or
+;*
+;* Params:  logic - Code number, 0 = NOT     2 = ROR     4 = XOR     6 = MOV
+;*                               1 = ROL     3 = AND     5 = OR
+;*          attr - Attribute mask
+;*          row1 - Row at top of window
+;*          col1 - Column at left edge of window
+;*          row2 - Row at bottom of window
+;*          col2 - Column at right edge of window
+;*
+;* Return:  None
+ 
+Colors  PROC \
+        USES ds si, \
+        logic:WORD, attr:WORD, row1:WORD, col1:WORD, row2:WORD, col2:WORD
+ 
+        GetVidOffset row1, col1         ; Get offset in video segment
+        inc     ax
+        mov     si, ax                  ; SI = offset for 1st attr byte
+        mov     bx, row2
+        sub     bx, row1
+        inc     bx                      ; BX = number of window rows
+        mov     cx, col2
+        sub     cx, col1
+        inc     cx                      ; CX = number of columns
+ 
+        mov     ds, vconfig.sgmnt       ; DS = video segment
+        mov     ax, attr                ; AL = mask for and, xor, and or
+loop1:  push    si                      ; Save ptr to start of line
+        push    cx                      ;   and number of columns
+        cmp     vconfig.adapter, CGA    ; CGA adapter?
+        jne     @F                      ; No?  Skip video disable
+ 
+; Disable CGA video prior to memory access to avoid screen snow. (See the
+; WinOpen and StrWrite procedures for further discussions on CGA snow.)
+ 
+        call    DisableCGA              ; Yes?  Disable video
+@@:     cmp     logic, 1                ; Rotate left?
+        jl      c_not                   ; If less, do NOT
+        je      c_rol                   ; If equal, do ROL
+        cmp     logic, 3                ; And?
+        jl      c_ror                   ; If less, do ROR
+        je      c_and                   ; If equal, do AND
+        cmp     logic, 5                ; Or?
+        jl      c_xor                   ; If less, do XOR
+        je      c_or                    ; If equal, do OR
+                                        ; Otherwise, do MOV
+c_mov:  mov     BYTE PTR [si], al       ; MOV attr parameter
+        add     si, 2                   ;   into attribute byte
+        loop    c_mov
+        jmp     SHORT c_done
+c_or:   or      BYTE PTR [si], al       ; OR with attr parameter
+        add     si, 2
+        loop    c_or
+        jmp     SHORT c_done
+c_xor:  xor     BYTE PTR [si], al       ; XOR with attr parameter
+        add     si, 2
+        loop    c_xor
+        jmp     SHORT c_done
+c_and:  and     BYTE PTR [si], al       ; AND with attr parameter
+        add     si, 2
+        loop    c_and
+        jmp     SHORT c_done
+c_ror:  ror     BYTE PTR [si], 1        ; Rotate right 1 bit
+        add     si, 2
+        loop    c_ror
+        jmp     SHORT c_done
+c_rol:  rol     BYTE PTR [si], 1        ; Rotate left 1 bit
+        add     si, 2
+        loop    c_rol
+        jmp     SHORT c_done
+c_not:  not     BYTE PTR [si]           ; Flip bits
+        add     si, 2
+        loop    c_not
+ 
+c_done: cmp     vconfig.adapter, CGA
+        jne     @F
+        call    EnableCGA               ; Reenable CGA video
+@@:     pop     cx                      ; Recover number of columns
+        pop     si                      ; Recover offset for start of line
+        add     si, 160                 ; Point to start of next line
+        dec     bx                      ; Decrement row counter
+        jnz     loop1                   ; Loop while rows remain
+        ret                             ; Exit when all lines complete
+ 
+Colors  ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,127 @@
+<html>
+
+<head>
+<title>Building a QuickHelp Database</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                                      <span class='grhilite'>◄</span><a href='_at_L8000.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='_cln_c.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                       Building a QuickHelp Database
+ 
+QuickHelp databases consist of ASCII text divided into topics. A topic
+consists of the text between .context commands (which specify context
+strings), or a .context command and the end of the file. A topic is
+displayed when the user searches for a context string that points to that
+topic (several context strings can point to the same topic). No topic should
+exceed 62K in length.
+ 
+<b>Building the Database</b>
+ 
+The helpmake program is used to build the database after you have added dot
+commands and any color changes to the source files. The syntax of the
+<b>helpmake</b> command is as follows:
+ 
+    helpmake /e15 /t /a: /ofilename file file ...
+ 
+────────────────────────────────────────────────────────────────────────────
+<i>/e15</i>  Specifies full compression. If you want to check the database before
+      using full compression, use /e0 instead of /e15. Using /e0 will create
+      a database with no compression. The helpmake program builds a
+      non-compressed database considerably faster than a fully compressed
+      database.
+ 
+<i>/t</i>    Specifies that the dot commands are to be compressed into a more terse
+      format that is understood by QuickHelp and other Microsoft products.
+ 
+<i>/a:</i>   Specifies that the database uses colon commands. This is a requirement
+      for any database that is created specifically for use by QuickHelp.
+ 
+<i>/o</i>    Specifies the output filename. The output filename must immediately
+      follow the parameter (no intervening spaces). You should give the
+      filename an extension of .hlp.
+ 
+<i>file</i>  Specifies the source files. You may include any number of filenames.
+      Filenames may include wildcards.
+ 
+For more information about helpmake, see the <span class='grhilite'>◄</span><a href='../helpmake.hlp/helpmake_dot_contents.html'>Helpmake</a><span class='grhilite'>►</span> topic.
+ 
+<b>Color Changes</b>
+ 
+You can add emphasis to the text in your database by displaying selected
+text in green, high-intensity white, or pale red. By convention, italic
+words are displayed in green, bold words are displayed in high-intensity
+white, and underlined words are displayed in red.
+ 
+To change a section of text to green, type a backslash and an i (\i) in
+front of the text. Type a backslash and a p (\p) to return to the normal
+display color. All text from the \i to the \p will be displayed in green.
+The \p does not need to be on the same line as the \i.
+ 
+To change a section of text to high-intensity white, type a backslash and an
+<i>b (\b) </i>in front of the text. Type a backslash and a p (\p) to return to the
+normal display color. All text from the \i to the \p will be displayed in
+high-intensity white. The \p does not need to be on the same line as the
+<b>\b</b>.
+ 
+To change a section of text to pale red, type a backslash and an u (\u) in
+front of the text. Type a backslash and a p (\p) to return to the normal
+display color. All text from the \i to the \p will be displayed in pale red.
+The \p does not need to be on the same line as the \u.
+ 
+<b>Dot Commands</b>
+ 
+Dot commands are commands in your source file that pass control codes to
+applications displaying help (such as QuickHelp). Each dot command is on its
+own line, and the dot must be the first character on the line. When building
+the database, you must specify the /t switch to translate the dot commands
+into the terser form that QuickHelp (and other Microsoft products) will
+understand.
+ 
+Only the .context command is guaranteed to be recognized by all Microsoft
+products that use the database. If an application does not support a
+specific dot command, the command will be ignored. The following dot
+commands are understood by QuickHelp:
+ 
+    <span class='grhilite'>◄</span><a href='_cln_c.html'>.category</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='_dot_context.html'>.context</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='_cln_z.html'>.freeze</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='_cln_i.html'>.list</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='_cln_p.html'>.paste</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='_cln_g.html'>.popup</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='_cln_r.html'>.ref</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='_cln_n.html'>.topic</a><span class='grhilite'>►</span>
+ 
+<b>Creating Hyperlinks</b>
+ 
+Hyperlinks allow the QuickHelp user to change topics quickly and easily even
+when the topic name is more than one word. You create hyperlinks by using
+the \a and \v flags. The \a flag starts the hyperlink. The text following
+the \a flag is the hyperlink's "hot spot"──the hot spot is the text that the
+user tabs to or double-clicks. Following the hot-spot text is the  flag completes the
+hyperlink. A hyperlink must fit entirely on one line. You cannot continue
+the hot-spot text or the context string over a line break.
+ 
+The following example creates a hyperlink. The words "closing files" are the
+hot spot. When the user clicks this hot spot, QuickHelp searches for the
+local context string "@close". (The at sign (@) before the word "close" in
+this example identifies the context string as a local context string. For
+more information on local context strings, see <span class='grhilite'>◄</span><a href='..//Plocal__dot_context.html'>Local Context Strings</a><span class='grhilite'>►</span>,
+later in this topic.)
+ 
+    For more information, see <a href='unknown#@close'>closing files</a>.
+ 
+<b>See Also</b>
+ 
+<b>.category, .context, .freeze, .list, .paste, .popup, .ref, .topic</b>
+ 
+                                      ♦
+ 
+
+</pre>
+</body>
+
+</html>

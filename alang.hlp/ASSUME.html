@@ -1,0 +1,101 @@
+<html>
+
+<head>
+<title>Register Assumptions</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L8465.html'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='_at_L8419.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Syntax:   ASSUME segregister:seglocation [, segregister:seglocation]...
+ 
+            ASSUME dataregister:qualifiedtype
+            [, dataregister:qualifiedtype]...
+ 
+            ASSUME register:ERROR [, register:ERROR]...
+ 
+            ASSUME [register:]NOTHING [, register:NOTHING]...
+ 
+  See also: SEGMENT, GROUP, .MODEL, SEG, <a href='_at_L8419.html'>Simplified Segment Directives</a>,
+            <a href='_at_L841a.html'>Complete Segment Directives</a>
+ 
+  Description:
+ 
+     A general-purpose directive that allows the assembler to
+     determine offsets, select the correct segment register, and verify
+     certain register use assumptions at assembly.
+ 
+     The "ASSUME segregister:seglocation" syntax is used to inform the
+     assembler of the current value of &lt;segregister&gt;. The assembler
+     uses this information to calculate offsets correctly and to guard
+     against segment selection errors. This directive does not generate
+     code to change the value of &lt;segregister&gt;. The ASSUME directive is
+     not necessary for the CS register, since CS is assumed to the
+     current segment or group automatically. The &lt;seglocation&gt; can be any
+     segment or group name, or an equivalent expression.
+ 
+     The "ASSUME dataregister:type" syntax informs the assembler that
+     &lt;dataregister&gt; is subject to the constraints of &lt;type&gt;. If an
+     assumed register is used incorrectly, the assembler generates an
+     error. The &lt;type&gt; parameter must be the same size as
+     &lt;dataregister&gt;.
+ 
+       ASSUME   bx:WORD
+       mov      ax, [bx]        ;Error--cannot dereference non-pointer
+       ASSUME   bx:PTR WORD
+       mov      [bx], 10h       ;Assumes operand size is WORD
+       mov      [bx], al        ;Error--cannot move byte into word memory
+       ASSUME   al:WORD         ;Error--al is only byte-sized
+       ASSUME   bx:BYTE         ;Error--bx is word-sized
+ 
+       The ASSUME directive can include ERROR, FLAT, or register:type.
+       MASM 6.1 issues a warning when you specify ASSUME values for
+       CS other than the current segment or group.
+ 
+     The "ASSUME register:ERROR" syntax causes the assembler to
+     generate an error if &lt;register&gt; is later used explictly or
+     implicitly. The OPATTR, .TYPE, and TYPE directives do not cause
+     errors when referring to registers assumed to ERROR.
+ 
+     The "ASSUME register:NOTHING" syntax causes the assembler to
+     remove all assumptions about &lt;register&gt;. ASSUME NOTHING removes
+     all assumptions about all registers.
+ 
+     Use an ASSUME statement each time you load a known value into a
+     segment register. Although not required, the ASSUME directive
+     helps the assembler safeguard against segment selection errors and
+     determine offsets. You may need to use instructions to initialize
+     segment registers properly at run time.
+ 
+     If you use the ASSUME directive to set assumptions about a data
+     register, it will override any assumptions for its subregisters.
+     For example, ASSUME EDX:DGROUP will override assumptions for DL,
+     DH, and DX.
+ 
+     Parameter      Description
+ 
+     segregister    CS, DS, ES, FS, GS, or SS. The assembler
+                    automatically maintains assumptions for the CS
+                    segment register.
+ 
+     seglocation    A segment address, another segment register, a
+                    group, or FLAT. You can find the segment address
+                    of a label by using the SEG operator. FLAT is
+                    the label of the single FLAT segment.
+ 
+     dataregister   Any byte, word, or 32-bit register.
+ 
+     qualifiedtype  Any qualified type that will fit in
+                    &lt;dataregister&gt;.
+                    See: <span class='grhilite'>◄</span><a href='qualtype.html'>Qualified Type</a><span class='grhilite'>►</span>
+ 
+     register       Any segment or data register.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

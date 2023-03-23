@@ -1,0 +1,96 @@
+<html>
+
+<head>
+<title>LOCATE Statement Programming Examples</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#LOCATE'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='_dot_locater.html'>Details<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>LOCATE Statement Programming Examples</b>
+ 
+These examples show how to use the LOCATE statement to move the cursor
+and select items from a menu.
+ 
+Here is an example that shows the effects on the cursor of different
+LOCATE statements:
+ 
+CLS                       'Clear screen
+LOCATE 5, 5               'Moves cursor to row 5, column 5
+PRINT "C"
+DO
+LOOP WHILE INKEY$ = ""    'Press any key to continue
+LOCATE 1,1                'Moves cursor to upper-left corner of the screen.
+PRINT "C"
+DO
+LOOP WHILE INKEY$ = ""    'Press any key to continue
+LOCATE,,1                 'Makes the cursor visible; position remains
+                          'unchanged.
+PRINT "C"
+DO
+LOOP WHILE INKEY$ = ""    'Press any key to continue
+LOCATE,,,7                'Position and cursor visibility remain unchanged;
+                          'sets the cursor to display at the bottom of
+                          'the character box starting and ending on
+                          'scan line 7.
+PRINT "C"
+DO
+LOOP WHILE INKEY$ = ""    'Press any key to continue
+LOCATE 5,1,1,0,7          'Moves the cursor to line 5, column 1;
+                          'turns cursor on; cursor covers entire
+                          'character cell starting at scan line
+                          '0 and ending on scan line 7.
+PRINT "C"
+DO
+LOOP WHILE INKEY$ = ""    'Press any key to continue
+ 
+ 
+Here is part of a program that prints a menu on the screen, then waits
+for input in the allowable range (1-4). If a number outside that range
+is entered, the program continues to prompt for a selection:
+ 
+                                ----- Note -----
+This program is incomplete. Do not try to run it in its current form.
+                                ----------------
+ 
+CONST FALSE=0, TRUE=NOT FALSE
+DO
+    CLS
+    PRINT "MAIN MENU" : PRINT
+    PRINT "1)  Add Records"
+    PRINT "2)  Display/Update/Delete a Record"
+    PRINT "3)  Print Out List of People Staying at Hotel"
+    PRINT "4)  End Program"
+    ' Change cursor to a block.
+    LOCATE ,,1,1,12
+    LOCATE 12,1
+    PRINT "What is your selection?";
+    DO
+       CH$ = INPUT$(1)
+    LOOP WHILE (CH$ &lt; "1" OR CH$ &gt; "4")
+    PRINT CH$
+ 
+' Call the appropriate subprogram.
+    SELECT CASE VAL(CH$)
+       CASE 1
+          CALL Add
+       CASE 2
+          CALL Search
+       CASE 3
+          CALL Hotel
+       CASE 4
+          CALL Quit
+    END SELECT
+LOOP WHILE NOT ENDPROG
+.
+.
+.
+END
+ 
+
+</pre>
+</body>
+
+</html>

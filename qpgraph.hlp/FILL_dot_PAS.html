@@ -1,0 +1,103 @@
+<html>
+
+<head>
+<title>FILL.PAS</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.index'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM filldemo;
+ 
+{ FILL.PAS illustrates color, filling, and linestyle functions including:
+ 
+      _FloodFill       _SetColor       _SetLineStyle
+      _GetLineStyle    _SetFillMask
+ 
+  The _GetFillMask function is not shown, but its use is similar to
+  _GetLineStyle.
+}
+ 
+USES
+    MSGraph, Crt;
+ 
+VAR
+    vc          : _VideoConfig;
+    errorcode   : Integer;
+    xinc, yinc,
+    xwid, ywid,
+    x, y, i     : Integer;
+    fill        : _FillMask;
+    color       : Integer;
+    linestyle   : Word;
+    vidmode     : Integer;
+    c           : Char;
+ 
+BEGIN
+ 
+    { Select video mode with highest resolution. }
+    IF (_SetVideoMode( _MaxResMode ) = 0 ) THEN
+        Halt( 1 );
+ 
+    { Get information about current monitor and video card }
+    _GetVideoConfig( vc );
+ 
+    xinc := Round( vc.NumXPixels / 8 );
+    yinc := Round( vc.NumYPixels / 8 );
+    xwid := Round( xinc / 2 ) - 4;
+    ywid := Round( yinc / 2 ) - 4;
+ 
+    { Draw circles and lines with different patterns.}
+    x := xinc;
+ 
+    WHILE (x &lt;= (vc.NumXPixels - xinc)) DO
+        BEGIN
+        y := yinc;
+        WHILE (y &lt;= (vc.NumYPixels - yinc)) DO
+            BEGIN
+            { Vary random seed, randomize fill and color. }
+            Randomize;
+            FOR i := 0 TO 7 DO
+                fill[i] := Random( 256 );
+            _SetFillMask( fill );
+            color := (Random( 256 ) MOD vc.NumColors) + 1;
+            _SetColor( color );
+ 
+            { Draw ellipse and fill with random color. }
+            _Ellipse( _GBorder, x - xwid, y - ywid, x + xwid, y + ywid );
+            _SetColor( ( Random( 256 ) MOD vc.NumColors ) + 1 );
+            _FloodFill( x, y, color );
+ 
+            { Draw vertical and horizontal lines. Vertical line style
+              is the opposite of (NOT) horizontal style. Since lines are
+              overdrawn with several linestyles, this has the effect of
+              combining colors and styles.
+            }
+            _SetLineStyle( Random( 5 ) );
+            _MoveTo( 0, y + ywid + 4 );
+            _LineTo( vc.NumXPixels - 1, y + ywid + 4 );
+            linestyle := _GetLineStyle;
+            _SetLineStyle( NOT linestyle );
+            _MoveTo( x + xwid + 4, 0 );
+            _LineTo( x + xwid + 4, vc.NumYPixels - 1 );
+            y := y + yinc;
+            END; { y-direction }
+ 
+        x := x + xinc;
+        END;
+ 
+    { Retain the picture on the screen until any key is pressed. }
+    c := ReadKey;
+ 
+    { Restore orginal video mode. }
+    errorcode := _SetVideoMode( _DefaultMode );
+ 
+END.
+ 
+
+</pre>
+</body>
+
+</html>

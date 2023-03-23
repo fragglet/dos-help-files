@@ -1,0 +1,44 @@
+<html>
+
+<head>
+<title>DispText</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* DispText - Macro to display text at given screen coordinates.
+;*
+;* Shows:   Equates - @DataSize     @data
+;*
+;* Params:  row - Screen row (top line = 0)
+;*          col - Screen column (leftmost column = 0)
+;*          str - Pointer to ASCIIZ string
+ 
+DispText MACRO row, col, str            ;; Macro definition
+    IF @DataSize                        ;; If far pointer required,
+        mov ax, @data                   ;;   pass data segment
+        push ax
+    ENDIF
+    mov  ax, str                        ;; Pointer to ASCIIZ text
+    push ax
+    mov  ax, col                        ;; Screen column
+    push ax
+    mov  ax, row                        ;; Screen row
+    push ax
+    call StrWrite
+    IF @DataSize
+        add sp, 8                       ;; Clean stack for far data
+    ELSE
+        add sp, 6                       ;; Clean stack for near data
+    ENDIF
+ENDM
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

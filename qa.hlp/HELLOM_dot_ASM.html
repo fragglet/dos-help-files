@@ -1,0 +1,59 @@
+<html>
+
+<head>
+<title>HELLOM.ASM</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* HELLOM.ASM illustrates multiple-modules and memory model independent
+;* techniques. To create the program, paste this module and PUTSTR.ASM
+;* (get help on PUTSTR.ASM to open it) into separate program files. In
+;* the environment, you must also create a program list for the program
+;* and define a model in the Defines field of the Assembler Flags dialog
+;* box. For example, use "model=large". Alternately, you could assemble
+;* outside the environment with the following command line:
+;*      qcl /Dmodel=large hellom.asm putstr.asm
+;*
+;* Shows:   Instruction - call
+;*          Directives - EXTRN
+;*          Equates - @DataSize     @CodeSize
+;*          Operators - %
+ 
+; Model is symbol passed from command line or environment. Note that the %
+; operator is required to receive external constant symbols.
+%       .MODEL  model, c
+ 
+        DOSSEG
+        .STACK  100h
+        .DATA
+msg     DB      "Hello, world.", 13, 10, 0      ; Null-terminated string
+ 
+        .CODE
+        .STARTUP                        ; Initialize data and stack segments
+ 
+; Tell assembler that PutStr is elsewhere (in another module).
+ 
+        EXTRN   PutStr:PROC             ; PROC evalutes to NEAR or FAR
+                                        ;   code depending on model
+        IF      @DataSize               ; If data is far (compact, large,
+        push    ds                      ;   or huge), push data segment
+        ENDIF
+        mov     ax, OFFSET msg          ; Always push the offset
+        push    ax
+ 
+        call    PutStr                  ; Call external procedure
+ 
+        .EXIT                           ; Exit program
+ 
+        END
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

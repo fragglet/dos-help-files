@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<title>Specify Type for Expression</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L8441.html'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='_at_L8428.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Syntax:   qualifiedtype PTR expression
+            PTR qualifiedtype
+ 
+  See also: TYPE, THIS, <a href='qualtype.html'>qualified type</a>
+ 
+  Description:
+ 
+     The first syntax treats &lt;expression&gt; as having the specified type.
+     Type casting can be used with forward references or unlabeled
+     addresses to specify a reference size, type, or distance.
+ 
+     The second syntax is used in defining qualified types.
+     See: <span class='grhilite'>◄</span><a href='qualtype.html'>qualified type</a><span class='grhilite'>►</span>
+ 
+     The PTR keyword can also appear in <a href='qualtype.html'>qualified types</a> to indicate
+     that the type is a pointer variable.
+ 
+     The &lt;qualifiedtype&gt; can be any qualified type. The &lt;expression&gt;
+     can be any valid expression. If &lt;qualifiedtype&gt; is a distance,
+     &lt;expression&gt; cannot be a memory expresssion or a data label.
+     See: <span class='grhilite'>◄</span><a href='qualtype.html'>qualified type</a><span class='grhilite'>►</span>
+ 
+     You can use a constant as the left operand to PTR in compatibility mode.
+     Otherwise, you must use a type expression. With OPTION M510, a constant
+     must have a value of 1 (BYTE), 2 (WORD), 4 (DWORD), 6 (FWORD),
+     8 (QWORD) or 10 (TBYTE). The assembler treats the constant as the
+     parenthesized type. Note that the TYPE operator yields a type expression,
+     but the SIZE operator yields a constant.
+ 
+     ; With OPTION M510
+ 
+          MyData  DW      0
+ 
+             mov     WORD PTR [bx], 10           ; Legal
+             mov     (TYPE MyData) PTR [bx], 10  ; Legal
+             mov     (SIZE MyData) PTR [bx], 10  ; Legal
+             mov     2 ptr [bx], 10              ; Legal
+ 
+     ; Without OPTION M510
+ 
+          MyData  WORD    0
+ 
+             mov     WORD PTR [bx], 10           ; Legal
+             mov     (TYPE MyData) PTR [bx], 10  ; Legal
+     ;       mov     (SIZE MyData) PTR [bx], 10  ; Illegal
+     ;       mov     2 PTR [bx], 10              ; Illegal
+ 
+ 
+ 
+  Example:
+ 
+     mov        ax, (MyStruct PTR [bx]).Username
+     fld        TBYTE PTR MaxConvolution
+     INVOKE     MyRoutine, PTR TempValue
+ 
+     Under MASM 5.1, applying the PTR operator to a data initializer de-
+     termines the size of the data displayed by CodeView. You can still use
+     PTR in this manner in MASM 6.1, but it does not affect CodeView typing.
+     Defining pointers with the TYPEDEF directive allows CodeView to generate
+     correct information.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,48 @@
+<html>
+
+<head>
+<title>SetAttribute</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* SetAttribute - Sets the attribute(s) of a specified file.
+;*
+;* Shows:   DOS Function - 43h (Get or Set File Attributes)
+;*
+;* Params:  attr - Attribute bits set as follows:
+;*                    bit 0 = read-only             bit 3 = volume label
+;*                    bit 1 = hidden                bit 4 = subdirectory
+;*                    bit 2 = system                bit 5 = archive
+;*                 (attr = 0 for normal data file)
+;*          fspec - Pointer to ASCIIZ file specification
+;*
+;* Return:  Short integer with error code
+;*          0 if successful
+;*          1 if delete error
+ 
+SetAttribute PROC \
+        USES ds, \
+        attr:WORD, fspec:PTR BYTE
+ 
+        LoadPtr ds, dx, fspec           ; DS:DX = file specification
+        mov     cx, attr                ; Put attribute code in CX
+        mov     ax, 4301h               ; AH = function #
+                                        ; AL = 1 (set attribute)
+        int     21h                     ; Set File Attributes
+        mov     ax, 0                   ; Clear code, keep flags
+        jnc     exit                    ; If successful, exit
+        inc     ax                      ; Else set error code
+exit:   ret
+ 
+SetAttribute ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

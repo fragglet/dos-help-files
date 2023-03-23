@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>Interrupt Handler Parameters</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='interrupt.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────C/C++ Language─────────────────────────────────────────────────────────
+ 
+     On entry to an interrupt handler, the DS register is initialized
+     to the near data segment, allowing your interrupt handler to
+     access global variables.
+ 
+     In addition, all registers (except SS) are saved on the stack. You
+     can access these registers within the function if you declare a
+     function parameter list containing a formal parameter for each
+     saved register. For example:
+ 
+        void __interrupt __far int_handler( unsigned _es, unsigned _ds,
+                                            unsigned _di, unsigned _si,
+                                            unsigned _bp, unsigned _sp,
+                                            unsigned _bx, unsigned _dx,
+                                            unsigned _cx, unsigned _ax,
+                                            unsigned _ip, unsigned _cs,
+                                            unsigned flags )
+        {
+        ∙ ∙ ∙
+        }
+ 
+     You can omit parameters from the end of the list in your
+     declaration, but you cannot omit parameters from the beginning of
+     the list. For example, if your handler needs to use only DI and
+     SI, you must still provide the ES and DS arguments, but not
+     necessarily BX, DX, or those that follow.
+ 
+     The compiler always saves and restores registers in the same
+     fixed order. Thus, no matter what names you use in the formal
+     parameter list, the first parameter in the list refers to ES, the
+     second refers to DS, and so on.
+ 
+     Do not give your parameters actual register names because they
+     can conflict with the inline assembler. To prevent conflict and
+     retain the documentation of the register names, use an underscore
+     when naming your parameters (for example, _ax, _bx).
+ 
+     Passing Additional Arguments
+ 
+     You can pass additional arguments if your interrupt handler is to
+     be called directly from C or C++ rather than by an INT instruction.
+     To do this, you must declare all register parameters and then
+     declare your parameter at the end of the list.
+ 
+     Changing Parameters
+ 
+     If you change any parameters of an interrupt handler during
+     function execution, the corresponding register contains the
+     changed value when the function returns. The code below causes DI
+     to contain -1 when int_handler returns.
+ 
+        void __interrupt __far int_handler( unsigned _es, unsigned _ds,
+                                            unsigned _di, unsigned _si)
+        {
+            _di = -1;
+        }
+ 
+     Do not modify the values of IP or CS in an interrupt handler. If
+     you need to modify a flag, use the bitwise-OR operator (|) so
+     that the other flags are not changed.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

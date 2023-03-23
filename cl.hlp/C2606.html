@@ -1,0 +1,64 @@
+<html>
+
+<head>
+<title>C2606</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='../clang.hlp/clang_dot_contents.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     Compiler error C2606
+ 
+     'class::identifier': illegal private access declaration
+ 
+     The access of the specified identifier was adjusted in the private
+     part of the derived class declaration.
+ 
+     The access to a member of a base class in a derived class can
+     only be adjusted by mentioning its name in the public or protected
+     part of the derived class declaration.
+ 
+     The following are examples of this error:
+ 
+          struct X
+          {
+          private:
+             int priv;
+          protected:
+             int prot;
+          public:
+             int pub;
+          };
+ 
+          struct A : public X
+          {
+          private:
+             X::priv;    // error
+             X::prot;    // error
+             X::pub;     // error
+          };
+ 
+          struct B : protected X
+          {
+          private:
+             X::priv;    // error
+             X::prot;    // error
+             X::pub;     // error
+          };
+ 
+          struct C : private X
+          {
+          private:
+             X::priv;    // error
+             X::prot;    // error
+             X::pub;     // error
+          };
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,54 @@
+<html>
+
+<head>
+<title>_dos_keep</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_dos_keep.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='_at_L80a4.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+     The _dos_keep routine installs terminate-and-stay-resident
+     programs (TSRs) in memory, using system call 0x31.
+ 
+     The routine first exits the calling process, leaving it in memory,
+     and then returns the low-order byte of &lt;retcode&gt; to the parent of
+     the calling process. Before returning execution to the parent
+     process, _dos_keep sets the allocated memory for the now-resident
+     process to &lt;memsize&gt; paragraphs. (A paragraph is 16 bytes.) Any
+     excess memory is returned to the system.
+ 
+     The _dos_keep function calls the same internal routines called by
+     the exit functions. It therefore takes the following actions:
+ 
+       1. Calls any functions that have been registered by atexit or
+          _onexit calls.
+ 
+       2. Flushes all file buffers.
+ 
+       3. Restores interrupt vectors replaced by the startup code,
+          primarily interrupt 0 (divide by zero). If the emulator math
+          library is used and there is no coprocessor, interrupts
+          0x34 through 0x3d are restored. If there is a coprocessor,
+          interrupt 2 is restored.
+ 
+     Do not use the emulator math library in TSRs unless you are
+     familiar with the startup code and the coprocessor. Use the
+     alternate math package if the TSR must do floating-point math.
+ 
+     Do not run programs that use _dos_keep from inside the Microsoft
+     Programmer's WorkBench environment, since doing so causes
+     subsequent memory problems. The _dos_keep function terminates a
+     program executed in the Programmer's WorkBench environment.
+ 
+     Return Value
+ 
+     None.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

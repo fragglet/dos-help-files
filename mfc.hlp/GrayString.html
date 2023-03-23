@@ -1,0 +1,122 @@
+<html>
+
+<head>
+<title>CDC::GrayString</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='CDC.html'>CDC</a><span class='grhilite'>►</span>                                         <span class='grhilite'>◄</span><a href='CDC.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span></i>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  BOOL GrayString( CBrush* pBrush,
+                   BOOL ( FAR PASCAL EXPORT* lpfnOutput )( HDC, DWORD,
+                   int ), DWORD lpData, int nCount, int x, int y,
+                   int nWidth, int nHeight );
+ 
+  Parameter    Description
+ 
+  &lt;pBrush&gt;     Identifies the brush to be used for dimming (graying).
+ 
+  &lt;lpfnOutput&gt; Specifies the procedure-instance address of the
+               application-supplied callback function that will draw the
+               string. For more information, see the description of the
+               Windows OutputProc callback function below.
+ 
+               If this parameter is NULL, the system uses the Windows
+               TextOut function to draw the string, and &lt;lpData&gt; is
+               assumed to be a long pointer to the character string to be
+               output.
+ 
+  &lt;lpData&gt;     Specifies a far pointer to data to be passed to the output
+               function. If &lt;lpfnOutput&gt; is NULL, &lt;lpData&gt; must be a long
+               pointer to the string to be output.
+ 
+  &lt;nCount&gt;     Specifies the number of characters to be output. If this
+               parameter is 0, GrayString calculates the length of the
+               string (assuming that &lt;lpData&gt; is a pointer to the string).
+               If &lt;nCount&gt; is -1 and the function pointed to by
+               &lt;lpfnOutput&gt; returns 0, the image is shown but not dimmed.
+ 
+  &lt;x&gt;          Specifies the logical x-coordinate of the starting position
+               of the rectangle that encloses the string.
+ 
+  &lt;y&gt;          Specifies the logical y-coordinate of the starting position
+               of the rectangle that encloses the string.
+ 
+  &lt;nWidth&gt;     Specifies the width (in logical units) of the rectangle
+               that encloses the string. If &lt;nWidth&gt; is 0, GrayString
+               calculates the width of the area, assuming &lt;lpData&gt; is a
+               pointer to the string.
+ 
+  &lt;nHeight&gt;    Specifies the height (in logical units) of the rectangle
+               that encloses the string. If &lt;nHeight&gt; is 0, GrayString
+               calculates the height of the area, assuming &lt;lpData&gt; is a
+               pointer to the string.
+ 
+  Remarks
+ 
+  Draws dimmed (gray) text at the given location by writing the text in a
+  memory bitmap, dimming the bitmap, and then copying the bitmap to the
+  display. The function dims the text regardless of the selected brush and
+  background. The GrayString member function uses the currently selected
+  font.
+ 
+  If &lt;lpFnOutput&gt; is NULL, GDI uses the Windows <span class='grhilite'>◄</span><a href='../win31qh.hlp/TextOut.html'>TextOut</a><span class='grhilite'>►</span> function, and
+  &lt;lpData&gt; is assumed to be a far pointer to the character to be output.
+  If the characters to be output cannot be handled by TextOut (for
+  example, the string is stored as a bitmap), the application must supply
+  its own output function.
+ 
+  Also note that all callback functions must trap Foundation exceptions
+  before returning to Windows, since exceptions cannot be thrown across
+  callback boundaries. For more information about exceptions, see Chapter
+  12 in the &lt;Class Libraries User's Guide&gt;.
+ 
+  The callback function passed to GrayString must use the Pascal calling
+  convention, must be exported with __export, and must be declared FAR.
+ 
+  Callback Function
+ 
+       BOOL FAR PASCAL __export OutputFunc( HDC &lt;hDC&gt;,
+                                DWORD &lt;lpData&gt;, int &lt;nCount&gt; );
+ 
+  &lt;OutputFunc&gt; is a placeholder for the application-supplied callback
+  function name. The actual name must be exported as described in the
+  "Remarks" above. The callback function (&lt;OutputFunc&gt;) must draw an image
+  relative to the coordinates (0,0) rather than (&lt;x&gt;, &lt;y&gt;).
+ 
+  Parameter   Description
+ 
+  &lt;hDC&gt;       Identifies a memory device context with a bitmap of at least
+              the width and height specified by &lt;nWidth&gt; and &lt;nHeight&gt; to
+              GrayString, respectively.
+ 
+  &lt;lpData&gt;    Points to the character string to be drawn.
+ 
+  &lt;nCount&gt;    Specifies the number of characters to output.
+ 
+  Return Value
+ 
+  The callback function's return value must be nonzero to indicate
+  success. Otherwise, it is 0.
+ 
+  Return Value
+ 
+  TRUE if the string is drawn, or FALSE if either the TextOut function or
+  the application-supplied output function returned FALSE, or there was
+  insufficient memory to create a memory bitmap for dimming.
+ 
+  See Also
+ 
+  <span class='grhilite'>◄</span><a href='../win31qh.hlp/GetSysColor.html'>::GetSysColor</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='SetTextColor.html'>CDC::SetTextColor</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='TextOut.html'>CDC::TextOut</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='../win31qh.hlp/GrayString.html'>::GrayString</a><span class='grhilite'>►</span>
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

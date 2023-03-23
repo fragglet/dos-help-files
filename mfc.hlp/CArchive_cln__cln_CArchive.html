@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>CArchive::CArchive</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='CArchive.html'>CArchive</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='CArchive.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span></i>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  CArchive( CFile* pFile, UINT nMode, int nBufSize = 512,
+            void FAR* lpBuf = NULL )
+  throw( CMemoryException, CArchiveException, CFileException );
+ 
+  Parameter   Description
+ 
+  &lt;pFile&gt;     A pointer to the CFile object that is the ultimate source or
+              destination of the persistent data.
+ 
+  &lt;nMode&gt;     A flag that specifies whether objects will be loaded from or
+              stored to the archive. The &lt;nMode&gt; parameter must have one
+              of the following values:
+ 
+              Value             Meaning
+ 
+              CArchive::load    Load data from the archive. Requires only
+                                CFile read permission.
+ 
+              CArchive::store   Save data to the archive. Requires CFile
+                                write permission.
+ 
+  &lt;nBufSize&gt;  An integer that specifies the size of the internal file
+              buffer, in bytes.
+ 
+              NOTE: The default buffer size is 512 bytes. If you routinely
+                    archive large objects, you will improve performance if
+                    you use a larger buffer size that is a multiple of the
+                    file buffer size.
+ 
+  &lt;lpBuf&gt;     An optional FAR pointer to a user-supplied buffer of size
+              &lt;nBufSize&gt;. If you do not specify this parameter, the
+              archive allocates a buffer from the local heap and frees it
+              when the object is destroyed. The archive does not free a
+              user-supplied buffer.
+ 
+  Remarks
+ 
+  Constructs a CArchive object and specifies whether it will be used for
+  loading or storing objects. You cannot change this specification after
+  you have created the archive.
+ 
+  You may not use CFile operations to alter the state of the file until
+  you have closed the archive. Any such operation will damage the
+  integrity of the archive. You may access the position of the file
+  pointer at any time during serialization by (1) obtaining the archive's
+  file object from the GetFile member function and then (2) using the
+  <span class='grhilite'>◄</span><a href='GetPosition.html'>CFile::GetPosition</a><span class='grhilite'>►</span> function. You should call CArchive::Flush before
+  obtaining the position of the file pointer.
+ 
+  Example
+ 
+  extern char* pFileName;
+  CFile f;
+  char buf[512];
+  if( !f.Open( pFileName, CFile::modeCreate | CFile::modeWrite ) ) {
+     #ifdef _DEBUG
+        afxDump &lt;&lt; "Unable to open file" &lt;&lt; "\n";
+        exit( 1 );
+     #endif
+  }
+  CArchive ar( &amp;f, CArchive::store, 512, buf );
+ 
+ 
+  See Also
+ 
+  <span class='grhilite'>◄</span><a href='CArchive_cln__cln_Close.html'>CArchive::Close</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='CArchive_cln__cln_Flush.html'>CArchive::Flush</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='Open.html'>CFile::Close</a><span class='grhilite'>►</span>
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

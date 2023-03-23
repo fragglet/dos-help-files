@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<title>StringAssign Routine Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#StringAssign'>Syntax</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../bas7ex.hlp/_dot_strasx.html'>Example</a><span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+The StringAssign routine is used in mixed-language programming to transfer
+a string from BASIC to a non-BASIC routine or from a non-BASIC routine to
+BASIC. A typical use is to transfer a string from BASIC to a non-BASIC
+routine, process the string using the non-BASIC routine, and then
+transfer the modified string back to BASIC.
+ 
+<b>StringAssign(sourceaddress&amp;, sourcelength%, destaddress&amp;, destlength%);</b>
+    ■ The preceding syntax is for the C language. However, the order of the
+      arguments in the syntax follows BASIC, Pascal, and FORTRAN calling
+      conventions rather than the C calling convention. (In BASIC, Pascal,
+      and FORTRAN, the arguments are passed in the order in which they
+      appear in the source code. In C, the arguments are passed in the
+      reverse order.)
+    ■ For C, MASM, Pascal, and FORTRAN examples, see Chapter 13,
+      "Mixed-Language Programming with Far Strings" in the Programmer's Guide.
+ 
+Usage Notes
+    ■ Calls to the StringAssign routine are usually made from a C, MASM,
+      Pascal, or FORTRAN routine that is going to perform string processing
+      functions on BASIC strings. Seldom, if ever, would you call
+      StringAssign from inside a BASIC program.
+    ■ StringAssign can be used to transfer both near and far strings. Using
+      StringAssign, you can write mixed-language programs that are near
+      string/far string independent.
+    ■ MASM, C, Pascal and FORTRAN deal only with fixed-length strings.
+      When programming in these languages you can use StringAssign to
+      create a new BASIC variable-length string and transfer fixed-
+      length string data to it. For example, to transfer a MASM fixed-length
+      string containing the word "Hello" to a BASIC variable-length string,
+      you use this data structure:
+ 
+        fixedstring      db       "Hello"     ; source of data
+        descriptor       dd        0          ; descriptor for destination
+ 
+      The second data element, descriptor, is a 4-byte string descriptor
+      initialized to zero. BASIC interprets this to mean that it should
+      create a new variable-length string and associate it with the address
+      labelled descriptor.
+ 
+      To create a new BASIC variable-length string and transfer fixed-length
+      data to it, the StringAssign routine requires four arguments:
+ 
+        - The far address of the fixed-length string in the MASM data
+          segment
+        - The length of the fixed-length string in the MASM data segment.
+        - The far address of the string descriptor in the MASM data
+          segment
+        - 0 (indicating the string in the BASIC data segment will be a
+          variable-length string)
+ 
+      The following MASM code pushes these arguments on the stack and calls
+      StringAssign:
+ 
+        .model
+        extrn        stringassign:  far
+ 
+        .code
+        push         ds                    ; segment of fixed-length string
+        lea          ax, fixedstring       ; offset of fixed-length string
+        push         ax
+        mov          ax, 5                 ; length of "Hello"
+        push         ax
+        push         ds                    ; segment of descriptor
+        lea          ax, descriptor        ; offset of descriptor
+        push         ax
+        mov          ax, 0                 ; 0 = variable-length string
+        push         ax
+        call         stringassign
+ 
+      When the call to StringAssign is made, BASIC will fill in the double
+      word descriptor with the correct string descriptor.
+    ■ For detailed instructions on mixed-language programming with strings,
+      see "Mixed-Language Programming with Far Strings" and "Mixed-Language
+      Programming with Near Strings" in the Programmer's Guide.
+ 
+Important
+      When creating a new variable-length string you must allocate four
+      bytes of static data for a string descriptor as shown above.
+      Allocating the data on the stack will not work.
+
+</pre>
+</body>
+
+</html>

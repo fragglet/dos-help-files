@@ -1,0 +1,69 @@
+<html>
+
+<head>
+<title>LINE INPUT # and WRITE # Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the WRITE # statement to write customer information
+'to a data file. The LINE INPUT # statement is then used to read the
+'records from the file.
+ 
+OPEN "LIST" FOR OUTPUT AS #1
+PRINT "CUSTOMER INFORMATION:"
+'Get customer information.
+DO
+    PRINT
+    INPUT "   LAST NAME:  ", LName$
+    INPUT "   FIRST NAME: ", FrName$
+    INPUT "   AGE:        ", Age$
+    INPUT "   SEX:        ", Sex$
+    Sex$ = UCASE$(Sex$)
+    WRITE #1, LName$, FrName$, Age$, Sex$
+    INPUT "Add another"; R$
+LOOP WHILE UCASE$(R$) = "Y"
+CLOSE #1
+ 
+'Echo the file back.
+OPEN "LIST" FOR INPUT AS #1
+CLS
+PRINT "Records in file:": PRINT
+DO WHILE NOT EOF(1)
+    LINE INPUT #1, REC$   'Read records from file.
+    PRINT REC$            'Print the records on the screen.
+LOOP
+ 
+'Remove file from disk.
+CLOSE #1
+KILL "LIST"
+ 
+'Sample Output
+'
+'CUSTOMER INFORMATION:
+'
+'
+'   LAST NAME:  Saintsbury
+'   FIRST NAME: Aloysius
+'   AGE:        35
+'   SEX:        m
+'Add another? y
+'
+'   LAST NAME:  Frangio
+'   FIRST NAME: Louisa
+'   AGE:        27
+'   SEX:        f
+'Add another? n
+'
+'Records in file:
+'
+'"Saintsbury","Aloysius","35","M"
+'"Frangio","Louisa","27","F"
+
+</pre>
+</body>
+
+</html>

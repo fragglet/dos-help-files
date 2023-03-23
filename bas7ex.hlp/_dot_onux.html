@@ -1,0 +1,52 @@
+<html>
+
+<head>
+<title>UEVENT Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the UEVENT and ON UEVENT statements to enable
+'user-defined event trapping. The SetUEvent routine signals a
+'user-defined event, and control is passed to an event-handling
+'routine. This example is a primitive use of the UEVENT statements,
+'which are best suited for interfacing hardware to a computer.
+ 
+'Note: In order to use this program or any user-defined event trapping,
+'you must load the Quick library QBX.QLB using the /L option.
+ 
+CLS
+PRINT "This program asks for 10 numbers between 0 and 9, inclusive."
+PRINT "As each number is input, it is evaluated to determine whether"
+PRINT "it is odd or even. Odd numbers cause a user-defined event"
+PRINT "to occur. Even numbers do not.": PRINT
+ON UEVENT GOSUB Event1
+UEVENT ON
+DO
+    PRINT "Enter a number --&gt; ";
+    N = VAL(INPUT$(1)): PRINT N: PRINT
+    SELECT CASE N
+        CASE 1, 3, 5, 7, 9
+            PRINT "An odd number was input causing a user-defined event.";
+            CALL SetUEvent
+        CASE ELSE
+            PRINT "No user-defined event occurred.": PRINT
+    END SELECT
+    LoopCount = LoopCount + 1
+LOOP UNTIL LoopCount = 10
+END
+ 
+Event1:
+    PRINT "Now processing the UEVENT. The odd number was"; N
+    PRINT
+    RETURN
+ 
+ 
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,51 @@
+<html>
+
+<head>
+<title>SIGNAL Statements Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the EVENT and SIGNAL statements to enable event
+'trapping. The ON SIGNAL statement passes control to a handling routine
+'when Ctrl-Break is pressed.
+ 
+'Note: The SIGNAL and ON SIGNAL statements can only be used in the OS/2
+'operating system.
+ 
+CLS
+ON ERROR GOTO ErrHandler
+PRINT "This program traps Control-Break in the OS/2 operating system."
+EVENT ON
+'Set up the signal event trap.
+ON SIGNAL(4) GOSUB CtrlBreak
+'Wait until the SIGNAL event occurs.
+'Enable the trap.
+SIGNAL(4) ON
+DO
+LOOP UNTIL UCASE$(INKEY$) = "Q"
+PRINT "'Q' pressed - Program terminating normally."
+END
+ 
+CtrlBreak:
+    PRINT "A SIGNAL(4) event occurred."
+    PRINT "Press 'Q' to quit."
+    RETURN
+ 
+ErrHandler:
+    SELECT CASE ERR
+        CASE 73
+            PRINT : PRINT "You cannot use the ON SIGNAL feature in DOS."
+        CASE ELSE
+    END SELECT
+    END
+ 
+ 
+
+</pre>
+</body>
+
+</html>

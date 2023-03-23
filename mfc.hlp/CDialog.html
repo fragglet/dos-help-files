@@ -1,0 +1,155 @@
+<html>
+
+<head>
+<title>class CDialog</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='CWnd.html'>CWnd</a><span class='grhilite'>►</span>                                        <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span></i>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  Description
+ 
+  The CDialog class is an abstract class for displaying dialog boxes on
+  the screen. To get a modeless dialog box, you must derive your own class
+  from CDialog. To derive modal dialog boxes, use the <span class='grhilite'>◄</span><a href='CModalDialog.html'>CModalDialog</a><span class='grhilite'>►</span>
+  class. The constructors for class CDialog are protected, so you must
+  derive your own class.
+ 
+  A modeless dialog box allows the user to display the dialog box and
+  return to another task without canceling or removing the dialog box. A
+  modal dialog box requires the user to close the dialog box before the
+  application continues.
+ 
+  You can create a modeless dialog in one step or two. To create it in one
+  step, write the constructor so it calls the object's <span class='grhilite'>◄</span><a href='CDialog_cln__cln_Create.html'>Create</a><span class='grhilite'>►</span> member
+  function. To create it in two steps, don't include a call to Create in
+  the constructor. Invoke the constructor for your dialog object, then
+  call the object's Create member function.
+ 
+  A modeless dialog box receives messages from Windows like any other
+  window. To process messages in your derived dialog-box class, provide
+  message-handler member functions for the messages the dialog box can
+  process.
+ 
+  Your message-handler member functions specify what happens when the user
+  works with your dialog box. Typically, you'll override the
+  <span class='grhilite'>◄</span><a href='OnInitDialog.html'>OnInitDialog</a><span class='grhilite'>►</span> member function when you need to initialize controls
+  (such as setting the initial text of an edit box).
+ 
+  You'll also override the <span class='grhilite'>◄</span><a href='OnClose.html'>OnClose</a><span class='grhilite'>►</span> member function of your derived
+  dialog class to call <span class='grhilite'>◄</span><a href='DestroyWindow.html'>CWnd::DestroyWindow</a><span class='grhilite'>►</span>. Instead of calling
+  DestroyWindow, you can call the C++ delete operator on the this
+  reference, which calls DestroyWindow for you.
+ 
+  Your derived dialog-box class can also add member variables to store
+  data entered by the user or data for display to the user. You can add
+  member functions to set or get these values. A modeless dialog box can
+  also send messages to its parent window.
+ 
+  Create your dialog box from a dialog-box resource template, as in
+  traditional Windows. The dialog-box resource specifies a template name
+  or ID, a font to use, a set of controls, such as buttons and edit boxes,
+  and the window styles that apply to the dialog box. To create a dialog
+  box from a template, specify the  template in your .RC file and compile
+  it with a resource compiler. The resulting .RES file is sent to the
+  linker, which incorporates the resource information with your executable
+  program. Specify the name or ID of the template when you call the
+  <span class='grhilite'>◄</span><a href='CDialog_cln__cln_Create.html'>Create</a><span class='grhilite'>►</span> member function from your dialog-box constructor.
+ 
+  Instead of creating your dialog box from a compiled resource, you can
+  build the resource yourself in memory, construct an object of your class
+  derived from CDialog, and use the <span class='grhilite'>◄</span><a href='CDialog_cln__cln_CreateIndirect.html'>CreateIndirect</a><span class='grhilite'>►</span> member function to
+  create the dialog box from the template in memory. The template
+  constructed in memory uses a DLGTEMPLATE data structure, as described in
+  the Windows Software Development Kit documentation.
+ 
+  If the dialog-box template (in a resource file or in memory) specifies
+  the WS_VISIBLE style, the dialog-box window appears in its parent
+  window. Otherwise, you must call the ShowWindow member function, which
+  CDialog inherits from class CWnd.
+ 
+  After the call to Create, Windows sends a <span class='grhilite'>◄</span><a href='../win31qh.hlp/WM_INITDIALOG.html'>WM_INITDIALOG</a><span class='grhilite'>►</span> message to the
+  dialog box. You can override the <span class='grhilite'>◄</span><a href='OnInitDialog.html'>OnInitDialog</a><span class='grhilite'>►</span> member function to
+  perform dialog-box initialization chores. For example, if your dialog
+  box displays statistics about the current font, you can override
+  OnInitDialog to set the current values of the static text controls in
+  the dialog box to reflect the statistics.
+ 
+  Although the dialog-box template can specify the dialog-box font, you
+  can also set the font on the fly. If the dialog-box template specifies
+  the DS_SETFONT style, Windows sends a WM_SETFONT message to the dialog
+  box before creating the controls. In response to this message, the
+  application calls the OnSetFont member function. You can override that
+  message-handler function to set the dialog-box font.
+ 
+  When the user terminates a modeless dialog box, call the
+  <span class='grhilite'>◄</span><a href='DestroyWindow.html'>DestroyWindow</a><span class='grhilite'>►</span> member function, which CDialog inherits from class
+  <span class='grhilite'>◄</span><a href='CWnd.html'>CWnd</a><span class='grhilite'>►</span>, to remove the dialog window and destroy its data  structures.
+  You can call DestroyWindow from the OnOK, OnCancel, or OnClose member
+  functions, which you can override from class CWnd. If you allocate any
+  memory in the dialog object, override the CDialog destructor to dispose
+  of the allocations.
+ 
+  See Also
+ 
+  <span class='grhilite'>◄</span><a href='CModalDialog.html'>CModalDialog</a><span class='grhilite'>►</span>
+ 
+  Public Members
+ 
+  Operations
+ 
+  <span class='grhilite'>◄</span><a href='MapDialogRect.html'>MapDialogRect</a><span class='grhilite'>►</span>     Converts the dialog-box units of a rectangle to
+                      screen units.
+ 
+  <span class='grhilite'>◄</span><a href='IsDialogMessage.html'>IsDialogMessage</a><span class='grhilite'>►</span>   Determines whether the given message is intended for
+                      the modeless dialog box and, if so, processes it.
+ 
+  <span class='grhilite'>◄</span><a href='NextDlgCtrl.html'>NextDlgCtrl</a><span class='grhilite'>►</span>       Moves the focus to the next dialog-box control in
+                      the dialog box.
+ 
+  <span class='grhilite'>◄</span><a href='PrevDlgCtrl.html'>PrevDlgCtrl</a><span class='grhilite'>►</span>       Moves the focus to the previous dialog-box control
+                      in the dialog box.
+ 
+  <span class='grhilite'>◄</span><a href='GotoDlgCtrl.html'>GotoDlgCtrl</a><span class='grhilite'>►</span>       Moves the focus to a specified dialog-box control in
+                      the dialog box.
+ 
+  <span class='grhilite'>◄</span><a href='SetDefID.html'>SetDefID</a><span class='grhilite'>►</span>          Changes the default pushbutton control for a dialog
+                      box to a specified pushbutton.
+ 
+  <span class='grhilite'>◄</span><a href='GetDefID.html'>GetDefID</a><span class='grhilite'>►</span>          Gets the ID of the default pushbutton control for a
+                      dialog box.
+ 
+  <span class='grhilite'>◄</span><a href='EndDialog.html'>EndDialog</a><span class='grhilite'>►</span>         Terminates a modal dialog box.
+ 
+  Overridables
+ 
+  <span class='grhilite'>◄</span><a href='OnInitDialog.html'>OnInitDialog</a><span class='grhilite'>►</span>   Override to augment dialog-box initialization.
+ 
+  <span class='grhilite'>◄</span><a href='OnSetFont.html'>OnSetFont</a><span class='grhilite'>►</span>      Override to specify the font that a dialog-box control
+                   is to use when drawing text.
+ 
+  Protected Members
+ 
+  Construction/Destruction
+ 
+  <span class='grhilite'>◄</span><a href='CDialog_cln__cln_CDialog.html'>CDialog</a><span class='grhilite'>►</span>   Constructs a CDialog object.
+ 
+  Initialization
+ 
+  <span class='grhilite'>◄</span><a href='CDialog_cln__cln_Create.html'>Create</a><span class='grhilite'>►</span>           Initializes the CDialog object. Creates the modeless
+                     dialog and attaches it to the CDialog object.
+ 
+  <span class='grhilite'>◄</span><a href='CDialog_cln__cln_CreateIndirect.html'>CreateIndirect</a><span class='grhilite'>►</span>   Creates a modeless dialog box from a dialog-box
+                     template in memory.
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,118 @@
+<html>
+
+<head>
+<title>FUNCTION...END FUNCTION Statement Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#FUNCTION'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='_dot_funx.html'>Example<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>FUNCTION...END FUNCTION Details</b>
+ 
+<b>Syntax</b>
+  FUNCTION name [(parameterlist)][STATIC]
+      [statements]
+    name = expression
+      [statements]
+  END FUNCTION
+ 
+  Part            Description
+  name            The name of the function. FUNCTION names follow the
+                  same rules as BASIC variable names and can include a
+                  type-declaration character (%, &amp;, !, #, or $). Note
+                  that the type of the name determines the type of
+                  value the function returns. For example, to create a
+                  function that returns a string, you would include a
+                  dollar sign in the name or give it a name defined as
+                  a string name by a DEFSTR statement.
+ 
+  parameterlist   The list of variables, separated by commas, passed
+                  to the FUNCTION. The parameters are passed by
+                  reference, so any change to a parameter's value
+                  inside the function changes its value in the calling
+                  program.
+ 
+  STATIC          Indicates that the function's local variables are to
+                  be saved between calls. Without STATIC, the local
+                  variables are allocated each time the function is
+                  invoked, and the variables' values are lost when the
+                  function returns to the calling program. The STATIC
+                  attribute does not affect variables that are used in
+                  a FUNCTION but declared outside the FUNCTION in DIM
+                  or COMMON statements using the SHARED attribute.
+ 
+  expression      The return value of the function. A FUNCTION returns
+                  a value by assigning a value to the function name.
+                  If no value is assigned to the FUNCTION name, the
+                  FUNCTION returns a default value:  a numeric
+                  function returns a value of zero, and a string
+                  function returns the null string ("").
+ 
+A parameterlist has the following syntax:
+ 
+  variable[( )][AS type][,variable[()][AS type]]
+ 
+A variable is any valid BASIC variable. The optional type can be
+either INTEGER, LONG, SINGLE, DOUBLE, STRING, or a user-defined type.
+ 
+Earlier versions of BASIC required the number of dimensions in
+parentheses after an array name. The number of dimensions is no longer
+required. Only the parentheses are required to indicate the parameter
+is an array. For example, the following statement indicates that both
+Keywords$ and KeywordTypes are arrays:
+ 
+FUNCTION ParseLine(Keywords$(),KeywordTypes())
+ 
+A FUNCTION procedure is like a SUB procedure:  it can accept
+parameters, perform a series of statements, and change the values of
+its parameters. Unlike a SUB, a FUNCTION is used in an expression in
+the same manner as a BASIC intrinsic function.
+ 
+Like SUB procedures, FUNCTION procedures use local variables.
+Any variable not in the parameter list is local to the FUNCTION
+unless it is declared as a shared variable in a SHARED statement,
+or unless the variable appears in a DIM or COMMON statement
+with the SHARED attribute.
+ 
+To return a value from a function, assign the value to the function
+name. For example, in a function named BinarySearch, you might
+assign the value of the constant FALSE to the name to indicate
+the value was not found:
+ 
+  FUNCTION BinarySearch(...)
+  CONST FALSE=0
+  .
+  .
+  .
+ 
+  ' Value not found. Return a value of FALSE.
+ 
+     IF Lower&gt;Upper THEN
+        BinarySearch=FALSE
+        EXIT FUNCTION
+     END IF
+  .
+  .
+  .
+  END FUNCTION
+ 
+Using the STATIC keyword slightly increases execution speed. STATIC is
+not usually used with recursive FUNCTION procedures.
+ 
+The EXIT FUNCTION statement provides an alternative exit from a
+FUNCTION. See the EXIT statement.
+ 
+Because BASIC may rearrange arithmetic expressions to attain greater
+efficiency, avoid using FUNCTION procedures that change program
+variables in arithmetic expressions. Also avoid using FUNCTION
+procedures that perform I/O in I/O statements.
+ 
+QuickBASIC FUNCTION procedures are recursive--they can call
+themselves to perform a given task. See the second example below.
+
+</pre>
+</body>
+
+</html>

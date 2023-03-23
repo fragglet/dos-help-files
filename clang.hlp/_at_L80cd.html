@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<title>HMANAGE.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* HMANAGE.C illustrates heap management using:
+ *      _heapadd        _heapmin
+ */
+ 
+#include &lt;stdio.h&gt;
+#include &lt;conio.h&gt;
+#include &lt;process.h&gt;
+#include &lt;malloc.h&gt;
+ 
+void heapdump( char *msg );     /* Prototype */
+ 
+char s1[] = { "Here are some strings that we use at first, then don't\n" };
+char s2[] = { "need any more. We'll give their space to the heap. \n\n" };
+ 
+void main()
+{
+    int *p[5], i;
+ 
+    printf( "%s%s", s1, s2 );
+    heapdump( "Initial heap" );
+ 
+    /* Give space of used strings to heap. */
+    _heapadd( s1, sizeof( s1 ) );
+    _heapadd( s2, sizeof( s2 ) );
+    heapdump( "After adding used strings" );
+ 
+    /* Allocate some blocks. Some may use used string blocks. */
+    for( i = 0; i &lt; 4; i++ )
+        if( (p[i] = (int *)calloc( 10 * (i + 1), sizeof( int ) )) == NULL )
+        {
+            --i;
+            break;
+        }
+    heapdump( "After allocating memory" );
+ 
+    /* Free some of the blocks. */
+    free( p[1] );
+    free( p[2] );
+    heapdump( "After freeing memory" );
+ 
+    /* Minimize heap. */
+    _heapmin();
+    heapdump( "After compacting heap" );
+ 
+    exit( 0 );
+}
+ 
+/* Walk through heap entries, displaying information about each block. */
+void heapdump( char *msg )
+{
+    _HEAPINFO hi;
+ 
+    printf( "\n%s\n", msg );
+    hi._pentry = NULL;
+    while( _heapwalk( &amp;hi ) == _HEAPOK )
+        printf( "\t%s block at %Fp of size %u\t\n",
+                hi._useflag == _USEDENTRY ? "USED" : "FREE",
+                hi._pentry,
+                hi._size );
+    _getch();
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,52 @@
+<html>
+
+<head>
+<title>COM Statements Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the OPEN COM statement to open the COM1 port for input
+'and the COM statement to enable event trapping.  The ON COM statement
+'passes control to a subroutine when there is activity on a terminal.
+ 
+'Note: To run this program, you must have a terminal connected to
+'the COM1 port.
+ 
+CLS
+'Set up error handling in case COM1 doesn't exist.
+ON ERROR GOTO ErrHandler
+'Open the COM port.
+OPEN "COM1:9600,N,8,1,BIN" FOR INPUT AS #1
+ 
+'Turn on COM event processing.
+COM(1) ON
+'Set up COM event handling.
+ON COM(1) GOSUB Com1Handler
+'Wait for a COM event to occur or a key to be pressed.
+DO
+LOOP WHILE INKEY$ = ""
+'Turn off COM event handling.
+COM(1) OFF
+CLS
+END
+ 
+Com1Handler:
+    PRINT A$; "Something was typed on the terminal attached to COM1."
+    RETURN
+ 
+ErrHandler:
+    SELECT CASE ERR
+        CASE 68: PRINT "COM1 is unavailable on this computer.": END
+        CASE ELSE: END
+    END SELECT
+ 
+ 
+
+</pre>
+</body>
+
+</html>

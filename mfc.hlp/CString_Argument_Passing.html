@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>CString Argument Passing</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='CString.html'>CString</a><span class='grhilite'>►</span>                                     <span class='grhilite'>◄</span><a href='CString.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span></i>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  Argument-Passing Conventions
+ 
+  When you define a class interface, you must determine the
+  argument-passing convention for your member functions. There are some
+  standard rules for passing and returning CString objects. If you follow
+  these rules, you will have efficient, correct code.
+ 
+  Strings as Function Inputs
+ 
+  If a string is an input to a function, in most cases it is best to
+  declare the string function parameter as const char*. Convert to CString
+  object as necessary within the function, using constructors and
+  assignment operators. If the string contents are to be changed by a
+  function, declare the parameter as a nonconstant CString reference
+  (CString&amp;).
+ 
+  Strings as Function Outputs
+ 
+  Normally you can return CString objects from functions since CStrings
+  follow value semantics like primitive types. To return a read-only
+  string, use a constant CString reference (const CString&amp;).
+ 
+  Example
+ 
+  class CName : public CObject
+  {
+  private:
+      CString m_firstName;
+      char m_middleInit;
+      CString m_lastName;
+  public:
+      CName() {}
+      void SetData( const char* fn, const char mi, const char* ln )
+      {
+          m_firstName = fn;
+          m_middleInit = mi;
+          m_lastName = ln;
+      }
+      void GetData( CString&amp; cfn, char mi, CString&amp; cln )
+      {
+          cfn = m_firstName;
+          mi = m_middleInit;
+          cln = m_lastName;
+      }
+      CString GetLastName()
+      {
+          return m_lastName;
+      }
+  };
+ 
+      CName name;
+      CString last, first;
+      char middle;
+ 
+      name.SetData( "John", 'Q', "Public" );
+      ASSERT( name.GetLastName() == "Public" );
+      name.GetData( first, middle, last );
+      ASSERT( ( first == "John" ) &amp;&amp; ( last == "Public" ) );
+  }
+  return 0;
+  }
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

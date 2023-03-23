@@ -1,0 +1,100 @@
+<html>
+
+<head>
+<title>TEXTDEMO.PAS</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.index'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM textdemo;
+ 
+{ TEXTDEMO.PAS demonstrates text control. The program uses:
+ 
+      _GetTextColor    _GetTextCursor    _OutMem    _ScrollTextWindow
+      _SetTextColor    _SetTextCursor    _Wrapon
+}
+ 
+USES
+    MSGraph, Crt;    { Crt used only for Delay routine }
+ 
+CONST
+    wrap_on = 'WrapOn is now True ';
+    wrap_off = 'WrapOn is now False ';
+VAR
+    i, text_color, cursor_shape : Integer;
+    prev_wrap : Boolean;
+ 
+BEGIN
+ 
+    { Initialization. }
+    _ClearScreen( _GClearScreen );      { Clear the screen. }
+    _SetTextWindow( 6, 10, 20, 50 );    { Create a text window. }
+    _SetTextColor( 9 );                 { Set text to light blue. }
+ 
+    { Demonstrate text wrapping. }
+    prev_wrap := _WrapOn( True );
+    FOR i := 1 TO 5 DO
+        BEGIN
+        _OutMem( wrap_on, Length( wrap_on ) );
+        Delay( 500 );
+        END;
+    _OutText( Chr( 10 ) );    { Space between examples. }
+ 
+    { Change color and turn off text wrap. }
+    text_color := _GetTextColor;
+    text_color := text_color + 1;    { Increase color by one. }
+    _SetTextColor( text_color );
+    prev_wrap := _WrapOn( False );
+    FOR i := 1 TO 5 DO
+        BEGIN
+        _OutMem( wrap_off, Length( wrap_off ) );
+        Delay( 500 );
+        END;
+    _OutText( Chr( 10 ) );
+ 
+    { Change color and scroll text. }
+    text_color := text_color + 1;
+    _SetTextColor( text_color );
+    _OutText( 'Screen scrolling is about to start... ' );
+    Delay( 2000 );
+    FOR i := 1 TO 5 DO
+        BEGIN
+        _ScrollTextWindow( -1 );    { Scroll down one line. }
+        Delay( 500 );
+        END;
+    FOR i := 1 TO 5 DO
+        BEGIN
+        _ScrollTextWindow( 1 );    { Scroll up one line. }
+        Delay( 500 );
+    END;
+    _OutText( Chr( 10 ) );
+ 
+    { Use different cursor shapes. }
+    text_color := text_color + 1;
+    _SetTextColor( text_color );
+    _OutText( 'Watch the cursor: ' );
+    _SetTextCursor( $0707 );    { Underline }
+    Delay( 2000 );
+    _SetTextCursor( $0007 );    { Block }
+    Delay( 2000 );
+    _SetTextCursor( $2000 );    { No cursor }
+    Delay( 2000 );
+    _SetTextCursor( $0607 );    { Double underline }
+    Delay( 2000 );
+ 
+    cursor_shape := _GetTextCursor;
+    _OutText( Chr( 10 ) );
+    IF (cursor_shape &lt;&gt; $0007) THEN
+        _OutText( 'The cursor is not a block.' );
+    _OutText( Chr( 10 ) );
+ 
+END.
+ 
+
+</pre>
+</body>
+
+</html>

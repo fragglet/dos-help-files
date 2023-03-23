@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>Huge Memory Model: Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L801e.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────C/C++ Compiler─────────────────────────────────────────────────────────
+ 
+     Syntax:  /AH
+ 
+     The huge-model option is similar to the large-model option. But
+     with the huge model, the restrictions on the size of individual
+     data items for arrays are relaxed.
+ 
+     Array               Data Item
+     (Size in Bytes)     (Size in Bytes)
+ 
+     ≤64K                ≤64K
+     &gt;64K; ≤128K         ≤64K
+     &gt;128K               ≤64K (and a power of 2)
+ 
+     Some size restrictions apply to elements of a huge array if the
+     array is larger than 64K. So that efficient addressing occurs,
+     array elements are not permitted to cross segment boundaries.
+     Therefore, no array element can be larger than 64K.
+ 
+     For any array larger than 128K, all elements must have a size in
+     bytes equal to a power of 2. However, if the array is 128K or
+     smaller, its elements can be any size--up to and including 64K.
+ 
+     In huge-model programs, be careful when you use the sizeof
+     operator or when you subtract pointers. The C language defines the
+     value returned by the sizeof operator to be an unsigned int value.
+     But the size in bytes of a huge array can be an unsigned long
+     value. Similarly, ptrdiff_t, the type returned by subtracting two
+     pointers, is defined as an unsigned int. With huge arrays, the
+     difference can exceed the capacity of ptrdiff_t.
+ 
+     The defaults in huge-model programs are far code addressing and
+     far data addressing. You can modify these defaults with the __near
+     keyword for code and the __near or __far keyword for data.
+ 
+     To maximize efficiency, the compiler tries to allocate static and
+     initialized global data in DGROUP. The compiler allocates data
+     items larger in size than the data-size threshold (set with /Gt) in
+     segments outside of DGROUP. The sum of all the items smaller than
+     the threshold must be less than 64K.
+     See: <span class='grhilite'>◄</span><a href='_sl_Gt.html'>Data Size Threshold (/Gt)</a><span class='grhilite'>►</span>
+ 
+     Under the compact, large, or huge memory model, the compiler
+     allocates initialized data items as near if they are smaller than
+     or equal in size to the threshold value set by the /Gt option. The
+     /Gx option extends this initialized data allocation rule to data
+     that is uninitialized and data that is marked as extern. Near
+     data offers two benefits:
+ 
+        ■ The compiler can generate more efficient code to reference
+          data it knows is near.
+ 
+        ■ You can achieve multiple instances of a single windows
+          application when all data is near.
+ 
+     See: <span class='grhilite'>◄</span><a href='_at_L8025.html'>Overriding Default Addressing</a><span class='grhilite'>►</span>
+          <span class='grhilite'>◄</span><a href='_sl_Gx.html'>Assume That Data Is Near Option (/Gx)</a><span class='grhilite'>►</span>
+ 
+     Using the /AH option causes CL to emit both the _M_I86 and the
+     _M_I86HM preprocessor identifiers.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

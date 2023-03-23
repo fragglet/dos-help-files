@@ -1,0 +1,48 @@
+<html>
+
+<head>
+<title>UniqueFile</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L83fe.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* UniqueFile - Creates and opens a new file with a name unique to the
+;* specified directory. The name is manufactured from the current time,
+;* making it useful for temporary files. For DOS versions 3.0 and higher.
+;*
+;* Shows:   DOS Function - 5Ah (Create Temporary File)
+;*
+;* Params:  Attr - Attribute code (see header comments for CreateFile)
+;*          Pspec - Pointer to ASCIIZ path specification
+;*
+;* Return:  Short integer with file handle or -1 for error
+ 
+UniqueFile PROC USES ds,
+        Attr:WORD,
+        Pspec:PBYTE
+ 
+        ; Get DOS version
+        INVOKE  GetVer
+ 
+        cmp     ax, 300                 ; 3.0 or higher?
+        jb      e_exit                  ; No?  Quit with error
+        LoadPtr ds, dx, Pspec           ; Point DS:DX to path spec
+        mov     cx, Attr                ; CX = attribute
+        mov     ah, 5Ah                 ; AH = function number
+        int     21h                     ; Create Temporary File
+        .IF     carry?
+e_exit: mov     ax, -1                  ; Set error code
+        .ENDIF
+        ret
+ 
+UniqueFile ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

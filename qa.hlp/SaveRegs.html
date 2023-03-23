@@ -1,0 +1,40 @@
+<html>
+
+<head>
+<title>SaveRegs</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* SaveRegs - Macro to generate a push instruction for each register in
+;* argument list.  Saves each register name in the string equate REGPUSHED.
+;* See also the RestoreRegs and the LoadPtr macros for examples of other
+;* macro directives.
+;*
+;* Shows:   Directives - CATSTR    IRP    IFNB
+;*
+;* Params:  r1 to r9 - registers to be pushed
+ 
+regpushed EQU &lt;&gt;                        ;; Initialize to the null string
+ 
+SaveRegs MACRO r1, r2, r3, r4, r5, r6, r7, r8, r9
+    regpushed CATSTR &lt;#&gt;, regpushed     ;; Mark a new group of registers
+    IRP reg, &lt;r1, r2, r3, r4, r5, r6, r7, r8, r9&gt;
+        IFNB &lt;reg&gt;                      ;; Push and record the register
+            push reg
+            regpushed CATSTR &lt;reg&gt;, &lt;,&gt;, &lt;regpushed&gt;
+        ELSE
+            EXITM                       ;; Quit if blank argument
+        ENDIF
+    ENDM                                ;; Terminator for IRP
+ENDM                                    ;; Terminator for MACRO
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

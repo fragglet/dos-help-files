@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<title>Dereferencing Memory Handles</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='da.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     Cast:    Local Handle Type Cast (lh)
+              Global Handle Type Cast (gh)
+ 
+     Syntax:  (lh)lhandle
+              (gh)ghandle
+ 
+     Summary: Converts a local or global memory handle to a near or
+              far pointer.
+ 
+     Arguments:
+ 
+     &lt;lhandle&gt;   Local memory handle of memory object to convert.
+ 
+     &lt;ghandle&gt;   Global memory handle of memory object to convert.
+ 
+     Description:
+ 
+     In a Windows program, the LocalLock and GlobalLock functions are
+     used to convert memory handles into near or far pointers. You may
+     know the handle of the memory object but might not know what near
+     or far address it references unless you are debugging in an area
+     where the program has just called LocalLock or GlobalLock.
+ 
+     To get the near and far pointer addresses for local and global
+     handles, use the (lh) and (gh) type casts. These casts are
+     available only with the C expression evaluator.
+ 
+     For example, you can use (lh) to reference the array in the
+     following code:
+ 
+          HANDLE hLocalMem;
+          int near *pnArray;
+          hLocalMem = LocalAlloc( LMEM_MOVEABLE, 100 );
+          pnArray = LocalLock( hLocalMem );
+          /* load values into the array */
+          LocalUnlock( hLocalMem );
+ 
+     To display the array, use the following command:
+ 
+          dw (lh)hLocalMem
+ 
+     If you set a breakpoint immediately after the LocalLock function,
+     you can find out where the local object is allocated in the
+     application data segment by looking at the value of the pnArray
+     variable.
+ 
+     To display the value of pnArray, for example, use the following
+     command:
+ 
+          dw pnArray
+ 
+     Note that you cannot rely on the value of pnArray anywhere else in
+     the program because the pointer may change or the memory object
+     may move.
+ 
+     Displaying a String
+ 
+     If the memory object is a string, you can display it using double
+     type casting, as shown:
+ 
+          HANDLE hGlobalMem;
+          LPSTR  lpstr;
+ 
+          hGlobalMem = GlobalAlloc( GMEM_MOVEABLE,  10L )
+          lpstr = GlobalLock( hGlobalMem );
+          lstrcpy( lpstr, "ABCDEF" );
+          GlobalUnlock( hGlobalMem );
+ 
+     You can display the contents of the string with the following
+     command:
+ 
+          ? *(char far*) (gh)lpstr,s
+ 
+     The (gh) type cast returns a handle to the far address of the
+     global memory object.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

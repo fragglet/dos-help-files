@@ -1,0 +1,39 @@
+<html>
+
+<head>
+<title>GetDTA</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='___ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+;* GetDTA - Gets address of current Disk Transfer Area.
+;*
+;* Shows:   DOS Function - 2Fh (Get DTA Address)
+;*
+;* Params:  dta - Far pointer to receive transfer address
+;*
+;* Return:  None
+ 
+GetDTA  PROC \
+        dta:FAR PTR BYTE
+ 
+        mov     ah, 2Fh                 ; DOS Function 2Fh
+        int     21h                     ; Get DTA Address in ES:BX
+        mov     ax, es                  ; Save DTA segment
+        mov     dx, bx                  ; Save DTA offset
+        les     bx, dta                 ; Now ES:BX points to variable
+        mov     es:[bx], dx             ; Copy DTA address to
+        mov     es:[bx+2], ax           ;   dta variable
+        ret
+ 
+GetDTA  ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

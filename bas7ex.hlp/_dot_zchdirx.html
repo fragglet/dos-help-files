@@ -1,0 +1,50 @@
+<html>
+
+<head>
+<title>CHDIR and MKDIR Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the MKDIR statement to create a subdirectory. The
+'AddADir procedure uses the CHDIR statement with the ON ERROR statement
+'to chek if the subdirectory already exists. If it does not exist, the
+'error-handling routine traps error 76, prompts the user, and creates
+'the directory.
+ 
+DECLARE SUB AddADir (DestDir$)
+ 
+CLS
+AddADir "TESTDIR"
+ 
+SUB AddADir (DestDir$)
+ON LOCAL ERROR GOTO ErrHandler  'Set up the local error handler.
+    CurDirName$ = CURDIR$       'Preserve the name of the current directory.
+    CHDIR DestDir$              'Change to DestDir$ - Error 76 if not exist.
+    CHDIR CurDirName$           'Change back to original directory.
+    EXIT SUB
+ 
+ErrHandler:
+    IF ERR = 76 THEN
+        PRINT "Directory does not exist. Create ?";
+        Ans$ = INPUT$(1)
+        PRINT Ans$
+        IF UCASE$(Ans$) = "Y" THEN
+            MKDIR DestDir$      'Make the directory.
+            PRINT DestDir$; " directory created."
+            RESUME NEXT
+        ELSE
+            PRINT DestDir$; " directory NOT created."
+        END IF                  'Return control to caller.
+    END IF
+    RESUME NEXT                 'Just continue.
+END SUB
+ 
+
+</pre>
+</body>
+
+</html>

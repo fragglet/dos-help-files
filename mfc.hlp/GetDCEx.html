@@ -1,0 +1,108 @@
+<html>
+
+<head>
+<title>GetDCEx</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='CWnd.html'>CWnd</a><span class='grhilite'>►</span>                                        <span class='grhilite'>◄</span><a href='CWnd.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span></i>
+──Microsoft Foundation Classes──────────────────────────────────────────────
+ 
+  Windows 3.1 only
+ 
+  CDC* GetDCEx( CRgn* prgnClip, DWORD flags );
+ 
+  Parameter   Description
+ 
+  &lt;prgnClip&gt;  Identifies a clipping region that may be combined with the
+              visible region of the client window.
+ 
+  &lt;flags&gt;     Can have one of the following preset values:
+ 
+              Value                  Meaning
+ 
+              DCX_CACHE              Returns a device context from the
+                                     cache, rather than the OWNDC or
+                                     CLASSDC window. Essentially overrides
+                                     CS_OWNDC and CS_CLASSDC.
+ 
+              DCX_CLIPCHILDREN       Excludes the visible regions of all
+                                     child windows below the CWnd window.
+ 
+              DCX_CLIPSIBLINGS       Excludes the visible regions of all
+                                     sibling windows above the CWnd
+                                     window.
+ 
+              DCX_EXCLUDERGN         Excludes the clipping region
+                                     identified by &lt;prgnClip&gt; from the
+                                     visible region of the returned device
+                                     context.
+ 
+              DCX_INTERSECTRGN       Intersects the clipping region
+                                     identified by &lt;prgnClip&gt; within the
+                                     visible region of the returned device
+                                     context.
+ 
+              DCX_LOCKWINDOWUPDATE   Allows drawing even if there is a
+                                     LockWindowUpdate call in effect that
+                                     would otherwise exclude this window.
+                                     This value is used for drawing during
+                                     tracking.
+ 
+              DCX_PARENTCLIP         Uses the visible region of the parent
+                                     window, ignoring the parent window's
+                                     WS_CLIPCHILDREN and WS_PARENTDC style
+                                     bits. This value sets the device
+                                     context's origin to the upper-left
+                                     corner of the CWnd window.
+ 
+              DCX_WINDOW             Returns a device context
+                                     corresponding to the window rectangle
+                                     rather than the client rectangle.
+ 
+  Remarks
+ 
+  Retrieves the handle of a device context for the CWnd window. The device
+  context can be used in subsequent graphics device interface (GDI)
+  functions to draw in the client area.
+ 
+  This function, which is an extension to the <span class='grhilite'>◄</span><a href='../win31qh.hlp/GetDC.html'>GetDC</a><span class='grhilite'>►</span> function, gives an
+  application more control over how and whether a device context for a
+  window is clipped.
+ 
+  Unless the device context belongs to a window class, the <span class='grhilite'>◄</span><a href='../win31qh.hlp/ReleaseDC.html'>ReleaseDC</a><span class='grhilite'>►</span>
+  function must be called to release the context after drawing. Since only
+  five common device contexts are available at any given time, failure to
+  release a device context can prevent other applications from accessing a
+  device context.
+ 
+  In order to obtain a cached device context, an application must specify
+  <span class='grhilite'>◄</span><a href='../win31qh.hlp/DCX_CACHE.html'>DCX_CACHE</a><span class='grhilite'>►</span>. If <span class='grhilite'>◄</span><a href='../win31qh.hlp/DCX_CACHE.html'>DCX_CACHE</a><span class='grhilite'>►</span> is not specified and the window is neither
+  CS_OWNDC nor <span class='grhilite'>◄</span><a href='../win31qh.hlp/CS_CLASSDC.html'>CS_CLASSDC</a><span class='grhilite'>►</span>, this function returns NULL.
+ 
+  A device context with special characteristics is returned by the
+  <span class='grhilite'>◄</span><a href='../win31qh.hlp/GetDCEx.html'>GetDCEx</a><span class='grhilite'>►</span> function if the <span class='grhilite'>◄</span><a href='../win31qh.hlp/CS_CLASSDC.html'>CS_CLASSDC</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='../win31qh.hlp/CS_OWNDC.html'>CS_OWNDC</a><span class='grhilite'>►</span>, or <span class='grhilite'>◄</span><a href='../win31qh.hlp/CS_PARENTDC.html'>CS_PARENTDC</a><span class='grhilite'>►</span>
+  style was specified in the <span class='grhilite'>◄</span><a href='../win31qh.hlp/WNDCLASS.html'>WNDCLASS</a><span class='grhilite'>►</span> structure when the class was
+  registered. For more information about these characteristics, see the
+  description of the <span class='grhilite'>◄</span><a href='../win31qh.hlp/WNDCLASS.html'>WNDCLASS</a><span class='grhilite'>►</span> structure.
+ 
+  Return Value
+ 
+  The device context for the specified window, if the function is
+  successful. Otherwise, it is NULL.
+ 
+  See Also
+ 
+  <span class='grhilite'>◄</span><a href='BeginPaint.html'>CWnd::BeginPaint</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='GetDC.html'>CWnd::GetDC</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='GetWindowDC.html'>CWnd::GetWindowDC</a><span class='grhilite'>►</span>,
+  <span class='grhilite'>◄</span><a href='ReleaseDC.html'>CWnd::ReleaseDC</a><span class='grhilite'>►</span>, <span class='grhilite'>◄</span><a href='../win31qh.hlp/GetDCEx.html'>::GetDCEx</a><span class='grhilite'>►</span>
+ 
+ 
+                                     -♦-
+ 
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,42 @@
+<html>
+
+<head>
+<title>FMUL/FMULP/FIMUL</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span><a href='FMUL.html'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Timings<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#quadratic'>Example</a><span class='grhilite'>►</span>
+────────────────┬──────────────────────┬───────────────────────────────────
+ FMUL [reg,reg] │ fmul   st,st(2)      │  87   130-145 (90-105) *
+                │ fmul   st(5),st      │ 287   130-145 (90-105) *
+                │ fmul                 │ 387   t=46-54 (49),f=29-57 (52) **
+────────────────┼──────────────────────┼───────────────────────────────────
+ FMULP reg,ST   │ fmulp st(6),st       │  87   134-148 (94-108) *
+                │                      │ 287   134-148 (94-108) *
+                │                      │ 387   29-57 (52) **
+────────────────┼──────────────────────┼───────────────────────────────────
+ FMUL memreal   │ fmul DWORD PTR [bx]  │  87   (s=110-125,l=154-168)+EA ***
+                │ fmul shortreal[di+3] │ 287   s=110-125,l=154-168 ***
+                │ fmul longreal        │ 387   s=27-35,l=32-57
+────────────────┼──────────────────────┼───────────────────────────────────
+ FIMUL memint   │ fimul int16          │  87   (w=124-138,d=130-144)+EA
+                │ fimul warray[di]     │ 287   w=124-138,d=130-144
+                │ fimul double         │ 387   w=76-87,d=61-82
+────────────────┴──────────────────────┴───────────────────────────────────
+*   The clocks in parentheses show times for short values--those with 40
+    trailing zeros in their fraction because they were loaded from
+    a short-real memory operand.
+ 
+**  The clocks in parentheses show typical speeds.
+ 
+*** If the register operand is a short value--having 40 trailing zeros in
+    its fraction because it was loaded from a short-real memory operand--
+    then the timing is (112-126)+EA on the 8087 or 112-126 on the 80287.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

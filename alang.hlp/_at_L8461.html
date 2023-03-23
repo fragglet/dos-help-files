@@ -1,0 +1,46 @@
+<html>
+
+<head>
+<title>GetVer</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='_at_L8401.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* GetVer - Gets DOS version.
+;*
+;* Shows:   DOS Function - 30h (Get MS-DOS Version Number)
+;*
+;* Params:  None
+;*
+;* Return:  Short integer of form (M*100)+m, where M is major
+;*          version number and m is minor version, or 0 if
+;*          DOS version earlier than 2.0
+ 
+GetVer  PROC
+ 
+        mov     ah, 30h                 ; DOS Function 30h
+        int     21h                     ; Get MS-DOS Version Number
+        .IF     al == 0                 ; If version, version 1
+        sub     ax, ax                  ; Set AX to 0
+        .ELSE                           ; Version 2.0 or higher
+        sub     ch, ch                  ; Zero CH and move minor
+        mov     cl, ah                  ;   version number into CX
+        mov     bl, 100
+        mul     bl                      ; Multiply major by 10
+        add     ax, cx                  ; Add minor to major*10
+        .ENDIF
+        ret                             ; Return result in AX
+ 
+GetVer  ENDP
+ 
+        END
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

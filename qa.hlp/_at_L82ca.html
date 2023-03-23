@@ -1,0 +1,182 @@
+<html>
+
+<head>
+<title>Int 21H Function 44H Subfunction 0DH</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span><a href='21H_dot_44H_dot_0DH.html'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Notes<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+▀ The minor code 40H (Set Device Parameters) function must be used before
+  an attempt to write, read, format, or verify a track on a logical drive.
+  In general, the following sequence applies to any of these operations:
+ 
+  - Get the current parameters (minor code 60H). Examine and save them.
+    Set the new parameters (minor code 40H).
+  - Perform the task.
+  - Retrieve the original parameters and restore them with minor code 40H.
+ 
+▀ For minor codes 40H (Set Device Parameters) and 60H (Get Device Parame-
+  ters), the parameter block is formatted as follows:
+ 
+  Special-functions field: offset 00H, length = 1 byte
+ 
+  Bit(s)  Value  Meaning
+  ══════  ═════  ═══════════════════════════════════════════════
+  0       0      Device BPB field contains a new default
+                  BPB
+          1      Use current BPB
+  1       0      Use all fields in parameter block
+          1      Use track layout field only
+  2       0      Sectors in track may be different sizes
+                  (should always be avoided)
+          1      Sectors in track are all same size;
+                  sector numbers range from 1 to the
+                  total number of sectors in the track
+                  (should always be used)
+  3-7     0      Reserved
+ 
+  Device type field: offset 01H, length 1 byte
+ 
+  Value  Meaning
+  ═════  ════════════════════════════
+  0      320/360 KB, 5.25-inch disk
+  1      1.2 MB, 5.25-inch disk
+  2      720 KB, 3.5-inch disk
+  3      Single-density, 8-inch disk
+  4      Double-density, 8-inch disk
+  5      Fixed disk
+  6      Tape drive
+  7      Other type of block device
+ 
+  Device attributes field: offset 02H, length 1 word
+ 
+  Bit(s)  Value  Meaning
+  ══════  ═════  ═══════════════════════════
+  0       0      Removable storage medium
+          1      Nonremovable storage medium
+  1       0      Door lock not supported
+          1      Door lock supported
+  2-15    0      Reserved
+ 
+  Number of cylinders field: offset 04H, length 1 word
+ 
+  Maximum number of cylinders supported on the block device
+ 
+  Media type field: offset 06H, length 1 byte
+ 
+  Value  Meaning
+  ═════  ══════════════════════════
+  0      1.2 MB, 5.25-inch disk
+  1      320/360 KB, 5.25-inch disk
+ 
+  Device BPB field: offset 07H, length 31 bytes
+ 
+  For format of the device BPB, see separate Note below.
+ 
+  If bit 0 = 0 in special-functions field, this field contains the new de-
+   fault BPB for the device.
+ 
+  If bit 0 = 1 in special-functions field, the BPB in this field is re-
+   turned by the device driver in response to subsequent Build BPB requests.
+ 
+  Track layout field: offset 26H, variable-length table
+ 
+  Length  Meaning
+  ══════  ═══════════════════════════════
+  Word    Number of sectors in track
+  Word    Number of first sector in track
+  Word    Size of first sector in track
+  .
+  .
+  .
+  Word    Number of last sector in track
+  Word    Size of last sector in track
+ 
+  The device BPB field is a 31-byte data structure that describes the cur-
+  rent disk and its control areas. The field is formatted as follows:
+ 
+  Byte(s)   Meaning
+  ═══════   ════════════════════════════════════════
+  00H-01H   Bytes per sector
+  02H       Sectors per cluster (allocation unit)
+  03H-04H   Reserved sectors, beginning at sector 0
+  05H       Number of file allocation tables (FATs)
+  06H-07H   Maximum number of root-directory entries
+  08H-09H   Number of sectors
+  0AH       Media descriptor
+  0BH-0CH   Sectors per FAT
+  0DH-0EH   Sectors per track
+  0FH-10H   Number of heads
+  11H-14H   Number of hidden sectors
+  15H-18H   Large number of sectors
+            (if bytes 08H-09H = 0)
+  19H-1EH   Reserved
+ 
+▀ When minor code 40H (Set Device Parameters) is used, the number of cylin-
+  ders should not be altered, or some or all of the volume may become
+  inaccessible.
+ 
+▀ For minor codes 41H (Write Track) and 61H (Read Track), the parameter
+  block is formatted as follows:
+ 
+  Byte(s)  Meaning
+  ═══════  ═══════════════════════════════════
+  00H      Special-functions field (must be 0)
+  01H-02H  Head
+  03H-04H  Cylinder
+  05H-06H  Starting sector
+  07H-08H  Sectors to transfer
+  09H-0CH  Transfer buffer address
+ 
+▀ For minor codes 42H (Format and Verify Track) and 62H (Verify Track),
+  the parameter block is formatted as follows:
+ 
+  Byte(s)  Meaning
+  ═══════  ════════════════════════════════════════════
+  00H      Special-functions field  (must be 0)
+           Bit(s)  Significance
+           0       FormatVerify track
+           1       Format status call (MS-DOS 4.0 only)
+           1-7     Reserved (0)
+  01H-02H  Head
+  03H-04H  Cylinder
+ 
+▀ In MS-DOS 4.0, this function may be called with bit 0 of the special-
+  functions field set after a minor code 40H call (Set Device Parameters)
+  to determine whether the driver supports the specified number of tracks
+  and sectors per track. A status is returned in the special-functions
+  field which is interpreted as follows:
+ 
+  Value  Meaning
+  ═════  ════════════════════════════════════════════════
+  0      Specified number of tracks and sectors per track
+         supported
+  1      This function not supported by the ROM BIOS
+  2      Specified number of tracks and sectors per track
+         not supported
+  3      No disk in drive
+ 
+▀ For minor codes 47H (Set Access Flag) and 67H (Get Access Flag), the
+  parameter block is formatted as follows:
+ 
+  Byte  Meaning
+  ════  ═══════════════════════════════════
+  00H   Special-functions field (must be 0)
+  01H   Disk access flag
+ 
+▀ When the disk access flag is zero, access to the medium is blocked by the
+  driver. The flag is set to zero when the driver detects an unformatted
+  medium or a medium with an invalid boot record. When the access flag is
+  nonzero, read/write operations to the medium are allowed by the driver.
+  A formatting program must set the disk access flag with minor code 47H
+  before it requests minor code 42H (Format and Verify Track).
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

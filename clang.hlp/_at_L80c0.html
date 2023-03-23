@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>EXTERR.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* EXTERR.C illustrates function:
+ *      _dosexterr                                                (DOS-only)
+ */
+ 
+#include &lt;dos.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+ 
+void errorinfo( void );     /* Prototype */
+ 
+void main( int argc, char *argv[] )
+{
+    int hsource;
+ 
+    /* Open to get file handle and test for errors. Try specifying
+     * invalid files to show different errors.
+     */
+    if( _dos_open( argv[1], _O_RDWR, &amp;hsource ) )
+        errorinfo();
+    printf( "No error\n" );
+    _dos_close( hsource );
+    exit( 0 );
+}
+ 
+/* Displays an extended error message. */
+void errorinfo()
+{
+    struct _DOSERROR err;
+    static char *eclass[] =
+    {
+        "", "Out of Resource", "Temporary Situation", "Authorization",
+        "Internal", "Hardware Failure", "System Failure",
+        "Application Error", "Not Found", "Bad Format", "Locked",
+        "Media", "Already Exists", "Unknown"
+    };
+    static char *eaction[] =
+    {
+        "", "Retry", "Delay Retry", "User", "Abort", "Immediate Exit",
+        "Ignore", "Retry After User Intervention"
+    };
+    static char *elocus[] =
+    {
+        "", "Unknown", "Block Device", "Net", "Serial Device", "Memory"
+    };
+ 
+ 
+    /* Get error information and display class, action, and locus. */
+    _dosexterr( &amp;err );
+    printf( "Class:\t%s\nAction:\t%s\nLocus:\t%s\nAction\t",
+            eclass[err.errclass], eaction[err.action], elocus[err.locus] );
+ 
+    /* Errors that could be caused by sample _dos_open. You can expand
+     * this list to handle others.
+     */
+    switch( err.exterror )
+    {
+        case 2:
+            printf( "File not found\n" );
+            break;
+        case 3:
+            printf( "Path not found\n" );
+            break;
+        case 5:
+            printf( "Access denied\n" );
+            break;
+    }
+    exit( err.exterror );
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

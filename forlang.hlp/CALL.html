@@ -1,0 +1,98 @@
+<html>
+
+<head>
+<title>CALL</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='ctrlstmnt.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hv'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#h.hvx'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────CALL───────────────────────────────────────────────────────────────────
+ 
+     Action
+ 
+     Invokes a subroutine.
+ 
+     Syntax
+ 
+     CALL sub [([actuals])]
+ 
+     Parameter          Description
+ 
+     sub                The name of the subroutine to execute.
+ 
+     actuals            One or more actual arguments.
+ 
+                        If there is more than one argument, they are
+                        separated by commas.
+ 
+     Remarks
+ 
+     A subroutine can be called from any program unit.
+ 
+     A CALL statement must contain as many actual arguments as there
+     are formal arguments in the corresponding SUBROUTINE statement
+     (unless the C and VARYING attributes were used in declaring the
+     subroutine), and the corresponding arguments must have the same
+     type.
+ 
+     FORTRAN does not support recursive subroutine calls.
+ 
+     An alternate-return feature lets you specify the statement to
+     which a subroutine should return control.
+ 
+        1. Choose the statements in the calling routine to which you
+           wish to return control. Precede these labels with asterisks
+           when calling the subroutine:
+ 
+               CALL INVERT (row, column, *100, *200, *500)
+ 
+        2. In the corresponding SUBROUTINE, enter asterisks for the
+           formal arguments corresponding to the label arguments in the
+           CALL statement:
+ 
+               SUBROUTINE INVERT (r, c, *, *, *)
+ 
+        3. In the subroutine, have at least one RETURN statement for
+           each alternate return. As arguments for these RETURN
+           statements, specify a 1 for the RETURN statement to return
+           control to the first statement label; a 2 for the RETURN
+           statement for the second label, and so on.
+ 
+     Examples
+           .
+           .
+           .
+           IF (ierr .NE. 0)  CALL Error (ierr)
+           END
+     C
+           SUBROUTINE Error (ierrno)
+           WRITE (*, 200) ierrno
+       200 FORMAT (1X, 'error', I5, ' detected')
+           END
+ 
+     C     This example illustrates the alternate return feature:
+         1 CALL Boomerang (count, *10, j, *20, *30)
+           WRITE (*, *) 'normal return'
+           GOTO 40
+        10 WRITE (*, *) 'returned to 10'
+           GOTO 40
+        20 WRITE (*, *) 'returned to 20'
+           GOTO 40
+        30 WRITE (*, *) 'returned to 30'
+        40 CONTINUE
+           .
+           .
+           .
+           SUBROUTINE Boomerang (i, *, j, *, *)
+           IF (i .EQ. 10)  RETURN 1
+           IF (i .EQ. 20)  RETURN 2
+           IF (i .EQ. 30)  RETURN 3
+           RETURN
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

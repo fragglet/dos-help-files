@@ -1,0 +1,198 @@
+<html>
+
+<head>
+<title>SMARTDRV</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='SMARTDRV--Note.html'>Notes</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='SMARTDRV--Example.html'>Examples</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                                  SMARTDRV
+ 
+Starts or configures SMARTDrive, which creates a disk cache in extended
+memory. A disk cache can significantly speed up MS-DOS disk operations. When
+used for disk caching, SMARTDrive is loaded by using the SMARTDRV command in
+your AUTOEXEC.BAT file or at the command prompt.
+ 
+SMARTDrive can also perform double buffering, which provides compatibility
+for hard-disk controllers that cannot work with memory provided by EMM386 or
+Windows running in 386 enhanced mode. To use double buffering, load the
+<i>&lt;<a href='smartdrv_dot_exe.html'>SMART</i>DRV.EXE</a>&gt; device driver by using a DEVICE command in your CONFIG.SYS
+file.
+ 
+SMARTDrive will not load after Windows has started.
+ 
+<b>Syntax</b>
+ 
+When starting SMARTDrive from your AUTOEXEC.BAT file or from the command
+prompt, use the following syntax:
+ 
+    [drive:][path]SMARTDRV [/X] [[drive[+|-]]...] [/U] [/C|/R] [/F|/N] [/L]
+    [/V|/Q|/S] [InitCacheSize[WinCacheSize]] [/E:ElementSize]
+    [/B:BufferSize]
+ 
+Once SMARTDrive is running, use the following syntax:
+ 
+    SMARTDRV [/X] [[drive[+|-]]...] [/C|/R] [/F|/N] [/Q|/S]
+ 
+To view the current status after SMARTDrive has loaded, use the following
+syntax:
+ 
+    SMARTDRV
+ 
+<b>Parameters</b>
+ 
+[drive:][path]
+    Specifies the location of the SMARTDRV.EXE file.
+ 
+[[drive+|-]
+    Specifies the letter of the disk drive for which you want to control
+    caching. Include the plus (+) sign to enable caching for the specified
+    drive; include the minus (-) sign to disable caching for that drive. You
+    can specify multiple disk drives.
+ 
+    If you specify a drive letter without a plus or minus sign, read-caching
+    is enabled and write-caching is disabled. If you specify a drive letter
+    followed by a plus sign (+), read-caching and write-caching are enabled.
+    If you specify a drive letter followed by a minus sign (-), both
+    read-caching and write-caching are disabled. If you don't specify a
+    drive letter, floppy disk drives, CD-ROM drives, and drives created
+    using Interlnk are read-cached but not write-cached, hard disk drives
+    are both read-cached and write-cached, and network drives and Microsoft
+    Flash memory-card drives are ignored. (For information about how
+    DriveSpace caches compressed drives, see Notes.)
+ 
+InitCacheSize
+    Specifies the size in kilobytes of the cache when SMARTDrive starts
+    (when Windows is not running). The size of the disk cache affects how
+    efficiently SMARTDrive runs. In general, the larger the cache, the less
+    often SMARTDrive needs to read information from the disk, which speeds
+    up your system's performance. If you do not specify an InitCacheSize
+    value, SMARTDrive sets the value according to how much memory your
+    system has (see the table below).
+ 
+WinCacheSize
+    Specifies, in kilobytes, how much SMARTDrive will reduce the cache size
+    for Windows. When you start Windows, SMARTDrive reduces the size of the
+    cache to recover memory for Windows' use. When you quit Windows, the
+    cache returns to its normal size. WinCacheSize specifies the smallest
+    size to which SMARTDrive will reduce the cache. The default value
+    depends on how much available memory your system has (see the table
+    below). If you specify a value for InitCacheSize that is smaller than
+    the value specified for WinCacheSize, InitCacheSize is set to the same
+    size as WinCacheSize.
+ 
+The following table shows what the default values for InitCacheSize and
+WinCacheSize will be, depending on the amount of available extended memory
+your computer has.
+ 
+<b>Extended         InitCacheSize        WinCacheSize</b>
+<b>Memory</b>
+───────────────────────────────────────────────────────────────────────────
+ 
+Up to 1 MB       All extended         Zero (no caching)
+                 memory
+ 
+Up to 2 MB       1 MB                 256K
+ 
+Up to 4 MB       1 MB                 512K
+ 
+Up to 6 MB       2 MB                 1 MB
+ 
+6 MB or more     2 MB                 2 MB
+ 
+<b>Switches</b>
+ 
+/X
+    Disables write-behind caching for all drives. You can then enable
+    caching for individual drives by using the drive+|- parameter.
+ 
+/U
+    Does not load the CD-ROM caching module of SMARTDrive even if you have a
+    CD-ROM drive. If SMARTDrive is loaded with the /U switch, you cannot
+    enable CD-ROM drive caching. If SMARTDrive is loaded without the /U
+    switch, you can disable or enable caching individual CD-ROM drives using
+    the drive+|- parameter.
+ 
+/C
+    Writes all cached information from memory to cached disks. SMARTDrive
+    writes information from memory to the disk at times when other disk
+    activity has slowed. You might use this option if you are going to turn
+    off your computer and want to make sure all cached information has been
+    written to the disk. (SMARTDrive writes all cached information to the
+    disk if you restart your computer by pressing CTRL+ALT+DELETE, but not
+    if you simply turn off the power or press your computer's reset
+    button.)
+ 
+/R
+    Clears the contents of the existing cache, including writing all
+    write-cached information to disk, and restarts SMARTDrive.
+ 
+/F
+    Writes cached data after each command completes. This is the default
+    value.
+ 
+/N
+    Writes cached data when the system is idle. When the command prompt
+    returns, not all cached data may be written yet. To ensure that all the
+    cached data is written, use the /C switch.
+ 
+/L
+    Prevents SMARTDrive from automatically loading into upper memory blocks
+    (UMBs), even if there are UMBs available. You can use the /L switch if
+    upper memory is enabled for use by programs. If you are using
+    SMARTDrive's double-buffering feature and your system appears to be
+    running slowly, try adding the /L switch to the SMARTDrive command in
+    your AUTOEXEC.BAT file.
+ 
+/V
+    Instructs SMARTDrive to display status and error messages when it
+    starts. (By default, SMARTDrive does not display any messages unless it
+    encounters an error condition.) The /V switch cannot be used in
+    conjunction with the /Q switch.
+ 
+/Q
+    Instructs SMARTDrive not to display status messages when it starts. (By
+    default, SMARTDrive does not display status messages when loading, but
+    does for most other operations.) If SMARTDrive encounters an error while
+    starting, it displays an error message whether or not it was loaded with
+    the /Q switch. The /Q switch cannot be used in conjunction with the /V
+    switch.
+ 
+/S
+    Displays additional information about the status of SMARTDrive.
+ 
+/E:ElementSize
+    Specifies in bytes the amount of the cache that SMARTDrive moves at a
+    time. Valid values are 1024, 2048, 4096, and 8192. The default value is
+    8192. The larger the value, the more conventional memory SMARTDrive
+    uses.
+ 
+/B:BufferSize
+    Specifies in bytes the size of the read-ahead buffer. A read-ahead
+    buffer is additional information that SMARTDrive reads when an
+    application reads information from the hard disk. For example, if an
+    application reads 512K of information from a file, SMARTDrive then reads
+    the amount of information specified by BufferSize and saves it in
+    memory. The next time the application needs to read information from
+    that file, it can read it from memory instead. The default size of the
+    read-ahead buffer is 16K (16384 bytes). Its value can be any multiple of
+    ElementSize. The larger the value of BufferSize, the more conventional
+    memory SMARTDrive uses.
+ 
+<b>Caution:</b>  Check that SMARTDrive has completed all write-caching before you
+          restart  or turn off your computer. (This is not necessary if you
+          restart your computer by pressing CTRL+ALT+DELETE.) To have
+          SMARTDrive write all cached information to cached disks, type
+          SMARTDRV /C at the command prompt. After all disk activity has
+          stopped, you can safely restart or turn off your computer.
+ 
+                                      ♦
+
+</pre>
+</body>
+
+</html>

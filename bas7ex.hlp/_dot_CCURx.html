@@ -1,0 +1,55 @@
+<html>
+
+<head>
+<title>CCUR Function Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                       <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+'This example uses the CCUR function to convert a double-precision,
+'floating-point value to currency data type. The program performs an
+'interest calculation in double precision, but displays the result as
+'a currency value. The SetFormatCC routine is used with the FormatC$
+'function to display the currency amount in the formats of the United
+'States and West Germany.
+ 
+'Note: To run this example you must use a Quick library that includes the
+'procedures contained in the date/time/format library files. The following
+'include file must also be present.
+ 
+'$INCLUDE: 'FORMAT.BI'
+ 
+DECLARE FUNCTION GetSalesTax@ (Amount#, percent!)
+CONST percent! = 8.1
+CLS
+INPUT "What is the taxable currency amount "; Amount#
+PRINT
+USCurFmt$ = FormatC$(GetSalesTax@(Amount#, percent!), "$#,###,###,##0.00")
+SetFormatCC (49)   'West Germany.
+WGCurFmt$ = FormatC$(GetSalesTax@(Amount#, percent!), "#.###.###.##0,00")
+WGCurFmt$ = WGCurFmt$ + " DM"
+ 
+PRINT "In the United States, currency is displayed with commas as"
+PRINT "numerical separators and a period serves to separate whole from"
+PRINT "fractional currency amounts. In some European countries, the "
+PRINT "numerical separator is a period, and the comma serves to"
+PRINT "separate whole from fractional currency amounts."
+PRINT
+PRINT "In the US, the tax on $"; Amount#; "at"; percent!; "percent is "
+PRINT "displayed as "; USCurFmt$
+PRINT
+PRINT "In West Germany, the tax on"; Amount#; "DM at"; percent!; "percent is"
+PRINT "displayed as "; WGCurFmt$
+END
+ 
+FUNCTION GetSalesTax@ (Amount#, percent!)
+    GetSalesTax@ = CCUR(Amount# * (percent! * .01))
+END FUNCTION
+
+</pre>
+</body>
+
+</html>

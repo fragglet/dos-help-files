@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<title>Interrupt 24H</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+   <span class='grhilite'>◄</span><a href='24H.html'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Notes<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='NewCritErr.html'>Example</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ 
+▀ On entry to the critical-error interrupt handler, bit 7 of register AH
+  is clear (0) if the error was a disk I/O error; otherwise, it is set (1).
+  BP:SI contains the address of a device-driver header from which addi-
+  tional information can be obtained. Interrupts are disabled. The regis-
+  ters will be set up for a retry operation, and an error code will be in
+  the lower half of the DI register, with the upper half undefined.
+ 
+  The lower byte of DI contains:
+ 
+  00H  write-protect error
+  01H  unknown unit
+  02H  drive not ready
+  03H  unknown command
+  04H  data error (CRC)
+  05H  bad request structure length
+  06H  seek error
+  07H  unknown media type
+  08H  sector not found
+  09H  printer out of paper
+  0AH  write fault
+  0BH  read fault
+  0CH  general failure
+  0DH  reserved
+  0EH  reserved
+  0FH  invalid disk change (MS-DOS 3.0 and later)
+ 
+  Note that these are the same error codes returned by the device driver
+  in the request header. Also, upon entry, the stack is set up as follows:
+ 
+  ┌─────────┐
+  │  Flags  │ ┐
+  ├─────────┤ │
+  │   CS    │ ├──Flags and CS:Ip pushed on stack
+  ├─────────┤ │  by original Int 21H call
+  │   IP    │ ┘
+  ├─────────┤
+  │   ES    │ ┐
+  ├─────────┤ │
+  │   DS    │ │
+  ├─────────┤ │
+  │   BP    │ │
+  ├─────────┤ │
+  │   DI    │ │
+  ├─────────┤ │
+  │   SI    │ ├──Registers at point of
+  ├─────────┤ │  original Int 21H call
+  │   DX    │ │
+  ├─────────┤ │
+  │   CX    │ │
+  ├─────────┤ │
+  │   BX    │ │
+  ├─────────┤ │
+  │   AX    │ ┘
+  ├─────────┤
+  │  Flags  │ ┐
+  ├─────────┤ │
+  │   CS    │ ├──Return address for Int 24H handler
+  ├─────────┤ │
+  │   IP    │ ┘
+  └─────────┘  ←SS:SP on entry to Int 24H handler
+ 
+▀ When a disk I/O error occurs, MS-DOS automatically retries the operation
+  before issuing a critical- error Int 24H. The number of retries varies
+  in different versions of MS-DOS but is typically in the range three to
+  five.
+ 
+▀ Int 24H handlers must preserve the SS, SP, DS, ES, BX, CX, and DX regis-
+  ters. Only Int 21H Functions 01-0CH and 59H can be used by an Int 24H
+  handler; other function calls will destroy the MS-DOS stack and its abil-
+  ity to retry or ignore an error.
+ 
+▀ When the Int 24H handler issues an IRET, it should return an action code
+  in AL that will be interpreted by DOS as follows:
+ 
+  0  ignore the error
+  1  retry the operation
+  2  terminate the program
+  3  [3.0+] fail the function call in progress
+ 
+▀ If the Int 24H handler returns control directly to the application pro-
+  gram rather than to MS-DOS, it must restore the program's registers, re-
+  moving all but the last three words from the stack, and issue an IRET.
+  Control returns to the instruction immediately following the function
+  call that caused the error. This option leaves MS-DOS in an unstable
+  state until a call to an Int 21H function higher than Function 0CH is
+  made.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

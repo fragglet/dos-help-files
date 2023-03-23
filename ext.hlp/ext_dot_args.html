@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>Extension Argument Structure</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='argData.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────PWB Extensions─────────────────────────────────────────────────────────
+ 
+     PWB passes the address of an ARG structure to extension functions.
+     This pointer is usually named 'pArg'. The following table shows the
+     pArg-&gt;argType values and corresponding pArg-&gt;arg member of the ARG
+     structure:
+ 
+     argType      Member/Member Type         Description
+ 
+     NOARG        pArg-&gt;arg.noarg            No argument or Arg count
+                  struct noargType {
+                      LINE y;                Cursor line
+                      COL  x;                Cursor column
+                  };
+     TEXTARG      pArg-&gt;arg.textarg          Text argument
+                  struct textargType {
+                      int  cArg;             Arg count
+                      LINE y;                Cursor line
+                      COL  x;                Cursor column
+                      char far *pText;       Text of argument
+                  };
+     NULLARG      pArg-&gt;arg.nullarg          Arg count only
+                  struct nullargType {
+                      int  cArg;             Arg count
+                      LINE y;                Cursor line
+                      COL  x;                Cursor column
+                  };
+     LINEARG      pArg-&gt;arg.linearg          Lines selected
+                  struct lineargType {
+                      int  cArg;             Arg count
+                      LINE yStart;           First line
+                      LINE yEnd;             Last line
+                  };
+     STREAMARG    pArg-&gt;arg.streamarg        Stream selected
+                  struct streamargType {
+                      int  cArg;             Arg count
+                      LINE yStart;           Top line
+                      COL  xStart;           Left column
+                      LINE yEnd;             Bottom line
+                      COL  xEnd;             Right column
+                  };
+     BOXARG       pArg-&gt;arg.boxarg           Box selected
+                  struct boxargType {
+                      int  cArg;             Arg count
+                      LINE yTop;             Top line
+                      LINE yBottom;          Bottom line
+                      COL  xLeft;            Left column
+                      COL  xRight;           Right column
+                  };
+ 
+     NOTE: When the current selection mode is box mode and a selection
+           is made that has the starting and ending points in the same
+           column, PWB highlights a range of lines. This argument is
+           passed to extension functions as a BOXARG. However, extension
+           functions should treat it as if it were a LINEARG.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,69 @@
+<html>
+
+<head>
+<title>UNGET.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+/* UNGET.C illustrates getting and ungetting characters from the console.
+ * Functions illustrated include:
+ *      getch           ungetch         putch
+ */
+ 
+#include &lt;conio.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;ctype.h&gt;
+ 
+void skiptodigit( void );
+int getnum( void );
+ 
+void main()
+{
+    int c, array[5];
+ 
+    /* Get five numbers from console. Then display them. */
+    printf( "Enter five numbers:\n" );
+    for( c = 0; c &lt; 5; c++ )
+    {
+        skiptodigit();
+        array[c] = getnum();
+        printf( "\t" );
+    }
+    for( c  = 0; c &lt; 5; c++ )
+        printf( "\n\r%d", array[c] );
+    printf( "\n" );
+}
+ 
+/* Converts digit characters into a number until a nondigit is received */
+int getnum()
+{
+    int ch, num =  0;
+ 
+    while( isdigit( ch = getch() ) )
+    {
+        putch( ch );                        /* Display digit     */
+        num = (num * 10) + ch  - '0';       /* Convert to number */
+    }
+    ungetch( ch );                          /* Put nondigit back */
+    return num;                             /* Return result     */
+}
+ 
+/* Throws away nondigit characters */
+void skiptodigit()
+{
+    int ch;
+ 
+    while( !isdigit( ch = getch() ) )
+        ;
+    ungetch( ch );
+}
+
+</pre>
+</body>
+
+</html>

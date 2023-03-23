@@ -1,0 +1,239 @@
+<html>
+
+<head>
+<title>ALARM.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* ALARM.C illustrates in-line assembly and functions or keywords
+ * related to terminate-and-stay-resident programs. Functions include:
+ *      _dos_setvect    _dos_getvect    _dos_keep                 (DOS-only)
+ *      _enable         _disable        _chain_intr
+ *
+ * Keywords:
+ *      __interrupt
+ * Directive:
+ *      #pragma
+ * Pragma:
+ *      check_stack     check_pointer   intrinsic
+ * Global variables:
+ *      _psp
+ *
+ * WARNING: You should run ALARM from the DOS command line. Running from
+ * inside the PWB environment will cause subsequent memory problems.
+ *
+ * See <a href='_at_L80dc.html'>MOVEMEM.C</a> for another pragma example.
+ */
+ 
+#include &lt;dos.h&gt;
+#include &lt;malloc.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
+ 
+/* Stack and pointer checking off */
+#pragma check_stack( off )
+#pragma check_pointer( off )
+#pragma intrinsic( _enable, _disable )
+ 
+/* In-line assembler macro to sound a bell. Note that comments in macros must
+ * be in the C format, not the assembler format.
+ */
+#define BEEP() __asm { \
+            __asm   sub  bx, bx    /* Page 0      */ \
+            __asm   mov  ax, 0E07h /* TTY bell    */ \
+            __asm   int  10h       /* BIOS 10     */ \
+                     }
+ 
+#define TICKPERMIN  1092L
+#define MINPERHOUR  60L
+enum BOOLEAN { FALSE, TRUE };
+ 
+/* Prototypes for interrupt functions */
+void (__interrupt __far *oldtimer)();
+void (__interrupt __far *oldvideo)();
+void __interrupt __far newtimer();
+void __interrupt __far newvideo();
+ 
+/* Variables that will be accessed inside TSR must be global. */
+int  ftimesup = FALSE, finvideo = FALSE;
+long goaltick;
+long __far *pcurtick = (long __far *)0x0000046cL;
+ 
+/* Huge pointers force compiler to do segment arithmetic for us. */
+char __huge *tsrstack;
+char __huge *appstack;
+char __huge *tsrbottom;
+ 
+void main( int argc, char **argv )
+{
+    long minute, hour;
+    unsigned tsrsize;
+ 
+    /* Initialize stack and bottom of program. */
+    __asm mov  WORD PTR tsrstack[0], sp
+    __asm mov  WORD PTR tsrstack[2], ss
+    _FP_SEG( tsrbottom ) = _psp;
+    _FP_OFF( tsrbottom ) = 0;
+ 
+    /* Program size is:
+     *     top of stack
+     *   - bottom of program (converted to paragraphs)
+     *   + one extra paragraph
+     */
+    tsrsize = ((tsrstack - tsrbottom) &gt;&gt; 4) + 1;
+ 
+    /* If command line not given, show syntax and quit. */
+    if( argc &lt; 2 )
+    {
+        puts( "  Syntax: ALARM &lt;hhmm&gt; " );
+        puts( "     where &lt;hhmm&gt; is time (military format) to ring alarm" );
+        exit( 1 );
+    }
+ 
+    /* Convert time to ticks past midnight. Time must include 0 in first
+     * position (0930, not 930). Time must be later than current time.
+     */
+    minute = atol( argv[1] + 2 );
+    argv[1][2] = 0;
+    hour = atol( argv[1] );
+    goaltick = (hour * MINPERHOUR * TICKPERMIN) + (minute * TICKPERMIN);
+    if( *pcurtick &gt; goaltick )
+    {
+        puts( "It's past that time now" );
+        exit( 1 );
+    }
+ 
+    /* Replace existing timer and video routines with ours. */
+    oldtimer = _dos_getvect( (unsigned)0x1c );
+    _dos_setvect( 0x1c, newtimer );
+    oldvideo = _dos_getvect( 0x10 );
+    _dos_setvect( 0x10, newvideo );
+ 
+    /* Free the PSP segment and terminate with program resident. */
+    _dos_freemem( _psp );
+    _dos_keep( 0, tsrsize );
+}
+ 
+/* Our timer interrupt compares current time to goal. If earlier,
+ * it just continues. If later, it beeps and sets a flag to quit checking.
+ */
+void __interrupt __far newtimer()
+{
+    if( ftimesup )
+        _chain_intr( oldtimer );
+    else
+    {
+        /* First, execute the original timer interrupt. */
+        (*oldtimer)();
+ 
+        /* Activate if two conditions are met: First, it's past time for
+         * the alarm. Second, we are not in a video interrupt. Checking
+         * the video interrupt prevents the rare but potentially
+         * dangerous case of calling INT 10 to beep while INT 10 is
+         * already running.
+         */
+        if( (*pcurtick &gt; goaltick) &amp;&amp; !finvideo )
+        {
+            /* Set flag so we'll never return. */
+            ftimesup = TRUE;
+ 
+            /* Save current stack of application, and set old stack of TSR.
+             * This is for safety since we don't know the state of the
+             * application stack, but we do know the state of our own stack.
+             * Turn off interrupts during the stack switch.
+             */
+            _disable();
+            __asm
+            {
+                mov  WORD PTR appstack[0], sp   ; Save current stack
+                mov  WORD PTR appstack[2], ss
+                mov  sp, WORD PTR tsrstack[0]   ; Load new stack
+                mov  ss, WORD PTR tsrstack[2]
+            }
+            _enable();
+ 
+            // BEEP();
+            // BEEP();
+            // BEEP();
+ 
+            /* Restore application stack. */
+            _disable();
+            __asm
+            {
+                mov  sp, WORD PTR appstack[0]
+                mov  ss, WORD PTR appstack[2]
+            }
+            _enable();
+        }
+    }
+}
+ 
+/* Protects against reentering INT 10 while it is already executing.
+ * Although rare, this could be disastrous if the interrupt routine was
+ * interrupted while it was accessing a hardware register.
+ */
+void __interrupt __far newvideo( unsigned _es, unsigned _ds, unsigned _di,
+                                 unsigned _si, unsigned _bp, unsigned _sp,
+                                 unsigned _bx, unsigned _dx, unsigned _cx,
+                                 unsigned _ax, unsigned _ip, unsigned _cs,
+                                 unsigned _flags )
+{
+    static unsigned save_bp;
+ 
+    /* If not already inside interrupt, chain to original. */
+    if( !finvideo )
+        _chain_intr( oldvideo );
+    else
+    {
+ 
+        /* Set the inside flag, then make sure all the real registers
+         * that might be passed to an interrupt 10h match the parameter
+         * registers. Some of the real registers may be modified by the
+         * preceding code. Note that BP must be saved in a static (nonstack)
+         * variable so that it can be retrieved without modifying the stack.
+         */
+        ++finvideo;
+        __asm
+        {
+            mov ax, _ax
+            mov bx, _bx
+            mov cx, _cx
+            mov dx, _dx
+            mov es, _es
+            mov di, _di
+            mov save_bp, bp
+            mov bp, _bp
+        }
+ 
+        /* Call the original interrupt. */
+        (*oldvideo)();
+ 
+        /* Make sure that any values returned in real registers by the
+         * interrupt are updated in the parameter registers. Reset the flag.
+         */
+        __asm
+        {
+            mov bp, save_bp
+            mov _bp, bp
+            mov _di, di
+            mov _es, es
+            mov _dx, dx
+            mov _cx, cx
+            mov _bx, bx
+            mov _ax, ax
+        }
+        --finvideo;
+    }
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

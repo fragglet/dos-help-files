@@ -1,0 +1,100 @@
+<html>
+
+<head>
+<title>DEVICEHIGH</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+<i><span class='grhilite'>◄</span><a href='Devicehigh--Notes.html'>Notes</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='Devicehigh--Examples.html'>Examples</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                                 DEVICEHIGH
+ 
+Loads device driver you specify into the upper memory area. Loading a device
+driver into the upper memory area frees more bytes of conventional memory
+for other programs. If upper memory is not available, the DEVICEHIGH command
+functions just like the DEVICE command.
+ 
+You can use this command only in your CONFIG.SYS file.
+ 
+<b>Syntax</b>
+ 
+    DEVICEHIGH [drive:][path]filename [dd-parameters]
+ 
+To specify the region(s) of memory into which to load the device driver, use
+the following syntax:
+ 
+    DEVICEHIGH [[/L:region1[,minsize1][;region2[,minsize2] [/S]]=
+    [drive:][path]filename [dd-parameters]
+ 
+<b>Parameters</b>
+ 
+[drive:][path]filename
+    Specifies the location and name of the device driver you want to load
+    into the upper memory area.
+ 
+dd-parameters
+    Specifies any command-line information required by the device driver.
+ 
+<b>Switches</b>
+ 
+/L:region1[,minsize1][;region2[,minsize2]...
+    Specifies one or more regions of memory into which to load the device
+    driver. By default, MS-DOS loads the driver into the largest free
+    upper-memory block (UMB) and makes all other UMBs available for the
+    driver's use. You can use the /L switch to load the device driver into a
+    specific region of memory or to specify which region(s) the driver can
+    use.
+ 
+    To load the driver into the largest block in a specific region of upper
+    memory, specify the region number after the /L switch. For example, to
+    load the driver into the largest free block in region 4, you would type
+    /L:4. (To list the free areas of memory, type MEM /F at the command
+    prompt.)
+ 
+    When loaded with the /L switch, a device driver can use only the
+    specified memory region. Some device drivers use more than one area of
+    memory; for those drivers, you can specify more than one region. (To
+    find out how a particular device driver uses memory, issue the MEM /M
+    command and specify the device-driver name as an argument.) To specify
+    two or more regions, separate the block numbers with a semicolon (;).
+    For example, to use blocks 2 and 3, you would type /L:2;3.
+ 
+    Normally, MS-DOS loads a driver into a UMB in the specified region only
+    if that region contains a UMB larger than the driver's load size
+    (usually equal to the size of the executable program file). If the
+    driver requires more memory while running than it does when loaded, you
+    can use the minsize parameter to ensure that the driver will not be
+    loaded into a UMB that is too small for it. If you specify a value for
+    minsize, MS-DOS loads the driver into that region only if it contains a
+    UMB that is larger than both the driver's load size and the minsize
+    value.
+ 
+/S
+    Shrinks the UMB to its minimum size while the driver is loading. Using
+    this switch makes the most efficient use of memory. This switch is
+    normally used only by the MemMaker program, which can analyze a device
+    driver's memory use to determine whether the /S switch can safely be
+    used when loading that driver. This switch can be used only in
+    conjunction with the /L switch and affects only UMBs for which a minimum
+    size was specified.
+ 
+<b>Related Commands</b>
+ 
+For information about loading programs into the upper memory area, see the
+<i>&lt;<a href='loadhigh.html'>LOADH</i>IGH</a>&gt; command.
+ 
+For information about loading device drivers into conventional memory, see
+the &lt;<a href='Device.html'>DEVICE</a>&gt; command.
+ 
+For information about using the MemMaker program to move programs to the
+upper memory area, see the &lt;<a href='MEMMAKER.html'>MEMMAKER</a>&gt; command.
+ 
+                                      ♦
+
+</pre>
+</body>
+
+</html>

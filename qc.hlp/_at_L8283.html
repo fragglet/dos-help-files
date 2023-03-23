@@ -1,0 +1,41 @@
+<html>
+
+<head>
+<title>COM.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+/* COM.C illustrates serial port access using function:
+ *      _bios_serialcom
+ */
+ 
+#include &lt;bios.h&gt;
+#include &lt;stdio.h&gt;
+ 
+void main()
+{
+    unsigned status, port;
+ 
+    for( port = 0; port &lt; 3; port++ )
+    {
+        status = _bios_serialcom( _COM_STATUS, port, 0 );
+ 
+        /* Report status of each serial port and test whether there is a
+         * responding device (such as a modem) for each. If data-set-ready
+         * and clear-to-send bits are set, a device is responding.
+         */
+        printf( "COM%c status: %.4X\tActive: %s\n",
+                (char)port + '1', status,
+                (status &amp; 0x0030) ? "YES" : "NO" );
+    }
+}
+
+</pre>
+</body>
+
+</html>
