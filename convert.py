@@ -94,6 +94,7 @@ class Topic(object):
 		self.category = None
 		self.topic = u""
 		self.text = u""
+		self.is_toc = False
 
 	def prettiest_context(self):
 		best = ""
@@ -111,6 +112,8 @@ class Topic(object):
 		return self.prettiest_context()
 
 	def filename(self):
+		if self.is_toc:
+			return "index.html"
 		return filename_for_context(self.prettiest_context())
 
 	def to_html(self):
@@ -200,6 +203,15 @@ class Database(object):
 		for t in topics:
 			for c in t.contexts:
 				self.topics_by_context[c] = t
+
+		# Find the ToC
+		for context, topic in self.topics_by_context.items():
+			if "contents" in context:
+				topic.is_toc = True
+				break
+		else:
+			print("Didn't find the table of contents ...")
+
 
 if len(sys.argv) != 3:
 	print("Usage: %s <filename> <output dir>" % sys.argv[0])
