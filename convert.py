@@ -12,7 +12,9 @@ FORMAT_SWITCH_RE = re.compile(r"\\([\\ibup])", re.DOTALL)
 HYPERLINK_RE = re.compile(r"\\a(.*?)\\v(.*?)\\v")
 ALWAYS_GREEN_RE = re.compile(u"([\u25ba\u25c4])")
 
-DONTCARE_COMMANDS = { "freeze", "list", "paste", "popup", "ref", "mark", "length", "end" }
+DONTCARE_COMMANDS = { "freeze", "list", "paste", "popup", "ref", "mark",
+                      "length", "end", "raw", "title", "command", "file",
+                      "execute" }
 
 # For filenames:
 CHAR_ESCAPES = {
