@@ -34,6 +34,7 @@ HTML_TEMPLATE="""<html>
 
 <head>
 <title>%(title)s</title>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
