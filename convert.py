@@ -81,6 +81,10 @@ def read_as_utf8(filename):
 		result.append(u"%c" % cp437[ord(c)])
 	return u"".join(result)
 
+def filename_for_context(context):
+	escaped = (u"".join(CHAR_ESCAPES.get(c, c) for c in context))
+	return escaped + ".html"
+
 class Topic(object):
 	def __init__(self, db):
 		self.db = db
@@ -105,9 +109,7 @@ class Topic(object):
 		return self.prettiest_context()
 
 	def filename(self):
-		escaped = (u"".join(CHAR_ESCAPES.get(c, c)
-		           for c in self.prettiest_context()))
-		return escaped + ".html"
+		return filename_for_context(self.prettiest_context())
 
 	def to_html(self):
 		# TODO: HTML escape < to &lt; etc.
@@ -138,7 +140,11 @@ class Topic(object):
 				else:
 					dest = "unknown#" + dest
 			else:
-				dest = "TODO#" + dest
+				filename, context = dest.split("!", 1)
+				dest = "../%s/%s" % (
+					filename.lower(),
+					filename_for_context(context),
+				)
 			return "<a href='%s'>%s</a>" % (dest, text)
 		def make_green(m):
 			return "<span class='grhilite'>%s</span>" % m.group(1)
