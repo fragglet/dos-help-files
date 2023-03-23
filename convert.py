@@ -135,7 +135,7 @@ class Topic(object):
 		def create_link(m):
 			text, dest = m.group(1), unescape(m.group(2))
 			dest = unescape(dest)
-			if dest == "!B":
+			if dest in ("!B", "!cq.hb"):
 				dest = "javascript:history.back();"
 			elif "!" not in dest:
 				target_topic = (
