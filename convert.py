@@ -117,6 +117,17 @@ def filename_for_context(context):
 	escaped = (u"".join(CHAR_ESCAPES.get(c, c) for c in context))
 	return escaped + ".html"
 
+def prettiest_string(strs):
+	"""Returns string with fewest digits - most likely to be human-made."""
+	best = ""
+	best_cnt = 9999
+	for s in strs:
+		digits = len(list(x for x in s if u"0" <= x <= u"9"))
+		if digits < best_cnt:
+			best = s
+			best_cnt = digits
+	return best
+
 class Topic(object):
 	def __init__(self, db):
 		self.db = db
@@ -127,14 +138,12 @@ class Topic(object):
 		self.is_toc = False
 
 	def prettiest_context(self):
-		best = ""
-		best_cnt = 9999
-		for c in self.contexts:
-			digits = len(list(x for x in c if u"0" <= x <= u"9"))
-			if digits < best_cnt:
-				best = c
-				best_cnt = digits
-		return best
+		# Try non-local contexts first.
+		nonlocal_contexts = [c for c in self.contexts
+		                     if not c.startswith("@")]
+		if nonlocal_contexts:
+			return prettiest_string(nonlocal_contexts)
+		return prettiest_string(self.contexts)
 
 	def name(self):
 		if len(self.topic) > 0:
