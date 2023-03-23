@@ -6,7 +6,7 @@ import os
 import sys
 import re
 
-DOTCMD_RE = re.compile(r"^\.([a-zA-Z]+)(\s+(.*))?")
+DOTCMD_RE = re.compile(r"^\.([a-z]+)(\s+(.*))?")
 
 FORMAT_SWITCH_RE = re.compile(r"\\([\\ibup])", re.DOTALL)
 HYPERLINK_RE = re.compile(r"\\a(.*?)\\v(.*?)\\v")
