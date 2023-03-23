@@ -37,7 +37,7 @@ HTML_TEMPLATE="""<html>
 
 <head>
 <title>%(title)s</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../style.css">
 </head>
 
 <body>
@@ -45,6 +45,16 @@ HTML_TEMPLATE="""<html>
 %(body)s
 </pre>
 </body>
+
+</html>
+"""
+
+REDIRECT_TEMPLATE="""<html>
+
+<head>
+<title> Page redirect </title>
+<meta http-equiv="Refresh" content="0; url=%s" />
+</head>
 
 </html>
 """
@@ -115,6 +125,12 @@ class Topic(object):
 		if self.is_toc:
 			return "index.html"
 		return filename_for_context(self.prettiest_context())
+
+	def alias_filenames(self):
+		main = self.prettiest_context()
+		for c in self.contexts:
+			if self.is_toc or c != main:
+				yield filename_for_context(c)
 
 	def to_html(self):
 		# TODO: HTML escape < to &lt; etc.
@@ -213,6 +229,19 @@ class Database(object):
 			print("Didn't find the table of contents ...")
 
 
+def write_html_file(filename, topic):
+	with open(filename, "wb") as out:
+		html = HTML_TEMPLATE % {
+			'body': topic.to_html(),
+			'title': topic.name(),
+		}
+		out.write(html.encode("utf-8"))
+
+def write_redirect_file(filename, topic):
+	with open(filename, "wb") as out:
+		html = REDIRECT_TEMPLATE % (topic.filename(),)
+		out.write(html.encode("utf-8"))
+
 if len(sys.argv) != 3:
 	print("Usage: %s <filename> <output dir>" % sys.argv[0])
 
@@ -222,11 +251,7 @@ db = Database()
 db.parse_text(f)
 for t in db.topics:
 	filename = t.filename()
-	outfile = os.path.join(outdir, filename)
-	with open(outfile, "wb") as out:
-		html = HTML_TEMPLATE % {
-			'body': t.to_html(),
-			'title': t.name(),
-		}
-		out.write(html.encode("utf-8"))
+	write_html_file(os.path.join(outdir, filename), t)
+	for filename in t.alias_filenames():
+		write_redirect_file(os.path.join(outdir, filename), t)
 
