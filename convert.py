@@ -94,6 +94,8 @@ def read_as_utf8(filename):
 	return u"".join(result)
 
 def filename_for_context(context):
+	if context.lower() == "index":
+		return "___ACTUALLY_NAMED_%s.html" % context
 	escaped = (u"".join(CHAR_ESCAPES.get(c, c) for c in context))
 	return escaped + ".html"
 
