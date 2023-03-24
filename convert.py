@@ -266,7 +266,7 @@ def write_html_file(filename, topic):
 	with open(filename, "wb") as out:
 		html = HTML_TEMPLATE % {
 			'body': topic.to_html(),
-			'title': topic.name(),
+			'title': escape(topic.name()),
 		}
 		out.write(html.encode("utf-8"))
 
@@ -281,7 +281,7 @@ def write_topic_list(filename, db):
 		for topic in db.topics:
 			topic_list.append((topic.name(), topic.filename()))
 		html_topic_list = "\n".join(
-			"<li> <a href='%s'>%s</a>" % (f, t)
+			"<li> <a href='%s'>%s</a>" % (f, escape(t))
 			for t, f in sorted(topic_list)
 		)
 		html = TOPIC_LIST_TEMPLATE % (html_topic_list,)
