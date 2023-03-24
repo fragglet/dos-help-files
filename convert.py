@@ -42,9 +42,8 @@ HTML_TEMPLATE="""<html>
 </head>
 
 <body>
-<pre>
-%(body)s
-</pre>
+<div class="page-title"> %(title)s</div>
+<pre>%(body)s</pre>
 </body>
 
 </html>
