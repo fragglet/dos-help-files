@@ -113,8 +113,11 @@ def read_as_utf8(filename):
 
 def filename_for_context(context):
 	if context.lower() == "index":
-		return "___ACTUALLY_NAMED_%s.html" % context
+		return "ACTUALLY_NAMED_%s.html" % context
 	escaped = (u"".join(CHAR_ESCAPES.get(c, c) for c in context))
+	# Files starting with underscore are hidden by Github Pages
+	if escaped.startswith("_"):
+		escaped = "x" + escaped
 	return escaped + ".html"
 
 def prettiest_string(strs):
