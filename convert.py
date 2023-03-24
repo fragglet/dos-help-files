@@ -153,6 +153,13 @@ class Topic(object):
 			return self.topic
 		return self.prettiest_context()
 
+	def page_title(self):
+		name = self.name()
+		db_title = self.db.title()
+		if db_title is not None:
+			name += " - " + db_title
+		return name
+
 	def filename(self):
 		if self.is_toc:
 			return "index.html"
@@ -220,6 +227,12 @@ class Database(object):
 		else:
 			raise Exception("Unknown dot command %r" % cmd)
 
+	def title(self):
+		topic = self.topics_by_context.get("h.title")
+		if topic is None:
+			return None
+		return topic.text.strip()
+
 	def parse_text(self, text):
 		self.current_topic = Topic(self)
 		topics = []
@@ -266,7 +279,7 @@ def write_html_file(filename, topic):
 	with open(filename, "wb") as out:
 		html = HTML_TEMPLATE % {
 			'body': topic.to_html(),
-			'title': escape(topic.name()),
+			'title': escape(topic.page_title()),
 		}
 		out.write(html.encode("utf-8"))
 
