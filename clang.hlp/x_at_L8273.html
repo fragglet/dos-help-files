@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<title>BARCOL.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* BARCOL.C illustrates presentation graphics support routines and
+ * single-series chart routines including:                        (DOS-only)
+ *      _pg_initchart   _pg_chart       _pg_chartpie    _pg_defaultchart
+ */
+ 
+#include &lt;conio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;graph.h&gt;
+#include &lt;string.h&gt;
+#include &lt;pgchart.h&gt;
+ 
+#define COUNTRIES 5
+float __far value[COUNTRIES] =     { 42.5F,  14.3F, 35.2F,  21.3F, 32.6F   };
+char  __far *category[COUNTRIES] = { "CAN",  "JAP", "USA",  "UK",  "Other" };
+short __far explode[COUNTRIES] =   { 0,      1,     0,      1,     0       };
+ 
+void main()
+{
+    _chartenv env;
+ 
+    if( !_setvideomode( _MAXRESMODE ) )
+        exit( 1 );
+ 
+    _pg_initchart();                    /* Initialize chart system    */
+ 
+    /* Single-series bar chart */
+    _pg_defaultchart( &amp;env, _PG_BARCHART, _PG_PLAINBARS );
+    strcpy( env.maintitle.title, "Widget Production" );
+    _pg_chart( &amp;env, category, value, COUNTRIES );
+    _getch();
+    _clearscreen( _GCLEARSCREEN );
+ 
+    /* Single-series column chart */
+    _pg_defaultchart( &amp;env, _PG_COLUMNCHART, _PG_PLAINBARS );
+    strcpy( env.maintitle.title, "Widget Production" );
+    _pg_chart( &amp;env, category, value, COUNTRIES );
+    _getch();
+    _clearscreen( _GCLEARSCREEN );
+ 
+    /* Pie chart */
+    _pg_defaultchart( &amp;env, _PG_PIECHART, _PG_PERCENT );
+    strcpy( env.maintitle.title, "Widget Production" );
+    _pg_chartpie( &amp;env, category, value, explode, COUNTRIES );
+    _getch();
+ 
+    _setvideomode( _DEFAULTMODE );
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

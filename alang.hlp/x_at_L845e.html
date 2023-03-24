@@ -1,0 +1,40 @@
+<html>
+
+<head>
+<title>GetPSP</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_at_L83fd.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='x_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* GetPSP - Gets address of Program Segment Prefix. For DOS 3.0 or higher.
+;*
+;* Shows:   DOS Function - 62h (Get PSP Address)
+;*
+;* Params:  None
+;*
+;* Return:  Short integer with PSP segment address
+;*          or 0 if DOS version below 3.0
+ 
+GetPSP  PROC
+ 
+        INVOKE  GetVer                  ; Get DOS version number
+        .IF     ax &gt;= 300               ; If DOS 3.0 or higher:
+        mov     ah, 62h                 ; Query DOS for PSP
+        int     21h                     ; Get PSP Address
+        mov     ax, bx                  ; Return in AX
+        .ELSE                           ; Else 2.0:
+        sub     ax, ax                  ; For version 2, return 0
+        .ENDIF
+        ret
+ 
+GetPSP  ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

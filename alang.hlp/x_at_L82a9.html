@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>Int 21h Function 31h</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_at_L82a8.html'>Summary</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='x_at_L8251.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     This function performs the following actions:
+ 
+        ■ Flushes the file buffers and closes any open handles for
+          files or devices owned by the process.
+ 
+        ■ Restores the termination handler vector (Int 22h) from
+          PSP:000Ah.
+ 
+        ■ Restores the CTRL+C handler vector (Int 23h) from PSP:000Eh.
+ 
+        ■ Restores the critical-error handler vector (Int 24h) from
+          PSP:0012h.
+ 
+     Transfers control to the termination handler.
+ 
+     If the program is returning to COMMAND.COM, control transfers to
+     the resident portion, and the transient portion is reloaded if
+     necessary. If a batch file is in progress, the next line of the
+     file is fetched and interpreted; otherwise, a prompt is issued for
+     the next user command.
+ 
+     This function call is typically used to allow user-written
+     utilities, drivers, or interrupt handlers to be loaded as ordinary
+     .COM or .EXE programs and then remain resident. Subsequent
+     entrance to the code is via a hardware or software interrupt.
+ 
+     This function attempts to set the initial memory allocation block
+     to the length in paragraphs specified in register DX. If other
+     memory blocks have been requested by the application using Int 21h
+     Function 48h, they will not be released by this function.
+ 
+     Other methods of performing a final exit are Int 20h, Int 21h
+     Function 00h, Int 21h Function 4Ch, and Int 27h.
+ 
+     The return code may be retrieved by a parent process through Int
+     21h Function 4Dh (Get Return Code). It can also be tested in a
+     batch file with an IF ERRORLEVEL statement. By convention, a
+     return code of zero indicates successful execution, and a nonzero
+     return code indicates an error.
+ 
+     This function should not be called by .EXE programs that are
+     loaded at the high end of the transient program area (linked with
+     the /HIGH switch), because doing so reserves the memory that is
+     normally used by the transient part of COMMAND.COM. If COMMAND.COM
+     cannot be reloaded, the system will fail.
+ 
+     This function should be used instead of Int 27h because it
+     supports return codes, allows larger amounts of memory to be
+     reserved, and does not require CS to contain the segment of the
+     program segment prefix.
+ 
+     [Version 3.0+]
+     If the program is running on a network, it should remove all locks
+     it has placed on file regions before terminating.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

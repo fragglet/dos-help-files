@@ -1,0 +1,128 @@
+<html>
+
+<head>
+<title>DECLARE (Non-BASIC Procedure) Statement Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='x_dot_cdeclnb.html'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='x_at_L809e.html'>Example<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>DECLARE (Non-BASIC Procedure) Statement Details</b>
+ 
+<b>Syntax 1</b>
+  DECLARE FUNCTION name [CDECL] [ALIAS "aliasname"][([parameterlist])]
+ 
+<b>Syntax 2</b>
+  DECLARE SUB name [CDECL] [ALIAS "aliasname"][([parameterlist])]
+ 
+  Argument       Description
+  FUNCTION       Indicates that the external procedure returns a value
+                 and can be used in an expression.
+  SUB            Indicates that the external procedure is invoked like a
+                 BASIC SUB.
+  name           The name used in the BASIC program to invoke the
+                 procedure. Names may have up to 40 characters. FUNCTION
+                 names can include an explicit type character (%, &amp;, !,
+                 #, or $) indicating the type of value the FUNCTION
+                 returns.
+  CDECL          Indicates that the procedure uses the C-language
+                 argument order. CDECL passes the arguments from right
+                 to left, rather than using the BASIC convention of left
+                 to right. CDECL also affects the name used in searches of
+                 object files and libraries.
+                   ■ If there is no ALIAS clause in the DECLARE, the
+                     type-declaration character is removed from the name
+                     of the procedure, and an underscore is added to the
+                     beginning. This becomes the name used when searching
+                     libraries and external files.
+                   ■ If CDECL is used with an ALIAS, the aliasname is used.
+  ALIAS          Indicates that the procedure has another name in the
+                 .OBJ or library file.
+  aliasname      The name the procedure has in the file or library.
+ 
+  parameterlist  Lists the variables to be passed to the called procedure
+                 and has the following syntax:
+ 
+  [{BYVAL|SEG}] variable [AS type][,[{BYVAL|SEG}] variable [AS type]]...
+ 
+  The following list describes the parts of a parameterlist:
+ 
+  Part       Description
+ 
+  BYVAL      BYVAL indicates that the parameter is passed by value,
+             rather than by reference. Reference is the default.
+             BYVAL can be used only with INTEGER, LONG, SINGLE, and
+             DOUBLE parameters. When BYVAL appears in front of a parameter,
+             the actual argument is converted to the type indicated in the
+             DECLARE statement before being passed.
+  SEG        Indicates the parameter is passed as a segmented address
+             (far pointer).
+  variable   A valid BASIC variable name. Only the variable's type is
+             significant. If the variable is an array it may be
+             followed by the number of dimensions in parentheses (to
+             maintain compatibility with older versions of BASIC):
+ 
+               DECLARE SUB EigenValue (A(2) AS DOUBLE)
+ 
+             The number of dimensions is optional.
+  AS type    Indicates the variable's type. The type element may be
+             either INTEGER, LONG, SINGLE, DOUBLE, STRING, ANY, or a
+             user type. You can also indicate the variable's type by
+             including an explicit type character (%, &amp;, !, #, or $)
+             in the variable name or by relying on the default type.
+             When declaring external procedures written in other
+             languages, you can use the ANY keyword in the AS clause.
+             ANY overrides type checking for that argument. You
+             cannot use ANY with arguments passed by value.
+ 
+  Note: When neither BYVAL nor SEG is used, arguments are passed as
+        near addresses (offsets).
+ 
+This form of the DECLARE statement lets you reference procedures
+written in other languages. The DECLARE statement also causes the
+compiler to check the number and type of arguments used to invoke
+the procedure. A DECLARE statement can appear only in module-level
+code and affects the entire source file.
+ 
+The form of the parameter list determines whether or not argument
+type checking is done:
+ 
+  Declaration                          Meaning
+  DECLARE SUB First CDECL              No argument checking is done
+                                       when there is no parameter
+                                       list.
+  DECLARE SUB First CDECL ()           First has no parameters.
+                                       Arguments in a CALL to First
+                                       are flagged as an error. Empty
+                                       parentheses indicate that the
+                                       SUB or FUNCTION has no
+                                       parameters.
+  DECLARE SUB First CDECL (X AS LONG)  First takes one long integer
+                                       argument. When a parameter
+                                       list appears, the number and
+                                       type of the arguments are
+                                       checked in each invocation.
+ 
+A procedure that appears in a DECLARE statement can be invoked
+without the CALL keyword.
+ 
+  Note: You cannot have fixed-length strings in DECLARE statements
+        because only variable-length strings can be passed to SUB
+        and FUNCTION procedures. Fixed-length strings can appear
+        in an argument list but are converted to variable-length
+        strings before being passed.
+ 
+Be careful when using the SEG keyword to pass arrays because BASIC may
+move variables in memory before the called routine begins execution.
+Anything in a CALL statement's argument list that causes memory
+movement may create problems.  You can safely pass variables using SEG
+if the CALL statement's argument list contains only simple variables,
+arithmetic expressions, or arrays indexed without the use of intrinsic
+or user-defined functions.
+
+</pre>
+</body>
+
+</html>

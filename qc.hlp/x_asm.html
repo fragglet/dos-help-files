@@ -1,0 +1,165 @@
+<html>
+
+<head>
+<title>_asm</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L8007.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Keyword:  _asm
+ 
+  Syntax:   _asm assembly language instruction
+            _asm
+            {
+               assembly language instructions
+            }
+ 
+  Summary:  If used without braces, the _asm keyword indicates that the
+            rest of the statement on the line is an assembly-language
+            statement. If used with braces, it indicates that each line
+            between the braces is an assembly-language statement.
+ 
+     Using Assembly Language in _asm Blocks
+ 
+     The language recognized by the in-line assembler is a subset of
+     that recognized by the Microsoft Macro Assembler (MASM) version
+     5.1. The instruction set is the 8086 and 8087 by default, or the
+     80286 and 80287 if the /G2 option is given. The following MASM
+     concepts are not recognized by the in-line assembler:
+ 
+        ■ 80386, 80387, and 80486 specific instructions
+        ■ Data directives and operators (DB, DW, DUP, RECORD, STRUCT,
+          etc.)
+        ■ Macros, equates, and related directives and operators
+        ■ Segment directives and names
+        ■ Calls and jumps to far labels
+ 
+     An _asm block can use the following C-language elements:
+ 
+        ■ Symbols, including labels, variables, and function names
+        ■ Constants, including symbolic constants and enum members
+        ■ Macros and preprocessor directives
+        ■ Type or typedef names wherever a MASM type is legal
+        ■ C comments (starting with // or enclosed in /* */)
+        ■ C constants (0xff is the same as 0FFh)
+ 
+     See also: <span class='grhilite'>◄</span><a href='x_emit.html'>_emit</a><span class='grhilite'>►</span>
+ 
+     Statement Format
+ 
+     Since the _asm keyword is a statement separator, you can put
+     assembly instructions on the same line. The following statements
+     are equivalent:
+ 
+          _asm                  // _asm block
+          {
+             mov ax, 01h
+             int 10h
+          }
+ 
+          _asm mov ax, 01h      // Separate _asm lines
+          _asm int 10h
+ 
+          // Multiple _asm statements on a line
+          _asm mov ax, 01h   _asm int 10h
+ 
+     Operators and Directives
+ 
+     The EVEN and ALIGN directives are the only MASM directives
+     recognized by the in-line assembler. The following conditions
+     apply to operators:
+ 
+        ■ Segment overrides must use a segment register (es:[bx])
+        ■ The SEG and OFFSET operators can be used with C variable
+          names (SEG i or OFFSET i)
+        ■ The LENGTH, SIZE, and TYPE operators can be used with C
+          arrays
+        ■ Indexes within brackets ([]) are unscaled
+        ■ The dollar symbol ($) can be used as the current location
+          counter
+ 
+     C Symbols
+ 
+     An _asm block can refer to any C symbol in the scope where the
+     block appears. This includes variables such as arguments, locals,
+     static locals, functions, and globals. Each assembly-language
+     statement can contain only one C symbol (except in LENGTH, TYPE,
+     and SIZE expressions). Functions referenced in an _asm block must
+     be declared (prototyped) earlier in the program.
+ 
+     If a structure or union member has a unique name, an _asm
+     block can refer to it by using only the member name
+     (mov ax, [bx].unique). If the member name is not unique, you must
+     place a variable or typedef name before the period operator
+     (mov ax, var[bx].copy).
+ 
+     Functions can be defined in C but implemented with the in-line
+     assembler, as shown below:
+ 
+          int power2( int num, int power )
+          {
+             _asm
+             {
+                mov ax, num    ; Get first argument
+                mov cx, power  ; Get second argument
+                shl ax, cl     ; AX = AX * ( 2 to the power of CL )
+             }
+          }  // Return with result in AX
+ 
+     This assumes the _cdecl or _pascal calling convention. You should
+     not use the _fastcall calling convention for functions with _asm
+     blocks.
+ 
+     Preserving Registers
+ 
+     An _asm block inherits whatever register values happen to result
+     from the normal flow of control. Within a function, you do not
+     need to preserve the AX, BX, CX, DX, or ES registers, but you
+     should preserve DI, SI, DS, SS, SP, and BP. If your function
+     changes the direction flag, you should restore it with CLD.
+     Functions return integer and near pointer values in AX; they
+     return long and far pointer values in AX and DX.
+ 
+     Defining _asm Blocks as C Macros
+ 
+     To use C macros to insert assembly code into C code, follow these
+     rules:
+ 
+       1. Enclose the _asm block in braces.
+       2. Put the _asm keyword in front of each assembly
+          instruction.
+       3. Use enclosing C comments ( /* comment */ ).
+       4. Use the backslash (\) to join the statements into a
+          single line.
+ 
+     For example,
+ 
+          #define BEEP _asm       \
+          /* Beep sound */        \
+          {                       \
+             _asm mov ah, 2       \
+             _asm mov dl, 7       \
+             _asm int 21h         \
+          }
+ 
+     This macro expands to a single line:
+ 
+          _asm { _asm mov ah, 2  _asm mov dl, 7 _asm int 21h }
+ 
+     Optimization
+ 
+     The presence of an _asm block in a function disables automatic
+     register variable storage. The presence of in-line assembly code
+     in a function inhibits the following optimizations for the entire
+     function: loop (/Ol), global register allocation (/Oe), and global
+     optimizations and common subexpressions (/Og).
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

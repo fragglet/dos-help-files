@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>GET Statement (File I/O) Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#GET'>Syntax</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../bas7ex.hlp/x_dot_gfiox.html'>Example</a><span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+GET reads from a disk file into a random-access buffer or variable.
+ 
+<b>GET [#]filenumber%[,[recordnumber&amp;][,variable]]</b>
+    ■ The argument filenumber% is the number used in the OPEN statement
+      to open the file.
+    ■ If you omit recordnumber&amp;, the next record or byte (the one
+      after the last GET or PUT, or the one pointed to by the last SEEK)
+      is read into the buffer. The largest possible record number is
+      2^31 -1, or 2,147,483,647.
+    ■ The first record or byte position in a file is 1.
+    ■ A record cannot be longer than 32,767 bytes.
+    ■ If you specify a variable, you do not need to use CVI, CVL, CVS,
+      CVD, or CVC to convert record fields to numbers. You can not use a
+      FIELD statement with the file if you use the variable argument.
+    ■ For random-access files, you can use any variable as long as the
+      length of the variable is less than or equal to the length of the
+      record. Usually, a record variable defined to match the fields in a
+      data record is used.
+    ■ For binary-mode files, you can use any variable. The GET
+      statement reads as many bytes as there are in the variable.
+    ■ When you use a variable-length string variable, the statement
+      reads as many bytes as there are characters in the string's value.
+      For example, the following two statements read 10 bytes from file
+      number 1:
+ 
+        VarStrings$=STRING$ (10, " ")
+        GET #1,,VarString$
+ 
+    ■ See the examples for more information about using variables
+      rather than FIELD statements for random-access files.
+ 
+Usage Notes
+    ■ Do not use GET on ISAM files.
+    ■ You can omit the arguments recordnumber&amp;, variable, or both. If you
+      omit the recordnumber&amp; but include a variable, you must still
+      include the commas:
+ 
+        GET #4,,FileBuffer
+ 
+    ■ If you omit both arguments, do not include the commas:
+ 
+        GET #4
+ 
+Important
+    ■ GET and PUT statements allow fixed-length input and output for
+      BASIC communications files. Use GET carefully because if there is a
+      communications failure, GET waits indefinitely for recordnumber&amp;
+      characters.
+ 
+Programming Tips
+    ■ When you use GET with the FIELD statement, you can use INPUT #
+      or LINE INPUT # after a GET statement to read characters from
+      the random-access file buffer. You may use the EOF function
+      after a GET statement to see if the GET went beyond the end
+      of the file.
+ 
+
+</pre>
+</body>
+
+</html>

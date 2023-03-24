@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<title>EXEC.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* EXEC.C illustrates the different versions of exec including:
+ *      _execl           _execle          _execlp          _execlpe
+ *      _execv           _execve          _execvp          _execvpe
+ *
+ * Although EXEC.C can exec any program, you can verify how different
+ * versions handle arguments and environment by compiling and
+ * specifying the sample program <a href='x_at_L80a5.html'>ARGS.C</a>. See <a href='x_at_L80ee.html'>SPAWN.C</a> for examples
+ * of the similar spawn functions.
+ */
+ 
+#include &lt;stdio.h&gt;
+#include &lt;conio.h&gt;
+#include &lt;process.h&gt;
+ 
+char *my_env[] =                /* Environment for exec?e */
+{
+    "THIS=environment will be",
+    "PASSED=to child by the",
+    "SPAWN=functions",
+    NULL
+};
+ 
+void main()
+{
+    char *args[4], prog[80];
+    int ch;
+ 
+    printf( "Enter name of program to exec: " );
+    gets( prog );
+    printf( " 1. _execl   2. _execle   3. _execlp   4. _execlpe\n" );
+    printf( " 5. _execv   6. _execve   7. _execvp   8. _execvpe\n" );
+    printf( "Type a number from 1 to 8 (or 0 to quit): " );
+    ch = _getche();
+    if( (ch &lt; '1') || (ch &gt; '8') )
+        exit( 1 );
+    printf( "\n\n" );
+ 
+    /* Arguments for _execv? */
+    args[0] = prog;
+    args[1] = "exec??";
+    args[2] = "two";
+    args[3] = NULL;
+ 
+    switch( ch )
+    {
+        case '1':
+            _execl( prog, prog, "_execl", "two", NULL );
+            break;
+        case '2':
+            _execle( prog, prog, "_execle", "two", NULL, my_env );
+            break;
+        case '3':
+            _execlp( prog, prog, "_execlp", "two", NULL );
+            break;
+        case '4':
+            _execlpe( prog, prog, "_execlpe", "two", NULL, my_env );
+            break;
+        case '5':
+            _execv( prog, args );
+            break;
+        case '6':
+            _execve( prog, args, my_env );
+            break;
+        case '7':
+            _execvp( prog, args );
+            break;
+        case '8':
+            _execvpe( prog, args, my_env );
+            break;
+        default:
+            break;
+    }
+ 
+    /* This point is reached only if exec fails. */
+    printf( "\nProcess was not execed." );
+    exit( 0 );
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

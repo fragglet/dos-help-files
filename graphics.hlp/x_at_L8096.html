@@ -1,0 +1,136 @@
+<html>
+
+<head>
+<title>_setfont</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_setfont.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='FONTS_dot_C.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='../qc.hlp/lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../qc.hlp/qc_dot_contents.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../qc.hlp/qc_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     The _setfont function finds a single font, from the set of
+     registered fonts, that has the characteristics specified by the
+     &lt;options&gt; string. If a font is found, it is made the current font.
+     The current font is used in all subsequent calls to the _outgtext
+     function. There can be only one active font at any time.
+ 
+     The &lt;options&gt; string is a set of characters that specifies the
+     desired characteristics of the font. The _setfont function
+     searches the list of registered fonts for a font matching the
+     specified characteristics.
+ 
+     The characteristics that may be specified in the &lt;options&gt; string
+     are shown in the list below. Characteristics specified in the
+     &lt;options&gt; string are neither case sensitive nor position sensitive.
+ 
+     Characteristic     Description
+ 
+     t'fontname'        Typeface.
+ 
+     hx                 Character height, where x is the number of
+                        pixels.
+ 
+     wy                 Character width, where y is the number of
+                        pixels.
+ 
+     f                  Find only a fixed-space font (should not be
+                        used with the "p" characteristic).
+ 
+     p                  Find only a proportionally spaced font (should
+                        not be used with the "f" characteristic)
+ 
+     v                  Find only a vector font (should not be used
+                        with the "r" characteristic).
+ 
+     r                  Find only a raster-mapped (bit-mapped) font
+                        (should not be used with the "v"
+                        characteristic).
+ 
+     b                  Select a best fit font.
+ 
+     nx                 Select font number x, where x is less than or
+                        equal to the value returned by the
+                        _registerfonts function. Use this option to
+                        "step through" an entire set of fonts.
+ 
+     You can request as many options as desired, except with nx, which
+     should be used alone. If mutually exclusive options are requested
+     (such as the pair f/p or r/v), the _setfont function ignores them.
+     There is no error detection for incompatible parameters used
+     with nx.
+ 
+     Options can be separated in the &lt;options&gt; string by blanks. Any
+     other character is ignored by _setfont.
+ 
+     The t (the typeface specification) in &lt;options&gt; is specified as a
+     "t" followed by the &lt;typename&gt; in single quotes. The typename may
+     be any of the following valid fonts:
+ 
+     Typename     Description
+ 
+     Courier      Fixed-width bit-mapped font with serifs
+ 
+     Helv         Sans serif proportional bit-mapped font
+ 
+     Tms Rmn      Proportional bit-mapped font with serifs
+ 
+     Script       Proportional vector-mapped font of slanted
+                  characters formed from nearly continuous lines
+ 
+     Modern       Proportional vector-mapped font without serifs
+ 
+     Roman        Proportional vector-mapped font with serifs
+ 
+     A "b" in the &lt;options&gt; field causes the _setfont routine to
+     automatically select the "best fit" font that matches the other
+     characteristics you have specified. If the b parameter is
+     specified and at least one font is registered, _setfont will
+     always be able to set a font and will return 0 to indicate
+     success.
+ 
+     In selecting a font, the _setfont routine uses the following
+     precedence (rated from highest precedence to lowest):
+ 
+       1. Pixel height
+       2. Typeface
+       3. Pixel width
+       4. Fixed or proportional font
+ 
+     You can also specify a pixel width and height for fonts. If a
+     nonexistent value is chosen for either, and the b option is
+     specified, the _setfont function will choose the closest match. A
+     smaller font size has precedence over a larger size. If _setfont
+     requests Helv 12 with best fit, and only Helv 10 and Helv 14 are
+     available, _setfont will select Helv 10.
+ 
+     If a nonexistent value is chosen for pixel height and width, the
+     _setfont function will apply a magnification factor to a vector-
+     mapped font to obtain a suitable font size. This automatic
+     magnification does not apply if the "r" (raster-mapped font)
+     option is specified, or if a specific typeface is requested and no
+     best fit ("b") option is specified.
+ 
+     If you specify the nx parameter, _setfont will ignore any other
+     specified options and supply only the font number corresponding
+     to x.
+ 
+     Note that the font functions affect only the output from the font
+     output function _outgtext; no other C run-time output functions
+     are affected by font usage.
+ 
+     Return Value
+ 
+     If successful, the _setfont function returns the number of the
+     selected font, which can be used with the &lt;n&gt; parameter on
+     subsequent calls to _setfont. A negative return value indicates
+     an error. An error occurs if a request for a specific font fails
+     and the "b" option was not specified, or if fonts have not yet
+     been registered.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

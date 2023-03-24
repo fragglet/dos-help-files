@@ -1,0 +1,59 @@
+<html>
+
+<head>
+<title>Interrupt 25h</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='25h.html'>Summary</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='x_at_L8255.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     All registers except the segment registers may be destroyed.
+ 
+     When this function returns, the CPU flags originally pushed on the
+     stack by the Int 25h instruction are still on the stack. The stack
+     must be cleared by a POPF or ADD SP,2 to prevent uncontrolled
+     stack growth and to make accessible any other values that were
+     pushed on the stack before the call to Int 25h.
+ 
+     Logical sector numbers are obtained by numbering each disk sector
+     sequentially from track 0, head 0, sector 1, and continuing until
+     the last sector on the disk is counted. The head number is
+     incremented before the track number. Logically adjacent sectors
+     may not be physically adjacent due to interleaving that occurs at
+     the device-driver level for some disk types.
+ 
+     The error code is interpreted as follows: The lower byte (AL) is
+     the same error code that is returned in the lower byte of DI when
+     an Int 24h is issued. The upper byte (AH) contains:
+ 
+     Error     Description
+ 
+     80h       If attachment failed to respond
+     40h       If seek operation failed
+     20h       If controller failed
+     10h       Data error (bad CRC)
+     08h       If direct memory access (DMA) failed
+     04h       If requested sector not found
+     02h       If bad address mark
+     01h       If bad command
+ 
+     [Version 4.0+]
+     When accessing partitions larger than 32 megabytes under MS-DOS
+     version 4.0, this function uses a parameter block with the
+     following format:
+ 
+     Bytes       Description
+ 
+     00h-03h     32-bit sector number
+     04h-05h     Number of sectors to read
+     06h-07h     Offset of buffer
+     08h-09h     Segment of buffer
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

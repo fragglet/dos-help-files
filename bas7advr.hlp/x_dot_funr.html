@@ -1,0 +1,137 @@
+<html>
+
+<head>
+<title>FUNCTION Statement Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#FUNCTION'>Syntax</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../bas7ex.hlp/x_dot_funx.html'>Example</a><span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+The FUNCTION statement declares the name, the parameters, and the return
+type of a FUNCTION procedure.
+ 
+<b>FUNCTION name [(parameterlist)] [STATIC]</b>
+    [statementblock]
+  name = expression
+    [statementblock]
+  [EXIT FUNCTION]
+    [statementblock]
+<b>END FUNCTION</b>
+ 
+    ■ The type of name determines the type of value the function returns.
+      For example, to create a function that returns a string, you would
+      include a dollar sign in the name or give it a name defined as
+      a string name by a DEFSTR statement. FUNCTION procedure names follow
+      the rules for naming BASIC variables.
+    ■ Names in the parameterlist are separated by commas. The syntax of
+      parameterlist is:
+ 
+        [BYVAL] variable[( )] [AS type] [,[BYVAL] variable[()] [AS type]]...
+ 
+            ■ BYVAL       Defines the variable as being passed by value
+                          rather than by reference (the default). BYVAL
+                          can be used only with simple numeric types
+                          (INTEGER, LONG, SINGLE, DOUBLE, or CURRENCY).
+            ■ variable    A BASIC variable name. Previous versions of BASIC
+                          required the number of dimensions in parentheses
+                          after an array name. In the current version of
+                          BASIC, the number of dimensions is not required.
+            ■ AS type     The type of the variable: INTEGER, LONG, SINGLE,
+                          DOUBLE, STRING, CURRENCY, or a user-defined
+                          type. You cannot use a fixed-length string as a
+                          parameter unless it is contained in an array. You
+                          can use a simple fixed-length string as an
+                          argument in a CALL statement; BASIC converts
+                          a simple fixed-length string argument to a
+                          variable-length string argument before passing
+                          the string to a function.
+ 
+    ■ STATIC indicates that the function's local variables are to
+      be saved between calls. Without STATIC, the local variables are
+      allocated each time the function is invoked, and the variables' values
+      are lost when the function returns to the calling program. The STATIC
+      attribute does not affect variables that are used in a FUNCTION
+      procedure but declared outside the FUNCTION procedure in DIM or
+      COMMON statements using the SHARED statement.
+    ■ The expression is the return value of the function. A FUNCTION
+      procedure returns a value by assigning a value to the function name.
+      If no value is assigned to the FUNCTION name, the FUNCTION
+      procedure returns a default value: a numeric function returns 0,
+      and a string function returns the null string ("").
+    ■ EXIT FUNCTION immediately exits a FUNCTION procedure. Program
+      execution continues where the function was invoked. EXIT FUNCTION
+      can be used only in a FUNCTION procedure. For more information,
+      see the <span class='grhilite'>◄</span><a href='unknown#EXIT'>EXIT Statement</a><span class='grhilite'>►</span>.
+ 
+Usage Notes
+    ■ If a parameter is passed by reference, any change to the parameter's
+      value inside the procedure changes its value in the calling program.
+    ■ If a parameter is passed by value, any changes to the parameter's
+      value inside the procedure is local to that procedure and does not
+      affect its value in the calling program.
+    ■ Earlier versions of BASIC required the number of dimensions in
+      parentheses after an array name. The number of dimensions is no longer
+      required. Only the parentheses are required to indicate the parameter
+      is an array. For example, the following statement indicates that both
+      Keywords$ and KeywordTypes are arrays:
+ 
+       FUNCTION ParseLine(Keywords$(),KeywordTypes())
+ 
+    ■ Earlier versions of BASIC did not allow you to pass arrays
+      containing fixed-length strings as parameters. BASIC now
+      supports this.
+    ■ A FUNCTION procedure is like a SUB procedure: it can be defined with
+      parameters, perform a series of statements, and change the values of
+      its parameters. A FUNCTION procedure is always used in an expression
+      in the same manner as a BASIC intrinsic function.
+    ■ Like SUB procedures, FUNCTION procedures can use local variables. Any
+      variable referred to within the body of the function is local to
+      the FUNCTION unless one of the following conditions is true:
+        - The variable is declared within the function as a shared
+          variable in a SHARED statement
+        - The variable appears in a DIM or COMMON statement with the SHARED
+          attribute at the module level.
+    ■ To return a value from a function, assign the value to the function
+      name. For example, in a function named BinarySearch, you might
+      assign the value of the constant FALSE to the name to indicate
+      the value was not found:
+ 
+        FUNCTION BinarySearch(...)
+        CONST FALSE=0
+        .
+        .
+        .
+ 
+        ' Value not found. Return a value of FALSE.
+ 
+         IF Lower&gt;Upper THEN
+           BinarySearch=FALSE
+           EXIT FUNCTION
+         END IF
+        .
+        .
+        .
+        END FUNCTION
+ 
+    ■ Using the STATIC attribute increases execution speed slightly. STATIC
+      is usually not used with recursive FUNCTION procedures.
+    ■ Because BASIC may rearrange arithmetic expressions to attain greater
+      efficiency, avoid using FUNCTION procedures that change program
+      variables in arithmetic expressions. Also, avoid using FUNCTION
+      procedures that perform I/O.
+    ■ FUNCTION procedures can be recursive--they can call themselves to
+      perform a given task. See the example for more information.
+ 
+Important
+    Avoid using I/O statements in a FUNCTION procedure called from an I/O
+    statement; they can cause unpredictable results. Also, because BASIC may
+    rearrange arithmetic expressions to attain greater efficiency, avoid
+    using FUNCTION procedures that change program variables in arithmetic
+    expressions.
+
+</pre>
+</body>
+
+</html>

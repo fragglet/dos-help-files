@@ -1,0 +1,115 @@
+<html>
+
+<head>
+<title>DEF FN Statement Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#DEF'>Syntax</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../bas7ex.hlp/x_dot_deffnx.html'>Example</a><span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+DEF FN defines and names a function.
+ 
+Syntax 1
+  DEF FNname[(parameterlist)] = expression
+ 
+Syntax 2
+  DEF FNname[(parameterlist)]
+     [statementblock]
+  FNname = expression
+     [statementblock]
+  [EXIT DEF]
+     [statementblock]
+  END DEF
+ 
+    ■ The name is a legal variable name, which is always prefixed with FN
+      (for example: FNShort). The variable name (including the FN prefix)
+      can be up to 40 characters long. The name can include an explicit
+      type-declaration character to indicate the type of value returned.
+      Names that are the same except for the type-declaration character
+      are distinct names. For example, the following are names of three
+      different DEF FN functions:
+ 
+        FNString$
+        FNString%
+        FNString#
+ 
+      To return a value defined by a DEF FN function, assign the value to
+      the full function name:
+ 
+        FNString$ = "No answer."
+ 
+    ■ parameterlist is a list of variable names, separated by commas.
+      A parameterlist has the following syntax:
+ 
+        variable [AS type] [,variable [AS type]]...
+ 
+          variable    Any valid BASIC variable name.
+ 
+          AS type     type is INTEGER, LONG, SINGLE, DOUBLE, CURRENCY,
+                      or STRING. You also can indicate a variable's type by
+                      including a type-declaration character (%, &amp;, !, #, @
+                      or $) in the name.
+ 
+ 
+    ■ In both versions of syntax, The argument expression is evaluated and
+      the result is the function's value. In Syntax 1 (single-line syntax),
+      expression is the entire body of the function and is limited to one
+      logical line.
+    ■ EXIT DEF immediately exits an executing DEF FN function. Program
+      execution continues where the DEF FN function was invoked.
+    ■ When the function is called, BASIC assigns the value of each
+      argument to its corresponding parameter. Function arguments are
+      passed by value. Functions defined by DEF FN do not accept arrays,
+      records, or fixed-length strings as arguments.
+    ■ When no expression is assigned to the name, the default return values
+      are 0 for a numeric DEF FN function, and the null string ("") for a
+      string DEF FN function.
+ 
+Usage Notes
+    ■ DEF FN must define a function before the function is used. If you
+      call the function before it is defined by DEF FN, BASIC generates
+      the error message, "Function not defined." DEF FN function
+      definitions cannot appear inside other DEF FN definitions. In
+      addition, functions defined by DEF FN cannot be recursive.
+    ■ Functions defined by DEF FN can be used only in the module in
+      which they are defined.
+    ■ A DEF FN-defined function can share variables with the module-level
+      code. Variables not in parameterlist are global--their values are
+      shared with the module-level code. To keep a variable value local to
+      a function definition, declare it in a STATIC statement.
+    ■ DEF FN can return either numeric or string values. DEF FN returns a
+      string value if name is a string-variable name, and a numeric value
+      if name is a numeric-variable name. If you assign a numeric value to a
+      string function name or assign a string value to a numeric function
+      name, BASIC generates the error message, "Type mismatch."
+    ■ If the function is numeric, DEF FNname returns a value with the
+      precision specified by name. For example, if name specifies a
+      double-precision variable, then the value returned by DEF FNname is
+      double precision, regardless of the precision of expression.
+    ■ Because BASIC may rearrange arithmetic expressions for greater
+      efficiency, avoid using DEF FN functions that change program variables
+      in expressions that may be reordered. The following example may give
+      unpredictable results:
+ 
+        DEF FNShort
+           I=10
+           FNShort=1
+        END DEF
+        I=1 : PRINT FNShort + I + I
+ 
+      If BASIC reorders the expression so FNShort is called after
+      calculating (I+I), the result is 3 rather than 21. You usually can
+      avoid this problem by isolating the DEF FN function call:
+ 
+        I = 1 : X = FNShort : PRINT X + I + I
+ 
+      Embedding I/O operations in DEF FN-defined functions used in I/O
+      statements, or embedding graphics operations in DEF FN-defined
+      functions in graphics statements, may cause similar problems.
+
+</pre>
+</body>
+
+</html>

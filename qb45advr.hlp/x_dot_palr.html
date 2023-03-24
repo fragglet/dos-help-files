@@ -1,0 +1,183 @@
+<html>
+
+<head>
+<title>PALETTE Statement Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#PALETTE'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='x_dot_palx.html'>Example<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>PALETTE Statement Details</b>
+ 
+<b>Syntax</b>
+  PALETTE [attribute,color]
+  PALETTE USING array-name [(array-index)]
+ 
+  Argument      Description
+  attribute     The palette attribute to be changed.
+  color         The display color number to be assigned to the
+                attribute. The color must be a long integer expression
+                for the IBM Video Graphics Array adapter (VGA) and IBM
+                Multicolor Graphics Array adapter (MCGA) in screen
+                modes 11 to 13. Integer or long-integer expressions
+                may be used with the IBM Enhanced Graphics Adapter
+                (EGA).
+  array-name    An array containing the color numbers to be assigned
+                to the attributes available in the current screen
+                mode. The VGA and MCGA adapters require a long integer
+                array in screen modes 11 to 13. With the EGA this can
+                be either an integer or long-integer array.
+  array-index   The index of the first array element to use in setting
+                the palette.
+ 
+The PALETTE statement works only on systems equipped with the EGA,
+VGA, or MCGA adapters.
+ 
+The statement provides a way of mapping display colors (the actual
+binary values used by the adapter) to color attributes (a smaller
+set of values). All BASIC graphics statements such as CIRCLE, COLOR,
+DRAW, or LINE use color attributes rather than display-color values.
+ 
+When a program enters a screen mode, the attributes are set to a series
+of default color values. (See the SCREEN statement for a list of the
+default colors.) In the EGA, VGA, and MCGA adapters these default
+values have been selected so the display shows the same colors, even
+though the EGA uses different color values.
+ 
+With the palette statement you can assign different colors to the
+attributes, giving you greater control over the colors on the display.
+A PALETTE statement with no arguments sets the palette back to the
+default color values.
+ 
+When you execute a PALETTE statement with arguments, the adapter
+subsequently uses the display color (indicated by color) whenever
+the value attribute appears in a statement like DRAW or LINE that
+specifies a color. Changing the display color assigned to an attribute
+changes the color on the screen immediately.
+ 
+For example, assume that the current palette contains colors 0, 1,
+2, and 3 in the four attributes numbered 0, 1, 2, and 3. The DRAW
+statement
+ 
+  DRAW "C3L100"
+ 
+selects attribute 3, and draws a line of 100 pixels using the display
+color associated with attribute 3, in this case also 3. If the
+statement
+ 
+  PALETTE 3,2
+ 
+is executed, then the color associated with attribute 3 is changed
+to color 2. All text or graphics currently on the screen displayed
+using attribute 3 are instantaneously changed to color 2. Text or
+graphics subsequently displayed with attribute 3 are also displayed
+in color 2. The new palette of colors contains 0, 1, 2, and 2.
+ 
+With the USING option, all entries in the palette can be modified
+in one PALETTE statement. The array-name argument is
+the name of an integer or long-integer array and the array-index
+specifies the index of the first array element in the array-name
+to use in setting the palette. Each attribute in the palette
+is assigned a corresponding color from this array. The array must
+be dimensioned large enough to set all the palette entries after
+array-index. For example, if you are assigning colors to all 16
+attributes, and the index of the first array element that is given
+in your PALETTE USING statement is 5, then the array must be
+dimensioned to hold at least 20 elements (since the number of
+elements from 5-20, inclusive, is 16):
+ 
+  DIM PAL%(20)
+  .
+  .
+  .
+  PALETTE USING PAL%(5)
+ 
+A color argument of -1 in the array leaves the attribute
+unchanged. All other negative numbers are invalid values for color.
+ 
+You can use the COLOR statement to set the default foreground
+color and the background display color. The foreground color argument
+specifies the way text characters appear on the display screen. Under
+a common initial palette setting, points colored with the attribute
+0 appear black on the display screen. Using the PALETTE statement,
+you could, for example, change the mapping of attribute 0 from black
+to white.
+ 
+The table below lists attribute and color ranges for various adapter
+types and screen modes.
+ 
+The VGA uses a different way of calculating color values from the
+EGA. To calculate a color value, select the intensities of red, green,
+and blue. The intensity of a color is a number from 0 (low intensity)
+to 63 (high intensity). Then use the following formula to calculate
+the actual color number:
+ 
+  color number = 65536 * blue + 256 * green + red
+ 
+Because there are gaps in the range of color numbers, you should use
+the formula rather than just select a number.
+ 
+When used with the IBM Analog Monochrome Monitor, the VGA color values
+are converted to a gray-scale value by taking a weighted sum of the
+red, blue, and green intensities:
+ 
+  gray value = 11% blue + 59% green + 30% red
+ 
+For example if the blue, green, and red intensities are 45, 20, and
+20, the gray value would be .11*45+.59*20+.30*20 or 22 (the fraction
+in the result is dropped).
+ 
+See the SCREEN statement for the list of colors available for
+various screen-mode, monitor, and graphics-adapter combinations.
+ 
+ 
+  Screen Color and Attribute Ranges
+ 
+  SCREEN   Monitor             Adapter   Attribute   Color
+  Mode     Attached            Range     Range
+ 
+   0       Monochrome          MDPA      0-15        N/A
+           Monochrome          EGA       0-15        0-2
+           Color               CGA       0-15        N/A
+           Color/Enhanced(b)   EGA       0-15        0-63
+           N/A                 VGA       0-15        0-63
+           N/A                 MCGA      0-15        N/A
+   1       Color               CGA       0-3         N/A
+           Color/Enhanced(b)   EGA       0-3         0-15
+           N/A                 VGA       0-3         0-15
+           N/A                 MCGA      0-3         N/A
+   2       Color               CGA       0-1         N/A
+           Color/Enhanced(b)   EGA       0-1         0-15
+           N/A                 VGA       0-1         0-15
+           N/A                 MCGA      0-1         N/A
+   7       Color/Enhanced(b)   EGA       0-15        0-15
+           N/A                 VGA       0-15        0-15
+   8       Color/Enhanced(b)   EGA       0-15        0-15
+           N/A                 VGA       0-15        0-15
+   9       Enhanced(b)         EGA(c)    0-3         0-63
+           Enhanced(b)         EGA(d)    0-15        0-63
+           N/A                 VGA       0-16        0-63
+  10       Monochrome          EGA       0-3         0-8
+           N/A                 VGA       0-3         0-8
+  11       N/A                 VGA       0-1         0-262,143(e)
+           N/A                 MCGA      0-1         0-262,143(e)
+  12       N/A                 VGA       0-15        0-262,143(e)
+  13       N/A                 VGA       0-255       0-262,143(e)
+           N/A                 MCGA      0-255       0-262,143(e)
+  ____________________________________________________________________
+  N/A = Not Applicable
+  (b) With 64K of EGA memory
+  (c) With more than 64K of EGA memory
+  (d) IBM Enhanced Color Display
+  (e) Display colors are not numbered from 0 to 262,143. See above.
+ 
+  Note: Because of their wide range of colors, the VGA and MCGA adapters
+        require a long-integer array in the PALETTE USING statement
+        in screen modes 11 to 13.
+
+</pre>
+</body>
+
+</html>

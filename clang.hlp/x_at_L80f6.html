@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<title>TOKEN.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* TOKEN.C illustrates tokenizing and searching for any of several
+ * characters. Functions illustrated include:
+ *      strcspn         strspn          strpbrk         strtok
+ */
+ 
+#include &lt;string.h&gt;
+#include &lt;stdio.h&gt;
+ 
+void main()
+{
+    char string[100], vowels[] = "aeiouAEIOU", seps[] = " \t\n,";
+    char *p;
+    int  count;
+ 
+    printf( "Enter a string: " );
+    gets( string );
+ 
+    /* Delete one word at a time. */
+    p = string;
+    while( *p )
+    {
+        printf( "String remaining: %s\n", p );
+        p += strcspn( p, seps );    /* Find next separator     */
+        p += strspn( p, seps );     /* Find next nonseparator  */
+    }
+ 
+    /* Count vowels. */
+    p = string;
+    count = 0;
+    do
+    {
+        p = strpbrk( p, vowels );   /* Find next vowel         */
+        count++;
+    } while( *(++p) );
+    printf( "\nVowels in string: %d\n\n", count - 1 );
+ 
+    /* Break into tokens. */
+    count = 0;
+    p = strtok( string, seps );     /* Find first token        */
+    while( p != NULL )
+    {
+        printf( "Token %d: %s\n", ++count, p );
+        p = strtok( NULL, seps );   /* Find next token         */
+    }
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

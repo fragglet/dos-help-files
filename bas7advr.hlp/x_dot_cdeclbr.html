@@ -1,0 +1,101 @@
+<html>
+
+<head>
+<title>DECLARE Statement (BASIC Procedures) Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#DECLARE'>Syntax</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../bas7ex.hlp/x_dot_cdeclbx.html'>Example</a><span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+DECLARE is a non-executable statement that declares references to BASIC
+procedures and ensures argument type checking.
+ 
+<b>DECLARE {FUNCTION | SUB} name [([parameterlist])]</b>
+    ■ The argument name is limited to 40 characters. FUNCTION procedure
+      names can end in one of the type-declaration characters
+      (%, &amp;, !, #, @, or $) to indicate the type of value returned.
+    ■ The parameterlist serves as a prototype for checking the
+      number and type of the arguments in SUB and FUNCTION procedure calls.
+      Only the number and type of the arguments are significant. It has the
+      following syntax:
+ 
+        [BYVAL] variable[AS type][,[BYVAL] variable[AS type]]...
+ 
+          BYVAL       Defines the variable as being passed by value
+                      rather than by reference (the default). BYVAL
+                      can be used only with simple numeric types (INTEGER,
+                      LONG, SINGLE, DOUBLE, or CURRENCY).
+          variable    Any valid BASIC variable name. If the variable is an
+                      array, it can be followed by the number of dimensions
+                      in parentheses, as in this fragment:
+ 
+                      DECLARE SUB DisplayText (A(2) AS STRING)
+                      DIM Text$(100,5)
+                      .
+                      .
+                      .
+                      CALL DisplayText(Text$())
+ 
+                      The number of dimensions is optional.
+ 
+          type        Is INTEGER, LONG, SINGLE, DOUBLE, CURRENCY, STRING,
+                      or a user-defined type. Again, only the number and
+                      types of arguments are significant.
+ 
+                      A variable's type also can be indicated by including
+                      an explicit type character (%, &amp;, !, #, @, or $) or
+                      by relying on the default type.
+ 
+Usage Notes
+    ■ If a parameter is passed by reference, any change to the parameter's
+      value inside the procedure changes its value in the calling program.
+    ■ If a parameter is passed by value, any changes to the parameter's
+      value inside the procedure is local to that procedure and does not
+      affect its value in the calling program.
+    ■ For calls within BASIC, the DECLARE statement is required only if
+      you call SUB procedures without the CALL keyword, or if you invoke
+      a FUNCTION procedure defined in another module. For more information
+      about invoking procedures without CALL, see Chapter 2, "SUB and
+      FUNCTION Procedures" in the Programmer's Guide.
+    ■ A DECLARE statement also causes the compiler to check the number
+      and type of arguments used to invoke the procedure. QBX automatically
+      generates DECLARE statements when you save your program while working
+      in the environment. The DECLARE statement can appear only in
+      module-level code (not in a SUB or FUNCTION procedure) and affects
+      the entire module.
+    ■ The form of the parameter list determines whether or not argument
+      checking is done, as shown in the following list:
+ 
+      Declaration                     Meaning
+      ═════════════════════════════   ═══════════════════════════════════════
+      DECLARE SUB First               You can omit the parentheses only if
+                                      the SUB or FUNCTION procedure is
+                                      separately compiled. No argument
+                                      checking is done.
+      DECLARE SUB First ()            First has no parameters. Arguments
+                                      in a call to First generate an error.
+                                      An empty parameter list indicates
+                                      that the SUB or FUNCTION procedure
+                                      has no parameters and that argument
+                                      checking should be done.
+      DECLARE SUB First (X AS LONG)   First has one long-integer parameter.
+                                      The number and type of the arguments
+                                      in each call or invocation are
+                                      checked when the parameter list
+                                      appears in the DECLARE statement.
+ 
+Important
+    ■ You cannot have fixed-length strings in DECLARE statements.
+      Only variable-length strings can be passed to SUB and FUNCTION
+      procedures. Fixed-length strings can appear in an argument list but
+      are converted to variable-length strings before being passed.
+    ■ You can have arrays containing fixed-length strings in DECLARE
+      statements. The lengths of the array in the CALL statement and the
+      declaration must match.
+
+</pre>
+</body>
+
+</html>

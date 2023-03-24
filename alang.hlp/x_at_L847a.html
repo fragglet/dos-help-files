@@ -1,0 +1,58 @@
+<html>
+
+<head>
+<title>PushAll</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_at_L8440.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='x_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* @PushAll and @PopAll - Macros to push and pop all general purpose
+;* registers. Registers are pushed in the following order:
+;*    AX, CX, DX, BX, SP, BP, SI, DI
+;* They are popped in the reverse order. Uses most efficient method
+;* available at assembly time (not at run time).
+;*
+;* Shows:   Instruction - pusha     popa
+;*          Operator    - AND
+;*
+;* Params:  None
+ 
+@PushAll MACRO
+    IF @Cpu AND 00000010y       ;; If assembling on 80186/286/386,
+        pusha                   ;;  use efficient PUSHA
+    ELSE                        ;; Otherwise push individually
+        push ax
+        push cx
+        push dx
+        push bx
+        push sp
+        push bp
+        push si
+        push di
+    ENDIF
+ENDM
+ 
+@PopAll MACRO
+    IF @Cpu AND 00000010y       ;; If assembling on 80186/286/386,
+        popa                    ;;  use efficient POPA
+    ELSE                        ;; Otherwise pop individually
+        pop di
+        pop si
+        pop bp
+        pop sp
+        pop bx
+        pop dx
+        pop cx
+        pop ax
+    ENDIF
+ENDM
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

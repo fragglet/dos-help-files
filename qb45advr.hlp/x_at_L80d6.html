@@ -1,0 +1,96 @@
+<html>
+
+<head>
+<title>GET (Graphics) Statement Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='x_dot_ggx.html'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='x_at_L80d7.html'>Example<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>GET (Graphics) Statement Details</b>
+ 
+<b>Syntax</b>
+  GET [STEP](x1,y1)-[STEP](x2,y2),arrayname[(indices)]
+ 
+  Argument      Description
+ 
+  x1,y1,x2,y2   Coordinates marking a rectangular area on the screen.
+                The placeholders x1, y1, x2, and y2 are numeric
+                expressions that are the coordinates of diagonally
+                opposite corners of the rectangle.
+ 
+  STEP          Keyword indicating that coordinates are relative to
+                the most recently plotted point. For example, if the
+                last point plotted were (10,10), then the actual
+                coordinates referred to by STEP (5,10) would be
+                (5+10,10+10) or (15,20). If the second coordinate pair
+                in a GET statement has a STEP argument, it is relative
+                to the first coordinate pair in the statement.
+ 
+  arrayname     Name assigned to the array that holds the image. This
+                array can be of any numeric type; its dimensions must
+                be large enough to hold the entire image.
+ 
+  indices       Numeric constants or variables indicating the element
+                of the array where the saved image starts.
+ 
+ 
+The GET statement transfers a screen image into the array specified
+by arrayname. The PUT statement, associated with GET, transfers the
+image stored in the array onto the screen.
+ 
+The following formula gives the required size of the array in bytes:
+ 
+  4 + INT(((x2 - x1 + 1) * (bits-per-pixel-per-plane) + 7)/8)
+                         * planes * ((y2 - y1) + 1)
+ 
+The bits-per-pixel-per-plane and planes values depend on the
+specification set in the SCREEN statement. The table below shows the
+number of bits per pixel per plane and the number of planes for each
+screen mode.
+ 
+  Values for Bits per Pixel per Plane and for Planes
+ 
+                 Bits per Pixel
+  Screen Mode    per Plane        Planes
+ 
+   1               2                1
+   2               1                1
+   7               1                4
+   8               1                4
+   9               1                2   (if   64K of EGA  memory)
+                                    4   (if &gt; 64K of EGA  memory)
+  10               1                2
+  11               1                1
+  12               1                4
+  13               8                1
+ 
+ 
+The bytes per element of an array are as follows:
+ 
+  ■ Two bytes for an integer array element
+  ■ Four bytes for a long-integer array element
+  ■ Four bytes for a single-precision array element
+  ■ Eight bytes for a double-precision array element
+ 
+For example, suppose you wanted to use the GET statement to store an
+image in high resolution (SCREEN 2). If the coordinates of the upper-
+left corner of the image are (0,0), and the coordinates of the lower-
+right corner are (32,32), then the required size of the array in bytes
+is 4 + INT((33 * 1 + 7)/8) * 1 * (33), or 169. This means an integer
+array with 85 elements would be large enough to hold the image.
+ 
+Unless the array type is integer or long, the contents of an array
+after a GET appear meaningless when inspected directly. Examining
+or manipulating noninteger arrays containing graphics images may cause
+run-time errors.
+ 
+One of the most useful things that can be done with GET and
+PUT is animation.
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,59 @@
+<html>
+
+<head>
+<title>StringRelease Routine Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#StringRelease'>Syntax</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../bas7ex.hlp/x_dot_strasx.html'>Example</a><span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+The StringRelease routine is used in mixed-language programming. A non-
+BASIC routine uses StringRelease to deallocate variable-length strings
+that have been transferred to BASIC's string space from the non-BASIC
+routine.
+ 
+<b>StringRelease(string-descriptor%);</b>
+    ■ The preceding syntax is for the C language.
+    ■ For C, MASM, Pascal, and FORTRAN examples, see Chapter 13,
+      "Mixed-Language Programming with Far Strings" in the Programmer's Guide.
+ 
+Usage Notes
+    ■ Calls to the StringRelease routine are made from a non-BASIC routine
+      to free up space in BASIC's data area.
+ 
+      ║ Note: Use the StringRelease routine only to deallocate variable-
+      ║       length strings that have been transferred to BASIC's string
+      ║       space from a non-BASIC routine. Never use it on strings
+      ║       created by BASIC. Doing so will cause unpredictable
+      ║       results.
+ 
+    ■ BASIC automatically deallocates strings allocated by BASIC. However,
+      strings that have been transferred to BASIC from a non-BASIC
+      routine should be deallocated from the non-BASIC routine using the
+      StringRelease routine. (The reason for this is that StringAssign
+      transfers strings but not string descriptors. Without the string
+      descriptor, BASIC cannot deallocate the string; the deallocation
+      has to be done from the non-BASIC routine with StringRelease.)
+    ■ As an example, assume that you have passed a string from a MASM
+      routine to BASIC's string space using StringAssign. To deallocate
+      this string, assuming a descriptor for the variable-length string
+      exists at offset descriptor, the code is:
+ 
+        .model
+        extrn        stringrelease: far
+ 
+        .code
+        lea          ax, descriptor        ; offset of descriptor
+        push         ax
+        call         stringrelease
+ 
+    ■ For detailed instructions on mixed-language programming with strings,
+      see Chapter 12, "Mixed-Language Programming" and Chapter 13,
+      "Programming with Near Strings" in the Programmer's Guide.
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<title>TYPEIT.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* TYPEIT.C illustrates reassigning handles and streams using functions:
+ *      freopen         _dup             _dup2
+ *
+ * The example also illustrates:
+ *      _setargv
+ *
+ * To make the program handle wildcards, link it with the SETARGV.OBJ
+ * file. You can do this in the PWB environment by creating a program list
+ * containing TYPEIT.C and SETARGV.OBJ (include the path or put in current
+ * directory). You must also turn off the Extended Dictionary flag
+ * within the PWB environment or use the /NOE linker option outside the
+ * environment. For example:
+ *    CL typeit.c setargv /link /NOE
+ */
+ 
+#include &lt;stdio.h&gt;
+#include &lt;conio.h&gt;
+#include &lt;io.h&gt;
+#include &lt;process.h&gt;
+ 
+void main( int argc, char **argv )
+{
+    FILE *ftmp;
+    int htmp;
+ 
+    /* Duplicate handle of stdin. Save the original to restore later. */
+    htmp = _dup( _fileno( stdin ) );
+ 
+    /* Process each command line argument. */
+    while( *(++argv) != NULL )
+    {
+        /* Original stdin used for _getch. */
+        printf( "Press any key to display file: %s\n", *argv );
+        _getch();
+ 
+        /* Reassign stdin to input file. */
+        ftmp = freopen( *argv, "rb", stdin );
+ 
+        if( (ftmp == NULL) || (htmp == -1 ) )
+        {
+            _dup2( htmp, _fileno( stdin ) );
+            perror( "Can't reassign standard input" );
+            exit( 1 );
+        }
+ 
+        /* Spawn MORE, which will receive open input file as its standard
+         * input. MORE can be the DOS MORE or the sample program MORE.C.
+         */
+        _spawnlp( _P_WAIT, "MORE", "MORE", NULL );
+ 
+        /* Reassign stdin back to original so that we can use the
+         * original stdin to get a key.
+         */
+        _dup2( htmp, _fileno( stdin ) );
+    }
+    exit( 0 );
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

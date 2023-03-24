@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>ON UEVENT GOSUB Statement Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='x_dot_onu.html'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='x_at_L8142.html'>Example<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>ON UEVENT GOSUB Statement Details</b>
+ 
+<b>Syntax</b>
+  ON UEVENT GOSUB { linenumber | linelabel }
+ 
+The linenumber or linelabel argument is the number or label of the first
+line in the event-handling routine. ON UEVENT GOSUB lets your program
+branch to an event-handling routine when a user-defined event occurs.
+The event is usually a hardware interrupt.
+ 
+This gives user-defined events one of the features enjoyed by the COM,
+KEY, and other events in BASIC. Once these events have been defined
+with an ON event statement, they act like interrupts. The program does
+not need to poll for the event.
+ 
+Likewise, once ON UEVENT GOSUB and UEVENT ON have been executed, the
+user-defined event automatically triggers execution of the BASIC routine
+to handle it. The program does not have to poll.
+ 
+At least two (and sometimes three) pieces of code are needed to set up
+a user-defined event.
+  ■ The first is the interrupt service routine.
+  ■ The second is an initialization routine to insert the address of the
+    service routine into the interrupt vector table.
+  ■ The third is the routine your BASIC program calls to retrieve the data
+    (if any) collected by the interrupt service routine.
+ 
+If the initialization routine "steals" an interrupt used by another
+service routine, the original address must be restored before your
+program terminates.
+ 
+These routines are usually written in assembly language. However, any
+language whose compiler can generate interrupt service routines and
+whose object code can be linked with BASIC may be used.
+ 
+There are four steps in creating a user-defined event:
+ 
+  1. Write an event-handling routine and add it to your BASIC program.
+  2. Execute the ON UEVENT GOSUB statement to specify the user-event
+     handling routine.
+  3. Execute the UEVENT ON statement to enable user-event trapping.
+  4. Call the interrupt-initialization routine to insert the address
+     of the interrupt service routine into the interrupt vector table.
+ 
+When the interrupt occurs, the interrupt transfers execution to the
+interrupt service routine. The service routine collects and stores
+the data the user wants. It then calls SetUEvent. SetUEvent sets a
+flag checked by QuickBASIC before going to the next BASIC statement
+(or label if executing compiled code using /W instead of /V). When
+the flag is set, control transfers to the event-handling routine
+designated in ON EVENT GOSUB.
+ 
+The SetUEvent procedure is a part of BASIC, and is automatically included
+in compiled applications or when running QuickBASIC with the /L command-line
+option. Your interrupt service routine must call SetUEvent; it is the only
+way to alert your program that the event has occurred. You can call
+SetUEvent from any language, not just assembly language.
+ 
+SetUEvent is not a function; it cannot return a value to BASIC. If you
+wish to return a value, you must write a function for your BASIC program
+to call. (It would usually be called by your event-handling routine.)
+This function must be described in a declare statement so your BASIC
+program can find and use it.
+ 
+Although ON UEVENT GOSUB ties an event-handling routine to a user-defined
+event, it does not enable the event trap. The UEVENT statement is used to
+enable, disable, and suspend user-defined event trapping.
+
+</pre>
+</body>
+
+</html>

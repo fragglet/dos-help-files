@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>WSSCRBUF.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* WSSCRBUF.C - Demonstrate setting the
+ * size of a QuickWin window's
+ * screen buffer
+ * Note: The size is set here to an amount
+ * smaller than the default size, but you can
+ * set it larger as well
+ */
+ 
+#include &lt;io.h&gt;
+#include &lt;stdio.h&gt;
+ 
+#define NUMWINS     4       /* Number of windows */
+#define OPENFLAGS   "w"     /* Access permission */
+#define NUMLINES    100     /* Lines of text to write */
+ 
+void main()
+{
+   int i;                   /* Loop variable */
+   int nSize;               /* Old size of screen buffer */
+   int nWinBufSize = 1500L; /* New size */
+   int nRes;                /* Result */
+   FILE *wp;                /* File pointer */
+ 
+   /* Open a window */
+   /* NULL arguments accept default characteristics */
+   wp = _fwopen( NULL, NULL, OPENFLAGS );
+   if( wp == NULL )
+   {
+      printf( "***ERROR:_fwopen\n" );
+      exit( -1 );
+   }
+ 
+   /* Get the size of its screen buffer */
+   nSize = _wgetscreenbuf( _fileno( wp ) );
+   nRes = fprintf( wp, "Screen buffer holds %i chars\n", nSize );
+ 
+   /* Reset the screen buffer size */
+   nRes = _wsetscreenbuf( _fileno( wp ), nWinBufSize );
+ 
+   /* Write many lines in the window */
+   for( i = 0; i &lt; NUMLINES; i++ )
+   {
+      nRes = fprintf( wp, "%i Windows!\n", i );
+   }
+   nRes = fprintf( wp, "\nWhen the program ends, click 'No'\n" );
+   nRes = fprintf( wp, "and try using the scroll bars\n" );
+ 
+   nRes = _wclose( _fileno( wp ), _WINPERSIST );
+ 
+   exit( 0 );
+}
+ 
+ 
+ 
+ 
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

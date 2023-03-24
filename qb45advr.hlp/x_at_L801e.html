@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>Variable Storage Allocation</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='x_at_L8017.html'>Variables<span class='grhilite'>►</span></a>   <span class='grhilite'>◄</span>Variable Storage Allocation<span class='grhilite'>►</span>   <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>   <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>Variable Storage Allocation</b>
+ 
+BASIC stores different kinds of variables in different areas in memory. You
+only need to worry about where variables are stored if you are doing mixed-
+language programming or you are using one of the following BASIC statements
+or functions:
+ 
+  CALL, CALLS (non-BASIC procedures)
+  DECLARE (non-BASIC procedures)
+  SADD
+  SETMEM
+  VARPTR
+  VARSEG
+  VARPTR$
+ 
+BASIC stores variables either in an area called DGROUP or as far objects.
+(DGROUP is the name of the default data segment, the segment referenced
+when DEF SEG is used without an address.) Variables stored in DGROUP
+can be referenced by using near addresses or pointers. A near address
+consists of a single value or offset from the beginning of a segment
+or block of memory. Far objects are referenced by using far addresses
+or pointers. A far address consists of two parts: the starting address
+of a segment or block of memory, and the offset within the segment.
+ 
+Whether a variable is stored in DGROUP or as a far object depends
+first on whether it is a simple variable or an array. All simple
+variables are stored in DGROUP. Array storage is a little more complex
+and is slightly different between programs run as .EXE files and
+programs run within the QuickBASIC environment.
+ 
+When doing mixed-language programming, far addresses are preferred. This
+ensures that all generated code is independent of the BASIC implementation.
+ 
+In programs run as .EXE files, array variables are stored as follows:
+ 
+  ■ All static arrays are stored in DGROUP and can be referenced
+    with near addresses.
+  ■ All dynamic arrays of variable-length strings are also stored
+    in DGROUP and can also be referenced with near addresses.
+  ■ All other dynamic arrays are stored as far objects and
+    require far addresses.
+ 
+In programs run within the QuickBASIC environment, array variable
+storage follows these rules:
+ 
+  ■ All static arrays in COMMON are stored in DGROUP and can be
+    referenced with near addresses.
+  ■ All arrays of variable-length strings are also stored in DGROUP
+    and can also be referenced with near addresses.
+  ■ All other arrays are stored as far objects and require far
+    addresses.
+ 
+Because BASIC attempts to make the most efficient use of memory possible,
+several different things may cause variables to move in memory:
+ 
+  ■ A reference to a string literal or expression
+  ■ A DEF FN or FUNCTION invocation
+  ■ The use of a BASIC string or memory-related function
+ 
+Because BASIC variables may move, use the results of a VARPTR, VARSEG,
+VARPTR$, or SADD function call immediately after the function call.
+
+</pre>
+</body>
+
+</html>

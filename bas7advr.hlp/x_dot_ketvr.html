@@ -1,0 +1,111 @@
+<html>
+
+<head>
+<title>KEY Statements (Event Trapping) Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#.ketv'>Syntax</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../bas7ex.hlp/x_dot_ketvx.html'>Example</a><span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+The KEY (event trapping) statements enable, disable, or suspend trapping
+of specified keys.
+ 
+<b>KEY(n%) ON</b>
+<b>KEY(n%) OFF</b>
+<b>KEY(n%) STOP</b>
+ 
+    ■ The values of n% are shown below:
+ 
+        n%       Key
+        ═════    ═════════════════════════════
+        0        All keys listed in this table
+        1-10     F1-F10
+        11       Up Arrow key
+        12       Left Arrow key
+        13       Right Arrow key
+        14       Down Arrow key
+        15-25    User-defined keys
+        30-31    F11-F12 on 101-key keyboards
+ 
+Usage Notes
+    ■ KEY(n%) ON enables trapping of function keys, direction keys, and
+      user-defined keys. If key n% is pressed after a KEY(n%) ON statement,
+      the routine specified in the ON KEY statement is executed.
+    ■ KEY(n%) OFF disables trapping of key n%. No trapping takes place
+      until another KEY(n%) ON statement is executed. Events occurring while
+      trapping is off are ignored.
+    ■ KEY(n%) STOP suspends trapping of key n%. No trapping takes place
+      until a KEY(n%) ON statement is executed. Events occurring while
+      trapping is suspended are remembered and processed when the next
+      KEY(n%) ON statement is executed. However, remembered events are lost
+      if KEY(n%) OFF is executed.
+    ■ When a key event trap occurs (that is, the GOSUB is performed), an
+      automatic KEY STOP is executed so that recursive traps cannot take
+      place. The RETURN from the trapping routine automatically executes a
+      KEY ON statement unless an explicit KEY OFF was performed inside the
+      routine.
+    ■ If your program contains event-handling statements and you are
+      compiling from the BC command line, use the BC /W or /V option.
+      (The /W option checks for events at every label or line number; the
+      /V option checks at every statement.) If you do not use these
+      options and your program contains event traps, BASIC generates the
+      error message, "ON event without /V or /W on command line."
+    ■ For more information, see Chapter 9, "Event Handling" in the
+      Programmer's Guide.
+ 
+User-Defined Keys
+    ■ In addition to providing the preassigned key numbers 1-14 (plus 30
+      and 31 with the 101-key keyboard), BASIC enables you to create user-
+      defined keys. You do this by assigning the numbers 15-25 to any of
+      the remaining keys on the keyboard. Use <span class='grhilite'>◄</span><a href='unknown#KEY'>KEY (Assignment)</a><span class='grhilite'>►</span>
+      to create user-defined keys.
+    ■ You can also set a trap for "shifted" keys. A key is shifted when
+      you press it simultaneously with one or more of the special keys
+      Shift, Ctrl, or Alt, or if you press it after pressing NumLock or
+      Caps Lock. Use the KEY statements (assignment) to define shifted keys
+      before you can trap them. The syntax for KEY (Assignment) is shown
+      below:
+ 
+        KEY n%, CHR$(keyboardflag) + CHR$(scancode)
+ 
+          n%              Is between 15 and 25 and indicates a user-defined
+                          key.
+ 
+          keyboardflag    Can be any combination of the values in the
+                          <span class='grhilite'>◄</span><a href='../bas7qck.hlp/x_dot_kbflags.html'>Keyboard Flag Table</a><span class='grhilite'>►</span>
+ 
+          scancode        A number that identifyies one of 83 keys to trap.
+                          See the <span class='grhilite'>◄</span><a href='../bas7qck.hlp/x_dot_kbsct.html'>Scan Code Table</a><span class='grhilite'>►</span>
+ 
+    ■ You can add the values in the Keyboard Flag Table together to test
+      for multiple shift states. A keyboardflag value of 12 would test
+      for both Ctrl and Alt being pressed, for example.
+    ■ To define Shift, Ctrl, Alt, NumLock, or Caps Lock as a user-defined
+      key (by itself, not in combination with another key), use a keyboard
+      flag of 0. For example, to define Alt as a user-defined key:
+ 
+        KEY CHR$(0) + CHR$(56)
+ 
+      To define Alt + Alt as a user-defined key (the second Alt will be
+      trapped as it is being pressed only if the first Alt key is
+      already pressed):
+ 
+        KEY CHR$(8) + CHR$(56)
+ 
+    ■ Because key trapping assumes the left and right Shift keys are the
+      same, you can use either 1, 2, or 3 to indicate a Shift key. The
+      scancode argument is a number identifying one of the 83 keys to trap,
+      as shown in the <span class='grhilite'>◄</span><a href='../bas7qck.hlp/x_dot_kbsct.html'>Scan Code Table</a><span class='grhilite'>►</span>.
+ 
+    ■ The scan codes in the Scan Code Table are equivalent to the first
+      column of the scan code table in Appendix A, "Keyboard Codes and
+      ASCII Character Codes" in the BASIC Language Reference. The codes in
+      the other columns of the table in the appendix should not be used for
+      key trapping.
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,45 @@
+<html>
+
+<head>
+<title>SaveRegs</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_at_L8440.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='x_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* @SaveRegs and @RestoreRegs - Macros to save and restore a list
+;* of macros. @SaveRegs pushes each register in the argument list.
+;* and saves each register name in a text macro. @RestoreRegs uses
+;* the saved register list to pop each register.
+;*
+;* Shows:   Directives - CATSTR    INSTR
+;*
+;*
+;* Params:  For @SaveRegs, the registers to be pushed
+;*          For @RestoreRegs, none
+ 
+pregs   TEXTEQU &lt;&gt;  ; Initialize global text macro to empty
+ 
+@SaveRegs MACRO regs:VARARG
+        LOCAL reg
+pregs   CATSTR  &lt;!&lt;&gt;, &lt;regs&gt;, &lt;!&gt;&gt;
+%       FOR reg, &lt;regs&gt;
+            push reg                                ;; Push each register
+        ENDM
+ENDM
+ 
+@RestoreRegs MACRO
+    LOCAL   reg
+%   FOR reg, @ArgRev( pregs )                   ;; @ArgRev from MACROS.INC
+        pop reg                                 ;; Pop each register
+    ENDM
+ENDM
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

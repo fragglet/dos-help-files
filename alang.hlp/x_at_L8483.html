@@ -1,0 +1,36 @@
+<html>
+
+<head>
+<title>@RestoreRegs</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_at_L8440.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='x_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* @RestoreRegs - Macro to generate a pop instruction for registers saved
+;* by the SaveRegs macro.  Restores the group of registers most recently
+;* pushed -- that is, RestoreRegs pops the group of registers saved by the
+;* last use of SaveRegs.
+;*
+;* Shows:   Directives - INSTR     SUBSTR     SIZESTR
+;*          Operators - GT
+;*
+;* Params:  None
+@RestoreRegs MACRO
+    LOCAL   regs, numloc
+    numloc  INSTR  %1, regpushed, &lt;!&gt;&gt;       ;; Find end of list
+    regs    SUBSTR regpushed, %1, %numloc + 1;; Get list of registers
+    regpushed   SUBSTR regpushed, %numloc    ;; Remove list from regpushed
+    FOR reg, @ArgRev( regs )                 ;; Pop each register
+        pop reg
+    ENDM
+ENDM
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

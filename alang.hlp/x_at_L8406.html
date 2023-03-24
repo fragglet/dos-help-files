@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>Video Data Memory</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L843a.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+  Address
+  (hex)       Size      Description
+ 
+  0000:0449   1 byte    Current video mode.
+ 
+  0000:044A   1 word    Number of screen columns (characters per row).
+ 
+  0000:044C   1 word    Size of video buffer in bytes.
+ 
+  0000:044E   1 word    Offset to buffer area used by current display page.
+ 
+  0000:0450   8 words   Cursor coordinates for 8 display pages, beginning
+                        with page 0. High byte of each coordinate = cursor
+                        row, low byte = cursor column.
+ 
+                        NOTE: top row = 0, leftmost column = 0.
+ 
+  0000:0460   1 word    Current cursor shape. High byte = scan line at
+                        top of cursor, low byte = scan line at bottom of
+                        cursor, relative to top of character box.
+ 
+                        For example, the normal MDA cursor shape uses
+                        lines 11-12 of the 14 scan lines (0-13) that form
+                        the character box. In this case, 0000:0460h
+                        contains the value 0B0Ch. Changing this value does
+                        not change cursor shape.
+ 
+  0000:0462   1 byte    Current display page number.
+ 
+  0000:0463   1 word    Port address of CRT controller index register
+                        (03B4h for monochrome, 03D4h for color).
+ 
+  0000:0465   1 byte    Current value in CRT controller mode register
+                        at port address 03B8h (monochrome) or 03D8h
+                        (color). Used only for MDA and CGA but emulated by
+                        other adapters.
+ 
+                        The MDA and CGA mode registers provide write-only
+                        access and cannot be read directly. To keep other
+                        processes (such as BIOS) informed of the
+                        register's contents, programs that reset the
+                        register should record the new value at 0000:0465.
+ 
+  0000:0466   1 byte    Current value in CRT controller's color register
+                        at port address 03D9h. Used only for CGA but
+                        emulated by EGA, MCGA, and VGA adapters.
+ 
+                        The color register, like the mode register
+                        described above, cannot be read directly. A program
+                        that resets the register should record the new
+                        value at 0000:0466.
+ 
+  See also: <a href='10h.html'>Interrupt 10h (Video Services)</a>
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,68 @@
+<html>
+
+<head>
+<title>SIEVE.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+/* SIEVE.C illustrates timing functions including:
+ *      clock           difftime            _bios_timeofday
+ *
+ * In addition to the timing use shown here, these functions can be
+ * used for delay loops as shown for the clock function in <a href='x_at_L827b.html'>BEEP.C</a>.
+ */
+ 
+#include &lt;time.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;bios.h&gt;
+#define TICKPERSEC      18.2
+ 
+int mark[10000];
+ 
+void main()
+{
+    time_t tstart, tend;    /* For difftime         */
+    time_t cstart, cend;    /* For clock            */
+    long   bstart, bend;    /* For _bios_timeofday  */
+    register int i, loop;
+    int n, num, step;
+ 
+    /* Start timing. */
+    printf( "Working...\n" );
+    time( &amp;tstart );     /* Use time and difftime for timing to seconds   */
+    cstart = clock();    /* Use clock for timing to hundredths of seconds */
+    _bios_timeofday( _TIME_GETCLOCK, &amp;bstart );
+    /* Do timed Sieve of Erotosthenes. */
+    for( loop = 0; loop &lt; 250; ++loop)
+        for( num = 0, n = 3; n &lt; 10000; n += 2 )
+            if( !mark[n] )
+            {
+                step = 2 * n;
+                for (i = 3 * n; i &lt; 10000; i += step)
+                    mark[i] = -1;
+                ++num;
+            }
+ 
+    /* End timing and print results. Note that _bios_timeofday doesn't
+     * handle midnight rollover.
+     */
+    time( &amp;tend );
+    printf( "\ndifftime:\t\t%4.2f seconds to find %d primes 50 times\n",
+             difftime( tend, tstart ), num );
+    cend = clock();
+    printf( "\nclock:\t\t\t%4.2f seconds to find %d primes 50 times\n",
+            ((float)cend - cstart) / CLK_TCK, num );
+    _bios_timeofday( _TIME_GETCLOCK, &amp;bend );
+    printf( "\n_bios_timeofday:\t%4.2f seconds to find %d primes 50 times\n",
+            ((float)bend - bstart) / TICKPERSEC, num );
+}
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>DCOMMIT.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* DCOMMIT.C illustrates DOS file I/O functions including:
+ *      _dos_commit     _dos_creatnew     _dos_write
+ *      _dos_creat      _dos_close
+ *
+ */
+ 
+#include &lt;dos.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;conio.h&gt;
+ 
+void main()
+{
+    char saveit[] = "Straight to disk. ",
+         prompt[] = "File exists, overwrite? [y|n] ",
+         err[] = "Error occurred. ",
+         newline[] = "\n\r";
+    int hfile, ch;
+    unsigned count;
+ 
+    /* Open file and create, overwriting if necessary. */
+    if( _dos_creatnew( "COMMIT.LOG", _A_NORMAL, &amp;hfile ) != 0 )
+    {
+        if( errno == EEXIST )
+        {
+            /* Use _dos_write to display prompts. Use _bdos to call
+             * function 1 to get and echo keystroke.
+             */
+            _dos_write( 1, prompt, sizeof( prompt ) - 1, &amp;count );
+            ch = _bdos( 1, 0, 0 ) &amp; 0x00ff;
+            if( (ch == 'y') || (ch == 'Y') )
+                _dos_creat( "COMMIT.LOG", _A_NORMAL, &amp;hfile );
+            _dos_write( 1, newline, sizeof( newline ) - 1, &amp;count );
+        }
+    }
+    /* Write to file; output passes through
+       operating system's buffers. */
+    if( _dos_write( hfile, saveit, sizeof( saveit ), &amp;count ) != 0 )
+    {
+        _dos_write( 1, err, sizeof( err ) - 1, &amp;count );
+        _dos_write( 1, newline, sizeof( newline ) - 1, &amp;count );
+    }
+    /* Write directly to file with no intermediate buffering */
+    if( _dos_commit( hfile ) != 0 )
+    {
+        _dos_write( 1, err, sizeof( err ) - 1, &amp;count );
+        _dos_write( 1, newline, sizeof( newline ) - 1, &amp;count );
+    }
+     /* Close file. */
+    if( _dos_close( hfile ) != 0 )
+    {
+        _dos_write( 1, err, sizeof( err ) - 1, &amp;count );
+        _dos_write( 1, newline, sizeof( newline ) - 1, &amp;count );
+    }
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

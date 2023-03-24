@@ -1,0 +1,61 @@
+<html>
+
+<head>
+<title>Int 21h Function 4Ch</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_at_L82f3.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_at_L8466.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='x_at_L8251.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     This function performs the following actions:
+ 
+        ■ All memory belonging to the process is released.
+ 
+        ■ File buffers are flushed and any open handles for files or
+          devices owned by the process are closed.
+ 
+        ■ The termination handler vector (Int 22h) is restored from
+          PSP:000Ah.
+ 
+        ■ The CTRL+C handler vector (Int 23h) is restored from
+          PSP:000Eh.
+ 
+        ■ The critical-error handler vector (Int 24h) is restored from
+          PSP:0012h.
+ 
+        ■ Control is transferred to the termination handler.
+ 
+     If the program is returning to COMMAND.COM, control transfers to
+     the resident portion and the transient portion is reloaded if
+     necessary. If a batch file is in progress, the next line of the
+     fil` is fetched and interpreted; otherwise, a prompt is issued
+     for the next user command.
+ 
+     This is the preferred method of termination for application
+     programs because it allows a return code to be passed to the
+     parent program and does not rely on the contents of any segment
+     register. Other methods of performing a final exit are Int 20h,
+     Int 21h Function 00h, Int 21h Function 31h, and Int 27h.
+ 
+     Any files that have been opened using FCBs and modified by the
+     program should be closed before program termination; otherwise,
+     data may be lost.
+ 
+     The return code can be retrieved by the parent process with Int
+     21h Function 4Dh (Get Return Code). It can also be tested in a
+     batch file with an IF ERRORLEVEL statement. By convention, a
+     return code of zero indicates successful execution, and a nonzero
+     return code indicates an error.
+ 
+     [Version 3.0+]
+     If the program is running on a network, it should remove all locks
+     it has placed on file regions before terminating.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,59 @@
+<html>
+
+<head>
+<title>Recursion</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='x_dot_mxp.html'>Modules and Procedures<span class='grhilite'>►</span></a>   <span class='grhilite'>◄</span>Recursion<span class='grhilite'>►</span>   <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>   <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>Recursion</b>
+ 
+QuickBASIC lets you write recursive SUB or FUNCTION procedures (procedures
+that call themselves). For example, the following program uses a recursive
+FUNCTION to reverse a string of characters:
+ 
+  DECLARE FUNCTION Reverse$ (StringVar$)
+  LINE INPUT "Enter string to reverse: ", X$
+  PRINT Reverse$(X$)
+  END
+ 
+  FUNCTION Reverse$ (S$)
+    C$ = MID$(S$, 1, 1)
+    IF C$ = "" THEN
+      ' The first character is null, so return
+      ' null--there's no more string left.
+      Reverse$ = ""
+    ELSE
+      ' The reverse of a non-null string is the first character
+      ' appended to the reverse of the remaining string.
+      Reverse$ = Reverse$(MID$(S$, 2)) + C$
+    END IF
+  END FUNCTION
+ 
+  Sample output
+ 
+  Enter string to reverse: abcdefgh...tuvwxyz
+  zyxwvut...hgfedcba
+ 
+Reverse$ reverses a string by first testing for the simplest case--a null
+string. If the string is null, then a null string is returned. If the
+string is not null--there are characters--then Reverse$ simplifies the
+problem. The reverse of a non-null string is the rest of the string, C$,
+with the first character of the string concatenated to it. So Reverse$
+calls itself to reverse the rest of the string and, when this is done,
+concatenates the first character to the reversed string.
+ 
+Recursion can use a lot of memory because automatic variables inside the
+FUNCTION or SUB must be saved in order to restart the procedure when the
+recursive call is finished. Because automatic variables are saved on the
+stack, you may need to increase the stack size with the CLEAR statement to
+keep from running out of stack space. Use the FRE function to determine by
+how many bytes you need to adjust the stack size.
+
+</pre>
+</body>
+
+</html>

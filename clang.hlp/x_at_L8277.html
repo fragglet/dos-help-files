@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>FILL.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* FILL.C illustrates color, filling, and linestyle functions including:
+ *    _setlinestyle      _setfillmask       _setcolor
+ *    _getlinestyle      _floodfill                               (DOS-only)
+ *
+ * The _getfillmask function is not shown, but its use is similar to
+ * _getlinestyle.
+ */
+ 
+#include &lt;conio.h&gt;
+#include &lt;graph.h&gt;
+#include &lt;time.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stddef.h&gt;
+ 
+void main()
+{
+    short x, y, xinc, yinc, xwid, ywid;
+    unsigned char fill[8];
+    struct _videoconfig vc;
+    unsigned seed = (unsigned)time( NULL ); /* Different seed each time   */
+    short i, color;
+ 
+    if( !_setvideomode( _MAXRESMODE ) )     /* Find a valid graphics mode */
+        exit( 1 );                          /* No graphics available      */
+    _getvideoconfig( &amp;vc );
+ 
+    xinc = vc.numxpixels / 8;               /* Size variables to mode     */
+    yinc = vc.numypixels / 8;
+    xwid = (xinc / 2) - 4;
+    ywid = (yinc / 2) - 4;
+ 
+    /* Draw circles and lines with different patterns. */
+    for( x = xinc; x &lt;= (vc.numxpixels - xinc); x += xinc )
+    {
+        for( y = yinc; y &lt;= (vc.numypixels - yinc); y += yinc )
+        {
+            /* Vary random seed, randomize fill and color. */
+            srand( seed = (seed + 431) * 5 );
+            for( i = 0; i &lt; 8; i++ )
+                fill[i] = (unsigned char)rand();
+            _setfillmask( fill );
+            color = (rand() % vc.numcolors) + 1;
+            _setcolor( color );
+ 
+            /* Draw ellipse and fill with random color. */
+            _ellipse( _GBORDER, x - xwid, y - ywid, x + xwid, y + ywid );
+            _setcolor( (rand() % vc.numcolors) + 1 );
+            _floodfill( x, y, color );
+ 
+            /* Draw vertical and horizontal lines. Vertical line style
+             * is the opposite of (NOT) horizontal style. Since lines are
+             * overdrawn with several line styles, this has the effect of
+             * combining colors and styles.
+             */
+            _setlinestyle( rand() );
+            _moveto( 0, y + ywid + 4 );
+            _lineto( vc.numxpixels - 1, y + ywid + 4 );
+            _setlinestyle( ~_getlinestyle() );
+            _moveto( x + xwid + 4, 0 );
+            _lineto( x + xwid + 4, vc.numypixels - 1 );
+        }
+    }
+    _getch();
+    _setvideomode( _DEFAULTMODE );
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

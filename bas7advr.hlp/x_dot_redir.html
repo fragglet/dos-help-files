@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>REDIM Statement Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#REDIM'>Syntax</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../bas7ex.hlp/x_dot_redix.html'>Example</a><span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+REDIM changes the space allocated to an array that has been declared
+dynamic.
+ 
+<b>REDIM [SHARED | PRESERVE] variable(subscripts) [AS type]</b>
+               [,variable(subscripts) [AS type]]...
+    ■ The SHARED attribute differs from the SHARED statement, which affects
+      only the variables within a single module. SHARED can be used in REDIM
+      statements only in the module-level code.
+    ■ PRESERVE preserves data when changing the outer bound of the array.
+    ■ subscripts are the dimensions of the array. Multiple
+      dimensions can be declared. The subscript syntax is:
+ 
+        [lower TO] upper [,[lower TO] upper]...
+ 
+         lower TO upper    Indicates the lower and upper bounds of an
+                           array's subscripts. Lower and upper are numeric
+                           expressions that specify the lowest and highest
+                           value for the subscript. See the
+                           <span class='grhilite'>◄</span><a href='x_dot_dimr.html'>DIM statement details</a><span class='grhilite'>►</span> for more information
+                           about using the TO keyword.
+ 
+    ■ AS type declares the type of the variable. The type may be
+      INTEGER, LONG, SINGLE, DOUBLE, STRING (for variable-length strings),
+      STRING * length (for fixed-length strings), CURRENCY, or a user-
+      defined type.
+ 
+New Features
+    ■ The PRESERVE keyword preserves data in the array, allowing you
+      to allocate space to arrays more efficiently.
+    ■ BASIC now supports the CURRENCY data type (type suffix @). This is
+      used in the AS type clause of REDIM.
+    ■ BASIC now supports static arrays in user-defined types.
+ 
+Usage Notes
+    ■ The REDIM statement changes the space allocated to an dynamic array.
+    ■ When a REDIM statement is compiled, all arrays declared in the
+      statement are treated as dynamic. At run time, when a REDIM
+      statement is executed, the array is deallocated (if it is already
+      allocated) and then reallocated with the new dimensions. If you
+      do not use PRESERVE, old array-element values are lost.
+    ■ The PRESERVE keyword allows you to raise or lower the outer
+      bound of a dynamic array without erasing data. For example:
+ 
+      REDIM X(10, 10, 10)
+      .
+      .
+      .
+      REDIM PRESERVE X(10, 10, 15)
+ 
+      This example keeps any data entered in the array X() and adds
+      space for more elements in the third dimension of the array.
+      The third dimension of X() is the rightmost bound of the array.
+      To change the leftmost bound, you must compile the program with /R.
+ 
+Important
+    ■ Although you can change the size of an array's dimensions with
+      the REDIM statement, you cannot change the number of dimensions.
+      For example, the following statements are legal:
+ 
+        ' $DYNAMIC
+        DIM A(50,50)
+        ERASE A
+        REDIM A(20,15)    ' Array A still has two dimensions.
+ 
+      However, the following statements are not legal, and produce the
+      error message: "Wrong number of dimensions":
+ 
+        ' $DYNAMIC
+        DIM A(50,50)
+        ERASE A
+        REDIM A(5,5,5)   ' Changed number of dimensions from
+                         ' two to three.
+
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<title>_fwopen</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_fwopen.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_at_L846b.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+     The _fwopen function is a high-level call that opens a new
+     QuickWin window, returning a file-stream pointer. This routine is
+     used only in QuickWin programs; it is not part of the Windows
+     API. For full details about QuickWin, see Chapter 8 of the
+     Programming Techniques manual.
+ 
+     The _wopeninfo and _wsizeinfo structures, declared in STDIO.H,
+     are used to pass window initialization information, including the
+     window's initial size and position on the screen. You can pass
+     NULL for these arguments to accept QuickWin defaults or declare
+     variables of these two structure types and fill in their fields.
+ 
+     If you declare _wopeninfo and _wsizeinfo variables, assign the
+     _QWINVER macro to the _version field. _QWINVER is the current
+     QuickWin version and is defined in STDIO.H and IO.H.
+ 
+     For the _wopeninfo variable, assign a null-terminated string to
+     the _title field containing the desired window title. You can
+     also optionally set the size of the window's screen buffer in the
+     _wbufsize field. The default is 2048 bytes, but you can pass some
+     other number or the value _WINBUFINF. This causes the buffer to
+     be reallocated continually so that all window output is retained
+     for scrolling.
+ 
+     For the _wsizeinfo variable, assign one of the following values
+     to the _type field:
+ 
+     Value            Meaning
+ 
+     _WINSIZEMIN      Minimize the window
+     _WINSIZEMAX      Maximize the window
+     _WINSIZECHAR     Use character coordinates for the window size
+ 
+     If the type is _WINSIZECHAR, you must supply the _x, _y, _h, and
+     _w values in the remainder of the structure. They specify the
+     upper-left corner and the height and width of the window (in
+     characters).
+ 
+     The &lt;mode&gt; parameter is a pointer to the stream I/O mode. The
+     _fwopen function accepts the same mode values as the STDIO.H
+     fopen function:
+ 
+     Type     Description
+ 
+     "r"      Opens for reading
+     "w"      Opens for writing
+     "r+"     Opens for both reading and writing
+     "w+"     Opens for both reading and writing
+ 
+     In addition to the values listed above, one of the following
+     characters can be included in &lt;mode&gt; to specify the translation
+     mode for newline characters:
+ 
+     Mode     Meaning
+ 
+     "t"      Open in text (translated) mode
+     "b"      Open in binary (untranslated) mode
+ 
+     If "t" or "b" is not given in &lt;mode&gt;, the translation mode is
+     defined by the default-mode variable _fmode. If "t" or "b" is
+     prefixed to the argument, the function fails and returns NULL.
+ 
+     If _fwopen is successful, the returned stream can be passed to
+     standard STDIO.H functions such as fread, fwrite, and fprintf. If
+     you write to a stream and then read from it, or if you read from
+     a stream and then write to it, call the STDIO.H rewind function
+     between the I/O calls. To close an open window stream, call the
+     STDIO.H function fclose. If you have opened a window with
+     _fwopen, you can use the _fileno macro to obtain a file handle,
+     which you can then pass to other QuickWin calls, such as
+     _wsetscreenbuf or _wsetsize.
+ 
+     Return Value
+ 
+     If successful, the _fwopen function returns a stream pointer
+     (FILE *) to the new window. A return value of NULL indicates an
+     error.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

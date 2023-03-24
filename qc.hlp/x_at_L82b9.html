@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<title>SPAWN.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+/* SPAWN.C illustrates the different versions of spawn including:
+ *      spawnl          spawnle         spawnlp         spawnlpe
+ *      spawnv          spawnve         spawnvp         spawnvpe
+ *
+ * Although SPAWN.C can spawn any program, you can verify how different
+ * versions handle arguments and environment by compiling and
+ * specifying the sample program <a href='x_at_L8277.html'>ARGS.C</a>. See <a href='x_at_L828e.html'>EXEC.C</a> for examples
+ * of the similar exec functions.
+ */
+ 
+#include &lt;stdio.h&gt;
+#include &lt;conio.h&gt;
+#include &lt;process.h&gt;
+ 
+char *my_env[] =                        /* Environment for spawn?e */
+{
+    "THIS=environment will be",
+    "PASSED=to child by the",
+    "SPAWN=functions",
+    NULL
+};
+ 
+void main()
+{
+    char *args[4], prog[80];
+    int ch, r;
+ 
+    printf( "Enter name of program to spawn: " );
+    gets( prog );
+    printf( " 1. spawnl   2. spawnle   3. spawnlp   4. spawnlpe\n" );
+    printf( " 5. spawnv   6. spawnve   7. spawnvp   8. spawnvpe\n" );
+    printf( "Type a number from 1 to 8 (or 0 to quit): " );
+    ch = getche();
+    if( (ch &lt; '1') || (ch &gt; '8') )
+        exit( -1 );
+    printf( "\n\n" );
+ 
+    /* Arguments for spawnv? */
+    args[0] = prog;
+    args[1] = "spawn??";
+    args[2] = "two";
+    args[3] = NULL;
+ 
+    switch( ch )
+    {
+        case '1':
+            r = spawnl( P_WAIT, prog, prog, "spawnl", "two", NULL );
+            break;
+        case '2':
+            r = spawnle( P_WAIT, prog, prog, "spawnle", "two",
+                         NULL, my_env );
+            break;
+        case '3':
+            r = spawnlp( P_WAIT, prog, prog, "spawnlp", "two", NULL );
+            break;
+        case '4':
+            r = spawnlpe( P_WAIT, prog, prog, "spawnlpe", "two",
+                          NULL, my_env );
+            break;
+        case '5':
+            r = spawnv( P_WAIT, prog, args );
+            break;
+        case '6':
+            r = spawnve( P_WAIT, prog, args, my_env );
+            break;
+        case '7':
+            r = spawnvp( P_WAIT, prog, args );
+            break;
+        case '8':
+            r = spawnvpe( P_WAIT, prog, args, my_env );
+            break;
+        default:
+            break;
+    }
+    if( r == -1 )
+        printf( "Couldn't spawn process" );
+    else
+        printf( "\nReturned from SPAWN!" );
+    exit( r );
+}
+
+</pre>
+</body>
+
+</html>

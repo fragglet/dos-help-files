@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>Environment-Variable Macros</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='nmake_dot_macro.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────NMAKE──────────────────────────────────────────────────────────────────
+ 
+     NMAKE inherits macro definitions for every environment variable
+     that existed before the NMAKE session. If a variable was set in
+     the operating-system environment, a macro exists that has the same
+     name and value. Inheritance occurs before preprocessing.
+ 
+     Environment-variable macro names are in uppercase.
+ 
+     WARNING: If an environment variable contains a dollar sign
+              ($), NMAKE interprets it as the beginning of a macro
+              invocation. The resulting macro expansion can cause
+              unexpected behavior and possibly an error.
+ 
+     Environment-variable macros can be redefined. However, the
+     following restrictions apply:
+ 
+        ■ Changing a macro does not change the equivalent environment
+          variable. To change the variable, use a SET command.
+ 
+        ■ Changing an environment variable in an NMAKE session using
+          the SET command does not change the corresponding macro; to
+          change the macro, use a macro definition.
+ 
+     If an environment variable has not been set, there is no
+     equivalent macro, and the variable cannot be set using a macro
+     definition. However, you can use a SET command in the NMAKE
+     session to set the variable. The variable is then in effect for
+     the rest of the NMAKE session unless redefined or cleared by a
+     later SET command. A SET definition in a makefile does not create
+     a corresponding macro; if you want a macro for an environment
+     variable that is created during an NMAKE session, you must
+     explicitly define the macro in addition to setting the variable.
+ 
+     The /E option causes macros inherited from environment variables
+     to override any macros with the same name in the makefile.
+     See: <span class='grhilite'>◄</span><a href='x_at_L8008.html'>/E Option</a><span class='grhilite'>►</span>
+          <span class='grhilite'>◄</span><a href='x_at_L8043.html'>Precedence Among Macro Definitions</a><span class='grhilite'>►</span>
+ 
+     Environment-variable macros are inherited during recursion.
+     See: <span class='grhilite'>◄</span><a href='x_at_L8042.html'>Inherited Macros</a><span class='grhilite'>►</span>
+ 
+     The !INCLUDE preprocessing directive uses the INCLUDE macro, which
+     is initially set to the value of the INCLUDE environment variable.
+     See: <span class='grhilite'>◄</span><a href='!INCLUDE.html'>!INCLUDE Directive</a><span class='grhilite'>►</span>
+ 
+     Example
+ 
+          LIB = c:\tools\lib
+ 
+          sample.exe : sample.obj
+            LINK sample;
+ 
+     This makefile redefines the environment-variable macro called LIB.
+     No matter what value the variable LIB had before, it has the value
+     c:\tools\lib when NMAKE executes the specified LINK command.
+     Redefining the inherited macro does not affect the original
+     environment variable; when NMAKE terminates, LIB still has its
+     original value.
+ 
+     However, if LIB is not defined before the NMAKE session, the LIB
+     macro definition does not set a LIB environment variable for the
+     LINK command. To do this, use the following makefile:
+ 
+          sample.exe : sample.obj
+           SET LIB=c:\tools.lib
+           LINK sample;
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

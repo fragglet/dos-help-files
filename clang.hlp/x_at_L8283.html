@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<title>TEXT.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* TEXT.C illustrates text output functions including:
+ *    _gettextcolor   _getbkcolor   _gettextposition   _outtext
+ *    _settextcolor   _setbkcolor   _settextposition   _clearscreen
+ *
+ * See <a href='x_at_L827a.html'>MODES.C</a> for another use of _outtext and <a href='x_at_L8284.html'>WINDOW.C</a> for another
+ * use of _clearscreen.
+ */
+ 
+#include &lt;conio.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;graph.h&gt;
+ 
+char buffer [80];
+ 
+void main()
+{
+    short blink, fgd, oldfgd;
+    long bgd, oldbgd;
+    struct _rccoord oldpos;
+ 
+    /* Save original foreground, background, and text position. */
+    oldfgd = _gettextcolor();
+    oldbgd = _getbkcolor();
+    oldpos = _gettextposition();
+    _clearscreen( _GCLEARSCREEN );
+ 
+    /* First time no blink, second time blinking. */
+    for( blink = 0; blink &lt;= 16; blink += 16 )
+    {
+ 
+        /* Loop through 8 background colors. */
+        for( bgd = 0; bgd &lt; 8; bgd++ )
+        {
+            _setbkcolor( bgd );
+            _settextposition( (short)bgd + ((blink / 16) * 9) + 3, 1 );
+            _settextcolor( 15 );
+            sprintf(buffer, "Back: %d Fore:", bgd );
+            _outtext( buffer );
+ 
+            /* Loop through 16 foreground colors. */
+            for( fgd = 0; fgd &lt; 16; fgd++ )
+            {
+                _settextcolor( fgd + blink );
+                sprintf( buffer, " %2d ", fgd + blink );
+                _outtext( buffer );
+            }
+        }
+    }
+    _getch();
+ 
+    /* Restore original foreground and background. */
+    _settextcolor( oldfgd );
+    _setbkcolor( oldbgd );
+    _clearscreen( _GCLEARSCREEN );
+    _settextposition( oldpos.row, oldpos.col );
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

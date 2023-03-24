@@ -1,0 +1,116 @@
+<html>
+
+<head>
+<title>CHMOD2.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+/* CHMOD2.C illustrates reading and changing file attributes and file
+ * time using functions:
+ *      _dos_getftime       _dos_setftime
+ *      _dos_getfileattr    _dos_setfileattr
+ *
+ * See <a href='x_at_L8280.html'>CHMOD1.C</a> for a simpler variation of this program using the utime,
+ * access, and chmod functions.
+ */
+ 
+#include &lt;dos.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;conio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;sys\types.h&gt;
+#include &lt;sys\stat.h&gt;
+ 
+char *datestr( unsigned d, char *buf );     /* Prototypes */
+char *timestr( unsigned t, char *buf );
+ 
+void main( int argc, char *argv[] )
+{
+    unsigned fdate, ftime, fattr;
+    struct dosdate_t ddate;
+    struct dostime_t dtime;
+    int hsource;
+    char timebuf[10], datebuf[10], *pkind;
+ 
+    /* Open to get handle and test for errors (such as nonexistence). */
+    if( _dos_open( argv[1], O_RDONLY, &amp;hsource ) )
+    {
+        printf( "Can't open\n" );
+        exit( 1 );
+    }
+ 
+    /* Get time, date, and attribute of file. */
+    _dos_getftime( hsource, &amp;fdate, &amp;ftime );
+    _dos_getfileattr( argv[1], &amp;fattr );
+ 
+    /* Convert information into formatted strings. */
+    datestr( fdate, datebuf );
+    timestr( ftime, timebuf );
+ 
+    printf( "%-12s   %-8s   %-9s   %-9s    %s %s %s\n",
+            "FILE", "TIME", "DATE", "KIND", "RDO", "HID", "SYS" );
+    printf( "%-12s   %8s   %8s    %-9s     %c   %c   %c\n",
+            argv[1], timebuf, datebuf, pkind,
+            (fattr &amp; _A_RDONLY) ? 'Y' : 'N',
+            (fattr &amp; _A_HIDDEN) ? 'Y' : 'N',
+            (fattr &amp; _A_SYSTEM) ? 'Y' : 'N' );
+ 
+    /* Update file time or attribute. */
+    printf( "Change: (T)ime  (R)ead only  (H)idden  (S)ystem\n" );
+    switch( toupper( getch() ) )        /* Use stdlib.h, not ctype.h */
+    {
+        case 'T':                       /* Set to current time */
+            _dos_gettime( &amp;dtime );
+            _dos_getdate( &amp;ddate );
+            ftime = (dtime.hour &lt;&lt; 11) | (dtime.minute &lt;&lt; 5);
+            fdate = ((ddate.year - 1980) &lt;&lt; 9) | (ddate.month &lt;&lt; 5) |
+                      ddate.day;
+            _dos_setftime( hsource, fdate, ftime );
+            break;
+        case 'R':               /* Toggle read only */
+            _dos_setfileattr( argv[1], fattr ^ _A_RDONLY );
+            break;
+        case 'H':               /* Toggle hidden    */
+            _dos_setfileattr( argv[1], fattr ^ _A_HIDDEN );
+            break;
+        case 'S':               /* Toggle system    */
+            _dos_setfileattr( argv[1], fattr ^ _A_SYSTEM );
+            break;
+    }
+    _dos_close( hsource );
+    exit( 1 );
+}
+ 
+/* Takes unsigned time in the format:               fedcba9876543210
+ * s=2 sec incr, m=0-59, h=23                       hhhhhmmmmmmsssss
+ * Changes to a 9-byte string (ignore seconds):     hh:mm ?m
+ */
+char *timestr( unsigned t, char *buf )
+{
+    int h = (t &gt;&gt; 11) &amp; 0x1f, m = (t &gt;&gt; 5) &amp; 0x3f;
+ 
+    sprintf( buf, "%2.2d:%02.2d %cm", h % 12, m,  h &gt; 11 ? 'p' : 'a' );
+    return buf;
+}
+ 
+/* Takes unsigned date in the format:               fedcba9876543210
+ * d=1-31, m=1-12, y=0-119 (1980-2099)              yyyyyyymmmmddddd
+ * Changes to a 9-byte string:                      mm/dd/yy
+ */
+char *datestr( unsigned d, char *buf )
+{
+    sprintf( buf, "%2.2d/%02.2d/%02.2d",
+             (d &gt;&gt; 5) &amp; 0x0f, d &amp; 0x1f, (d &gt;&gt; 9) + 80 );
+    return buf;
+}
+
+</pre>
+</body>
+
+</html>

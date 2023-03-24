@@ -1,0 +1,49 @@
+<html>
+
+<head>
+<title>WriteTTY</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_at_L83fd.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='x_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* WriteTTY - Displays ASCIIZ string at cursor position, in either text
+;* or graphics mode.
+;*
+;* Shows:   BIOS Interrupt - 10h, Function 0Eh (Write Character in TTY Mode)
+;*
+;* Uses:    vconfig - Video configuration structure (initialized
+;*          by calling the GetVidConfig procedure)
+;*
+;* Params:  Sptr - Pointer to ASCIIZ string
+;*          icolor - Color index (for graphics mode only)
+;*
+;* Return:  None
+ 
+WriteTTY PROC USES ds si,
+        Sptr:PBYTE, icolor:WORD
+ 
+        mov     bx, icolor              ; BL = color index
+        mov     bh, vconfig.dpage       ; BH = current display page
+        LoadPtr ds, si, Sptr
+        mov     cx, -1                  ; Set loop counter to maximum
+        mov     ah, 14                  ; Function 14
+ 
+        .REPEAT
+        lodsb                           ; Get character from string
+        .BREAK .IF al == 0              ; Exit if NULL string terminator
+        int     10h                     ; No?  Display, advance cursor
+        .UNTILCXZ
+ 
+        ret
+ 
+WriteTTY ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

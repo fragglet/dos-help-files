@@ -1,0 +1,58 @@
+<html>
+
+<head>
+<title>DRIVES.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* DRIVES.C illustrates drive functions including:
+ *      _getdrive       _chdrive        _getdcwd
+ *
+ * See <a href='x_at_L80b8.html'>DIRECT.C</a> for an example of _getcwd.
+ */
+ 
+#include &lt;stdio.h&gt;
+#include &lt;conio.h&gt;
+#include &lt;direct.h&gt;
+#include &lt;stdlib.h&gt;
+ 
+void main()
+{
+    int ch, drive, curdrive;
+    static char path[_MAX_PATH];
+ 
+    /* Save current drive. */
+    curdrive = _getdrive();
+ 
+    printf( "Available drives are: \n" );
+ 
+    /* If we can switch to the drive, it exists. */
+    for( drive = 1; drive &lt;= 26; drive++ )
+        if( !_chdrive( drive ) )
+            printf( "%c: ", drive + 'A' - 1 );
+ 
+    while( 1 )
+    {
+        printf( "\nType drive letter to check or ESC to quit: " );
+        ch = _getch();
+        if( ch == 27 )
+            break;
+        if( _getdcwd( toupper( ch ) - 'A' + 1, path, _MAX_PATH ) != NULL )
+            printf( "\nCurrent directory on that drive is %s\n", path );
+    }
+ 
+    /* Restore original drive.
+     */
+    _chdrive( curdrive );
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

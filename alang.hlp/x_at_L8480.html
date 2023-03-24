@@ -1,0 +1,44 @@
+<html>
+
+<head>
+<title>ReadFile</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_at_L83fe.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='x_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* ReadFile - Read from open file to specified buffer. See the CopyFile
+;* procedure for another example of using DOS Function 3Fh to read files.
+;*
+;* Shows:   DOS Function - 3Fh (Read File or Device)
+;*
+;* Params:  Handle - File handle
+;*          Len - Number of bytes to read
+;*          Pbuff - Pointer to buffer
+;*
+;* Return:  Short integer with number of bytes read, or 0 if read error
+ 
+ReadFile PROC USES ds di,
+        Handle:WORD, Len:WORD, Pbuff:PBYTE
+ 
+        LoadPtr ds, dx, Pbuff           ; Point DS:DX to buffer
+        mov     di, dx                  ; Keep string offset in DI
+        mov     bx, Handle              ; BX = handle
+        mov     cx, Len                 ; CX = number of bytes to read
+        mov     ah, 3Fh                 ; Request DOS read
+        int     21h                     ; Read File
+        .IF     carry?
+        sub     ax, ax                  ; Set error code
+        .ENDIF
+        ret
+ 
+ReadFile ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

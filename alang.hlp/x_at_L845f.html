@@ -1,0 +1,51 @@
+<html>
+
+<head>
+<title>GetShift</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_at_L83fd.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='x_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* GetShift - Gets current shift status. Checks for extended keyboard,
+;* and if available returns additional shift information.
+;*
+;* Shows:   BIOS Interrupt - 16h, Functions 2 and 12h (Get Keyboard Flags)
+;*
+;* Params:  None
+;*
+;* Return:  Long integer
+;*          high word = 0 for non-extended keyboard
+;*                      1 for extended keyboard
+;*          low word has following bits set when indicated keys are pressed:
+;*          0 - Right shift                   8 - Left Ctrl
+;*          1 - Left shift                    9 - Left Alt
+;*          2 - Ctrl                         10 - Right Ctrl
+;*          3 - Alt                          11 - Right Alt
+;*          4 - Scroll Lock active           12 - Scroll Lock pressed
+;*          5 - Num Lock active              13 - Num Lock pressed
+;*          6 - Caps Lock active             14 - Caps Lock pressed
+;*          7 - Insert toggled               15 - Sys Req pressed
+ 
+GetShift PROC
+ 
+        sub     dx, dx                  ; Assume non-extended keyboard
+        mov     ah, 2                   ;   and use Function 2
+        mov     es, dx                  ; Point ES to low memory
+        .IF     BYTE PTR es:[496h] &amp; 16 ; If extended keyboard installed,
+        inc     dx                      ;   Set high word of return code
+        mov     ah, 12h                 ;   and use Function 12h
+        .ENDIF
+        int     16h                     ; Get Keyboard Flags
+        ret
+ 
+GetShift ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

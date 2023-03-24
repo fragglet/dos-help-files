@@ -1,0 +1,91 @@
+<html>
+
+<head>
+<title>Debugging a Build:message Rule</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L81de.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Programmer's WorkBench─────────────────────────────────────────────────
+ 
+     The easiest way to debug a Build:message rule is to define a
+     regular-expression find-and-replace macro and test it with a file
+     of sample messages.
+ 
+     The example that follows assumes that the message matches a file,
+     line, and column, in that order. You can modify the test macros as
+     appropriate for the messages that you want to match.
+ 
+     First, create a text file of sample messages in the format that you
+     want to recognize. The easiest way to do this is to run the tool on
+     a file with errors using the Compile function. You can then save
+     the contents of the Build Results window. The file is modified as
+     you test, so you should save a backup copy.
+     See: Compile
+ 
+     Open the working copy of the test file into PWB, add a few blank
+     lines at the beginning of the file, then write the following
+     definitions:
+ 
+          Match := ""
+ 
+          Subst := "file:[\\1]  line:[\\2]  col:[\\3]"
+          Test := arg arg replace match newline subst newline
+          Test : F11
+ 
+     Save the file so you can restore it later. If you make a mistake,
+     you can reread the file with the Refresh function («refresh»).
+     See: Refresh
+ 
+     To test a pattern:
+ 
+       1. Select the last three lines above.
+ 
+       2. Execute the Assign function («assign»).
+ 
+          The Subst and Test macros and a key for Test are now defined.
+          As you test, you will repeatedly define the Match macro.
+ 
+       3. Type the tagged regular expression between the double
+          quotation marks in the Match macro definition. Because this is
+          a macro string, you must double each backslash that you want
+          to appear in the regular expression.
+ 
+          TIP: Type the regular expression as you would in the Find
+               dialog box, then select the line and use the Replace
+               function («replace») to double the backslashes.
+ 
+       4. Place the cursor on the Match line and execute Assign («assign»).
+ 
+       5. Move the cursor below the definitions and press F11. PWB
+          performs the find-and-replace operation.
+ 
+          The first tagged text is listed between brackets after the
+          'file:'. This should be a legal filename. The second tagged
+          text, which should be a line number, appears in brackets after
+          'line:'.
+ 
+          You can verify that the correct portions of the message are
+          tagged. If they are not correct, choose Undo from the Edit
+          menu to restore the original messages, then go back to step 3
+          above.
+ 
+       6. When the expression is correct, you can copy the string in the
+          Match macro definition to the Build:message definition in
+          TOOLS.INI.
+ 
+     See
+ 
+     Assign, Compile, Refresh, Replace, Undo
+     <span class='grhilite'>◄</span><a href='Build_cln_message.html'>Build:Message Switch</a><span class='grhilite'>►</span>
+     <span class='grhilite'>◄</span><a href='x_at_L8034.html'>Macro String Syntax</a><span class='grhilite'>►</span>
+     <span class='grhilite'>◄</span><a href='regex.html'>Regular Expressions</a><span class='grhilite'>►</span>
+     <span class='grhilite'>◄</span><a href='x_at_L8024.html'>Tagged Expressions in Build:Message</a><span class='grhilite'>►</span>
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

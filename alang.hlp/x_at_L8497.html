@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<title>WinClose</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_at_L83fd.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='x_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* WinClose - "Closes" a window previously opened by the WinOpen procedure.
+;* See also the WinOpen procedure.
+;*
+;* Shows:   DOS Function - 49h (Release Memory Block)
+;*          Instructions - lodsw
+;*          Operators - : (segment override)     SEG
+;*
+;* Uses:    vconfig - Video configuration structure (initialized
+;*          by calling the GetVidConfig procedure)
+;*
+;* Params:  Adr - Segment address of buffer that holds screen contents
+;*                 saved in WinOpen procedure
+;*
+;* Return:  None
+ 
+WinClose PROC USES ds di si,
+        Adr:WORD
+ 
+        mov     ds, Adr                 ; DS:SI points to buffer
+        sub     si, si
+        lodsw
+        mov     di, ax                  ; DI = video offset of window
+        lodsw
+        mov     bx, ax                  ; BX = number of window rows
+        lodsw
+        mov     cx, ax                  ; CX = number of columns
+ 
+        mov     ax, SEG vconfig.sgmnt
+        mov     es, ax                  ; Point ES to data segment
+        push    es:vconfig.sgmnt
+        pop     es                      ; ES = video segment
+        mov     ax, 160                 ; Number of video cells/row
+ 
+        .REPEAT
+        push    di                      ; Save ptr to start of line
+        push    cx                      ;   and number of columns
+ 
+; Disable CGA video prior to memory move to avoid screen snow. (See the
+; WinOpen and StrWrite procedures for further discussions on CGA snow.)
+ 
+        .IF     vconfig.adapter == CGA  ; If CGA adapter,
+        INVOKE  DisableCga              ;   disable video
+        .ENDIF
+ 
+        rep     movsw                   ; Copy one row to buffer
+ 
+        .IF     vconfig.adapter == CGA  ; If CGA adapter,
+        INVOKE  EnableCga               ;   reenable CGA video
+        .ENDIF
+        pop     cx                      ; Recover number of columns
+        pop     di                      ;   and start of line
+        add     di, ax                  ; Point to start of next line
+        dec     bx                      ; Decrement row counter
+        .UNTIL  zero?                   ;   until no rows remain
+ 
+        mov     ah, 49h                 ; Request DOS Function 49h
+        mov     es, Adr
+        int     21h                     ; Release Memory Block
+        ret
+ 
+WinClose ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

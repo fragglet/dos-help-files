@@ -1,0 +1,113 @@
+<html>
+
+<head>
+<title>CALL or CALLS (Non-BASIC Procedures) Statement Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#CALLS'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='x_dot_cnbx.html'>Example<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>CALL or CALLS (Non-BASIC Procedures) Details</b>
+ 
+<b>Syntax</b>
+ 
+There are three different forms that can be used to perform this
+function:
+ 
+  CALL name [( call-argumentlist )]
+  name [ call-argumentlist ]
+  CALLS name [( calls-argumentlist )]
+ 
+  Argument            Description
+  name                The name of the procedure being called. A name
+                      is limited to 40 characters.
+  call-argumentlist   The variables or constants passed to the
+                      procedure. The syntax of a call-argumentlist is
+                      described below.
+  calls-argumentlist  A list containing the variables and constants
+                      that CALLS passes to the procedure. Entries are
+                      separated by commas. Note that these arguments
+                      are passed by reference as far addresses,
+                      using the segment and offset of the variable.
+                      You cannot use BYVAL and SEG in a calls-
+                      argumentlist.
+ 
+A call-argumentlist has the following syntax:
+ 
+  [[{BYVAL|SEG}]argument][,[{BYVAL|SEG}]argument]...
+ 
+If argument is an array, parentheses are required:
+ 
+  [[{BYVAL|SEG}]argument[()]][,[{BYVAL|SEG}]argument]...
+ 
+  Part       Description
+  BYVAL      Indicates the argument is passed by value, rather than
+             by near reference (the default)
+  SEG        Passes the argument as a segmented (far) address
+  argument   A BASIC variable, array, or constant passed to a
+             procedure
+ 
+CALLS is the same as using CALL with a SEG before each argument: every
+argument in a CALLS statement is passed as a segmented address.
+ 
+  Note: The syntax described above does not correctly invoke a BASIC
+        procedure -- only procedures in other languages. See the
+        <span class='grhilite'>◄</span><a href='unknown#CALL'>CALL (BASIC) statement<span class='grhilite'>►</span></a> for the other syntax.
+ 
+If the argument list of either statement includes an array argument,
+the array is specified by the array name and a pair of parentheses:
+ 
+  DIM IntArray(20) AS INTEGER
+  .
+  .
+  .
+  CALL ShellSort(IntArray() AS INTEGER)
+ 
+When you use the CALL statement, the CALL keyword is optional.
+However, when you omit CALL, you must declare the procedure
+in a DECLARE statement. Notice also that when you omit CALL,
+you also omit the parentheses around the argument list.
+ 
+The result of the BYVAL keyword differs from BASIC's pass by value:
+ 
+  CALL Difference (BYVAL A,(B))
+ 
+For the first argument, only the value of A is passed to Difference.
+In contrast, (B) is evaluated, a temporary location is created for
+the value, and the address of the temporary location is passed to
+Difference. You can use BASIC's pass by value for an argument, but
+you must write the procedure in the other language so the procedure
+accepts an address.
+ 
+  Note: If name refers to an assembly-language procedure, it must be
+        a PUBLIC name (symbol). PUBLIC names beginning with "$" and
+        "_" may conflict with names used by the BASIC run-time system.
+        Duplicate names cause a linker error message "Symbol already
+        defined" to be generated.
+ 
+Be careful using the SEG keyword to pass arrays because BASIC may move
+variables in memory before the called routine begins execution.
+Anything in an argument list that causes memory movement may create
+problems. You can safely pass variables using SEG if the CALL
+statement's argument list contains only simple variables, arithmetic
+expressions, or arrays indexed without the use of intrinsic or user-
+defined functions.
+ 
+<b>Differences from BASICA</b>
+ 
+Assembly-language programs invoked from BASICA that have string
+arguments must be changed because the string descriptor is now four
+bytes long. The four bytes are the low byte and high byte of the
+length followed by the low byte and high byte of the address.
+ 
+To locate the routine being called, the BASICA CALLS statement uses
+the segment address defined by the most recently executed DEF SEG
+statement. There is no need to use DEF SEG with the CALLS statement
+because all arguments are passed as far (segmented) addresses.
+
+</pre>
+</body>
+
+</html>

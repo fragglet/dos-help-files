@@ -1,0 +1,122 @@
+<html>
+
+<head>
+<title>malloc Functions</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='malloc.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_at_L8285.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     The malloc family of functions allocates a memory block of at
+     least &lt;size&gt; bytes. The block may be larger than &lt;size&gt; bytes
+     because of space required for alignment and for maintenance
+     information. If size is 0, malloc allocates a zero-length item
+     in the heap and returns a valid pointer to that item.
+ 
+     The storage space pointed to by the return value is guaranteed to
+     be suitably aligned for storage of any type of object. To get a
+     pointer to a type other than void, use a type cast on the return
+     value.
+ 
+     In large data models (compact, large, and huge), malloc maps to
+     _fmalloc. In small data models (tiny, small, and medium), malloc
+     maps to _nmalloc.
+ 
+     The _fmalloc function allocates a memory block of at least &lt;size&gt;
+     bytes outside the default data segment. The _fmalloc function
+     returns a far pointer to void. If a block of more than 64K is
+     needed, use the halloc function.
+ 
+     The _bmalloc function allocates a memory block of at least &lt;size&gt;
+     bytes in the based heap specified by the segment selector &lt;seg&gt;.
+ 
+     The various malloc functions allocate memory in the heap specified
+     in the list below:
+ 
+     Function     Heap Segment
+ 
+     malloc       Depends on data model of program
+     _bmalloc     Based heap specified by seg value
+     _fmalloc     Far heap (outside default data segment)
+     _nmalloc     Near heap (inside default data segment)
+ 
+     If you are creating programs to run in both real mode and
+     protected mode, you should probably bind with APILMR.OBJ as well
+     as API.LIB and OS2.LIB. This is necessary in any case in which a
+     program will use the _nmalloc function.
+ 
+     The functions that call the malloc family of routines are listed
+     below. In addition, the C start-up code uses malloc to allocate
+     storage for the environ/envp[] and argv[] strings and arrays.
+ 
+     The following C run-time routines call _nmalloc:
+ 
+          _nrealloc()     _ncalloc()     _nstrdup()
+ 
+     The following C run-time routines call _fmalloc:
+ 
+          _frealloc()     _fcalloc()     _fstrdup()
+ 
+     The following routines call malloc:
+ 
+          calloc()       fseek()         scanf()
+          execl()        fsetpos()       _searchenv()
+          execle()       _fullpath()     setvbuf()
+          execlp()       fwrite()        spawnl()
+          execlpe()      getc()          spawnle()
+          execv()        getchar()       spawnlp()
+          execve()       getcwd()        spawnlpe()
+          execvp()       _getdcwd()      spawnv()
+          execvpe()      gets()          spawnve()
+          fgetc()        getw()          spawnvp()
+          fgetchar()     _popen()        spawnvpe()
+          fgets()        printf()        strdup()
+          fprintf()      putc()          system()
+          fputc()        putchar()       tempnam()
+          fputchar()     putenv()        ungetc()
+          fputs()        puts()          vfprintf()
+          fread()        putw()          vprintf()
+          fscanf()       realloc()
+ 
+     The following routines call malloc only in the multithread
+     run-time libraries (LLIBCMT, LLIBCDLL, CDLLOBJS), but not in the
+     regular run-time libraries:
+ 
+          asctime()        localtime()     _strerror()
+          _beginthread     mktime()        tmpfile()
+          ctime()          strerror()      tmpnam()
+          gmtime()
+ 
+     In Microsoft Quick C version 2.0, the _fmalloc function would
+     retry allocating within the default data segment if sufficient
+     memory was not available outside the default data segment.
+     As noted above, version 2.5 returns NULL under these conditions.
+ 
+     In version 2.0, the start-up code used malloc only if wild-card
+     expansion was used.
+ 
+     The _freect(), _memavl(), and _memmax() functions called malloc in
+     version 2.0 but do not do so in version 2.5.
+ 
+     Return Value
+ 
+     The malloc function returns a void pointer to the allocated space.
+     The _nmalloc function returns a ( void _near * ) and _fmalloc
+     returns a ( void _far * ). The _bmalloc function returns a
+     ( void _based( void ) * ).
+ 
+     The _malloc, _fmalloc and _nmalloc functions return NULL if there
+     is insufficient memory available. The _bmalloc function returns
+     _NULLOFF if there is insufficient memory available.
+ 
+     Always check the return from the malloc function, even if the
+     amount of memory requested is small.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

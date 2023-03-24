@@ -1,0 +1,119 @@
+<html>
+
+<head>
+<title>_bios_disk Constants</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L8126.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+  Constant:  _DISK_FORMAT, _DISK_READ, _DISK_RESET, _DISK_STATUS,
+             _DISK_VERIFY, _DISK_WRITE
+ 
+  Context:   _bios_disk
+ 
+  Summary:   The &lt;service&gt; argument of _bios_disk selects the disk
+             function desired.
+ 
+     The argument is set with one of the following constants:
+ 
+     Constant         Action
+ 
+     _DISK_FORMAT     Formats the track specified by &lt;diskinfo&gt;. The
+                      &lt;head&gt; and &lt;track&gt; fields indicate the track to
+                      format. Only one track can be formatted in a
+                      single call. The &lt;buffer&gt; field points to a set of
+                      sector markers. The format of the markers depends
+                      on the type of disk drive; see a technical
+                      reference to the PC BIOS to determine the marker
+                      format. The high-order byte (AH) of the return
+                      value contains the status of the call; 0 equals
+                      success. If there is an error, the high-order
+                      byte will contain a set of status flags, as
+                      defined below under Return Value.
+ 
+     _DISK_READ       Reads one or more disk sectors into memory. This
+                      service uses all fields of the structure pointed
+                      to by &lt;diskinfo&gt;. If no error occurs, the
+                      function returns 0 in the high-order byte and the
+                      number of sectors read in the low-order byte. If
+                      there is an error, the high-order byte (AH) will
+                      contain a set of status flags, as defined below
+                      under Return Value.
+ 
+     _DISK_RESET      Forces the disk controller to do a hard reset,
+                      preparing for floppy-disk I/O. This is useful
+                      after an error occurs in another operation, such
+                      as a read. If this service is specified, the
+                      &lt;diskinfo&gt; argument is ignored. Status is returned
+                      in the 8 high-order bits (AH) of the return value.
+                      If there is an error, the high-order byte will
+                      contain a set of status flags, as defined below
+                      under Return Value.
+ 
+     _DISK_STATUS     Obtains the status of the last disk operation.
+                      If this service is specified, the &lt;diskinfo&gt;
+                      argument is ignored. Status is returned in the 8
+                      low-order bits (AL) of the return value. If there
+                      is an error, the low-order byte (AL) will contain
+                      a set of status flags, as defined below under
+                      Return Value.
+ 
+     _DISK_VERIFY     Checks the disk to be sure the specified sectors
+                      exist and can be read. It also runs a CRC (cyclic
+                      redundancy check) test. This service uses all
+                      fields (except &lt;buffer&gt;) of the structure pointed
+                      to by &lt;diskinfo&gt;. If no error occurs, the
+                      function returns 0 in the high-order byte (AH)
+                      and the number of sectors compared in the low-
+                      order byte (AL), as defined below under Return
+                      Value.
+ 
+     _DISK_WRITE      Writes data from memory to one or more disk
+                      sectors. This service uses all fields of the
+                      structure pointed to by &lt;diskinfo&gt;. If no error
+                      occurs, the function returns 0 in the high-
+                      order byte (AH) and the number of sectors written
+                      in the low-order byte (AL). If there is an error,
+                      the high-order byte will contain a set of status
+                      flags, as defined below under Return Value.
+ 
+     Return Value
+ 
+                      Bits       Meaning
+ 
+                      0X00       No error
+                      0X01       Invalid request or a bad command
+                      0X02       Address mark not found
+                      0X03       Disk write protected
+                      0X04       Sector not found
+                      0X05       Reset failed
+                      0X06       Floppy disk removed
+                      0X07       Drive parameter activity failed
+                      0X08       Direct Memory Access (DMA) overrun
+                      0X09       DMA crossed 64K boundary
+                      0X0A       Bad sector flag detected
+                      0X0B       Bad track flag detected
+                      0X0C       Media type not found
+                      0X0D       Invalid number of sectors on format
+                      0X0E       Control data access mark detected
+                      0X0F       DMA arbitration level out of range
+                      0X10       Data read (CRC or ECC) error
+                      0X11       Corrected data read (ECC) error
+                      0X20       Controller failure
+                      0X40       Seek error
+                      0X80       Disk timed out or failed to respond
+                      0XAA       Drive not ready
+                      0XBB       Undefined error
+                      0XCC       Write fault on drive
+                      0XE0       Status error
+                      0XFF       Sense operation failed
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

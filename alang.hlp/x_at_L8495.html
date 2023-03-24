@@ -1,0 +1,41 @@
+<html>
+
+<head>
+<title>VeriPrint</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_at_L83fd.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='x_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* VeriPrint - Checks if LPT1 (PRN) is available.
+;*
+;* Shows:   BIOS Interrupt - 17h (Parallel Port Printer Driver)
+;*
+;* Params:  None
+;*
+;* Return:  Short integer, 1 for yes or 0 for no
+ 
+VeriPrint PROC
+ 
+        mov     ah, 2                   ; Check printer status for
+        sub     dx, dx                  ;   parallel printer (port 0)
+        int     17h
+        xchg    dx, ax                  ; Put 0 (for error) in AX
+ 
+; If all error bits are off and both operation bits are on, return 1
+ 
+        .IF     !(dh &amp; 00101001y) &amp;&amp; (dh &amp; 10010000y)
+        inc     ax                      ; Return 1
+        .ENDIF
+        ret
+ 
+VeriPrint ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

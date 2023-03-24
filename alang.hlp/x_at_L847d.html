@@ -1,0 +1,48 @@
+<html>
+
+<head>
+<title>PutStrO</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_at_L8468.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='x_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+;---------------------------- cut here ----------------------------------
+;* PUTSTRO.ASM is a program module containing a procedure to be
+;* called by <a href='x_at_L8468.html'>HELLOMO.ASM</a>.
+ 
+_TEXT   SEGMENT WORD PUBLIC 'CODE'      ; Code segment
+        ASSUME  cs:_TEXT
+ 
+        PUBLIC  C putstr                ; Declare a C public symbol
+putstr  PROC    NEAR C                  ; Define a near C procedure
+        push    bp                      ; Set up stack frame
+        mov     bp, sp
+ 
+        mov     ah, 02h                 ; Display character function
+        mov     di, [bp+4]              ; Load address of string
+next:
+        mov     dl, [di]                ; Load each character through [DI]
+        or      dl, dl                  ; Done if character is zero
+        jz      exit
+        int     21h                     ; DOS displays character
+        inc     di                      ; Point to next character
+        jmp     next
+exit:
+        pop     bp                      ; Destroy stack from and return
+        ret
+ 
+putstr  ENDP
+ 
+_TEXT   ENDS
+        END
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

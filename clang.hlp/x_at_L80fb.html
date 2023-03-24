@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>VCNT.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* VCNT.C: This program locks a block of virtual memory five times with
+ * _vlock, and then unlocks it five times with _vunlock, calling
+ * _vlockcnt after each operation to report the number of locks held.
+ */
+ 
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;vmemory.h&gt;
+ 
+void main()
+{
+    int i, count;
+    _vmhnd_t handle;
+    int __far *buffer;
+ 
+    if ( !_vheapinit( 0, _VM_ALLDOS, _VM_XMS | _VM_EMS ) )
+    {
+        printf( "Could not initialize virtual memory manager. \n" );
+        exit( -1 );
+    }
+ 
+    if ( (handle = _vmalloc( 100 * sizeof(int) )) == _VM_NULL )
+    {
+        _vheapterm();
+        exit( -1 );
+    }
+ 
+    printf( "Block of virtual memory allocated.\n" );
+ 
+    printf( "Locking...\n" );
+    for ( i = 0; i &lt; 5; i++ )
+    {
+        if ( (buffer = (int __far *)_vlock( handle )) == NULL )
+        {
+            _vheapterm();
+            exit( -1 );
+        }
+ 
+        count = _vlockcnt( handle );
+        printf( "%d locks held.\n", count );
+    }
+ 
+    printf("Unlocking...\n" );
+    for ( i = 0; i &lt; 5; i++ )
+    {
+        _vunlock( handle, _VM_CLEAN );
+ 
+        count = _vlockcnt( handle );
+        printf( "%d locks held.\n", count );
+    }
+ 
+    _vfree( handle );
+    _vheapterm();
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

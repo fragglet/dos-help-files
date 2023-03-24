@@ -1,0 +1,59 @@
+<html>
+
+<head>
+<title>Macro Looping Examples</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_at_L8031.html'>Description</a><span class='grhilite'>►</span>                               <span class='grhilite'>◄</span><a href='x_at_L8031.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Programmer's WorkBench─────────────────────────────────────────────────
+ 
+     Macro conditionals allow you to write loops, as shown in the
+     following examples.
+ 
+     This macro executes the macro 'Act' for every line in the file,
+     starting from the end of the file. You can define Act to be any
+     action you want.
+ 
+          AllBackward := Endfile :&gt;s Act Up +&gt;s
+ 
+     The following macro scans forward a line at a time. However, it has
+     the limitation that it executes Act for a window of lines past the
+     end of the file. Depending on the action, this may be benign.
+ 
+          AllForward := Begfile :&gt;s Act Down +&gt;s
+ 
+     A macro that scans forward and stops on the last line of the file
+     is slower because the termination test is costly. This macro also
+     clears the anchor as a side effect.
+ 
+          AllForward2 := Begfile Savecur :&gt;s Restcur act   \
+                         Down Savecur Begline Endfile +&gt;s
+ 
+     In practice, you rarely need to perform an action on every line.
+     More common (and faster) is the "file loop" where an action is
+     repeated for each occurrence of a text pattern (regular expression)
+     in the file. These macros generally take the following form:
+ 
+          For1 := Begfile :&gt;s Arg Arg "RE" Psearch -&gt; Act =&gt;s
+ 
+     Where 'RE' is a regular expression that matches a location of
+     interest, and 'Act' is a macro or function sequence that performs
+     the desired action. If the action does not perform a search, the
+     macro runs faster if the pattern is specified only once before the
+     beginning of the loop, as follows:
+ 
+          For2 := Begfile Arg Arg "RE" :&gt;s Psearch -&gt; act =&gt;s
+ 
+     This takes advantage of the behavior of Psearch with no arguments,
+     which repeats the previous search. When a regular expression is
+     used, it is compiled only once at the beginning of the loop.
+     See: <span class='grhilite'>◄</span><a href='x_at_L8035.html'>Regular Expressions in Macro Strings</a><span class='grhilite'>►</span>
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

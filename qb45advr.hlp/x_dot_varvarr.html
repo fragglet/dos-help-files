@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>VARPTR and VARSEG Functions Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#VARPTR'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='x_dot_varvarx.html'>Example<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>VARPTR and VARSEG Functions Details</b>
+ 
+<b>Syntax</b>
+  VARPTR(variablename)
+  VARSEG(variablename)
+ 
+The variablename may be any BASIC variable, including a record variable
+or record element. The VARPTR function returns an unsigned integer that
+is the offset of the variable within its segment. The VARSEG function
+returns an unsigned integer that is the segment part of the variable's
+address. If variablename is not defined before VARPTR or VARSEG is called,
+the variable is created and its address is returned. When variablename is
+a string variable, VARPTR and VARSEG return the location of the first byte
+of the string descriptor.
+ 
+  Note: Because many BASIC statements change the locations of variables
+        in memory, use the values returned by VARPTR and VARSEG
+        immediately after the functions are used.
+ 
+VARPTR and VARSEG are often used with BLOAD, BSAVE, CALL ABSOLUTE,
+CALL INTERRUPT, PEEK, POKE, or when passing arrays to procedures
+written in other languages.
+ 
+When using VARPTR or VARSEG to get the address of an array,
+use the first element of the array as the argument:
+ 
+  DIM A(150)
+  .
+  .
+  .
+  ArrAddress=VARPTR(A(1))
+ 
+  Note: You may no longer use VARPTR to get the address of a file's
+        buffer. Use the function FILEATTR to get information about a
+        file.
+ 
+        In addition, programs written in earlier versions of BASIC
+        that used VARPTR to access numeric arrays may no longer work.
+        You must now use a combination of VARPTR and VARSEG. For example,
+        the following QuickBASIC Version 3.0 fragment no longer works
+        correctly:
+ 
+            DIM Cube(675)
+            .
+            .
+            .
+           BSAVE "graph.dat",VARPTR(Cube(1)),2700
+ 
+       The fragment would be rewritten as follows:
+ 
+           DIM Cube(675)
+           .
+           .
+           .
+           ' Change segment to segment containing Cube.
+           DEF SEG=VARSEG(Cube(1))
+           BSAVE "graph.dat",VARPTR(Cube(1)),2700
+           ' Restore BASIC segment.
+           DEF SEG
+ 
+You may use VARPTR alone to get the address of a variable stored in
+DGROUP. You must use both VARPTR and VARSEG to get the complete
+address of a variable stored as a far object.
+ 
+The VARSEG function, combined with VARPTR, replaces the PTR86
+subprogram used in previous versions of QuickBASIC.
+ 
+
+</pre>
+</body>
+
+</html>

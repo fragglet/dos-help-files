@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>PUT Statement (File I/O) Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#PUT'>Syntax</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../bas7ex.hlp/x_dot_pfiox.html'>Example</a><span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+PUT writes from a variable or a random-access buffer to a file.
+ 
+<b>PUT [#]filenumber%[,[recordnumber&amp;][,variable]]</b>
+    ■ If you omit the argument recordnumber&amp;, the next record or byte
+      (the one after the last GET or PUT statement, or the one pointed
+      to by the last SEEK) is written to. The largest possible record
+      number is 2^31 -1 or 2,147,483,647.
+    ■ The first record or byte position in a file is 1.
+    ■ A record cannot be longer than 32,767 bytes.
+    ■ If you specify a variable, you do not need to use MKI$, MKL$, MKS$,
+      MKD$, or MKC$ to convert numeric fields before writing. You can not
+      use a FIELD statement with the file if you use the variable argument.
+    ■ For random-access files, you can use any variable as long as the
+      length of the variable is less than or equal to the length of the
+      record. Usually, a record variable defined to match the fields in a
+      data record is used.
+    ■ For binary-mode files, you can use any variable. The PUT statement
+      writes as many bytes to the file as there are bytes in the variable.
+    ■ When you use a variable-length string variable, the statement
+      writes as many bytes as there are characters in the string's value.
+      For example, the following two statements write 15 bytes to file
+      number 1:
+ 
+        VarString$=STRING$(15, "X")
+        PUT #1,,VarString$
+ 
+    ■ See the examples for more information about using variables
+      rather than FIELD statements for random-access files.
+ 
+Usage Notes
+    ■ Do not use PUT on ISAM files.
+    ■ You can omit the argument recordnumber&amp;, variable, or both. If
+      you omit the record number but include a variable, you must still
+      include the commas:
+ 
+        PUT #4,,FileBuffer
+ 
+    ■ If you omit both arguments, do not include the commas:
+ 
+        PUT #4
+ 
+Important
+    ■ GET and PUT statements allow fixed-length input and output for
+      BASIC communications files. Be careful using GET and PUT for
+      communications because PUT writes a fixed number of characters and
+      may wait indefinitely if there is a communications failure.
+ 
+Programming Tips
+    ■ When using a file buffer defined by a FIELD statement, LSET,
+      RSET, PRINT # , PRINT # USING, and WRITE # may be used to put
+      characters in the random-file buffer before executing a PUT
+      statement.
+    ■ In the case of WRITE #, BASIC pads the buffer with spaces up to
+      the carriage return. If you attempt to read or write past the end of
+      the buffer, BASIC generates the error message, "FIELD overflow."
+ 
+
+</pre>
+</body>
+
+</html>

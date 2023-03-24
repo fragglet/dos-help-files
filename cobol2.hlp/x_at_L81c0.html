@@ -1,0 +1,61 @@
+<html>
+
+<head>
+<title>STICKY-LINKAGE Details    (↑ Choosing Run-time Behavior)</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_at_L8024.html'>Key</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='STICKY-LINKAGE.html'>Summary</a><span class='grhilite'>►</span>                             <span class='grhilite'>◄</span><a href='x_at_L8026.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     A program can be called via different entry-points that expect
+     different parameters. When a Linkage Section record is used as a
+     parameter in a called program it is linked to the corresponding
+     data item in the calling program. This directive causes such
+     links to remain during subsequent calls of the called program, so
+     that the record can be accessed during subsequent calls even if
+     they are via entry-points that do not use it as a parameter.
+ 
+     For example, in the calling program:
+ 
+       CALL "ENTRY-1" USING HOURLY-RATE EMPLOYEE
+       CALL "ENTRY-2"                           *&gt; STICKY-LINKAGE "1" or "2"
+ 
+       CALL "ENTRY-1" USING HOURLY-RATE         *&gt; STICKY-LINKAGE "2" only
+ 
+     In the called program:
+ 
+       ENTRY "ENTRY-1" USING HOURLY-RATE.
+       DISPLAY HOURLY-RATE
+       DISPLAY EMPLOYEE
+       EXIT PROGRAM.
+ 
+       ENTRY "ENTRY-2".
+       DISPLAY HOURLY-RATE
+       EXIT PROGRAM.
+ 
+     Specifying STICKY-LINKAGE "1" causes the called program to fill in any
+     parameters not specified in the ENTRY... USING phrase. Thus, both the
+     DISPLAY HOURLY-RATE statements will work correctly for the first two
+     CALL statements, but DISPLAY EMPLOYEE will cause run-time error 203
+     (CALL parameter not supplied (fatal)).
+ 
+     Specifying STICKY-LINKAGE "2" causes the called program to fill in any
+     parameter not actually passed by the caller. The caller must be a
+     COBOL program ,which, if generated, was generated with PARMCOUNTCHECK.
+     Thus, the DISPLAY EMPLOYEE statement will work correctly for the first
+     and third calls, as well as the DISPLAY HOURLY-RATE statement in all
+     three cases.
+ 
+     With NOSTICKY-LINKAGE specified, the second and third calls will
+     cause run-time error 203 (CALL parameter not supplied (fatal)).
+ 
+     See also <span class='grhilite'>◄</span><a href='PARAMCOUNTCHECK.html'>PARAMCOUNTCHECK</a><span class='grhilite'>►</span>
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

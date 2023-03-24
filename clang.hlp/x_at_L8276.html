@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<title>FIGURE.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* FIGURE.C illustrates graphics drawing functions including:
+ *      _setpixel   _lineto     _moveto     _rectangle      _ellipse
+ *      _pie        _arc        _getarcinfo                       (DOS-only)
+ *
+ * Window versions of graphics drawing functions (such as _rectangle_w,
+ * _ellipse_wxy, and _lineto_w) are illustrated in <a href='x_at_L8284.html'>WINDOW.C</a> and <a href='x_at_L8279.html'>GEDIT.C</a>.
+ */
+ 
+#include &lt;conio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;graph.h&gt;
+ 
+void main()
+{
+    short x, y;
+    struct _xycoord xystart, xyend, xyfill;
+ 
+    if( !_setvideomode( _MAXRESMODE ) ) /* Find a valid graphics mode */
+        exit( 1 );                      /* No graphics available      */
+ 
+    for( x = 10, y = 50; y &lt; 90; x += 2, y += 3 )/* Draw pixels       */
+        _setpixel( x, y );
+    _getch();
+ 
+    for( x = 60, y = 50; y &lt; 90; y += 3 )        /* Draw lines        */
+    {
+        _moveto( x, y );
+        _lineto( x + 20, y );
+    }
+    _getch();
+ 
+    x = 110; y = 70;                             /* Draw rectangles   */
+    _rectangle( _GBORDER,       x - 20, y - 20, x, y );
+    _rectangle( _GFILLINTERIOR, x + 20, y + 20, x, y );
+    _getch();
+ 
+    x = 160;                                     /* Draw ellipses     */
+    _ellipse( _GBORDER,       x - 20, y - 20, x, y );
+    _ellipse( _GFILLINTERIOR, x + 20, y + 20, x, y );
+    _getch();
+ 
+    x = 210;                                    /* Draw pies          */
+    _pie( _GBORDER,       x - 20, y - 20, x, y,
+                          x - 10, y - 20, x - 20, y - 10 );
+    _pie( _GFILLINTERIOR, x + 20, y + 20, x,      y,
+                          x,      y + 10, x + 10, y );
+ 
+    x = 260;                                     /* Draw arcs         */
+    _arc( x - 20, y - 20, x, y, x - 10, y - 20, x - 20, y - 10 );
+    _arc( x + 20, y + 20, x, y, x,      y + 10, x + 10, y );
+ 
+    /* Get endpoints of arc and enclose the figure, then fill it. */
+    _getarcinfo( &amp;xystart, &amp;xyend, &amp;xyfill );
+    _moveto( xystart.xcoord, xystart.ycoord );
+    _lineto( xyend.xcoord,   xyend.ycoord );
+    _floodfill( xyfill.xcoord, xyfill.ycoord, _getcolor() );
+ 
+    _getch();
+ 
+    _setvideomode( _DEFAULTMODE );
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

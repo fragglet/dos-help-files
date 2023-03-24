@@ -1,0 +1,61 @@
+<html>
+
+<head>
+<title>_set_new_handler Functions</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_set_new_handler.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_at_L80c8.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+     Use the C++ _set_new_handler function to gain control if the new
+     operator fails to allocate memory. The run-time system
+     automatically calls _set_new_handler when new fails.
+ 
+     To use _set_new_handler, you must write an exception-handling
+     function and then pass it as an argument to _set_new_handler. To
+     facilitate the easy declaration of this new handler, three
+     pointer-to-function types (_PNH, _PNHH, and _PNHB) are defined in
+     NEW.H.
+     See: _PNH, _PNHH, _PNHB
+ 
+     Basically, _set_new_handler is a garbage-collection scheme. The
+     run-time system retries allocation each time your function returns
+     a nonzero value and fails new if your function returns 0.
+ 
+     An occurrence of one of the _set_new_handler functions in a program
+     registers the exception-handling function specified in the argument
+     list with the run-time system:
+ 
+          #include &lt;new.h&gt;
+          int handle_program_memory_depletion( size_t )
+          {
+              // Your code
+          }
+ 
+          void main( void )
+          {
+              _set_new_handler( handle_program_memory_depletion );
+              int *pi = new int[BIG_NUMBER];
+          }
+ 
+     You can save the function address that was last passed to the
+     _set_new_handler function and then reinstate it at a later time:
+ 
+          _PNH old_handler = _set_new_handler( my_handler );
+          // Code that requires my_handler
+          _set_new_handler( old_handler )
+          // Code that requires old_handler
+ 
+     Return Value
+ 
+     The _set_new_handler function returns a pointer to the allocated
+     program memory if successful. It returns a 0 if it's unsuccessful.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

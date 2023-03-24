@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<title>CALL ABSOLUTE Statement Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#ABSOLUTE'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='x_dot_callabsr.html'>Details<span class='grhilite'>►</span></a>     <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>CALL ABSOLUTE Statement Programming Example</b>
+ 
+The following example uses CALL ABSOLUTE to execute a machine-language
+program stored in an array:
+ 
+CONST nASMBYTES=14
+' This program prints a message indicating whether or not
+' a math coprocessor is installed.
+' It uses a machine-language program stored in an array
+' to get the information from the operating system.
+'AsmBytes is a label; nASMBYTES is a symbolic constant.
+DEFINT A-Z
+DIM AsmProg(1 TO (nASMBYTES/2))
+ 
+' The machine-language program stored as data to read into
+' the array.
+AsmBytes:
+DATA &amp;H55              :'PUSH BP        Save base pointer.
+DATA &amp;H8B, &amp;HEC        :'MOV  BP,SP     Get our own.
+DATA &amp;HCD, &amp;H11        :'INT  11H       Make the ROM-BIOS call.
+DATA &amp;H8B, &amp;H5E, &amp;H06  :'MOV  BX,[BP+6] Get argument address.
+DATA &amp;H89, &amp;H07        :'MOV  [BX],AX   Save list in argument.
+DATA &amp;H5D              :'POP  BP        Restore base pointer.
+DATA &amp;HCA, &amp;H02, &amp;H00  :'RET  2         Pop argument off stack
+                        '               and make far return.
+' Get the starting offset of the array.
+P=VARPTR(AsmProg(1))
+' Poke the machine-language program into the array.
+DEF SEG=VARSEG(AsmProg(1)) ' Change the segment.
+Restore AsmBytes
+FOR I=0 TO nASMBYTES-1
+   READ J
+   POKE(P+I),J
+NEXT I
+ 
+' Execute the program. The program expects a single integer argument.
+CALL ABSOLUTE(X%,VARPTR(AsmProg(1)))
+DEF SEG   ' Restore the segment.
+' X% now contains bit-encoded equipment list returned by DOS.
+' Mask off all but the coprocessor bit (bit 2).
+CoProcessor=X% AND &amp;H2
+' Print the appropriate message.
+IF CoProcessor=2 THEN
+  PRINT "Math coprocessor present."
+ELSE
+  PRINT "No math coprocessor."
+END IF
+END
+ 
+
+</pre>
+</body>
+
+</html>

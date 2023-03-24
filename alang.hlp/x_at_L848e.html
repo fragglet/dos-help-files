@@ -1,0 +1,103 @@
+<html>
+
+<head>
+<title>StrInput</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_at_L8401.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='x_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* StrInput - Gets input string from keyboard using BIOS. Signals idle
+;* state by calling interrupt 28h while polling for keypress, making
+;* the procedure useful in TSR programs. Terminates when Enter or Esc
+;* keys pressed.
+;*
+;* Shows:   DOS interrupt - Interrupt 28h (DOS Idle Interrupt)
+;*
+;* Params:  Row - Row coordinate
+;*          Col - Column coordinate
+;*          Max - Maximum allowable string length
+;*          Sptr - Pointer to string
+;*
+;* Return:  Short integer with terminating char
+ 
+StrInput PROC USES ds si,
+        Row:WORD,
+        Col:WORD,
+        Max:WORD,
+        Sptr:PBYTE
+ 
+        LoadPtr ds, si, Sptr            ; DS:SI points to string
+        add     Max, si
+        dec     Max                     ; MAX now points to string limit
+ 
+        .WHILE  1                       ; Get key until break or continue
+loop1:
+        INVOKE  StrWrite,               ; Display input string
+                Row,
+                Col,
+                si
+ 
+        mov     bx, si
+        mov     dx, Col                 ; DL = cursor column
+ 
+        .WHILE  (BYTE PTR [bx] != 0)    ; Scan string for null terminator
+        inc     bx                      ; Else try next character
+        inc     dx                      ;   and increment cursor column
+        .ENDW
+ 
+        ; Set cursor position, pass row and column (DX)
+        INVOKE  SetCurPos,
+                Row,
+                dx
+ 
+        .REPEAT
+        int     28h                     ; Signal idle state
+        mov     ah, 1
+        int     16h                     ; Key waiting?
+        .CONTINUE .IF zero?
+        sub     ah, ah
+        int     16h                     ; Yes?  Get key
+ 
+        cmp     ah, LEFT                ; Left arrow key?
+        je      backspace               ; Treat like backspace
+        .UNTIL  al != 0                 ; Ignore all other special keys
+ 
+        .BREAK  .IF al == ESCAPE        ; Exit if Esc key
+        .BREAK  .IF al == CR            ; Exit if Return key
+ 
+        .IF     al == BACKSP            ; If backspace or left, handle it
+backspace:
+        cmp     bx, si                  ; At first letter?
+        jbe     loop1                   ; Yes?  Ignore backspace
+        dec     bx                      ; No?  Point to preceding char
+        dec     dx                      ; Decrement column
+        mov     BYTE PTR [bx], ' '      ; Blank char
+        push    bx                      ; Preserve pointer
+        INVOKE  StrWrite,               ; Overwrite last char with blank
+                Row,
+                dx,
+                bx
+ 
+        pop     bx
+        mov     BYTE PTR [bx], 0        ; Make last char the new terminator
+        .CONTINUE
+        .ENDIF
+ 
+        .CONTINUE .IF bx &gt; Max          ; Ignore key if too many letters
+        sub     ah, ah
+        mov     [bx], ax                ; Store letter and null terminator
+        .ENDW
+ 
+        ret
+ 
+StrInput ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

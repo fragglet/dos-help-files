@@ -1,0 +1,106 @@
+<html>
+
+<head>
+<title>EXTDIR.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* EXTDIR.C illustrates wildcard handling using functions:
+ *      _dos_findfirst      _dos_findnext       sprintf           (DOS-only)
+ */
+ 
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;conio.h&gt;
+#include &lt;ctype.h&gt;
+#include &lt;dos.h&gt;
+#include &lt;io.h&gt;
+#include &lt;sys\types.h&gt;
+#include &lt;sys\utime.h&gt;
+#include &lt;sys\stat.h&gt;
+ 
+long fileinfo( struct _find_t *find );       /* Prototypes */
+char *timestr( unsigned d, char *buf );
+char *datestr( unsigned d, char *buf );
+ 
+void main( int argc, char *argv[] )
+{
+    struct _find_t find;
+    long size;
+ 
+    /* Find first matching file, then find additional matches. */
+    if( !_dos_findfirst( argv[1], 0xffff, &amp;find ) )
+    {
+        printf( "%-12s   %-8s    %-8s   %-8s   %-9s   %s %s %s %s\n",
+                "FILE", "SIZE", "TIME", "DATE", "KIND",
+                "RDO", "HID", "SYS", "ARC" );
+        size = fileinfo( &amp;find );
+    }
+    else
+    {
+        printf( "  SYNTAX: EXTDIR &lt;wildfilespec&gt;" );
+        exit( 1 );
+    }
+    while( !_dos_findnext( &amp;find ) )
+        size += fileinfo( &amp;find );
+    printf( "%-12s   %8ld\n\n", "Total", size );
+    exit( 0 );
+}
+ 
+/* Displays information about a file. */
+long fileinfo( struct _find_t *pfind )
+{
+    char timebuf[10], datebuf[10], *pkind;
+ 
+    datestr( pfind-&gt;wr_date, datebuf );
+    timestr( pfind-&gt;wr_time, timebuf );
+ 
+    if( pfind-&gt;attrib &amp; _A_SUBDIR )
+        pkind = "Directory";
+    else if( pfind-&gt;attrib &amp; _A_VOLID )
+        pkind = "Label";
+    else
+        pkind = "File";
+ 
+    printf( "%-12s   %8ld    %8s   %8s   %-9s    %c   %c   %c   %c\n",
+            pfind-&gt;name, pfind-&gt;size, timebuf, datebuf, pkind,
+            (pfind-&gt;attrib &amp; _A_RDONLY) ? 'Y' : 'N',
+            (pfind-&gt;attrib &amp; _A_HIDDEN) ? 'Y' : 'N',
+            (pfind-&gt;attrib &amp; _A_SYSTEM) ? 'Y' : 'N',
+            (pfind-&gt;attrib &amp; _A_ARCH)   ? 'Y' : 'N' );
+    return pfind-&gt;size;
+}
+ 
+/* Takes unsigned time in the format:               fedcba9876543210
+ * s=2 sec incr, m=0-59, h=23                       hhhhhmmmmmmsssss
+ * Changes to a 9-byte string (ignore seconds):     hh:mm ?m
+ */
+char *timestr( unsigned t, char *buf )
+{
+    int h = (t &gt;&gt; 11) &amp; 0x1f, m = (t &gt;&gt; 5) &amp; 0x3f;
+ 
+    sprintf( buf, "%2.2d:%02.2d %cm", h % 12, m,  h &gt; 11 ? 'p' : 'a' );
+    return buf;
+}
+ 
+/* Takes unsigned date in the format:               fedcba9876543210
+ * d=1-31, m=1-12, y=0-119 (1980-2099)              yyyyyyymmmmddddd
+ * Changes to a 9-byte string:                      mm/dd/yy
+ */
+char *datestr( unsigned d, char *buf )
+{
+    sprintf( buf, "%2.2d/%02.2d/%02.2d",
+             (d &gt;&gt; 5) &amp; 0x0f, d &amp; 0x1f, (d &gt;&gt; 9) + 80 );
+    return buf;
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

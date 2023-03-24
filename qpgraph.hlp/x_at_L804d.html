@@ -1,0 +1,121 @@
+<html>
+
+<head>
+<title>_RemapPalette Function</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='x_RemapPalette.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='PALETTE1_dot_PAS.html'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+  Argument
+ 
+    index      Color index to be set to a new color value
+ 
+    value      New color value to be assigned to the color index
+ 
+  Returns
+ 
+    LongInt    Previous color value of the index argument if
+               successful, or -1 if not
+ 
+  Description
+ 
+    The _RemapPalette function assigns a new color value, given in the
+    argument value, to the color index given by the argument index. The
+    call to this function affects the current display immediately.
+ 
+    _RemapPalette works in all graphics modes, but only with EGA, MCGA,
+    or VGA hardware. An error results if the function is called while
+    using any other configuration.
+ 
+    The range of color indexes depends on the number of colors
+    supported by the current video mode. For example, in HRes16Color
+    mode, the color index must be in the range 0-15.
+ 
+  Color Mode
+ 
+    The color value, a LongInt, is defined by specifying three bytes of
+    data representing the three component colors: red, green, and blue.
+    Each of the three bytes represents the intensity of one of the red,
+    green, or blue component colors and must be in the range 0-31.
+    In other words, the low-order six bits of each byte specify the
+    component's intensity and the high-order two bits should be zero.
+    The fourth (high-order) byte in the LongInt is unused and should be
+    set to zero. The diagram below shows the ordering of the lower
+    three bytes within the LongInt value.
+ 
+    For example, to create a lighter shade of blue, start with lots
+    of blue, then add some green and maybe a little bit of red. The
+    three-byte color value would be:
+ 
+      Unused         Blue Byte      Green Byte      Red Byte
+      ══════════     ═════════      ══════════      ═════════
+      00000000       00111111       00101111        00011111
+      High order                                    Low order
+ 
+    This particular color would be written as $3F2F1F when used as the
+    LongInt argument for _RemapPalette. MSGraph defines constants for
+    the default color values corresponding to color indexes 0-15 in
+    color text modes and 16-color graphics modes, as shown below.
+ 
+    Index    Constant   Value       Index    Constant        Value
+    ═════    ══════════════════     ═════    ═══════════════════════
+    0        _Black     $000000     8        _Gray           $151515
+    1        _Blue      $2a0000     9        _LightBlue      $3F1515
+    2        _Green     $002a00     10       _LightGreen     $153f15
+    3        _Cyan      $2a2a00     11       _LightCyan      $3F3F15
+    4        _Red       $00002a     12       _LightRed       $15153F
+    5        _Magenta   $2a002a     13       _LightMagenta   $3F153F
+    6        _Brown     $00152a     14       _Yellow         $153F3F
+    7        _White     $2a2a2a     15       _BrightWhite    $3F3F3F
+ 
+    The VGA supports a palette of 262,144 colors (256K) in color modes,
+    whereas the EGA supports a palette of only 64 different colors.
+    Color values for EGA are specified in exactly the same way as with
+    the VGA; however, only bits 4 and 5 are used. The low-order four
+    bits of each are ignored. Therefore, in the VGA example color
+    described above, only the bits specified below would be relevant
+    for EGA:
+ 
+      Blue Byte     Green Byte    Red Byte
+      ══════════    ══════════    ═════════
+      00110000      00100000      00010000
+      High order                  Low order
+ 
+  Monochrome Mode
+ 
+    The color values for the constants in _ERESNOCOLOR mode range from
+    0 to 8.
+ 
+      Constant         Value
+      ═════════════    ═════
+      _ModeFOff        = 0;
+      _ModeFOffToOn    = 1;
+      _ModeFOffToHi    = 2;
+      _ModeFOnToOff    = 3;
+      _ModeFOn         = 4;
+      _ModeFOnToHi     = 5;
+      _ModeFHiToOff    = 6;
+      _ModeFHiToOn     = 7;
+      _ModeFHi         = 8;
+ 
+    _TextMono mode, mode 7, is limited to three constants and color
+    values.
+ 
+      Constant     Value
+      ═════════    ═════
+      _Mode7Off    = 0;
+      _Mode7On     = 1;
+      _Mode7Hi     = 2;
+ 
+  _GrStatus Returns
+ 
+    _GrError, _GrInvalidParameter
+ 
+
+</pre>
+</body>
+
+</html>

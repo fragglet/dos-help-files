@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<title>CURSOR.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* CURSOR.C illustrates cursor functions including:
+ *      _settextcursor  _gettextcursor  _displaycursor
+ */
+ 
+#include &lt;conio.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;graph.h&gt;
+ 
+/* Macro to define cursor lines */
+#define CURSOR(top,bottom) (((top) &lt;&lt; 8) | (bottom))
+ 
+void main()
+{
+    short oldcursor, newcursor;
+    unsigned char top, bottom;
+    char buffer[80];
+    struct _videoconfig vc;
+ 
+    /* Save old cursor shape and make sure cursor is on. */
+    oldcursor = _gettextcursor();
+    _clearscreen( _GCLEARSCREEN );
+    _displaycursor( _GCURSORON );
+ 
+    /* Change cursor shape. */
+    for( top = 7, bottom = 7; top; top-- )
+    {
+        _settextposition( 1, 1 );
+        sprintf( buffer, "Top line: %d   Bottom line: %d  ", top, bottom );
+        _outtext( buffer );
+        newcursor = CURSOR( top, bottom );
+        _settextcursor( newcursor );
+        _getch();
+    }
+ 
+    _outtext( "\nCursor off" );
+    _displaycursor( _GCURSOROFF );
+    _getch();
+    _outtext( "\nCursor on" );
+    _displaycursor( _GCURSORON );
+    _getch();
+ 
+    /* Restore original cursor shape. */
+    _settextcursor( oldcursor );
+    _clearscreen( _GCLEARSCREEN );
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

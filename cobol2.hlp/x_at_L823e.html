@@ -1,0 +1,89 @@
+<html>
+
+<head>
+<title>Switch N Details    (↑ RTS switches)</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_at_L820f.html'>Key</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='switch-n.html'>Summary</a><span class='grhilite'>►</span>                             <span class='grhilite'>◄</span><a href='switch.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+     See <span class='grhilite'>◄</span><a href='x_at_L8210.html'>Introduction to switches</a><span class='grhilite'>►</span>
+ 
+     This switch is especially useful if the format of your files is
+     incompatible with this version of COBOL.
+ 
+     Setting this switch to on means that when a program writes records to
+     a line sequential file with a record containing control characters
+     (that is, all characters with ASCII codes less than or equal to
+     x"1B"), the system adds a null character (x"00") before each
+     control character. Similarly, on reading a record from a line
+     sequential file, these null characters are stripped from the control
+     characters.
+ 
+     Setting this switch affects only the physical storage of data in a
+     line sequential file. Records written with one setting and read back
+     with the same setting are returned in exactly the same way. However,
+     you should note that if you attempt to input a file with one setting
+     that had been output with the other setting, the results are
+     unpredictable.
+ 
+     Setting this switch off allows control characters to be written and
+     read in the same way as other characters.
+ 
+     When the N switch is on:
+ 
+      o  Any character is allowed in the data record of a line
+         sequential file.
+ 
+      o  Each record is examined before it is written. All characters
+         whose value is less than x"1B" are written with a preceding null
+         (x"00") to form 2-byte pairs. On output to disk, trailing spaces
+         are removed, and a record terminator of x"0D0A" is appended to
+         terminate the record.
+ 
+      o  The file is read as records, some of which may contain 2-byte
+         pairs where the first byte is null. The records are terminated
+         by a record terminator. The leading null of each 2-byte pair is
+         removed to give the final data record. Tabs (x"09") that do not
+         form part of a 2-byte pair are expanded.
+ 
+     Note:
+ 
+      Control characters depend on the operating system. Their hexadecimal
+      values are always less than x"1B". CR (x"0D"), LF (x"0A"),
+      TAB (x"09"), NUL (x"00"), and EOF (x"1A") are all recognized control
+      characters on DOS and OS/2.
+ 
+ 
+     When the N switch is off:
+ 
+      o  Data records in a line sequential file must contain only ASCII
+         text characters (those with a value greater than x"1B").
+ 
+      o  Trailing spaces are removed on output to disk, and a record
+         terminator of x"0D0A" is appended to terminate the record.
+         Printer control characters may also be written to disk.
+ 
+      o  The file is read as data records with each record terminated by
+         a record terminator. If the data contains either x"0D" or x"0A",
+         results can be unpredictable. Tab characters (x"09") are
+         expanded to spaces; otherwise the data record is returned intact.
+ 
+ 
+     For example, the command:
+ 
+       A:MYPROG (-N)
+ 
+     loads the program MYPROG from drive A. It also specifies that in line
+     sequential files, all characters less than x"1B" except for TAB
+     and the file control characters are treated as data. Null is not
+     inserted before data characters less than x"1B" on output.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

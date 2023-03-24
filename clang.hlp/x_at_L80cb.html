@@ -1,0 +1,137 @@
+<html>
+
+<head>
+<title>HEAPWALK.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* HEAPWALK.C illustrates heap testing functions including:
+ *      _heapchk        _heapset        _heapwalk       _msize
+ */
+ 
+#include &lt;stdio.h&gt;
+#include &lt;conio.h&gt;
+#include &lt;malloc.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;time.h&gt;
+ 
+/* Macro to get a random integer within a specified range */
+#define getrandom( min, max ) ((rand() % (int)(((max)+1) - (min))) + (min))
+ 
+int __far *heapvalidate( unsigned fill );    /* Prototypes */
+void heapstat( int status );
+ 
+void main()
+{
+    unsigned *p[10];
+    int i, __far *perr;
+ 
+    srand( (unsigned)time( NULL ) );  /* Seed with current time */
+ 
+    /* Check heap status. Should be OK at start of heap. */
+    heapstat( _heapchk() );
+ 
+    /* Now do some operations that affect the heap. In this example,
+     * allocate random-size blocks.
+     */
+    for( i = 0; i &lt; 10; i++ )
+    {
+        if( (p[i] = (unsigned *)calloc( getrandom( 1, 10000 ),
+                                        sizeof( unsigned ) )) == NULL )
+        {
+            --i;
+            break;
+        }
+        printf( "Allocated %u at %Fp\n",
+                _msize( p[i] ), (void __far *)p[i] );
+    }
+ 
+    /* Fill all free blocks with the test value. */
+    heapstat( _heapset( 254 ) );
+ 
+    /* In a real program, you might do operations here on the allocated
+     * buffers. Then do heapvalidate to make sure none of the operations
+     * wrote to free blocks.
+     */
+    perr = heapvalidate( 254 );
+    if( perr == NULL )
+        printf( "Free entries are unchanged.\n\n" );
+    else
+        printf( "Free entry at %Fp modified.\n\n", perr );
+ 
+    /* Do some more heap operations. */
+    for( i = 9; i &gt;= 0; i-- )
+    {
+        free( p[i] );
+        printf( "Deallocating %u at %Fp\n",
+                _msize( p[i] ), (void __far *)p[i] );
+    }
+ 
+    /* Check heap again. */
+    heapstat( _heapchk() );
+}
+ 
+/* Tests each block in the heap. If a modified free block is found,
+ * returns its address. Otherwise returns NULL.
+ */
+int __far *heapvalidate( unsigned fill )
+{
+    _HEAPINFO hi;
+    unsigned heapstatus, i;
+    unsigned __far *p;
+ 
+    /* Walk through entries, checking free blocks. */
+    hi._pentry = NULL;
+    while( (heapstatus = _heapwalk( &amp;hi )) == _HEAPOK )
+    {
+        /* For free entries, check each byte to see that it still
+         * has only the fill value. Return address if changed.
+         */
+        if( hi._useflag != _USEDENTRY )
+        {
+            for( p = (unsigned __far *)hi._pentry, i = 0; i &lt; hi._size; p++,i++ )
+                if( (unsigned)*p != fill )
+                    return hi._pentry;
+        }
+    }
+    return NULL;
+}
+ 
+/* Reports on the status returned by _heapwalk, _heapset, or _heapchk */
+void heapstat( int status )
+{
+    printf( "\nHeap status: " );
+    switch( status )
+    {
+        case _HEAPOK:
+            printf( "OK - heap is fine" );
+            break;
+        case _HEAPEMPTY:
+            printf( "OK - empty heap" );
+            break;
+        case _HEAPEND:
+            printf( "OK - end of heap" );
+            break;
+        case _HEAPBADPTR:
+            printf( "ERROR - bad pointer to heap" );
+            break;
+        case _HEAPBADBEGIN:
+            printf( "ERROR - bad start of heap" );
+            break;
+        case _HEAPBADNODE:
+            printf( "ERROR - bad node in heap" );
+            break;
+    }
+    printf( "\n\n" );
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

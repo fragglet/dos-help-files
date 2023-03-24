@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>SADD Function Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#SADD'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='x_dot_saddr.html'>Details<span class='grhilite'>►</span></a>     <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>SADD Function Programming Example</b>
+ 
+The following example uses SADD and LEN to pass a string to a function
+written in C. The C function returns the ASCII value of a character at
+a given position in the string.
+ 
+The C program would be separately compiled and stored in a Quick library
+or explicitly linked to form an .EXE file. Note that BYVAL is the
+default for C.
+ 
+'*** Programming example: SADD function ***
+'
+' Do not attempt to run this program unless you have already
+' separately compiled the C function and placed it in a
+' Quick library or linked it to the BASIC program.
+'
+' Pass a string to a C function using SADD and LEN.
+DEFINT A-Z
+' Declare the function;
+DECLARE FUNCTION MyAsc CDECL(BYVAL A AS INTEGER, BYVAL B AS INTEGER, _
+BYVAL C AS INTEGER)
+ 
+A$="abcdefghijklmnopqrstuvwxyz"
+ 
+PRINT "Enter a character position (1-26). Enter 0 to Quit."
+DO
+' Get a character position.
+    INPUT N
+' End if the position is less than zero.
+    IF N&lt;=0 THEN EXIT DO
+' Call C function; the function returns the ASCII code of the
+' character at position N in A$.
+    AscValue=MyAsc(SADD(A$),LEN(A$),N)
+    PRINT "ASCII value: ";AscValue;"Character: ";CHR$(AscValue)
+LOOP
+END
+ 
+/* C function to return the ASCII value of the character
+   at position pos in string c of length len.          */
+ 
+int far myasc(c,len,pos)
+char near *c;
+int len, pos;
+{
+ 
+   if(pos&gt;len) return(c[--len]);/* Avoid indexing off end. */
+   else if (pos&lt;1) return(c[0]);/* Avoid indexing off start. */
+   else
+      return(c[--pos]);/* pos is good. Return the character at
+                          pos-1 because C arrays (strings) are
+                          zero-indexed. */
+}
+ 
+<b>Sample Output</b>
+ 
+Enter a character position (1-26). Enter -1 to Quit.
+? 24
+ASCII value:  120 Character: x
+? -1
+ 
+
+</pre>
+</body>
+
+</html>

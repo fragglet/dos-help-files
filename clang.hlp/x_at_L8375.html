@@ -1,0 +1,49 @@
+<html>
+
+<head>
+<title>Functions Based in a Segment</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_based.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────C/C++ Language─────────────────────────────────────────────────────────
+ 
+     Form of &lt;base&gt;:
+ 
+          __segname(&lt;string literal&gt;)
+ 
+     A function declared as __based resides in the code segment named
+     by &lt;string literal&gt;. You can use the __near or __far keywords
+     with the __based keyword when declaring a function. In
+     programs that use overlays, you can reduce swapping by using
+     __based to group together functions that frequently call one
+     another. You also can use __based to ensure that near functions
+     reside in the same segment as the functions that call them.
+ 
+     For example:
+ 
+          // FILE 1 - compiled under large model
+ 
+          void __based(__segname("MYSEG")) farfunc()  // far by default
+          {
+              nearfunc();
+          }
+ 
+          // FILE 2 - compiled under large model
+ 
+          void __near __based(__segname("MYSEG") nearfunc()
+          {
+             // ...
+          }
+ 
+     If these two functions were not declared as based, this program
+     would suffer a runtime error. Since both functions are
+     based in the MYSEG segment, the program executes correctly.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

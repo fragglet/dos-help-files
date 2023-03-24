@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<title>StrFindChar</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='x_at_L83fe.html'>Map</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='x_at_L843b.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../pwb.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+ 
+;* StrFindChar - Finds first occurence of character in given ASCIIZ string,
+;* searching either from beginning or end of string. See StrWrite, WinOpen,
+;* WinClose, and StrCompare procedures for other examples of string
+;* instructions.
+;*
+;* Shows:   Instructions - repne     scasb    cld     std
+;*
+;* Params:  Ichar - Character to search for
+;*          Sptr - Pointer to ASCIIZ string in which to search
+;*          Direct - Direction flag:
+;*                       0 = search from start to end
+;*                       1 = search from end to start
+;*
+;* Return:  Null pointer if character not found, else pointer to string where
+;*          character first encountered
+ 
+StrFindChar PROC USES ds di si,
+        IChar:SBYTE,
+        Sptr:PBYTE,
+        Direct:WORD
+ 
+        LoadPtr es, di, Sptr            ; ES:DI points to string
+        LoadPtr ds, si, Sptr            ;   as does DS:SI
+        mov     cx, -1                  ; Set scan counter to maximum
+        mov     bx, cx                  ; BX = max string tail
+        cld                             ; Assume head-to-tail search
+ 
+        .IF     Direct != 0             ; If assumption correct:
+        mov     bx, di                  ; Set BX to byte before
+        dec     bx                      ;   string head and scan
+        sub     al, al                  ;   string for null terminator
+        push    cx                      ;   to find string tail
+        repne   scasb
+        pop     cx                      ; Recover scan counter
+        dec     di                      ; Backup pointer to last
+        dec     di                      ;   character in string and
+        mov     si, di                  ;   begin search from there
+        std                             ; Set direction flag
+        .ENDIF
+ 
+        .REPEAT
+        lodsb                           ; Get first char from string
+        .IF     (si == bx) || (al == 0) ; If at head or tail limit:
+        sub     ax, ax                  ; No match
+        sub     dx, dx                  ; Set null pointer
+        jmp     exit
+        .ENDIF
+        .UNTILCXZ al == IChar
+ 
+        mov     ax, si                  ; Match, so point to first
+        dec     ax                      ;   occurence
+        .IF     Direct != 0             ; If head-to-tail search:
+        inc     ax                      ; Adjust pointer forward
+        inc     ax
+        mov     dx, ds                  ; Pointer segment
+        .ENDIF
+exit:
+        ret
+ 
+StrFindChar ENDP
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

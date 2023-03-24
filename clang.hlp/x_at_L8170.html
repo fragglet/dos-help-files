@@ -1,0 +1,112 @@
+<html>
+
+<head>
+<title>malloc Functions</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+ <span class='grhilite'>◄</span><a href='malloc.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_at_L80b4.html'>Example</a><span class='grhilite'>►</span>                         <span class='grhilite'>◄</span><a href='lib_dot_lst.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+     The malloc family of functions allocates a memory block of at
+     least &lt;size&gt; bytes. The block may be larger than &lt;size&gt; bytes
+     because of space required for alignment and for maintenance
+     information. If size is 0, malloc allocates a zero-length item
+     in the heap and returns a valid pointer to that item.
+ 
+     The storage space pointed to by the return value is guaranteed to
+     be suitably aligned for storage of any type of object. To get a
+     pointer to a type other than void, use a type cast on the return
+     value.
+ 
+     In large data models (compact, large, and huge), malloc maps to
+     _fmalloc. In small data models (tiny, small, and medium), malloc
+     maps to _nmalloc.
+ 
+     The _fmalloc function allocates a memory block of at least &lt;size&gt;
+     bytes outside the default data segment. The _fmalloc function
+     returns a far pointer to void. If a block of more than 64K is
+     needed, use the _halloc function.
+ 
+     The _bmalloc function allocates a memory block of at least &lt;size&gt;
+     bytes in the based heap specified by the segment selector &lt;seg&gt;.
+ 
+     The various malloc functions allocate memory in the heap specified
+     in the list below:
+ 
+     Function     Heap Segment
+ 
+     malloc       Depends on data model of program
+     _bmalloc     Based heap specified by seg value
+     _fmalloc     Far heap (outside default data segment)
+     _nmalloc     Near heap (inside default data segment)
+ 
+     The functions that call the malloc family of routines are listed
+     below. In addition, the startup code uses malloc to allocate
+     storage for the environ/envp[] and argv[] strings and arrays.
+ 
+     The following routines call _nmalloc:
+ 
+          _nrealloc     _ncalloc     _nstrdup     realloc *
+ 
+          * in small data models
+ 
+     The following routines call _fmalloc:
+ 
+          _frealloc     _fcalloc     _fstrdup     realloc *
+ 
+          * in large data models
+ 
+     The following routines call malloc:
+ 
+          _calloc        fseek           _searchenv
+          _execl         fsetpos         setvbuf
+          _execle        _fullpath       _spawnl
+          _execlp        fwrite          _spawnle
+          _execlpe       getc            _spawnlp
+          _execv         getchar         _spawnlpe
+          _execve        _getcwd         _spawnv
+          _execvp        _getdcwd        _spawnve
+          _execvpe       gets            _spawnvp
+          fgetc          _getw           _spawnvpe
+          _fgetchar      printf          _strdup
+          fgets          putc            system
+          fprintf        putchar         _tempnam
+          fputc          _putenv         ungetc
+          _fputchar      puts            vfprintf
+          fputs          _putw           vprintf
+          fread          realloc
+          fscanf         scanf
+ 
+     In Microsoft C version 5.1, the _fmalloc function would retry
+     allocating within the default data segment if sufficient memory
+     was not available outside the default data segment. Since version
+     6.0, _fmalloc returns NULL under these conditions.
+ 
+     In version 5.1, the startup code used malloc only if wildcard
+     expansion was used.
+ 
+     The _freect, _memavl, and _memmax functions called malloc in
+     version 5.1 but do not do so in versions 6.0 and 7.0.
+ 
+     Return Value
+ 
+     The malloc function returns a void pointer to the allocated space.
+     The _nmalloc function returns a ( void __near * ) and _fmalloc
+     returns a ( void __far * ). The _bmalloc function returns a
+     ( void __based( void ) * ).
+ 
+     The malloc, _fmalloc, and _nmalloc functions return NULL if there
+     is insufficient memory available. The _bmalloc function returns
+     _NULLOFF if there is insufficient memory available.
+ 
+     Always check the return from the malloc function, even if the
+     amount of memory requested is small.
+                                    -♦-
+
+</pre>
+</body>
+
+</html>

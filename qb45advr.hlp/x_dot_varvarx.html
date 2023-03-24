@@ -1,0 +1,69 @@
+<html>
+
+<head>
+<title>VARPTR and VARSEG Functions Programming Example</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#VARPTR'>QuickSCREEN<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='x_dot_varvarr.html'>Details<span class='grhilite'>►</span></a>     <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>      <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents<span class='grhilite'>►</span></a>      <span class='grhilite'>◄</span><a href='unknown#-9997'>Index<span class='grhilite'>►</span></a>
+──────────────────────────────────────────────────────────────────────────────
+<b>VARPTR and VARSEG Functions Programming Example</b>
+ 
+For examples of how to use the VARPTR and VARSEG functions with other
+statements, see
+ 
+  the <span class='grhilite'>◄</span><a href='x_dot_bsavex.html'>BSAVE and BLOAD programming examples<span class='grhilite'>►</span></a>,
+  the <span class='grhilite'>◄</span><a href='x_dot_callabsx.html'>CALL ABSOLUTE programming example<span class='grhilite'>►</span></a>, or
+  the <span class='grhilite'>◄</span><a href='x_dot_ca86x.html'>CALL INTERRUPT<span class='grhilite'>►</span></a> programming example.
+ 
+This example program illustrates how to use the VARPTR and VARSEG
+functions in a CALL statement to pass a BASIC array to a C function.
+ 
+'*** Programming example: VARPTR and VARSEG with CALL ***
+'
+' Do not attempt to run this program unless you have already
+' separately compiled the C function with the large-model (/AL)
+' switch and placed the object module in a Quick library or linked
+' it to the BASIC main program.
+'
+' BASIC main program passing an array to C function.
+'
+DEFINT A-Z
+'
+DECLARE SUB AddArr CDECL (BYVAL Offs, BYVAL Segm, BYVAL Num)
+DIM A(1 TO 100) AS INTEGER
+' Fill the array with the numbers 1 to 15.
+FOR I=1 TO 15
+   A(I)=I
+NEXT I
+'
+' Call the C function. AddArr expects a far address (segment
+' and offset). Because CDECL puts things on the stack from
+' right to left, put the offset ( VARPTR(A(1)) ) first in the
+' list, followed by the segment ( VARSEG(A(1)) ).
+'
+CALL AddArr(VARPTR(A(1)),VARSEG(A(1)),15%)
+'
+' Print the modified array.
+FOR I=1 TO 15
+   PRINT A(I)
+NEXT I
+ 
+END
+ 
+/* Add one to the first num elements of array arr.*/
+void far addarr(arr,num)
+int far *arr;
+int num;
+{
+   int i;
+   for(i=0;i&lt;num;i++) arr[i]++;
+}
+ 
+
+</pre>
+</body>
+
+</html>

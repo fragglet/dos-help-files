@@ -1,0 +1,172 @@
+<html>
+
+<head>
+<title>OPEN Statement (File I/O) Details</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+  <span class='grhilite'>◄</span><a href='unknown#OPEN'>Syntax</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../bas7ex.hlp/x_dot_freefx.html'>Example</a><span class='grhilite'>►</span>                 <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+OPEN enables I/O to a file, device, or ISAM table.
+ 
+<b>OPEN file$ [FOR mode] [ACCESS access] [lock] AS [#]filenumber% [LEN=reclen%]</b>
+<b>OPEN database$ FOR ISAM tabletype tablename$ AS [#]filenumber%</b>
+    ■ The arguments file$ and database$ specify an optional device,
+      followed by a filename or path conforming to the DOS naming conventions.
+      The argument database$ must be the name of an ISAM file. If file$ or
+      database$ do not exist, they will be created.
+    ■ The argument mode is a keyword specifying one of the following
+      file modes:
+        ║ Output    Sequential output mode.
+        ║ Input     Sequential input mode.
+        ║ Append    Sequential output mode and sets the file
+        ║           pointer to the end of file and the record number to
+        ║           the last record of the file. A PRINT # or WRITE #
+        ║           statement then extends (appends to) the file.
+        ║ Random    Specifies random-access file mode, the
+        ║           default mode. In random mode, if no ACCESS clause
+        ║           is present, three attempts are made to open the
+        ║           file when the OPEN statement is executed. Access is
+        ║           attempted in the following order:
+        ║             1. Read/write
+        ║             2. Write-only
+        ║             3. Read-only
+        ║ Binary    Specifies binary-file mode. In binary mode,
+        ║           you can read or write information to any byte
+        ║           position in the file using GET and PUT.
+        ║           In binary mode, if no ACCESS clause is present,
+        ║           three attempts are made to open the file. The
+        ║           attempts follow the same order as those for random
+        ║           files.
+      If the mode argument is omitted, the default is random access.
+    ■ ISAM is a keyword that specifies you are opening an ISAM table.
+    ■ The argument tabletype is the name of a user-defined type that defines
+      a subset of the table definition. See <span class='grhilite'>◄</span><a href='unknown#TYPE'>TYPE</a><span class='grhilite'>►</span>.
+    ■ The argument tablename$ is the name of the ISAM table being opened.
+      It follows the <span class='grhilite'>◄</span><a href='../bas7qck.hlp/x_dot_ISAMNC.html'>ISAM naming conventions</a><span class='grhilite'>►</span>.
+    ■ The argument access is a keyword that specifies the operation performed
+      on the opened file:
+        ║ Read          Opens the file for reading only.
+        ║ Write         Opens the file for writing only.
+        ║ Read Write    Opens the file for both reading and writing.
+        ║               This mode is valid only for random and binary
+        ║               files and files opened for append.
+    ■ The lock argument works in a multiprocessing environment to restrict
+      access by other processes to an open file. It can be one of the
+      following keywords specifying the lock type:
+        ║ Shared             Any process on any machine can read from or
+        ║                    write to this file. Do not confuse the
+        ║                    shared lock type with the SHARED statement
+        ║                    or the shared attribute that appears in other
+        ║                    statements.
+        ║ Lock Read          No other process is granted read access to
+        ║                    this file. This access is granted only if no
+        ║                    other process has a previous read access to
+        ║                    the file.
+        ║ Lock Write         No other process is granted write access to
+        ║                    this file. This lock is granted only if no
+        ║                    other process has a previous write access to
+        ║                    the file.
+        ║ Lock Read Write    No other process is granted either read or
+        ║                    write access to this file. This access is
+        ║                    granted only if read or write access has not
+        ║                    already been granted to another process, or
+        ║                    if a lock read or lock write is not already
+        ║                    in place.
+      If you do not specify a lock type, the file can be opened for
+      reading and writing any number of times by this process, but other
+      processes are denied access to the file while it is opened.
+    ■ The filenum% is an integer expression whose value is between 1
+      and 255, inclusive. When an OPEN is executed, the file number is
+      associated with the file as long as it is open. Other I/O statements
+      can use the number to refer to the file.
+    ■ The Argument reclen% is an integer expression less than or equal
+      to 32,767 bytes. It specifies different settings for random-access
+      or sequential files:
+ 
+        For random-access files        For sequential files
+        ═══════════════════════        ════════════════════
+        reclen% sets the record        reclen% specifies the
+        length (the number of          number of characters to be
+        characters in a record).       loaded into the buffer
+                                       before the buffer is
+        The default is 128 bytes.      written to, or read from,
+                                       the disk.
+ 
+                                       A larger buffer means more
+                                       room taken from BASIC, but
+                                       faster file I/O. A smaller
+                                       buffer means more room in
+                                       memory for BASIC, but
+                                       slower I/O.
+ 
+                                       The default is 512 bytes.
+ 
+      The LEN clause and reclen% are ignored if the file mode is binary.
+ 
+Usage Notes
+    ■ You must open a file before any I/O operation can be performed
+      on it. OPEN allocates a buffer for I/O to the file or device and
+      determines the mode of access used with the buffer.
+    ■ If the file is already opened by another process and the
+      specified type of access is not allowed, the OPEN fails and BASIC
+      generates the error message, "Permission denied."
+    ■ The ACCESS clause works in an OPEN statement only if you are
+      using a version of DOS that supports networking (DOS Versions 3.0
+      or later). In addition, you must run the SHARE.EXE program (or
+      the network startup program must run it) to perform any locking
+      operation. If ACCESS is used with OPEN, earlier versions of DOS
+      return the error message, "Advanced feature unavailable."
+    ■ For sequential files, reclen% need not correspond to an
+      individual record size, because a sequential file may have records
+      of different sizes.
+    ■ The following devices are supported by BASIC and can be named
+      and opened with the file argument:
+ 
+        KYBD:, SCRN:, COMn:, LPTn:, CONS:, PIPE:.
+ 
+      The BASIC file I/O system allows you to take advantage of
+      user-installed devices. (See your DOS manual for information on
+      character devices.)
+    ■ Character devices are opened and used in the same manner as
+      disk files. However, characters are not buffered by BASIC as they
+      are for disk files. The record length for the device files is set
+      to one.
+    ■ BASIC sends only a carriage return at the end of a line. If the
+      device requires a line feed, the driver must provide it. When
+      writing device drivers, keep in mind that other BASIC users will
+      want to read and write control information. Writing and reading
+      of device-control data is handled by the IOCTL statement and
+      IOCTL$ function.
+    ■ None of the BASIC devices directly supports binary mode.
+      However, line printer devices can be opened in binary mode
+      by adding the BIN keyword:
+ 
+        OPEN "LPT1:BIN" FOR OUTPUT AS #1
+ 
+      Opening a printer in BIN mode eliminates printing a carriage
+      return at the end of a line.
+    ■ When you open an ISAM table, the next record is the first record in
+      the table and the current index is the NULL index.
+ 
+ISAM Programming Tips
+    ■ Any ISAM operation that closes a table causes transactions to be
+      committed. For example, if a type mismatch occurs while you are
+      opening an ISAM table, the table is closed and a pending transaction
+      is committed.
+    ■ You may wish to code your programs so they first open all tables,
+      then perform all transactions, then close tables. Make sure any
+      operation that can close a table occurs outside a transaction.
+ 
+Important
+    ■ In input, random, and binary modes you can open a file under a
+      different file number without first closing the file. In output
+      or append mode you must close a file before opening it with a
+      different file number.
+
+</pre>
+</body>
+
+</html>

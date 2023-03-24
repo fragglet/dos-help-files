@@ -1,0 +1,61 @@
+<html>
+
+<head>
+<title>WGETSIZE.C</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<pre>
+                                             <span class='grhilite'>◄</span><a href='x_at_L8122.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/hv.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../advisor.hlp/vx.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────Run-Time Library───────────────────────────────────────────────────────
+ 
+/* WGETSIZE.C - Demonstrate getting the
+ * size of a QuickWin window on the screen
+ */
+ 
+#include &lt;io.h&gt;
+#include &lt;stdio.h&gt;
+ 
+#define OPENFLAGS   "w"          /* Access permission */
+#define PERSISTFLAG _WINPERSIST  /* Keep on screen */
+ 
+void main()
+{
+   int nRes;                /* Result */
+   FILE *wp;                /* File pointer */
+   struct _wsizeinfo ws;    /* Size information */
+ 
+   /* Open a window */
+   /* NULL arguments accept default characteristics */
+   wp = _fwopen( NULL, NULL, OPENFLAGS );
+   if( wp == NULL )
+   {
+      printf( "***ERROR:_fwopen\n" );
+      exit( -1 );
+   }
+ 
+   /* Get the window's size and screen position */
+   ws._version = _QWINVER;
+   nRes = _wgetsize( _fileno( wp ), _WINCURRREQ, &amp;ws );
+   if( nRes == -1 )
+   {
+      printf( "***ERROR: _wgetsize\n" );
+      exit( -1 );
+   }
+   nRes = fprintf( wp, "Size:\n" );
+   nRes = fprintf( wp, "  Upper Left: x = %d\n", ws._x );
+   nRes = fprintf( wp, "              y = %d\n", ws._y );
+   nRes = fprintf( wp, "  Width:      w = %d\n", ws._w );
+   nRes = fprintf( wp, "  Height:     h = %d\n", ws._h );
+ 
+   nRes = _wclose( _fileno( wp ), PERSISTFLAG );
+ 
+   exit( 0 );
+}
+                                    -♦-
+
+</pre>
+</body>
+
+</html>
