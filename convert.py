@@ -37,15 +37,17 @@ CHAR_ESCAPES = {
 HTML_TEMPLATE="""<html>
 
 <head>
-<title>%(title)s</title>
+<title>%(title)s - %(db_title)s</title>
 <link rel="stylesheet" href="../style.css">
 </head>
 
 <body>
+<div class="page-heading">
 <form action="https://duckduckgo.com/" method="GET">
 <input name="q" id="search-box" placeholder="Search">
 <input type="hidden" name="sites" value="fragglet.github.io">
 </form>
+%(heading)s</div>
 <div class="page-title"> %(title)s</div>
 <pre>%(body)s</pre>
 </body>
@@ -156,13 +158,6 @@ class Topic(object):
 			return self.topic
 		return self.prettiest_context()
 
-	def page_title(self):
-		name = self.name()
-		db_title = self.db.title()
-		if db_title is not None:
-			name += " - " + db_title
-		return name
-
 	def filename(self):
 		if self.is_toc:
 			return "index.html"
@@ -236,8 +231,28 @@ class Database(object):
 			return None
 		return topic.text.strip()
 
-	def parse_text(self, text):
+	def page_heading(self):
+		t = self.title()
+		if t is not None:
+			result = "%s (%s)" % (escape(t), self.filename)
+		else:
+			result = self.filename
+
+		links = []
+		if self.toc_topic is not None:
+			links.append((self.toc_topic.filename(),
+			              "Table of Contents"))
+		links.append(("TOPIC_LIST.html", "Topic list"))
+
+		result += " (%s)" % ("; ".join(
+			"<a href='%s'>%s</a>" % (
+				filename, escape(title),
+			) for filename, title in links))
+		return result
+
+	def parse_text(self, text, filename):
 		self.current_topic = Topic(self)
+		self.filename = filename
 		topics = []
 
 		last_was_context = False
@@ -273,16 +288,20 @@ class Database(object):
 		for context, topic in self.topics_by_context.items():
 			if "contents" in context:
 				topic.is_toc = True
+				self.toc_topic = topic
 				break
 		else:
 			print("Didn't find the table of contents ...")
+			self.toc_topic = None
 
 
-def write_html_file(filename, topic):
+def write_html_file(filename, topic, db):
 	with open(filename, "wb") as out:
 		html = HTML_TEMPLATE % {
 			'body': topic.to_html(),
-			'title': escape(topic.page_title()),
+			'title': escape(topic.name()),
+			'heading': db.page_heading(),
+			'db_title': db.title() or db.filename,
 		}
 		out.write(html.encode("utf-8"))
 
@@ -309,10 +328,10 @@ if len(sys.argv) != 3:
 outdir = sys.argv[2]
 f = read_as_utf8(sys.argv[1])
 db = Database()
-db.parse_text(f)
+db.parse_text(f, os.path.basename(sys.argv[1]))
 for t in db.topics:
 	filename = t.filename()
-	write_html_file(os.path.join(outdir, filename), t)
+	write_html_file(os.path.join(outdir, filename), t, db)
 	for filename in t.alias_filenames():
 		write_redirect_file(os.path.join(outdir, filename), t)
 write_topic_list(os.path.join(outdir, "TOPIC_LIST.html"), db)
