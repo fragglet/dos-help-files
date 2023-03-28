@@ -42,6 +42,10 @@ HTML_TEMPLATE="""<html>
 </head>
 
 <body>
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
 <div class="page-title"> %(title)s</div>
 <pre>%(body)s</pre>
 </body>
