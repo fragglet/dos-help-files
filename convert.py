@@ -328,7 +328,7 @@ if len(sys.argv) != 3:
 outdir = sys.argv[2]
 f = read_as_utf8(sys.argv[1])
 db = Database()
-db.parse_text(f, os.path.basename(sys.argv[1]))
+db.parse_text(f, os.path.basename(sys.argv[1]).replace(".txt", ".hlp"))
 for t in db.topics:
 	filename = t.filename()
 	write_html_file(os.path.join(outdir, filename), t, db)
