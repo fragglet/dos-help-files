@@ -301,7 +301,7 @@ def write_html_file(filename, topic, db):
 			'body': topic.to_html(),
 			'title': escape(topic.name()),
 			'heading': db.page_heading(),
-			'db_title': db.title() or db.filename,
+			'db_title': escape(db.title() or db.filename),
 		}
 		out.write(html.encode("utf-8"))
 
