@@ -15,7 +15,7 @@ ALWAYS_GREEN_RE = re.compile(u"([\u25ba\u25c4])")
 
 DONTCARE_COMMANDS = { "freeze", "list", "paste", "popup", "ref", "mark",
                       "length", "end", "raw", "title", "command", "file",
-                      "execute" }
+                      "execute", "next" }
 
 # For filenames:
 CHAR_ESCAPES = {
