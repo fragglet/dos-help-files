@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>DOEVENTS Function Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DOEVENTS Function Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses DOEVENTS to yield to other operating environment events
+' that may be occurring at the same time as a CPU-intensive FOR...NEXT loop
+' in Visual Basic processing. Click the form to start the DOEVENTS loop.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Choose New Form from the File menu to create a form
+' 3. Press Alt+F4 to return to the programming environment
+' 4. Copy the code example below to the form module
+' 5. Press F5 to run the example
+ 
+ DECLARE SUB DoEventsDemo ()
+ 
+ SUB DoEventsDemo ()
+     Msg$ = "A FOR...NEXT loop simulates a CPU intensive operation. "
+     Msg$ = Msg$ + CHR$(10) + CHR$(13) + _
+     "DOEVENTS is not used the first time the loop "
+     Msg$ = Msg$ + CHR$(10) + CHR$(13) + _
+     "executes. As a result, you are unable to do "
+     Msg$ = Msg$ + CHR$(10) + CHR$(13) + _
+     "anything else until the loop is finished. Choose "
+     Msg$ = Msg$ + CHR$(10) + CHR$(13) + _
+     "OK and try to select another window before the beep."
+     MSGBOX Msg$
+     FOR I% = 1 TO 5000                      ' Start 1st loop
+          N% = INT(5000 * RND + 1)           ' Generate random number
+     NEXT I%                                 ' Increment loop counter
+     BEEP                                    ' Notify user 1st loop is done
+     Msg$ = "DOEVENTS is used the second time the loop executes causing "
+     Msg$ = Msg$ + CHR$(10) + CHR$(13) + _
+     "it to yield control to other events that may occur "
+     Msg$ = Msg$ + CHR$(10) + CHR$(13) + _
+     "while the loop is executing. The processing appears "
+     Msg$ = Msg$ + CHR$(10) + CHR$(13) + _
+     "to be running in the background. Now choose OK and "
+     Msg$ = Msg$ + CHR$(10) + CHR$(13) + "try to select another window."
+     MSGBOX Msg$                             ' Display explanation
+     FOR I% = 1 TO 1000                      ' Start 2nd loop
+          N% = INT(5000 * RND + 1)           ' Generate random number
+          State% = DOEVENTS()                ' Yield to other events
+     NEXT I%                                 ' Increment loop counter
+     BEEP: BEEP                              ' Notify user 2nd loop is done
+     MSGBOX "All Done!"                      ' Display final message
+ END SUB
+ 
+ SUB Form_Click ()
+     CALL DoEventsDemo
+ END SUB
+ 
+</pre>
+</body>
+
+</html>

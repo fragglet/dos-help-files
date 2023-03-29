@@ -1,0 +1,100 @@
+<html>
+
+<head>
+<title>GET and PUT Statements (Graphics) Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GET and PUT Statements (Graphics) Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses GET to put a spaceship graphic into an array. The PUT
+' statement is then used to display the ship array in different locations
+' depending on user input.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ ON ERROR RESUME NEXT
+ 
+ CONST g = .01                   ' Gravity
+ CONST vThrust = .005            ' Horizontal thrust
+ CONST hThrust = .01             ' Vertical thrust
+ 
+ SCREEN 2
+ CLS
+ 
+' Calculate size of array for ship array.
+ arraybytes = 4 + INT(((60 - 40 + 1) * 1 + 7) / 8) * 1 * ((60 - 50) + 1)
+ DIM ship(arraybytes / 2) AS INTEGER
+ 
+ LINE (50, 50)-(40, 60)              ' Draw ship
+ LINE (40, 60)-(60, 60)
+ LINE (60, 60)-(50, 50)
+ GET (40, 50)-(60, 60), ship         ' Get ship image into array
+ CLS
+ 
+ X = 310: Y = 10                     ' Set initial conditions
+ vx = 0: vy = 0
+ ax = 0: ay = g
+ 
+ PRINT " i"                          ' Print help keys
+ PRINT "j k"
+ PRINT " m"
+ 
+ LOCATE 25, 1                        ' Print initial conditions
+ PRINT "ax="; USING "+#.###    "; ax;
+ PRINT "ay="; USING "+#.###    "; ay;
+ LINE (0, 190)-(639, 190)
+ PUT (X, Y), ship, PSET              ' Draw ship
+ 
+ DO
+     vx = vx + ax: vy = vy + ay      ' Calculate velocity
+     newx = X + vx: newy = Y + vy    ' Calculate new x and y position
+     PUT (X, Y), ship, XOR           ' Erase ship at current position
+     PUT (newx, newy), ship, PSET    ' Draw ship at new location
+     X = newx: Y = newy
+ 
+     a$ = INKEY$                     ' Check keys
+     SELECT CASE LCASE$(a$)
+     CASE "m", "i", "j", "k":
+         SELECT CASE a$
+         CASE "m":                   ' Down key
+             ay = ay + vThrust
+         CASE "i":                   ' Up key
+             ay = ay - vThrust
+         CASE "j":                   ' Left key
+             ax = ax - hThrust
+         CASE "k":                   ' Right key
+             ax = ax + hThrust
+         END SELECT
+ 
+     LOCATE 25, 1                            ' Print accelerations
+     PRINT "ax="; USING "+#.###    "; ax;
+     PRINT "ay="; USING "+#.###    "; ay;
+     END SELECT
+ 
+     LOCATE 25, 40                           ' Print velocities
+     PRINT "vx="; USING "+##.###    "; vx;
+     PRINT "vy="; USING "+#.###"; vy;
+ LOOP UNTIL Y &gt; 180 OR ERR &lt;&gt; 0              ' Loop until landed or crashed
+ 
+ IF ERR &lt;&gt; 0 OR vy &gt; .2 THEN                 ' Crashed if velocity is greater
+     CLS                                     ' than .2 or if ship went off
+     LOCATE 12, 33: PRINT "You crashed!"     ' screen
+ ELSE
+     LOCATE 12, 33: PRINT "You made it!"
+ END IF
+</pre>
+</body>
+
+</html>

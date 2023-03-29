@@ -1,0 +1,62 @@
+<html>
+
+<head>
+<title>LOF Function Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> LOF Function Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses LOF to determine the length of a message which is to be
+' encrypted and then decrypted.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ CLS                                     ' Clear the screen
+ DIM C AS STRING * 1
+ OPEN "MESSAGE.DAT" FOR OUTPUT AS #1     ' Open a text file and put
+ CLS                                     ' the message "Hi there" in it
+ INPUT "Enter a message for encryption: ", message$
+ PRINT #1, message$
+ CLOSE #1
+ CLS
+ PRINT "Encrypting MESSAGE.DAT"
+ PRINT "   ";
+ OPEN "MESSAGE.DAT" FOR BINARY AS #1     ' Encrypt the text contained within
+ FOR i% = 1 TO LOF(1)                    ' MESSAGE.DAT; the encryption routine
+     GET #1, i%, C                       ' replaces each ASCII character with
+     C = CHR$((ASC(C) + 1) MOD 256)      ' the next ASCII character, for
+     PUT #1, i%, C                       ' example, A becomes B, C becomes D
+     PRINT C;                            ' Print each encrypted character
+ NEXT i%
+ LOCATE 3, 1
+ PRINT "Decrypting MESSAGE.DAT"
+ PRINT "   ";
+ FOR i% = 1 TO LOF(1)                    ' Decrypt the text in MESSAGE.DAT
+     GET #1, i%, C
+     PRINT CHR$((ASC(C) + 255) MOD 256); ' Print each decrypted character
+ NEXT i%
+ LOCATE 5, 1
+ PRINT "File MESSAGE.DAT contains "; LOF(1); " bytes"
+ CLOSE #1
+ END
+ 
+ 
+ 
+ 
+ 
+</pre>
+</body>
+
+</html>

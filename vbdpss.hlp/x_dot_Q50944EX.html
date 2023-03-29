@@ -1,0 +1,102 @@
+<html>
+
+<head>
+<title>Article Q50944, Example - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q50944, Example</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Using CALL INTERRUPT to Push Characters into Keyboard Buffer, Example</b>
+ 
+ The program shown below, KEYPSH.BAS, sets up a table containing all of
+ the scan codes for ASCII character values 32 (a space) through 126
+ (~), and defines the routine PUSHSTRING that will push the passed
+ string of characters into the keyboard buffer.
+ 
+ Code Example: KEYPSH.BAS
+ ------------------------
+ 
+ To try this example in VBDOS.EXE:
+ 
+   1. From the File menu, choose New Project.
+   2. Copy the code example to the Code window.
+   3. Press F5 to run the program.
+ 
+ ' To run this program in the environment, you must invoke the
+ ' environment with the /L switch to load the default Quick library:
+ ' VBDOS.EXE /L for Visual Basic 1.0 for MS-DOS
+ '
+ ' This program works on IBM AT and PS/2 class computers, but not on
+ ' IBM PC class computers.
+ 
+ DECLARE SUB pushstring (thestring$)
+ ' Use the following include file for Visual Basic 1.0 for MS-DOS:
+ REM $INCLUDE: 'VBDOS.BI'
+ DIM SHARED scanarray(1 TO 93) AS INTEGER
+ FOR i% = 1 TO 93  ' Initialize scan code array.
+         READ scanarray(i%)
+ NEXT
+ CALL pushstring("&lt;Key Push!&gt;")
+ INPUT a$
+ PRINT a$
+ ' Define Scan Codes for ASCII characters 32 (space) through 126 (~):
+ 
+ REM      !   "  #  $  %  &amp;   '   (   )  *   +   ,   -   .  /
+ DATA 57, 2, 40, 4, 5, 6, 8, 40, 10, 11, 9, 13, 51, 12, 52, 53
+ 
+ REM    0  1  2  3  4  5  6  7  8   9
+ DATA  11, 2, 3, 4, 5, 6, 7, 8, 9, 10
+ 
+ REM   :   ;   &lt;   =   &gt;   ?  @
+ DATA 39, 39, 51, 13, 52, 53, 3
+ 
+ REM   A   B   C   D   E   F   G   H   I   J   K   L   M
+ DATA 30, 48, 46, 32, 18, 33, 34, 35, 23, 36, 37, 38, 50
+ 
+ REM   N   O   P   Q   R   S   T   U   V   W   X   Y   Z
+ DATA 49, 24, 25, 16, 19, 31, 20, 22, 47, 17, 45, 21, 44
+ 
+ REM   [   \  ]  ^   _   `
+ DATA 26, 43, 27, 7, 12, 41
+ 
+ REM   a   b   c   d   e   f   g   h   i   j   k   l   m
+ DATA 30, 48, 46, 32, 18, 33, 34, 35, 23, 36, 37, 38, 50
+ 
+ REM   n   o   p   q   r   s   t   u   v   w   x   y   z
+ DATA 49, 24, 25, 16, 19, 31, 20, 22, 47, 17, 45, 21, 44
+ 
+ REM   {   |   }   ~
+ DATA 26, 43, 27, 41
+ 
+ SUB pushstring (thestring$)   ' Pushes string into keyboard buffer.
+    DIM inregs AS regtype
+    DIM outregs AS regtype
+    stringlen = LEN(thestring$)
+    IF stringlen &gt; 15 THEN stringlen = 15  ' Maximum buffer size = 15.
+    FOR i% = 1 TO stringlen
+       inregs.ax = &amp;H500    ' Subfunction to push character.
+       ascvalue = ASC(MID$(thestring$, i%, 1))
+       IF ascvalue &gt;= 32 AND ascvalue &lt;= 126 THEN
+          ' Assign scan code to high byte.
+          inregs.cx = scanarray(ascvalue - 31) * 256
+          inregs.cx = inregs.cx + ascvalue   ' Add ASCII code.
+          CALL interrupt(&amp;H16, inregs, outregs) ' Keyboard interrupt.
+       END IF
+    NEXT
+ END SUB
+ 
+</pre>
+</body>
+
+</html>

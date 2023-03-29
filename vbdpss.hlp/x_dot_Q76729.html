@@ -1,0 +1,164 @@
+<html>
+
+<head>
+<title>Article Q76729 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q76729</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Complete VB Program to BLOAD/BSAVE Four Plane PICEM Images</b> - Q76729
+ 
+ This article contains a sample program that combines information from
+ several Microsoft Knowledge Base articles for a more complete example
+ of using the BLOAD and BSAVE statements with graphics images. It
+ incorporates information on how to shell to PICEM210 (a shareware
+ utility) to display a graphics image, how to BLOAD/BSAVE the graphics
+ file with four color planes, and how to save the video card palette
+ registers associated with the image.
+ 
+ PICEM.EXE is available in the IBM Forum on CompuServe, or in the
+ Microsoft Software/Data Library on CompuServe, as described below.
+ (For more information on CompuServe, call 800-848-8199.) Since
+ PICEM.EXE is freeware, it is also widely available on local bulletin
+ board services around the country.
+ 
+ More Information:
+ 
+ The program below, PIC.BAS, shows one method of using PICEM210 to
+ display a .GIF, .PCX, or .PIC graphics image file and BSAVE the image
+ to disk. This program is intended to save and load images in screen
+ modes with more than one bit plane. Screen modes 9 (640-by-350-by-16)
+ and 12 (640-by-480-by-16) fall into this category (they each have four
+ bit planes). This program can also save screen mode 13
+ (320-by-200-by-256) graphics images, but PICEM210 already has the
+ ability to save one bit plane images in the Basic BSAVE format without
+ using a separate Basic program.
+ 
+ To find PICEM on the IBM Forum on CompuServe, type "GO IBMFF" to
+ invoke IBM File Finder, and then follow the prompts to find PICEM.ARC
+ or PICEM.EXE. Because you may find several older versions of PICEM,
+ use only version 2.0b or 2.1 to support saving in Basic BLOAD format
+ (or any later versions that support Basic BLOAD format). The following
+ is the header information for PICEM in CompuServe:
+ 
+    PICEM  - Picture view utility
+             Version 2.1 - July 25, 1990
+             Written by John Bridges,  Copyright(C) 1987,88,89,90
+ 
+ PICEM can also be found in the Microsoft Software/Data Library on
+ Compuserve by searching on the word PICEM or S12734. (PICEM was
+ archived using the PKware file-conversion utility.)
+ 
+ For any questions or problems regarding PICEM, contact John Bridges on
+ CIS (CompuServe) ID:73307,606 in the PICS Forum. To enter the PICS
+ forum on CompuServe, type "GO PICS" (without the quotation marks) from
+ any prompt. (Since PICEM is not a Microsoft product, Microsoft does
+ not support questions about PICEM.)
+ 
+ If PICEM.EXE doesn't work properly on your card, you need to tell it
+ what mode to use via the PICEM /V: switch. See the /V: modes listed
+ below and in PICEM.DOC.
+ 
+ PICEM210 has the ability to set most of its viewing options from the
+ command line in addition to leaving the image on the screen when it
+ ends. The options used in this program are as follows:
+ 
+   /e    - leaves image on screen after displaying
+   /k    - tells PICEM to not wait for a keypress after displaying image
+   /v:x  - which mode to display the image
+ 
+         Values for x used are:
+ 
+           i    - Screen mode 9, change to "g" for EGA cards
+           m    - Screen mode 12
+           l    - Screen mode 13
+ 
+ In addition to BSAVEing the graphics image, the program below also
+ saves the palette registers used by the picture. It does so because
+ when you shell to another process then return to Basic, Basic does not
+ know that the screen mode and palette have changed during the shell.
+ If this step is not performed, the next time the image is loaded,
+ Basic's default palette is used rather than the palette needed for the
+ image, so the picture will not display in the correct colors.
+ 
+ Information About the Program
+ -----------------------------
+ 
+ The program first finds if it is loading a previously BSAVEd file or
+ if it is BSAVEing a graphics file. It then gets information about the
+ file to load or save, and which screen mode the file is to be
+ displayed in (valid values are 9, 12, and 13). It then either shells
+ to PICEM or BLOADs the image to the screen.
+ 
+ When an image is saved, there are four image files (saved as
+ "&lt;file&gt;.B_X") and one register file (saved as "&lt;file&gt;.REG") saved. The
+ image files each contain one bit plane of the image, and the register
+ file contains the values of the palette registers for the image.
+ 
+ When an image is loaded, the program looks for the "&lt;file&gt;.REG" to
+ make sure that the image has been previously BSAVED (where &lt;file&gt; is
+ the filename of the image BSAVEd). The DIR$ function checks to see if
+ a specified file exists; if the file does not exist, DIR$ returns a
+ null string.
+ 
+ PIC.BAS will also accept command line parameters. The format is as
+ follows:
+ 
+    pic [&lt;save/load&gt; /mode [&lt;GIF-file&gt;] &lt;bsave-name&gt;]
+ 
+ where
+ 
+    &lt;Save/Load&gt;:   /S = Save a GIF, /L = Load a BSAVE file
+    /mode:         /9 = 640x350x16, /12 = 640x480x16, /13 = 320x200x256
+    &lt;GIF-file&gt;:    Filename of .GIF, .PCX, .PIC file to BSAVE, extension
+                   required. (Not used when loading a BSAVE file.)
+    &lt;bsave-file&gt;:  Eight character filename to BLOAD or BSAVE GIF
+ 
+ An example of loading the 640-by-480-by-16 GIF file COLORS.GIF and
+ BSAVEing it as COLORS is as follows (where COLORS.GIF is in the
+ current directory):
+ 
+    pic /s /12 colors.gif colors
+ 
+ The above command will create five files: COLORS.B_0, COLORS.B_1,
+ COLORS.B_2, COLORS.B_3, and COLORS.REG. To load the BSAVE files back
+ into video memory, use the following command:
+ 
+    pic /l /12 colors
+ 
+ The steps used to compile the program are as follows:
+ 
+     bc /o pic;
+ 
+     link pic,,,vbdos.lib;
+ 
+ Disclaimer
+ ----------
+ 
+ This program is NOT a retail product of Microsoft Corporation.
+ It was developed by a private technician as a utility to be used by
+ programmers using Microsoft Visual Basic version 1.0 for MS-DOS. This
+ program is provided AS IS, without warranty of any kind, either
+ expressed or implied. The entire risk as to the quality and
+ performance of this program is with the user. Neither Microsoft or the
+ programmer of the application shall be responsible for any problems,
+ including, but not limited to, any lost profits, lost savings, or
+ other incidental or consequential damages arising from the use or
+ inability to use this program.
+ 
+    <span class='grhilite'>◄</span><a href='x_dot_Q76729EX.html'>See Program</a><span class='grhilite'>►</span>
+</pre>
+</body>
+
+</html>

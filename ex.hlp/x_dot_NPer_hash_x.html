@@ -1,0 +1,68 @@
+<html>
+
+<head>
+<title>NPer# Function Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> NPer# Function Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the NPer# function to determine how many periods, or
+' payments, must be made to pay off a loan.
+ 
+' Note: To run this example you must use the FINANCE.QLB Quick library.
+' The FINANCE.BI include file must also be present.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+' $INCLUDE: 'FINANCE.BI'
+ 
+ CONST ENDPER = 0
+ CONST BEGINPER = 1
+ DEFDBL A-Z
+ DIM APR AS SINGLE
+ DIM Status AS INTEGER
+ PresVal = 8000
+ FutrVal = 0
+ Payment = 250
+ APR = .102
+ 
+ ' Explain the premise.            ' Clear the screen
+ CLS
+ PRINT "You're trying to buy a new car that costs $8000.00. Your budget"
+ PRINT "only allows you to spend up to $250.00 per month to buy the car"
+ PRINT "and you don't have a down payment."
+ PRINT
+ PRINT "Car loans are normally financed for 12, 24, 36 or 48 months. You'd"
+ PRINT "like to figure out how long you must finance to stay within your"
+ PRINT "budget."
+ PRINT
+ Periods = NPer#(APR / 12, -Payment, PresVal, FutrVal, BEGINPER, Status)
+ ' Examine Status to determine success of failure of NPer#.
+ IF Status THEN
+     ' If unsuccessful, announce a problem.
+     PRINT "There was an error in calculating the number of periods"
+     PRINT "in your loan."
+ ELSE
+     ' If successful, display the results.
+     PRINT "Calculations reveal that at exactly $250.00 per month"
+     PRINT "you would have to finance for at least"; INT(Periods); "months."
+     PRINT
+     PRINT "It appears that you'll have to finance for 48 months unless you"
+     PRINT "can come up with a $210.00 downpayment."
+ END IF
+</pre>
+</body>
+
+</html>

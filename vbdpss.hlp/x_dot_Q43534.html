@@ -1,0 +1,218 @@
+<html>
+
+<head>
+<title>Article Q43534 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q43534</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How to Use CALL INTERRUPT with Visual Basic for MS-DOS</b> - Q43534
+ 
+ The CALL INTERRUPT statement is a complicated statement that allows
+ programmers to have access to low-level MS-DOS and ROM BIOS
+ information and control from Visual BASIC for MS-DOS. Effective use
+ of the complex CALL INTERRUPT interface requires an understanding of
+ the Visual Basic for MS-DOS programming environment, the VBDOS
+ language, and lower-level MS-DOS and ROM BIOS functions. This article
+ explains many of these necessary features, including the following:
+ 
+ 1. Libraries and Quick libraries
+ 
+ 2. User-defined TYPEs
+ 
+ 3. INCLUDE files
+ 
+ 4. CALL INTERRUPT input and output
+ 
+ 5. Example of CALL INTERRUPT
+ 
+ 6. Differences between CALL INTERRUPT and CALL INTERRUPTX
+ 
+ 7. References for documentation on INTERRUPTs
+ 
+ LIBRARIES AND QUICK LIBRARIES
+ -----------------------------
+ 
+ The object code for the INTERRUPT routines is located in the VBDOS.LIB
+ and VBDOS.QLB files, which are supplied with Visual Basic for MS-DOS.
+ 
+ The difference between LINK libraries (LIB files) and Quick libraries
+ (QLB files) is that Quick libraries serve as executable code modules
+ for use within the VBDOS environment, and LINK libraries are used
+ at link time to produce executable programs.
+ 
+ To load a Quick library for use with the VBDOS environment, you
+ must start VBDOS with the /L option (that is, VBDOS /L VBDOS.QLB). This
+ will allow you to make CALLs to the routines in that Quick library.
+ When you open the Run menu and choose Make EXE File, your program
+ automatically will be linked with the library (LIB file) of the same
+ name as your Quick library (in this case, VBDOS.LIB).
+ 
+ User-Defined Types
+ ------------------
+ 
+ To use the CALL INTERRUPT statement, you must first create a user-
+ defined TYPE to contain the registers for the INTERRUPT. The TYPEs
+ defined in the INCLUDE file (VBDOS.BI) that comes with VBDOS are as
+ follows:
+ 
+ TYPE RegType
+      ax    AS INTEGER
+      bx    AS INTEGER
+      cx    AS INTEGER
+      dx    AS INTEGER
+      bp    AS INTEGER
+      si    AS INTEGER
+      di    AS INTEGER
+      flags AS INTEGER
+ END TYPE
+ 
+ TYPE RegTypeX                     ' See Note below.
+      ax    AS INTEGER
+      bx    AS INTEGER
+      cx    AS INTEGER
+      dx    AS INTEGER
+      bp    AS INTEGER
+      si    AS INTEGER
+      di    AS INTEGER
+      flags AS INTEGER
+      ds    AS INTEGER
+      es    AS INTEGER
+ END TYPE
+ 
+ Note: RegTypeX is used with the CALL INTERRUPTX statement, which
+ allows you to specify the DS and ES registers. For more information
+ on the CALL INTERRUPTX statement, please refer to the section
+ "Differences Between CALL INTERRUPT and CALL INTERRUPTX" on Page 4 of
+ this application note.
+ 
+ INCLUDE Files
+ -------------
+ 
+ To simplify the TYPE definition for INTERRUPTs, the INCLUDE file
+ VBDOS.BI is shipped with VBDOS. VBDOS.BI has the TYPE definitions
+ and SUB declarations needed for INTERRUPTs. To use this file, place
+ the metacommand $INCLUDE at the beginning of your code. The syntax
+ of this statement is as follows:
+ 
+    REM $INCLUDE: 'VBDOS.BI'
+ 
+ Please note the following:
+ 
+ 1. The $INCLUDE metacommand is placed in a REM (comment) statement.
+ 
+ 2. A colon (:) follows $INCLUDE.
+ 
+ 3. The filename VBDOS.BI is enclosed in single quotation marks
+    ('QB.BI').
+ 
+ CALL INTERRUPT Input and Output
+ -------------------------------
+ 
+ Besides the INTERRUPT number, there are two other parameters for the
+ CALL INTERRUPT statement: the input registers and the output
+ registers. Before you use these registers, you must dimension two
+ variables AS the RegType defined earlier, as follows:
+ 
+    DIM inregs AS RegType, outregs AS RegType
+ 
+ For most INTERRUPTs, you need to pass some information (function
+ number, function parameters) in one or more of the registers. This
+ assignment is done into individual elements of the user-defined TYPE
+ inregs, such as the following:
+ 
+    inregs.AX = &amp;H1A00
+ 
+ Note that the above assignment uses hexadecimal values -- denoted by
+ the "&amp;H"-- instead of decimal values. Most references for INTERRUPTs
+ use hexadecimal numbers rather than decimal numbers because the high
+ (1A) and low (00) bytes are easier to distinguish in hexadecimal
+ notation.
+ 
+ For some INTERRUPTs, it is necessary to set the high-order or low-
+ order byte of a register. These bytes are referred to in technical
+ literature with H and L replacing X. For example, the high and low
+ bytes of the BX register are BH and BL, respectively. To assign the
+ registers when given high and low bytes, concatenate the hexadecimal
+ values. For example, if you need to assign CH the value 2Bh and
+ assign CL the value 3Dh, you would assign CX as follows:
+ 
+    inregs.CX = &amp;H2B3D     ' High byte = &amp;H2B    Low byte = &amp;H3D
+ 
+ If you are given only 1 byte (high or low), the other byte should be
+ assigned 00 (two zeros). For example, you would set AH to the value
+ 01h as follows:
+ 
+    inregs.AX = &amp;H0100     ' High byte = &amp;H01    Low byte = &amp;H00
+ 
+   Note: The above statement is NOT equivalent to inregs.AX=&amp;H01.
+   You must specify the low-order byte or the value will be stored
+   as &amp;H0001.
+ 
+ Once you have set the values of the input registers, you are ready to
+ make the CALL. The CALL INTERRUPT syntax is as follows:
+ 
+    CALL INTERRUPT(IntNum%, inregs, outregs)
+ 
+ If an INTERRUPT returns any values, those values will be passed back
+ in the outregs variable. As with inregs, values will often be passed
+ in the high or low bytes of a register. The routine BreakWord() in the
+ "Example CALL INTERRUPT" section below breaks a register into the
+  2-byte values.
+ 
+ With many INTERRUPTs, you need to check only a single bit (or a few
+ bits) of any register. This is done using the bitwise operators AND,
+ OR, XOR, and NOT. For example, the following statement will check to
+ see if the third bit of AX is set:
+ 
+    IF (outregs.AX AND &amp;H4) THEN     ' 4 in hex = 100 in binary.
+      PRINT "3rd Bit is on"
+    END IF
+ 
+ The following example program (see below) gives an example of the
+ the CALL INTERRUPT statement and provides two utility SUB programs
+ for processing output.
+ 
+    <span class='grhilite'>◄</span><a href='x_dot_Q43534EX.html'>See Example</a><span class='grhilite'>►</span>
+ 
+ Differences Between CALL INTERRUPT and CALL INTERRUPTX
+ ------------------------------------------------------
+ 
+ The CALL INTERRUPT and CALL INTERRUPTX statements are very similar.
+ Either statement allows you to make calls to MS-DOS and ROM BIOS
+ INTERRUPTs.
+ 
+ The only difference is that with INTERRUPTX, you can specify the DS
+ and ES registers. (The documentation for INTERRUPTs -- see the
+ following reference section -- will state whether those registers are
+ necessary. For most INTERRUPTs, DS and ES are not needed.)
+ 
+ References for Documentation on INTERRUPTs
+ ------------------------------------------
+ 
+ The following books are excellent resources for the different
+ INTERRUPTs available from MS-DOS and the ROM BIOS. Be aware that
+ the code in these books is written in assembly language; however,
+ the necessary input and output is given by register.
+ 
+ 1. Advanced MS-DOS Programming, Second Edition by Ray Duncan,
+    published by Microsoft Press (1988).
+ 
+ 2. The New Peter Norton Programmer's Guide to the IBM PC &amp; PS/2 by
+    Peter Norton, published by Microsoft Press (1988).
+ 
+</pre>
+</body>
+
+</html>

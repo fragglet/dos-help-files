@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>Article Q77835 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q77835</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> FIXSHIFT.COM Requires /I to Install; Detailed Explanation</b> - Q77835
+ 
+ FIXSHIFT.COM is a Terminate-and-Stay-Resident (TSR) program that
+ corrects a ROM BIOS problem that may be present in some vendors'
+ hardware, including Compaq hardware.
+ 
+ FIXSHIFT.COM modifies the scan codes returned for the SHIFT keys to
+ correctly maintain the shift states.
+ 
+ To install FIXSHIFT.COM, you must use the /I switch. For example:
+ 
+    fixshift /i
+ 
+ More Information:
+ 
+ FIXSHIFT.COM corrects a problem in Compaq and possibly other hardware
+ vendors' ROM BIOS that causes the SHIFT states to be maintained
+ incorrectly when using a 101-key keyboard.
+ 
+ The 101-key keyboard generates "false" key up/down strokes for the
+ left and right SHIFT keys to simulate the original keyboard that did
+ not have as many keys. Many ROM BIOS's handle these "false" keystrokes
+ correctly, but some do not. The problem is that some ROM BIOS's read
+ the "false" keystrokes as changes to the state of the real SHIFT keys,
+ therefore it is impossible for an application program to know when the
+ real shift keys are down.
+ 
+ To solve this problem, FIXSHIFT.COM maintains two sets of state
+ information for the SHIFT keys. One state is the real state of the
+ SHIFT keys, and the other is the combination of the real and the false
+ SHIFT key transitions (up/down). When a real SHIFT key transition is
+ detected, both the real and the combined shift states are updated;
+ when a false transition is detected (false transitions are always
+ preceded by a special code), only the combined state is updated.
+ 
+ FIXSHIFT.COM hooks the keyboard interrupt to maintain the shift
+ states. When FIXSHIFT.COM gets a keyboard interrupt, it first sets the
+ ROM BIOS shift state (a documented memory location) to what the
+ ROM BIOS expects (the combined real and fake shift states). FIXSHIFT
+ then passes on the interrupt to the interrupt handler that was
+ servicing the keyboard interrupt before FIXSHIFT revectored that
+ interrupt. The ROM BIOS is unaware that FIXSHIFT.COM has done
+ anything because its shift states are the same as if this program
+ were not present. When the ROM BIOS's interrupt handler returns,
+ FIXSHIFT sets the ROM BIOS's shift state to the real shift states, so
+ when an application looks at this, it will reflect the true state of
+ the SHIFT keys.
+ 
+ If FIXSHIFT.COM is executed without any command line parameters, it
+ tests the machine to see if FIXSHIFT is required. First it checks if a
+ 101-key keyboard is attached to the machine; if not, FIXSHIFT is not
+ required. It then checks if the ROM BIOS problem is present by turning
+ on NUM LOCK and asking the user to type a down arrow using the
+ dedicated down arrow key (not the DOWN ARROW on the numeric keypad).
+ If the shift states reflect that the left SHIFT key is down, then the
+ ROM BIOS has the problem. Pressing the down arrow key while NUM LOCK
+ is on generates a fake left shift down that the problem ROM BIOS will
+ record in the shift states. Regardless of the outcome of this test,
+ FIXSHIFT.COM will not install unless you invoke it with the /I command
+ line option.
+</pre>
+</body>
+
+</html>

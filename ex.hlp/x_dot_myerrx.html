@@ -1,0 +1,69 @@
+<html>
+
+<head>
+<title>ERL and ERR Function Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ERL and ERR Function Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example shows how the ERR and ERL functions canbe used in an error-
+' handling routine.
+ 
+' In this example, line numbers are used for diagnostic purposes, not for
+' essential program logic flow. When program logic is stable, remove all
+' line numbers except those used to recover from trapped user errors.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+     CLS            ' Clear the screen
+     Recnum% = 0    ' Redundant since default is 0
+     ON ERROR GOTO Errhandler
+10 : ERROR 4        ' Force an error to check trap
+ 
+15 : OPEN "errtest.dat" FOR RANDOM AS #1 LEN = 80
+     PRINT "Enter data &lt;= 80 characters then return."
+     PRINT "To Quit, press Enter at prompt."
+     DO
+          Recnum% = Recnum% + 1
+25 :      INPUT "Your data"; aline$
+30 :      PUT #1, Recnum%, aline$
+     LOOP WHILE aline$ &lt;&gt; ""
+     IF Recnum% = 1 AND aline$ = "" THEN
+          PRINT "    Empty file."
+35 :      ERROR 200
+     END IF
+     PRINT " This is your data file."
+     FOR i% = 1 TO Recnum%
+45 :      GET #1, i%, outaline$
+          PRINT outaline$
+     NEXT i%
+60 : CLOSE #1
+     KILL "errtest.dat"                       ' Deletes file from disk
+     END
+ 
+Errhandler:
+     Errnum% = ERR
+     Errlin% = ERL   ' Note that ERL returns only line NUMBERS Not LABELS!
+     PRINT "Error number "; Errnum%; " occurred at line number "; Errlin%
+     IF Errnum% = 200 THEN RESUME 60 ' If user quits before any
+                                     ' input CLOSE and END
+     IF Errnum% = 59 THEN RESUME 25  ' If user exceeds LEN then try again!
+ 
+' This returns to next executable statement after error.
+     RESUME NEXT
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,57 @@
+<html>
+
+<head>
+<title>SHARED Statement Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> SHARED Statement Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the SHARED statement to share a variable between the main
+' program and a SUB procedure. Each time the SUB is called, an asterisk (*)
+' is added to a STATIC array.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DECLARE SUB foo ()
+ CLS                               ' Clear the screen
+ FOR i = 1 TO 9
+     CALL foo
+ NEXT
+ END
+ 
+ SUB foo ()
+    STATIC array() AS STRING            ' "array" is static
+    STATIC flag                         ' "flag" is static
+    SHARED i                            ' "i" is shared with main module only
+ 
+    IF flag = 0 THEN                    ' Dimension array if not already
+        DIM array(1 TO 9) AS STRING     ' dimensioned
+        flag = 1
+    END IF
+ 
+    array(i) = STRING$(i, "*")          ' Put data into array
+ 
+    IF i = 9 THEN                       ' Print contents of array when
+        FOR j = 1 TO 9                  ' it is filled
+            PRINT j; ":"; array(j)
+        NEXT
+    END IF
+ 
+ END SUB
+ 
+</pre>
+</body>
+
+</html>

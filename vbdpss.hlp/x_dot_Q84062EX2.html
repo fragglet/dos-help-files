@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>Article Q84062, Example - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q84062, Example</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> VB for MS-DOS: How to Append Data to the End of an .EXE File</b> - Q84062
+ 
+ The next example should be compiled and have the data file from the
+ previous program appended on the end of the executable. Type in the
+ following program and save it as "TEST.BAS":
+ 
+ ' To try this example in VBDOS.EXE:
+ ' 1. From the File menu, choose New Project.
+ ' 2. Copy the code example to the Code window.
+ ' 3. Press F5 to run the program.
+ 
+ TYPE EXEHEADER
+     exSignature AS INTEGER
+     exExtraBytes AS INTEGER ' Number of bytes in last page.
+     exPages AS INTEGER      ' Number of whole and part pages.
+     exRelocItems AS INTEGER
+     exHeaderSize AS INTEGER
+     exMinAlloc AS INTEGER
+     exMaxAlloc AS INTEGER
+     exInitSS AS INTEGER
+     exInitSP AS INTEGER
+     exCheckSum AS INTEGER
+     exInitIP AS INTEGER
+     exInitCS AS INTEGER
+     exRelocTable AS INTEGER
+     exOverlay AS INTEGER
+ END TYPE
+ 
+ DIM exeheadblock AS EXEHEADER
+ OPEN "test.exe" FOR BINARY AS #1
+ GET #1, , exeheadblock  ' This puts the executable header in
+                         ' to the structure exeheadblock.
+ CLS
+ SCREEN 12
+ DIM box%(1 TO 1792)
+ IF exeheadblock.exPages MOD 512 &lt;&gt; 0 THEN
+ size = exeheadblock.exPages * 512&amp; -(512&amp;-exeheadblock.exExtraBytes)
+ ELSE  ' If no partial pages then execute the ELSE statement.
+ size = exeheadblock.exPages * 512&amp;
+ END IF
+ 
+ GET #1, size + 1, box%(1) ' Read each element of the array.
+ FOR i% = 2 TO 1792
+     GET #1, , box%(i%)
+ NEXT i%
+ CLOSE #1
+ PUT (100, 100), box%      ' Put the graphics image to the screen.
+ SLEEP
+ END
+ 
+</pre>
+</body>
+
+</html>

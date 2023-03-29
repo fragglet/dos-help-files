@@ -1,0 +1,117 @@
+<html>
+
+<head>
+<title>EVENT, ON STRIG, STRIG, STICK, and STRIG Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> EVENT, ON STRIG, STRIG, STICK, and STRIG Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the EVENT and STRIG statements to enable joystick event
+' trapping for two buttons on each of two joysticks. The ON STRIG statement
+' passes control to an event-handling routine when a button is pressed. The
+' STRIG function is used to determine which button was pressed, and the
+' STICK function returns the position of both joysticks.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ CLS                              ' Clear the screen
+ EVENT ON                         ' Turn on event processing
+ 
+' Turn on event processing.
+ STRIG(0) ON                      ' Lower button, joystick A
+ STRIG(2) ON                      ' Lower button, joystick B
+ STRIG(4) ON                      ' Upper button, joystick A
+ STRIG(6) ON                      ' Upper button, joystick B
+ 
+' Set up joystick event processing for each button.
+ ON STRIG(0) GOSUB JoyButtonHandler
+ ON STRIG(2) GOSUB JoyButtonHandler
+ ON STRIG(4) GOSUB JoyButtonHandler
+ ON STRIG(6) GOSUB JoyButtonHandler
+ 
+ LOCATE 22, 6
+ PRINT "Press a button on either joystick to see a complete joystick report."
+ LOCATE 23, 20
+ PRINT "Press ANY keyboard key to end the program."
+ 
+' Infinite loop waiting for a joystick event or keyboard input.
+ DO
+ LOOP WHILE INKEY$ = ""
+ 
+WrapItUp:
+     CLS                          ' Clear the screen
+     STRIG(0) OFF
+     STRIG(2) OFF
+     STRIG(4) OFF
+     STRIG(6) OFF
+     END
+ 
+JoyButtonHandler:
+     LOCATE 10, 14: PRINT "Joystick A"       ' Print a label on screen
+     LOCATE 10, 45: PRINT "Joystick B"
+     LOCATE 22, 1: PRINT STRING$(80, 32)
+     DO
+          IF STRIG(1) THEN                   ' Button 1, Joystick A
+               ButtonStatus$ = "DOWN"
+          ELSE
+               ButtonStatus$ = "UP  "
+          END IF
+          EVENT OFF
+          LOCATE 16, 10: PRINT "Button 1 is "; ButtonStatus$
+          EVENT ON
+          IF STRIG(3) THEN                   ' Button 1, Joystick B
+               ButtonStatus$ = "DOWN"
+          ELSE
+               ButtonStatus$ = "UP  "
+          END IF
+          EVENT OFF
+          LOCATE 16, 42: PRINT "Button 1 is "; ButtonStatus$
+          EVENT ON
+          IF STRIG(5) THEN                   ' Button 2, Joystick A
+               ButtonStatus$ = "DOWN"
+          ELSE
+               ButtonStatus$ = "UP  "
+          END IF
+          EVENT OFF
+          LOCATE 18, 10: PRINT "Button 2 is "; ButtonStatus$
+          EVENT ON
+          IF STRIG(7) THEN                   ' Button 2, Joystick B
+               ButtonStatus$ = "DOWN"
+          ELSE
+               ButtonStatus$ = "UP  "
+          END IF
+          EVENT OFF
+          LOCATE 18, 42: PRINT "Button 2 is "; ButtonStatus$
+          EVENT ON
+          GOSUB UpdateXY
+     LOOP WHILE INKEY$ = ""
+     RETURN WrapItUp
+ 
+UpdateXY:
+     EVENT OFF
+     LOCATE 12, 10: PRINT USING "X Position = ###"; STICK(0)
+     LOCATE 14, 10: PRINT USING "Y Position = ###"; STICK(1)
+     LOCATE 12, 42: PRINT USING "X Position = ###"; STICK(2)
+     LOCATE 14, 42: PRINT USING "Y Position = ###"; STICK(3)
+     EVENT ON
+     RETURN
+ 
+ 
+ 
+ 
+</pre>
+</body>
+
+</html>

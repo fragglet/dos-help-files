@@ -1,0 +1,126 @@
+<html>
+
+<head>
+<title>Article Q69333 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q69333</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How to Work Around Floating-Point Accuracy/Comparison</b> - Q69333
+ 
+ To reliably test whether two floating-point variables or expressions
+ are equal (using IEEE format), you must subtract the two variables being
+ compared and test whether their difference is less than a value chosen
+ at the limits of significance for single or double precision. NO OTHER
+ TEST FOR EQUALITY WILL BE RELIABLE. The following formulas reliably test
+ whether X and Y are equal:
+ 
+ 1. For single precision, you must test whether the difference of X and
+    Y is less than the value 7 significant digits smaller than X or Y.
+    Divide X or Y by 10^7 to find the comparison value. For example:
+ 
+    To try these examples in VBDOS.EXE:
+ 
+    1. From the File menu, choose New Project.
+    2. Copy the code example to the Code window.
+    3. Press F5 to run the program.
+ 
+       IF ABS(X! - Y!) &lt;= (X! / 10^7) THEN
+           PRINT "Equal within 7 digits"
+       END IF
+ 
+ 2. For double precision, you must test whether the difference of X and
+    Y is less than the value 15 significant digits smaller than X or Y.
+    Divide X or Y by 10^15 to find the comparison value. For example:
+ 
+       IF ABS(X# - Y#) &lt;= (X# / 10^15) THEN
+           PRINT "Equal within 15 digits"
+       END IF
+ 
+ More Information:
+ 
+    NOTE: Significant digits in a calculated number can be lost due to
+    the following: multiple calculations, especially addition of
+    numbers far apart in value, or subtraction of numbers similar in
+    value. When a number results from multiple calculations, you may
+    need to change your test for equality to use fewer significant
+    digits to reflect the mathematical loss of significant digits. If
+    your test of significance uses too many significant digits, you may
+    fail to discover that numbers compared for equality are actually
+    equal within the possible limit of accuracy.
+ 
+ In Visual Basic for MS-DOS, intermediate calculations are performed
+ in an internal 64-bit temporary register, which has more bits of
+ accuracy than are stored in single- or double-precision variables.
+ This often results in an IF statement saying that the intermediate
+ calculation is not equal to the expression being compared, as in the
+ following example:
+ 
+    X = 25
+    Y = 60.1
+    IF 1502.5 = (X * Y) THEN PRINT "equal"
+ 
+ Running the above code will NOT print "equal". In contrast, the
+ following method using a placeholder variable will print "equal", but
+ is still NOT a reliable technique as a test for equality:
+ 
+    Z = 25 * 60.1
+    IF 1502.5 = Z THEN PRINT "equal"
+ 
+ Note that explicit numeric type casts (! for single precision, # for
+ double precision) will affect the precision in which calculations are
+ stored and printed. Whichever type casting you perform, you may still
+ see unexpected rounding results:
+ 
+    PRINT 69.82! + 1    ' Single precision, prints 70.82.
+    PRINT 69.82# + 1    ' Double precision, prints 70.81999999999999.
+ 
+ For an exact decimal (base 10) numeric representation, such as for
+ calculations of dollars and cents, you should use the CURRENCY (@)
+ data type found in BASIC PDS 7.00/7.10. The CURRENCY data type exactly
+ stores up to 19 digits, with 4 digits after the decimal place.
+ 
+ Reference:
+ 
+ The IEEE standard attempts to balance accuracy and precision with
+ numeric range and speed. Accuracy measures how many significant bits of
+ precision are not lost in calculations. Precision refers to the number
+ of bits in the mantissa, which determines how many decimal digits can be
+ represented.
+ 
+ The IEEE format stores numbers of the form 1.x to the power of
+ y (where x and y are base 2 numbers; x is the mantissa, and y is the
+ exponent).
+ 
+ IEEE single precision has 24 bits of mantissa, and double precision
+ has 53 bits of mantissa. However, all single- and double-precision
+ IEEE calculations in Visual Basic for MS-DOS version 1.0 are performed
+ in a 64-bit temporary register for greater accuracy.
+ 
+ Most numbers in decimal (base 10) notation do NOT have an exact
+ representation in the binary (base 2) floating-point storage format
+ used in single- and double-precision data types. IEEE format cannot
+ exactly represent (and must round off) all numbers that are not of the
+ form 1.x to the power of y (where x and y are base 2 numbers). The
+ numbers that can be exactly represented are spread out over a very wide
+ range. A high density of representable numbers is near 1.0 and
+ -1.0, but fewer and fewer representable numbers occur as the numbers go
+ towards 0 or infinity.
+ 
+ The above limitations often cause BASIC to return floating-point
+ results different than you might expect.
+</pre>
+</body>
+
+</html>

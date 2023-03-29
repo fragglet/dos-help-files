@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<title>STATIC Statement Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> STATIC Statement Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the STATIC statement to preserve the value of a variable
+' between calls to the SUB procedure in which the variable is used. The
+' program searches for every occurrence of a certain string expression in a
+' file and replaces it with another string.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DECLARE SUB Extension ()
+ DECLARE SUB Search ()
+ 
+ CLS                                      ' Clear the screen
+ INPUT "Name of file"; F1$
+ INPUT "String to replace"; Old$
+ INPUT "Replace with"; Nw$
+ Rep = 0: Num = 0
+ M = LEN(Old$)
+ OPEN F1$ FOR INPUT AS #1
+ CALL Extension
+ OPEN F2$ FOR OUTPUT AS #2
+ DO WHILE NOT EOF(1)
+     LINE INPUT #1, Temp$
+     CALL Search
+     PRINT #2, Temp$
+ LOOP
+ CLOSE
+ PRINT "There were "; Rep; " substitutions in "; Num; " lines."
+ PRINT "Substitutions are in file "; F2$
+ END
+ 
+ STATIC SUB Extension ()
+ SHARED F1$, F2$
+     Mark = INSTR(F1$, ".")
+     IF Mark = 0 THEN
+          F2$ = F1$ + ".NEW"
+     ELSE
+          F2$ = LEFT$(F1$, Mark - 1) + ".NEW"
+     END IF
+ END SUB
+ 
+ STATIC SUB Search ()
+ SHARED Temp$, Old$, Nw$, Rep, Num, M
+ STATIC R
+     Mark = INSTR(Temp$, Old$)
+     WHILE Mark
+         Part1$ = LEFT$(Temp$, Mark - 1)
+         Part2$ = MID$(Temp$, Mark + M)
+         Temp$ = Part1$ + Nw$ + Part2$
+         R = R + 1
+         Mark = INSTR(Temp$, Old$)
+     WEND
+     IF Rep = R THEN
+          EXIT SUB
+     ELSE
+          Rep = R
+          Num = Num + 1
+     END IF
+ END SUB
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+<html>
+
+<head>
+<title>TYPE Statement Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> TYPE Statement Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example use the PUT statement to store test scores in a random-access
+' file. The TYPE statement is used to create a user-defined variable type.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ TYPE TestRecord                       ' Define record fields
+    NameField  AS STRING * 20
+    ScoreField AS SINGLE
+ END TYPE
+ 
+ DIM FileBuffer AS TestRecord
+ DIM I AS LONG                         ' Open the test data file
+ OPEN "TESTDAT.DAT" FOR RANDOM AS #1 LEN = LEN(FileBuffer)
+ CLS                                   ' Clear the screen
+ I = 0
+ DO                                    ' Read pairs of names and
+     I = I + 1                         ' scores from the console
+     INPUT "Name ? ", FileBuffer.NameField
+     INPUT "Score? ", FileBuffer.ScoreField
+     INPUT "--&gt;More (y/n)? ", Resp$
+     PUT #1, I, FileBuffer
+ LOOP UNTIL UCASE$(MID$(Resp$, 1, 1)) = "N"
+ PRINT I; " records written."
+ CLOSE #1
+ KILL "TESTDAT.DAT"                    ' Remove file from disk
+</pre>
+</body>
+
+</html>

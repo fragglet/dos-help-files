@@ -1,0 +1,141 @@
+<html>
+
+<head>
+<title>Article Q46980, Example - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q46980, Example</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> CALL INTERRUPT Example to Get Disk Drive Capacity, Free Space</b> - Q46980
+ 
+ Code Sample
+ -----------
+ 
+ You can compile this program within the QuickBasic environment as
+ follows:
+ 
+    QB filename /L [ QB.QLB ]
+ 
+ For Basic PDS versions 7.0 and 7.1, start the QBX.EXE environment as
+ follows:
+ 
+    QBX filename /L [ QBX.QLB]
+ 
+ Or, compile with BC.EXE and LINK.EXE as follows:
+ 
+    BC filename [ options ]
+    LINK filename,,,QB.LIB [ options ]
+ 
+ For Basic PDS versions 7.0 and 7.1, use BC.EXE and LINK.EXE as follows:
+ 
+    BC filename [ options ]
+    LINK filename,,,QBX.LIB [ options ]
+ 
+ DECLARE FUNCTION unsignedlong&amp; (num%)
+ REM ******************************************************************
+ REM **                                                              **
+ REM ** RegType is a user-defined type used by the CALL INTERRUPT    **
+ REM ** routine. The file QB.BI contains the user-defined type and   **
+ REM ** the prototyping for the subprogram INTERRUPT. The            **
+ REM ** INTERRUPT routine is located in the QB.QLB and the QB.LIB.  **
+ REM **                                                              **
+ REM ** For Basic PDS 7.0 use QBX.BI for the include file and the    **
+ REM ** library QBX.QLB or QBX.LIB for CALL INTERRUPT support.      **
+ REM **                                                              **
+ REM ** Note: When not using the user-defined type provided with     **
+ REM **       the QuickBasic package, the length of the TYPE must    **
+ REM **       be 20 bytes long. Unpredictable results will occur     **
+ REM **       if the length is less than 20 bytes.                  **
+ REM **                                                              **
+ REM ******************************************************************
+ 
+ TYPE RegType
+   AX    AS INTEGER
+   BX    AS INTEGER
+   CX    AS INTEGER
+   DX    AS INTEGER
+   BP    AS INTEGER
+   SI    AS INTEGER
+   DI    AS INTEGER
+   FLAGS AS INTEGER
+   DS    AS INTEGER
+   ES    AS INTEGER
+ END TYPE
+ DIM REGS AS RegType
+ CLS
+ PRINT "**  Drive Capacity Utility  **": PRINT
+ PRINT "NOTE: Drive number ranges 0 through 26, where A = 1, C = 3"
+ PRINT
+ INPUT "Drive number to obtain drive capacity from : ", DriveNum%
+ IF DriveNum% &lt; 0 OR DriveNum% &gt; 26 THEN
+    PRINT
+    PRINT "ERROR: Invalid Drive Number (RANGE: 0 thru 26)"
+    PRINT
+    END
+ END IF
+ REGS.AX = &amp;H3600      ' ** AH = 36, AL = 00
+ REGS.DX = DriveNum%   ' ** DH = ??, DL = DriveNum%
+ CALL INTERRUPT(&amp;H21, REGS, REGS)
+ IF REGS.AX = -1 THEN    ' ** -1 = &amp;HFFFF
+    PRINT
+    PRINT "ERROR: Invalid Drive Specification"
+    PRINT
+    END
+ END IF
+ 
+ REM ** Convert the signed register values to "unsigned" long integer
+ REM    values. This ensures that the amount of free disk space will be
+ REM    a positive unsigned value.
+ 
+ BXLong&amp; = unsignedlong&amp;(REGS.BX)
+ CXLong&amp; = unsignedlong&amp;(REGS.CX)
+ DXLong&amp; = unsignedlong&amp;(REGS.DX)
+ 
+ REM ** TEMP = [ Sectors per cluster ] TIMES [ Bytes per Sector ]    **
+ Temp&amp; = REGS.AX * CXLong&amp;
+ 
+ REM ** CAPACITY  = [ TEMP ] TIMES [ Clusters per Drive ]            **
+ Capacity&amp; = Temp&amp; * DXLong&amp;
+ 
+ REM ** AVAILABLE = [ TEMP ] TIMES [ Number of Available Clusters ]  **
+ Available&amp; = Temp&amp; * BXLong&amp;
+ 
+ REM ** INUSE     = [ CAPACITY ] MINUS [ AVAILABLE ]                 **
+ InUse&amp; = Capacity&amp; - Available&amp;
+ 
+ PRINT
+ PRINT "Drive Number = "; DriveNum%
+ IF DriveNum% = 0 THEN
+    PRINT "** Default drive number used **"
+ ELSE
+    PRINT "      Letter =  "; CHR$(64 + DriveNum%)
+ END IF
+ PRINT
+ PRINT USING "Capacity  = ###,###,###"; Capacity&amp;
+ PRINT USING "In Use    = ###,###,###"; InUse&amp;
+ PRINT "            ==========="
+ PRINT USING "Available = ###,###,###"; Available&amp;
+ END
+ 
+ FUNCTION unsignedlong&amp; (num%)
+        IF num% &lt; 0 THEN
+                unsignedlong&amp; = num% + 65536
+        ELSE
+                unsignedlong&amp; = num%
+        END IF
+ END FUNCTION
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,101 @@
+<html>
+
+<head>
+<title>Article Q58213, Program 3 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q58213, Program 3</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How to Empty (Flush) File And Keyboard Buffers in Basic</b> - Q58213
+ 
+ Code Example 3
+ ______________
+ 
+ Flushing a file buffer to disk from within a Visual Basic version 1.0
+ for MS-DOS program can be done with one of the following two methods
+ using MS-DOS Interrupt CALLs:
+ 
+ 1. Using MS-DOS version 3.3 or later, the MS-DOS Interrupt 21h with
+    Function 68h commits the file buffer to disk.
+ 
+ 2. Using MS-DOS earlier than version 3.30, the MS-DOS Interrupt 21h
+    with Function 45h creates a duplicate file handle, followed by a
+    Interrupt 21h with Function 3Eh to close the duplicate file
+    handle, which commits the file buffer to disk.
+ 
+ Using Interrupt 21h with Function 68h has the advantage of not
+ failing due to an insufficient number of file handles, or not risking
+ losing control of the file in network environments. Its disadvantage
+ is its limitation to MS-DOS version 3.3 or later.
+ 
+ The following program demonstrates how to perform this type of
+ functionality. The "commit" subroutine in the program included below
+ demonstrates Method 2, and the "commit330" subroutine in the program
+ included below demonstrates Method 2.
+ 
+ ' To try this example in VBDOS.EXE:
+ ' 1. From the File menu, choose New Project.
+ ' 2. Copy the code example to the Code window.
+ ' 3. Press F5 to run the program.
+ 
+ DECLARE SUB commit (filenum%)     ' For use with MS-DOS 2.10 &amp; up.
+ DECLARE SUB commit330 (filenum%)  ' For use with MS-DOS 3.30 &amp; up.
+ 
+ ' Use the following include file for Visual Basic 1.0 for MS-DOS:
+ REM $INCLUDE: 'VBDOS.BI'
+ 
+ CLS
+ DIM SHARED inregs AS RegType      ' Define inregs of regtype.
+ DIM SHARED outregs  AS RegType    ' Define outregs of regtype.
+ 
+ '-----------------------------------------------------------
+ PRINT "press any key to open file"
+ SLEEP                             ' Wait for keyboard input.
+ OPEN "b:stuff2" FOR RANDOM AS #1 LEN = 80
+ PRINT "press a key to write to buffer"
+ SLEEP
+ a$ = "this and that"
+ PUT #1, 1, a$                     ' Write buffer.
+ 
+ '-----------------------------------------------------------
+ PRINT "press any key to commit the buffer to disk"
+ SLEEP                             ' Wait for keyboard input.
+ CALL commit330(1)                 ' Commit buffer for file 1.
+ 
+ '-----------------------------------------------------------
+ PRINT "press any key to close file"
+ SLEEP
+ CLOSE 1
+ END
+ 
+ SUB commit (filenum%)
+ inregs.ax = &amp;H4500                ' Set funct 45h duplicate handle.
+ inregs.bx = FILEATTR(filenum%, 2) ' Set file handle to duplicate.
+ CALL interrupt(&amp;H21, inregs, outregs)  ' Call INT 21h function 45h.
+ inregs.ax = &amp;H3E00                ' Set function 3Eh close file.
+ inregs.bx = outregs.ax            ' Set duplicated handle to close.
+ CALL interrupt(&amp;H21, inregs, outregs) ' Call INT 21h function 3Eh.
+ END SUB
+ 
+ SUB commit330 (filenum%)
+ inregs.ax = &amp;H6800                ' Function 68h.
+ inregs.bx = FILEATTR(filenum%, 2) ' Place file handle in register BX.
+ inregs.flags = &amp;H0                ' Initialize flag values.
+ CALL interrupt(&amp;H21, inregs, outregs)  ' Call Interrupt 21h to
+ '                                        commit buffer.
+ END SUB
+</pre>
+</body>
+
+</html>

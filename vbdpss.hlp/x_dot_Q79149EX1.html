@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>Article Q79149 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q79149</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How to Remember Current ISAM Record for Different Indexes</b> - Q79149
+ 
+ Method 1
+ --------
+ 
+ One way to remember the position of the current record according to an
+ index is to count the record's relative position (from the beginning or
+ end of the table) before changing to another index. This could be
+ accomplished by using either MOVEPREVIOUS, with the beginning of the
+ table as a reference point, or MOVENEXT, with the end of the table as
+ a reference point. However, because this method is sequential, it is
+ slow on larger data bases. Listed below is an example, using "One" and
+ "Two" as arbitrary index names:
+ 
+ Index1Pos = 0            ' Using index "One".
+ WHILE NOT BOF(1)
+  MOVEPREVIOUS #1
+  Index1Pos = Index1Pos + 1
+ WEND
+ SETINDEX #1, "Two"
+ 
+ The variable Index1Pos can then be used to find the same record when
+ the index is returned to:
+ 
+ SETINDEX #1, "One"
+ ' To get to Nth record, MOVENEXT N-1 times:
+ FOR i% = 1 to (Index1Pos - 1)
+    MOVENEXT #1
+ NEXT i%
+ 
+ This will make the original record the current one, thereby achieving
+ the desired result. It is important to note that this method will only
+ work if no INSERTs, UPDATEs, or DELETEs have been done with the second
+ index that would affect the position of any record under the first
+ index. Otherwise, the counting method used above may return to a
+ different record than expected, because the index may no longer be in
+ the original state.
+ 
+ The element Temp.RecordPosition can be used as a marker in correlation
+ with the second part of Method 1 (for example, Index1Pos =
+ Temp.RecordPosition). Index1Pos can be used to count to the record
+ that was current when the index was last used. Also, any time a
+ RETRIEVE is done with index "One", the associated record number can be
+ displayed (for example, LOCATE 25, 77: PRINT Temp.RecordPosition).
+ Note that the RecordPosition field of records would have to be updated
+ any time records are INSERTed, UPDATEd or DELETEed, because these
+ operations could change the order of the records in the index.
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,69 @@
+<html>
+
+<head>
+<title>$INCLUDE Metacommand and Interrupt[X] Routine Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> $INCLUDE Metacommand and Interrupt[X] Routine Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the Interrupt routine to determine the current drive
+' and the amount of free space remaining on the drive.
+ 
+' Note: The Interrupt routine requires the Quick library VBDOS.QLB. To load
+' VBDOS.QLB, start Visual Basic with the /L switch.
+ 
+' The following include file must also be present.
+' $INCLUDE: 'VBDOS.BI'
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DIM regs AS RegType                    ' Define registers
+ CLS                                    ' Clear the screen
+' Get current drive information; set up input and do system call
+ regs.ax = &amp;H1900
+ CALL INTERRUPT(&amp;H21, regs, regs)
+ 
+' Convert drive information to readable form
+ Drive$ = CHR$((regs.ax AND &amp;HFF) + 65) + ":"
+ 
+' Get disk free space; set up input values and do system call
+ regs.ax = &amp;H3600
+ regs.dx = ASC(UCASE$(Drive$)) - 64
+ CALL INTERRUPT(&amp;H21, regs, regs)
+ 
+' Decipher the results
+ SectorsInCluster = regs.ax
+ BytesInSector = regs.cx
+ IF regs.dx &gt;= 0 THEN
+         ClustersInDrive = regs.dx
+ ELSE
+         ClustersInDrive = regs.dx + 65536
+ END IF
+ IF regs.bx &gt;= 0 THEN
+         ClustersAvailable = regs.bx
+ ELSE
+         ClustersAvailable = regx.bx + 65536
+ END IF
+ Freespace = ClustersAvailable * SectorsInCluster * BytesInSector
+ 
+' Report results
+ CLS                                    ' Clear the screen
+ PRINT "Drive "; Drive$; " has a total of";
+ PRINT USING "###,###,###"; Freespace;
+ PRINT " bytes remaining free."
+</pre>
+</body>
+
+</html>

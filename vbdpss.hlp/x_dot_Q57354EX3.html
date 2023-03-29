@@ -1,0 +1,187 @@
+<html>
+
+<head>
+<title>Article Q57354, Example 3 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q57354, Example 3</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How to Print Visual BASIC Video Screens to Epson Printers, Example</b>
+ 
+ Printing EGA or VGA Screen Modes 7 Through 12:
+ 
+ Example
+ -------
+ 
+ To try this example in VBDOS.EXE:
+ 
+    1. From the File menu, choose New Project.
+    2. Copy the code example to the Code window.
+    3. Press F5 to run the program.
+ 
+    DECLARE SUB ScreenParams (scrn%, ScreenWidth%, ScreenLength%, NP%)
+    DECLARE SUB DRAWPIC (scrn%)
+    DECLARE SUB VGAtoEpson (scrn%, f$, flip%, border%)
+    ' Demonstrates the use of VGAtoEpson, a subprogram that dumps
+    ' a SCREEN 7, 8, 9, 10, 11 or 12 image to an Epson printer.
+ 
+    CLS : scrn% = 0
+    WHILE (scrn% &lt; 7) OR (scrn% &gt; 12)
+       INPUT "Enter Screen Mode: (7, 8, 9, 10, 11 or 12)"; scrn%
+    WEND
+ 
+    SCREEN scrn% : CALL DRAWPIC(scrn%)      ' Draw the picture.
+    CALL VGAtoEpson(scrn%, "LPT1", 0, 255)  ' Do the VGA screen print.
+    END
+ 
+    SUB DRAWPIC (scrn%)                     ' Draw picture on screen.
+      CALL ScreenParams(scrn%, ScreenWidth%, ScreenLength%, NumPlanes%)
+      IF NumPlanes% = 2 THEN ci% = 0 ELSE ci% = 1  ' Color increment.
+      xmax% = ScreenWidth% : ymax% = ScreenLength%
+      halfx% = xmax% / 2 : halfy% = ymax% / 2
+      x% = halfx% : c% = 1
+       FOR y% = ymax% TO halfy% STEP -5
+          deltax% = xmax% - x% : deltay% = ymax% - y%
+          LINE (halfx%, y%)-(x%, halfy%), c%
+          LINE (x%, ymax%)-(xmax%, y%), c% + ci%
+          LINE (halfx%, deltay%)-(x%, halfy%), c% + 2 * ci%
+          LINE (x%, 0)-(xmax%, deltay%), c% + 3 * ci%
+          LINE (halfx% + 1, y%)-(deltax%, halfy%), c% + 4 * ci%
+          LINE (deltax%, ymax%)-(0, y%), c% + 5 * ci%
+          LINE (halfx%, deltay%)-(deltax%, halfy% + 1), c% + 6 * ci%
+          LINE (deltax%, 0)-(0, deltay%), c% + 7 * ci%
+          x% = x% + (((xmax% + 1) / (ymax% + 1)) * 5)
+       NEXT y%
+    END SUB
+ 
+    SUB ScreenParams (scrn%, ScreenWidth%, ScreenLength%, NumPlanes%)
+      ' Return the screen dimensions in pixels
+      ' and the number of planes.
+      NumPlanes% = 4          ' Set default values for SCREEN 12.
+      ScreenWidth% = 640 : ScreenLength% = 480
+      SELECT CASE scrn%       ' Change values for other SCREEN modes.
+         CASE 7
+            ScreenWidth% = 320 : ScreenLength% = 200
+         CASE 8
+            ScreenLength% = 200
+         CASE 9
+            ScreenLength% = 350
+         CASE 10
+            NumPlanes% = 2 : ScreenLength% = 350
+         CASE 11
+            NumPlanes% = 2
+      END SELECT
+    END SUB
+ 
+    SUB VGAtoEpson (scrn%, fileN$, flip%, border%) STATIC
+    ' Sends the image on SCREEN 7, 8, 9, 10, 11 or 12
+    ' to an Epson printer.
+    ' Parameters:
+    '    scrn%   - SCREEN video mode of screen to print (7 through 12).
+    '    fileN$  - Name of file or device to send image to.
+    '    flip%   - Invert flag (0 = normal, not 0 = invert).
+    '    border% - Character to use for border drawing on screens
+    '              9 and 10 (0 = none, 255 = solid, etc.)
+      OPEN fileN$ FOR BINARY AS 1            ' Open the output file.
+      WIDTH #1, 255
+      esc$ = CHR$(27) : crlf$ = CHR$(13) + CHR$(10)
+      line$ = esc$ + "A" + CHR$(8)           ' Set printer to 8/72 lpi".
+      PUT #1, , line$
+      CALL ScreenParams(scrn%, ScreenWidth%, ScreenLength%, NumPlanes%)
+ 
+      IF ScreenLength% &lt; 480 THEN       ' Figure how many bytes to send
+         numbyte% = ScreenLength% * 2 + 16   ' to printer for one
+         maxy% = ScreenLength% - 1           '  line of graphics.
+      ELSE
+         numbyte% = 960 : maxy% = 479
+      END IF
+ 
+      DEF SEG = &amp;HA000               ' Start of EGA/VGA screen memory.
+      BorderOffset% = (960 - numbyte%) / (2 * 8)
+      IF ScreenLength% &lt; 480 THEN
+         ' Print top line for border on screens where border will fit.
+         line$ = SPACE$(BorderOffset%)           ' (For margin).
+         PUT #1, , line$
+         line$ = esc$ + "L" + MKI$(numbyte%)
+         line$ = line$ + STRING$(numbyte%, border%) + crlf$
+         PUT #1, , line$
+      END IF
+ 
+      ' This loop is the horizontal byte location.
+      colend% = (ScreenWidth% / 8) - 1
+      FOR col% = 0 TO colend%
+        ' Set the printer up to receive 716 or 960 bytes
+        ' of graphics data.
+        IF ScreenLength% &lt; 480 THEN
+           line$ = SPACE$(BorderOffset%)
+           PUT #1, , line$  '(for border)
+        END IF
+ 
+        line$ = esc$ + "L" + MKI$(numbyte%)  '(for init)
+        PUT #1, , line$
+        IF ScreenLength% &lt; 480 THEN
+           line$ = STRING$(8, border%)
+           PUT #1, , line$    '(for border)
+        END IF
+ 
+        '--- This loop is the vertical byte position.
+        FOR row% = maxy% TO 0 STEP -1
+          ' For 4 plane screens (7, 8, 9 and 12) logically OR the blue
+          ' plane with the red plane, send that byte, then OR the green
+          ' plane with the intensity plane and send that byte.
+ 
+          ' For screens 10 and 11, the video planes are sent directly
+          ' to the printer.
+          FOR plane% = 0 TO 1                ' Plane (* 2) set.
+            OUT &amp;H3CE, 4 : OUT &amp;H3CF, plane%
+            place&amp; = row%                   ' Figure out screen memory
+            place&amp; = place&amp; * (colend% + 1) ' location to read - use
+            place&amp; = place&amp; + col%          ' a long to avoid overflow.
+            mem% = PEEK(place&amp;)
+ 
+            IF NumPlanes% = 4 THEN ' OR color planes together.
+               OUT &amp;H3CE, 4 : OUT &amp;H3CF, plane% + 2
+               mem% = mem% OR PEEK(place&amp;)
+            END IF
+ 
+            '--- Flip the byte if need be (inverses printed picture).
+            IF flip% &lt;&gt; 0 THEN mem% = 255 - mem%
+            line$ = CHR$(mem%) : PUT #1, , line$
+          NEXT plane%
+        NEXT row%
+ 
+        line$ = crlf$    ' Default for no border.
+        IF ScreenLength% &lt; 480 THEN
+           line$ = STRING$(8, border%) + crlf$   ' Righthand border.
+        END IF
+        PUT #1, , line$
+      NEXT col%
+ 
+      IF ScreenLength% &lt; 480 THEN     '--- Print bottom line for border.
+         line$ = SPACE$(BorderOffset%)       ' (For margin).
+         PUT #1, , line$
+         line$ = esc$ + "L" + MKI$(numbyte%)
+         line$ = line$ + STRING$(numbyte%, border%) + crlf$
+         PUT #1, , line$
+      END IF
+      ResetPrn$ = esc$ + "@"
+      PUT #1, , ResetPrn$                 ' Reset printer.
+      line$ = CHR$(12) : PUT #1, , line$  ' Send formfeed (page eject).
+      CLOSE 1                             ' All done.
+    END SUB
+ 
+</pre>
+</body>
+
+</html>

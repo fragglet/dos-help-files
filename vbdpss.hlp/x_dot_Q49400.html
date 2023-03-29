@@ -1,0 +1,98 @@
+<html>
+
+<head>
+<title>Article Q49400 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q49400</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Example of Passing Two-Dimensional Fixed-String Array to MASM</b> - Q49400
+ 
+ The two programs shown below demonstrate how a Microsoft Basic program
+ can pass a two-dimensional fixed-length string array to assembly
+ language.
+ 
+ More Information:
+ 
+ The following Basic program is BTWOFIX.BAS, which passes an
+<b> uninitialized two-dimensional array of fixed-length strings to an</b>
+<b> assembly routine that initializes the array.</b>
+ 
+ Code Example
+ ------------
+ 
+ DECLARE SUB TwoFix(BYVAL ASeg AS INTEGER, BYVAL AOff AS INTEGER)
+ 
+ DIM FixArray(1 TO 2, 1 TO 3) AS STRING * 9
+ 
+ CALL TwoFix(VARSEG(FixArray(1, 1)), VARPTR(FixArray(1, 1)))
+ FOR row% = 1 TO 2
+    FOR col% = 1 TO 3
+       PRINT FixArray(row%, col%)
+    NEXT
+ NEXT
+ END
+ 
+ 
+ The following program is ATWOFIX.ASM, which initializes a
+<b> two-dimensional array of fixed-length strings passed from Basic:</b>
+ 
+ .MODEL MEDIUM, BASIC
+ .DATA
+         Fix11 DB 'String 11'  ; Allocate string data.
+         Fix21 DB 'String 21'
+         Fix12 DB 'String 12'
+         Fix22 DB 'String 22'
+         Fix13 DB 'String 13'
+         Fix23 DB 'String 23'
+ .CODE
+         PUBLIC TwoFix
+ TwoFix  PROC
+         push bp
+         mov bp, sp            ; Set stack frame.
+         push es
+         push si
+         push di
+         mov es, [bp+8]        ; Segment of string array.
+         mov di, [bp+6]        ; Offset of string array.
+         mov si, OFFSET Fix11  ; Get offset to string data.
+         mov cx, 54            ; Length of all string data.
+         rep movsw             ; Copy string data to array.
+         pop di
+         pop si
+         pop es
+         pop bp
+         ret 4
+ TwoFix  ENDP
+         END
+ 
+ To demonstrate these programs from an .EXE program, compile and link
+<b> as follows:</b>
+ 
+      BC BTWOFIX.BAS;
+      MASM ATWOFIX.ASM;
+      LINK BTWOFIX ATWOFIX;
+ 
+ BTWOFIX.EXE produces the following output:
+ 
+ String 11
+ String 12
+ String 13
+ String 21
+ String 22
+ String 23
+</pre>
+</body>
+
+</html>

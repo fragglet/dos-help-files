@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>StringAssign Routine Details - advr.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+advr.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> StringAssign Routine Details</div>
+<pre>  <span class='grhilite'>◄</span><a href='unknown#StringAssign'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#.strasx'>Example</a><span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ StringAssign(sourceaddress&amp;, sourcelength%, destaddress&amp;, destlength%);
+ 
+ Usage Notes
+   ■ The StringAssign syntax is for the C language. However, the order of
+     arguments in the syntax follows Basic, Pascal, and FORTRAN calling
+     conventions rather than the C calling convention. Note: In Basic,
+     Pascal, and FORTRAN, the arguments are passed in the order in which
+     they appear in the source code. In C, the arguments are passed in the
+     reverse order.
+ 
+   ■ Calls to the StringAssign routine are usually made from a C, MASM,
+     Pascal, or FORTRAN routine that performs string processing functions
+     on Basic strings. Seldom, if ever, do you call StringAssign from inside
+     a Visual Basic program.
+ 
+   ■ StringAssign can be used to transfer far strings. Using StringAssign,
+     you can write far string independent mixed-language programs.
+ 
+   ■ MASM, C, Pascal, and FORTRAN deal only with fixed-length strings. When
+     programming in these languages you can use StringAssign to create a new
+     Basic variable-length string and transfer fixed-length string data to
+     it. For example, to transfer a MASM fixed-length string containing the
+     word "Hello" to a Basic variable-length string, you use this data
+     structure:
+ 
+         fixedstring      db       "Hello"     ; source of data
+         descriptor       dd        0          ; descriptor for destination
+ 
+     The second data element, descriptor, is a 4-byte string descriptor
+     initialized to zero. Visual Basic interprets this to mean that it should
+     create a new variable-length string and associate it with the address
+     labeled descriptor.
+ 
+   ■ When creating a new variable-length string, you must allocate 4 bytes of
+     static data for a string descriptor, as shown above. Allocating the data
+     on the stack will not work.
+ 
+   ■ To create a new Basic variable-length string and transfer fixed-length
+     data to it, the StringAssign routine requires four arguments:
+     • The far address of the fixed-length string in the MASM data segment
+     • The length of the fixed-length string in the MASM data segment
+     • The far address of the string descriptor in the MASM data segment
+     • 0 (indicating the string in the Basic data segment will be a variable-
+       length string)
+ 
+   ■ The following MASM code pushes these arguments on the stack and calls
+     StringAssign:
+ 
+         .model
+          extrn      stringassign:  far
+ 
+         .code
+          push       ds                    ; segment of fixed-length string
+          lea        ax, fixedstring       ; offset of fixed-length string
+          push       ax
+          mov        ax, 5                 ; length of "Hello"
+          push       ax
+          push       ds                    ; segment of descriptor
+          lea        ax, descriptor        ; offset of descriptor
+          push       ax
+          mov        ax, 0                 ; 0 = variable-length string
+          push       ax
+          call       stringassign
+ 
+     When the call to StringAssign is made, Visual Basic fills in the double-
+     word descriptor with the correct string descriptor.
+ 
+</pre>
+</body>
+
+</html>

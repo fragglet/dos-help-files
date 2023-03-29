@@ -1,0 +1,64 @@
+<html>
+
+<head>
+<title>CLEAR, GETTEXT, SETTEXT Methods and CLIPBOARD Object Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> CLEAR, GETTEXT, SETTEXT Methods and CLIPBOARD Object Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example illustrates the use of the CLEAR, GETTEXT, and SETTEXT
+' methods and the CLIPBOARD object. Click the form to copy a text string
+' from the Clipboard to a string variable.
+'
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Choose New Form from the File menu to create a form with a text box
+'    control
+' 3. Press Alt+F4 to return to the programming environment
+' 4. Copy the code example below to the form module
+' 5. Press F5 to run the example
+'
+ DECLARE SUB ClipboardTextDemo ()
+ 
+ SUB ClipboardTextDemo ()
+     ON ERROR RESUME NEXT                ' Setup error handling
+     Msg$ = "Type anything you like into the text box below."
+     Text1.text = INPUTBOX$(Msg$)        ' Get text from user
+     Msg$ = "Choose OK to copy the contents of the text box "
+     Msg$ = Msg$ + "to the Clipboard."
+     MSGBOX Msg$                         ' Display message
+     CLIPBOARD.CLEAR                     ' Clear Clipboard
+     CLIPBOARD.SETTEXT Text1.text        ' Put text on Clipboard
+     IF CLIPBOARD.GETTEXT() &lt;&gt; "" THEN
+          Text1.text = ""                ' Clear the text box
+          Msg$ = "The text is now on the Clipboard."
+     ELSE
+          Msg$ = "There is no text on the Clipboard."
+          MSGBOX Msg$                    ' Display error message
+     END IF
+     Msg$ = Msg$ + " Choose OK to copy the text from the "
+     Msg$ = Msg$ + CHR$(13) + CHR$(10) + "Clipboard back to the text box"
+     Msg$ = Msg$ + CHR$(13) + CHR$(10) + "in reverse order."
+     MSGBOX Msg$                         ' Display message
+     Temp$ = CLIPBOARD.GETTEXT()         ' Get Clipboard text
+     FOR I% = LEN(Temp$) TO 1 STEP -1    ' Reverse the text
+          Text1.text = Text1.text + MID$(Temp$, I%, 1)
+     NEXT I%
+ END SUB
+ SUB Form_Click ()
+     CALL ClipboardTextDemo           ' Call Clipboard example
+ END SUB
+ 
+</pre>
+</body>
+
+</html>

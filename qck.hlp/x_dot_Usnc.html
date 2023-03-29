@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>Using Named COMMON - qck.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+qck.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Named COMMON</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ Using Named COMMON
+ 
+ ■ A named COMMON block provides a convenient way to group variables so that
+   different modules have access to only the common variables that they need.
+ 
+ ■ Named COMMON blocks are not preserved across chained programs. Use blank
+   COMMON blocks to pass variables to a chained program.
+   See: <span class='grhilite'>◄</span><a href='x_dot_Uscwc.html'>Using COMMON with CHAIN</a><span class='grhilite'>►</span>
+ 
+ ■ The following program fragment, which calculates the volume and density
+   of a rectangular prism, uses named COMMON blocks to share different sets
+   of data with two SUB procedures:
+ 
+         DIM S(3)                      ' Main program
+         COMMON /Sides/ S()
+         COMMON /Weight/ C
+         C=52
+         S(1)=3:S(2)=3:S(3)=6
+         CALL Volume
+         CALL Density
+         END
+ 
+         DIM S(3)                      ' SUB procedure Volume in
+         COMMON SHARED /Sides/ S()     ' a separate module
+ 
+         SUB Volume STATIC
+             Vol=S(1)*S(2)*S(3)
+             .
+             .
+             .
+         END SUB
+ 
+         DIM S(3)                      ' SUB procedure Density in
+         COMMON SHARED /Sides/ S()     ' a separate module
+         COMMON SHARED /Weight/ W
+ 
+         SUB Density STATIC
+             Vol=S(1)*S(2)*S(3)
+             Dens=W/Vol
+             .
+             .
+             .
+         END SUB
+ 
+   The SUB procedure Volume shares only the variables representing the
+   lengths of the sides (in COMMON block Sides). The SUB procedure Density
+   also needs variables representing the weight (in COMMON block Weight).
+   See: <span class='grhilite'>◄</span><a href='COMMON.html'>COMMON Statement</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_var_dot_scope.html'>Scope Rules</a><span class='grhilite'>►</span>
+ 
+</pre>
+</body>
+
+</html>

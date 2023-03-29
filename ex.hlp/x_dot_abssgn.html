@@ -1,0 +1,52 @@
+<html>
+
+<head>
+<title>ABS Function, SGN Function, and DEFtype Statements Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ABS Function, SGN Function, and DEFtype Statements Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example finds the cube root of an input value. The ABS and
+' SGN functions test whether the current guess is accurate. The
+' DEFDBL statement establishes the default data type for the
+' variables.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ CLS                                        ' Clear the screen
+ DEFDBL A-Z
+ CONST Precision = .0000001#
+ CONST LowGuess = -1, HighGuess = 1, ExactGuess = 0
+ CLS                                        ' Clear the screen
+ INPUT "Enter a value: ", Value             ' Prompt for input
+ X1 = 0#: X2 = Value                        ' Make the first two guesses
+ accuracy$ = "approximate"
+ DO UNTIL ABS(X1 - X2) &lt; Precision          ' Loop until the difference
+     X = (X1 + X2) / 2#                     ' between guesses is less than
+     SELECT CASE SGN(X * X * X - Value)     ' the required precision;
+     CASE IS = LowGuess                     ' adjust the guesses
+          X1 = X
+     CASE IS = HighGuess
+          X2 = X
+     CASE IS = ExactGuess
+          accuracy$ = "Exact"
+          X1 = X2
+     END SELECT
+ LOOP
+ PRINT "The "; accuracy$; " cube root is"; X
+</pre>
+</body>
+
+</html>

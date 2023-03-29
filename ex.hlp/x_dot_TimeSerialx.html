@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>Time Related Commands Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Time Related Commands Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example calculates the time between now and midnight tonight. The
+' time information is displayed using the TIMEVALUE, TIMESERIAL, HOUR,
+' MINUTE, and SECOND functions.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ CLS                              ' Clear the screen
+ 
+' Get a time value for midnight tonight - 1 second.
+ Midnight = TIMEVALUE("23:59:59")
+ 
+' Get a time value for right now.
+ Instant = NOW
+ 
+' Get the difference in hours, minutes, seconds.
+ HourDiff% = HOUR(Midnight) - HOUR(Instant)
+ MinuteDiff% = MINUTE(Midnight) - MINUTE(Instant)
+ 
+' Add in the odd second between 23:59:59 and midnight.
+ SecondDiff% = SECOND(Midnight) - SECOND(Instant) + 1
+ 
+' Adjust so that seconds and minutes are less than 60.
+ IF SecondDiff% = 60 THEN
+         MinuteDiff% = MinuteDiff% + 1
+         SecondDiff% = 0
+ END IF
+ IF MinuteDiff% = 60 THEN
+         HourDiff% = HourDiff% + 1
+         MinuteDiff% = 0
+ END IF
+ 
+' Calculate a total of seconds between now and midnight.
+ TotalMinDiff = (HourDiff% * 60) + MinuteDiff%
+ TotalSecDiff = (TotalMinDiff * 60) + SecondDiff%
+ 
+' Put the difference back into a standard time format.
+ TotalDiff = TIMESERIAL(HourDiff%, MinuteDiff%, SecondDiff%)
+ 
+' Display results.
+ CLS
+ PRINT "There are a total of"; TotalSecDiff; "seconds until midnight."
+ PRINT "That translates to"; HourDiff%; "hours,"; MinuteDiff%;
+ PRINT "minutes, and"; SecondDiff%; "seconds."
+ PRINT
+ PRINT "The difference can also be expressed in standard time notation as:"
+ PRINT FORMAT$(TotalDiff, "hh:mm:ss")
+</pre>
+</body>
+
+</html>

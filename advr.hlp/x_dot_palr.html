@@ -1,0 +1,213 @@
+<html>
+
+<head>
+<title>PALETTE, PALETTE USING Statement Details - advr.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+advr.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> PALETTE, PALETTE USING Statement Details</div>
+<pre>  <span class='grhilite'>◄</span><a href='unknown#PALETTE'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#.palx'>Example</a><span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ PALETTE [attribute%, color%]
+ PALETTE USING arrayname[(index%)]
+ 
+ Usage Notes (General)
+   ■ The argument color% must be a long integer expression for the IBM
+     Video Graphics Array adapter (VGA) and IBM Multicolor Graphics Array
+     adapter (MCGA) in screen modes 11 to 13. Integer or long integer
+     expressions can be used with the IBM Enhanced Graphics Adapter (EGA).
+ 
+   ■ The following table lists attribute and color ranges for various adapter
+     types and screen modes:
+ 
+     Screen  Monitor                      Attribute  Color         PALETTE
+     Mode    Attached            Adapter  Range      Range         Supported
+     ══════  ══════════════════  ═══════  ═════════  ════════════  ═════════
+     0       Monochrome          MDPA     0-15                     No
+             Monochrome          EGA      0-15       0-2           Yes
+             Color               CGA      0-15                     No
+             Color/Enhanced(1)   EGA      0-15       0-15/0-63     Yes
+             Analog              VGA      0-15       0-63          Yes
+             Color/Analog        MCGA     0-15       0-63          No
+     1       Color               CGA      0-3        0-15(2)       No
+             Color/Enhanced(1)   EGA      0-3        0-15          Yes
+             Analog              VGA      0-3        0-15          Yes
+             Color/Analog        MCGA     0-3        0-15          No
+     2       Color               CGA      0-1                      No
+             Color/Enhanced(1)   EGA      0-1        0-15          Yes
+             Analog              VGA      0-1        0-15          Yes
+             Color/Analog        MCGA     0-1        0-15          No
+     3       Monochrome          HGC      0-1                      No
+     4       Color/Enhanced      OCGA/(7) 0-1        0-15(3)       No
+                                 OEGA/(7)
+                                 OVGA(7)
+     7       Color/Enhanced(1)   EGA      0-15       0-15          Yes
+                                 VGA      0-15       0-15          Yes
+     8       Color/Enhanced(1)   EGA      0-15       0-15          Yes
+                                 VGA      0-15       0-15          Yes
+     9       Enhanced(1)         EGA(4)   0-3        0-63          Yes
+             Enhanced(1)         EGA(5)   0-15       0-63          Yes
+             Analog              VGA      0-16       0-63          Yes
+     0       Monochrome          EGA      0-3        0-8           Yes
+             Analog              VGA      0-3        0-8           Yes
+     1       Analog              VGA      0-1        0-262,143(6)  Yes
+             Analog              MCGA     0-1        0-262,143(6)  Yes
+     2       Analog              VGA      0-15       0-262,143(6)  Yes
+     3       Analog              VGA      0-255      0-262,143(6)  Yes
+             Analog              MCGA     0-255      0-262,143(6)  Yes
+     ───────────────────────────────────────────────────────────────────────
+     (1) IBM Enhanced Color Display.
+     (2) Color range available for attribute 0 only.
+     (3) Color range available for attribute 1 only.
+     (4) With 64K of EGA memory.
+     (5) With more than 64K of EGA memory.
+     (6) Range of display colors is actually from 0 to 4,144,959, but only
+         262,144 of these can be displayed.
+     (7) Olivetti CGA, EGA and VGA.
+ 
+   ■ The SCREEN statement lists the colors available for various screen
+     modes, monitor, and graphics adapter combinations.
+     See: <span class='grhilite'>◄</span><a href='unknown#.SCREENS'>SCREEN Statement</a><span class='grhilite'>►</span>
+ 
+   ■ The argument arrayname is an array that contains more than one display
+     color. It must be a long integer array for VGA and MCGA adapters in
+     screen modes 11 to 13. Otherwise, the array can be either an integer
+     or long-integer array.
+ 
+   ■ The argument index% is the index of the first array element to use in
+     setting the palette.
+ 
+   ■ The PALETTE statement provides a way of mapping display colors (the
+     actual binary values used by the adapter) to color attributes (a smaller
+     set of values).
+ 
+   ■ When a program enters a screen mode, the attributes are set to a series
+     of default color values. See: <span class='grhilite'>◄</span><a href='unknown#color.table'>Color Attributes and Values (SCREEN)</a><span class='grhilite'>►</span>
+ 
+   ■ In the EGA, VGA, and MCGA adapters the default values have been selected
+     so the display shows the same colors, even though the EGA uses different
+     color values. Use the PALETTE statement to assign different colors to
+     the attributes.
+ 
+   ■ Use a PALETTE statement with no arguments to set the palette back to the
+     default color values.
+ 
+   ■ After a PALETTE statement is executed with arguments, the graphics
+     adapter uses the display color associated with the attribute whenever
+     an attribute argument appears in a statement such as DRAW or LINE.
+     See: <span class='grhilite'>◄</span><a href='unknown#draw'>DRAW Statement</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#line'>LINE Statement</a><span class='grhilite'>►</span>
+ 
+   ■ Changing the display color assigned to an attribute changes those
+     colors currently displayed on the screen associated with that
+     attribute. For example, assume that the current palette contains
+     colors 0, 1, 2, and 3 in the four attributes numbered 0, 1, 2, and 3.
+     The following DRAW statement selects attribute 3, and draws a line of
+     100 pixels using the display color associated with attribute 3, in
+     this case also 3:
+ 
+         DRAW "C3L100"
+ 
+     If the following statement is executed, the color associated with
+     attribute 3 is changed to color 2:
+ 
+         PALETTE 3,2
+ 
+     All text or graphics currently on the screen displayed using attribute
+     3, including the line that is 100 pixels long, are instantaneously
+     changed to color 2. Text or graphics subsequently displayed with
+     attribute 3 are also displayed in color 2. The new palette of colors
+     contains 0, 1, 2, and 2.
+ 
+   ■ Attribute 0 is always the screen background color. Under a common
+     initial palette setting, points colored with the attribute 0 appear
+     black on the display screen. For example, you can use the PALETTE
+     statement to change the mapping of attribute 0 from black to white.
+ 
+   ■ Use the COLOR statement to change the screen background color in
+     modes 1 and 7-10. See: <span class='grhilite'>◄</span><a href='unknown#color'>COLOR Statement</a><span class='grhilite'>►</span>
+ 
+   ■ The 64 EGA colors are derived from four levels each of red, green, and
+     blue. For example, black is composed of red, green, and blue levels of
+     (0,0,0), bright white is (3,3,3), dark gray is (1,1,1), and so on.
+ 
+   ■ The best way to see the Visual Basic color code (0-63) associated with
+     each combination of red, green, and blue levels is to run the following
+     program:
+ 
+         ' Display the EGA color codes 1 through 63
+         ' using color code 0 (black) as background.
+         DEFINT A-Z
+         SCREEN 9                     'Establish EGA screen mode
+         ' Display a set of nine color bars.
+         FOR CC% = 1 TO 9
+           LINE (((CC% * 64) - 24), 40)-STEP(60, 140), CC%, BF
+         NEXT CC%
+          ' Display seven sets of nine color bars.
+          ' A new set is displayed each time user presses a key.
+         FOR Set% = 0 TO 6
+           FOR ColorBar% = 1 TO 9
+             DisplayCode% = (Set% * 9) + ColorBar%
+             LOCATE 15, (ColorBar% * 8)
+             PRINT DisplayCode%
+             PALETTE ColorBar%, DisplayCode%
+           NEXT ColorBar%
+           SLEEP
+         NEXT Set%
+         END
+ 
+   ■ To calculate a VGA color value, select the intensities of red, green,
+     and blue. The intensity of a color is a number from 0 (low intensity)
+     to 63 (high intensity). Then use the following formula to calculate
+     the actual color number:
+ 
+         color number = 65536 * blue + 256 * green + red
+ 
+     This formula yields integer values from 0 to 4,144,959; however, since
+     there are gaps in the range of color numbers, it's better to use the
+     formula rather than just select a number.
+ 
+   ■ When used with the IBM Analog Monochrome Monitor, the VGA color values
+     are converted to a gray-scale value by taking a weighted sum of the red,
+     blue, and green intensities:
+ 
+         gray value = 11% blue + 59% green + 30% red
+ 
+     For example, if the blue, green, and red intensities are 45, 20, and
+     20, then the gray intensity value calculation would be:
+ 
+         gray value = (.11 * 45) + (.59 * 20) + (.30 * 20) = 22
+ 
+     Note: The fractional part of the result is dropped.
+ 
+ Usage Notes (PALETTE USING)
+   ■ All entries in the palette can be modified in one PALETTE USING
+     statement. Each attribute in the palette is assigned a corresponding
+     color from the array.
+ 
+   ■ A color argument of -1 in the array leaves the attribute unchanged in
+     the palette. All other negative numbers are invalid values for color.
+ 
+   ■ The dimensions for the array must be large enough to set all the
+     palette entries after index%. For example, if you are assigning colors
+     to a palette with 16 attributes and the argument index% is 5 (the first
+     array element to use in resetting the palette), then the dimensions for
+     the array must be large enough to hold at least 20 elements (because
+     the number of elements from 5 to 20, inclusive, is 16):
+ 
+         DIM PAL%(20)               ' Other statements can go between
+         .                          ' DIM and PALETTE USING
+         .
+         .
+         PALETTE USING PAL%(5)
+ 
+</pre>
+</body>
+
+</html>

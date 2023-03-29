@@ -1,0 +1,353 @@
+<html>
+
+<head>
+<title>Article Q76729, Program - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q76729, Program</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Complete VB Program to BLOAD/BSAVE Four Plane PICEM Images, Program</b>
+ 
+ Code Example
+ ------------
+ ' PIC.BAS: An interface for Microsoft Visual Basic version 1.0 for
+ ' MS-DOS to use with PICEM version 2.1.
+ ' This program requires the user to have a copy of PICEM210.EXE,
+ ' available through COMPUSERVE and other bulletin boards.
+ ' To run this program in the environment, you must invoke the
+ ' environment with the /L switch to load the default Quick library:
+ '    VBDOS.EXE /L          for Visual Basic 1.0 for MS-DOS
+ DEFINT A-Z
+ CONST TRUE = -1
+ CONST FALSE = NOT TRUE
+ CONST Save = 2        ' Constants to tell if we are loading or
+ CONST LoadG = 1        ' saving GIF and BSAVE files.
+ 
+ TYPE ColorType        ' Type used to store Palette register
+                       ' information.
+         red AS STRING * 1
+         green AS STRING * 1
+         blue AS STRING * 1
+ END TYPE
+ 
+ ' Use the following include file for Visual Basic 1.0 for MS-DOS:
+ REM $INCLUDE: 'VBDOS.BI'
+ DECLARE SUB LoadBSAVE (NumRegs%, mode, BSAVEfile$)
+ DECLARE SUB SaveGif (NumRegs%, mode, Giffile$, BSAVEfile$)
+ DECLARE SUB SaveBasicPalette (NumRegs%, LoadSave%)
+ DECLARE SUB EgaVgaSub (filename$, mode AS INTEGER, RW AS INTEGER)
+ DECLARE SUB ComLine (cmd$, SL$, mode%, Bfile$, Gif$)
+ 
+ COMMON SHARED ColorBuf() AS ColorType, BasicPalette() AS ColorType
+ 
+ '$DYNAMIC
+ ' Buffers for Basic's and PICEM's Palette Registers.
+ DIM ColorBuf(0 TO 15) AS ColorType
+ DIM BasicPalette(0 TO 15) AS ColorType
+ DIM NumRegs AS INTEGER
+ 
+ NumRegs = 16        ' Initialize variables, assume SCREEN 9 or 12.
+ Giffile$ = " "
+ BSAVEfile$ = " "
+ 
+ cmd$ = COMMAND$     ' Check for command line arguments.
+ IF cmd$ = "" THEN
+  SCREEN 0
+  CLS
+  COLOR 14, 8
+  LOCATE 1, 5
+  PRINT "Welcome to the GIF/PCX/PIC picture BSAVE/BLOAD utility"
+  LOCATE 3, 5
+  PRINT "Would you like to Save a GIF, Load a BSAVE file, or"
+  LOCATE 4, 5: INPUT "Quit the application? (S,L,Q): ", SaveorLoad$
+ ELSE
+  ' Parse command$.
+  CALL ComLine(cmd$, SaveorLoad$, mode, BSAVEfile$, Giffile$)
+ END IF
+ SELECT CASE UCASE$(SaveorLoad$)
+   CASE "S"
+         CALL SaveGif(NumRegs, mode, Giffile$, BSAVEfile$)
+   CASE "L"
+         CALL LoadBSAVE(NumRegs, mode, BSAVEfile$)
+   CASE "H"
+          PRINT "Usage: /s-save GIF, /l-load bsave file,"
+          PRINT
+          PRINT "  PIC [&lt;Save/Load&gt; /mode &lt;GIF-file&gt; &lt;bsavefile&gt;]"
+          PRINT
+          PRINT "Save/Load: /s = Save a GIF, /l = Load BSAVE files"
+          PRINT "/mode: /9 = 640x350x16, /12 = 640x480x16, /13 = ";
+          PRINT "320x200x256"
+          PRINT "GIF-file: path, name, and extension of GIF-file to BSAVE"
+          PRINT "bsavefile: 8 character filename to BLOAD, or BSAVE GIF"
+   END SELECT
+ END
+ 
+ SUB ComLine (cmd$, SL$, mode, Bfile$, Gif$)
+ 
+ ' This slightly modified code is in the On-Line help for Command$.
+ 
+    DIM Args$(1 TO 4)
+    MaxArgs = 4
+    NumArgs = 0: In = FALSE
+    L = LEN(cmd$)
+    ' Go through the command line a character at a time.
+    FOR I = 1 TO L
+           C$ = MID$(cmd$, I, 1)
+           ' Test for character being a blank or a TAB.
+           IF ((C$ &lt;&gt; " ") AND (C$ &lt;&gt; CHR$(9)) AND (C$ &lt;&gt; "/")) THEN
+           ' Neither blank nor TAB. Test if you're inside an argument.
+           IF NOT In THEN
+           ' You've found the start of a new argument.
+                  IF NumArgs = MaxArgs THEN EXIT FOR
+                  NumArgs = NumArgs + 1
+                  In = TRUE
+           END IF
+           ' Add the character to the current argument.
+           Args$(NumArgs) = Args$(NumArgs) + C$
+           ELSE
+           ' Found a blank or a TAB.
+           ' Set "Not in an argument" flag to FALSE.
+          In = FALSE
+           END IF
+    NEXT I
+ 
+    IF NumArgs &gt; 2 THEN       ' At least 3 arguments, or print help.
+          SL$ = Args$(1)          ' First param should be /s or /l.
+          mode = VAL(Args$(2))    ' Next param should be video mode.
+          IF SL$ = "S" THEN
+          Gif$ = Args$(3)      ' If /s, get GIF-file name.
+          Bfile$ = Args$(4)    ' Assign BSAVE file-name.
+          ELSEIF SL$ = "L" THEN
+          Bfile$ = Args$(3)    ' If /l get BSAVE file-name.
+          END IF
+    ELSE
+          SL$ = "H"
+    END IF
+ END SUB
+ 
+ STATIC SUB EgaVgaSub (filename$, mode AS INTEGER, RW AS INTEGER)
+ 
+ ' This code is essentially the same as BLOAD/BSAVE application note,
+ ' the name the file is BSAVEd as is the only thing changed.
+ 
+   SELECT CASE mode     ' Determine how much to BSAVE.
+ 
+   ' Mode 7 is 320x200- save/load 8000 bytes.
+   ' Mode 8 is 640x200- save/load 16000 bytes.
+   ' Modes 9 and 10 are 640x350- save/load 28000 bytes.
+   ' Modes 11 and 12 are 640x480- save/load 38400 bytes.
+   ' Mode 13 is 320x200x(1byte/256 colors)- save/load 64000 bytes.
+ 
+         CASE 7
+          total! = 8000
+         CASE 8
+          total! = 16000
+         CASE 9 TO 10
+          total! = 28000
+         CASE 11 TO 12
+          total! = 38400
+         CASE 13
+          total! = 64000
+         CASE ELSE
+          PRINT "ERROR: Non EGA/VGA graphics mode!"
+          GOTO NonEGAorVGA
+   END SELECT
+ 
+   IF mode = 10 THEN   ' SCREEN mode 10 only has two bit planes
+         cycle = 1        ' because it is used on a monochrome display.
+   ELSE
+         cycle = 3         ' SCREEN modes 7, 8, 9, 11, and 12 have four
+   END IF               ' bit planes.
+ 
+   DEF SEG = &amp;HA000   ' Define the segment for EGA/VGA graphics.
+                      ' BSAVEing and BLOADing SCREEN mode 13 does not
+   IF mode = 13 THEN  ' require the use of the graphics map register.
+         IF RW = 1 THEN  ' BLOAD the file.
+           f$ = filename$ + ".B_0"       ' Load the file into VGA memory.
+           BLOAD f$, 0                   ' 0 is the offset to page 0.
+         ELSE                            ' BSAVE the file.
+           f$ = filename$ + ".B_0"    ' Save VGA memory in a file.
+           BSAVE f$, 0, total!        ' Save the visual page, at offset 0.
+         END IF
+   ELSE
+         FOR I = 0 TO cycle     ' Cycle through each bit plane of EGA/VGA.
+           IF RW = 1 THEN       ' BLOAD files.
+           OUT &amp;H3C4, 2         ' We want to index the map register.
+           OUT &amp;H3C5, 2 ^ I     ' Bit plane we want to reference.
+ 
+           ' Load each file into its corresponding bit plane.
+           f$ = filename$ + ".B_" + CHR$(I + 48)
+           BLOAD f$, 0          ' 0 is the offset to page 0.
+           ELSE                 ' BSAVE files.
+           OUT &amp;H3CE, 4         ' Select Read Map Select Register.
+           OUT &amp;H3CF, I         ' Select the bit plane to save.
+ 
+           ' Save each bit plane in its own file.
+           f$ = filename$ + ".B_" + CHR$(I + 48)
+           BSAVE f$, 0, total!  ' Save the visual page, at offset 0.
+           END IF
+         NEXT I
+   END IF
+   DEF SEG                      ' Restore the segment.
+ NonEGAorVGA:
+ END SUB
+ 
+ SUB LoadBSAVE (NumRegs, mode, SaveFile$)
+ ' This sub loads BSAVE files from disk into video
+ ' memory, also restores the Picture's Palette registers.
+ 
+   DIM inregx AS RegTypeX
+   DIM outregx AS RegTypeX
+ 
+   DO UNTIL DIR$(SaveFile$ + ".reg") &lt;&gt; ""   ' Get valid filename.
+         LOCATE 3, 1: PRINT SPACE$(79)      'Clear previous print lines.
+         LOCATE 4, 1: PRINT SPACE$(79)
+         LOCATE 3, 5
+         INPUT "Please enter the BSAVE filename (8 chars,no ext):",_
+             SaveFile$
+   LOOP
+                ' Get valid screen mode.
+   DO UNTIL (mode = 9) OR (mode = 12) OR (mode = 13)
+   LOCATE 4, 5: INPUT "Which screen mode is it? (9,12,13): ", mode
+   LOOP
+ 
+   IF mode = 13 THEN             ' If screen 13, change array sizes.
+          REDIM ColorBuf(0 TO 255) AS ColorType
+          REDIM BasicPalette(0 TO 255) AS ColorType
+          NumRegs = 256
+   END IF
+ 
+   SCREEN mode     ' Change to the specified screen mode.
+   CLS
+ 
+   CALL SaveBasicPalette(NumRegs, Save)       ' Save Basic's Palette.
+ 
+   DEF SEG = VARSEG(ColorBuf(0))     ' Bload the picture's Palette
+   BLOAD SaveFile$ + ".reg", VARPTR(ColorBuf(0))  ' into an array.
+   DEF SEG
+ 
+   inregx.ax = &amp;H1012                   ' Restore picture's palette
+   inregx.bx = 0                        ' to the palette registers.
+   inregx.cx = NumRegs
+   inregx.es = VARSEG(ColorBuf(0))
+   inregx.dx = VARPTR(ColorBuf(0))
+   CALL INTERRUPTX(&amp;H10, inregx, outregx)
+ 
+   CALL EgaVgaSub(SaveFile$, mode, LoadG) ' Reload the BSAVEd picture.
+ 
+   COLOR 3
+   PRINT "Picture should be displayed, hit key to continue"
+   DO: LOOP UNTIL INKEY$ &lt;&gt; ""
+   ERASE ColorBuf
+ 
+   CALL SaveBasicPalette(NumRegs, LoadG)  ' Restore Basic's Palette.
+   SCREEN 0
+   CLS
+ END SUB
+ 
+ SUB SaveBasicPalette (NumRegs, LoadSave)
+ ' This sub Saves/Restores Basic's internal Palette registers.
+ 
+   DIM inregx AS RegTypeX
+   DIM outregx AS RegTypeX
+ 
+   IF LoadSave = Save THEN
+         inregx.ax = &amp;H1017                 ' Save Basic's palette.
+   ELSE
+         inregx.ax = &amp;H1012                 ' Load Basic's palette.
+   END IF
+   inregx.bx = 0
+   inregx.cx = NumRegs
+   inregx.es = VARSEG(BasicPalette(0))
+   inregx.dx = VARPTR(BasicPalette(0))
+   CALL INTERRUPTX(&amp;H10, inregx, outregx) ' Interrupt to load/save
+                                          ' palette registers.
+ END SUB
+ 
+ SUB SaveGif (NumRegs, mode, Giffile$, SaveName$)
+ ' This sub shells to PICEM210 to display the
+ ' GIF file, then BSAVEs the image to disk.
+ 
+   DIM inregx AS RegTypeX
+   DIM outregx AS RegTypeX
+ 
+   DO UNTIL DIR$(Giffile$) &lt;&gt; ""         ' Get a valid file name.
+         LOCATE 3, 5: PRINT SPACE$(70)      ' Clear previous print lines.
+         LOCATE 4, 5: PRINT SPACE$(70)
+         LOCATE 3, 5: PRINT "Please enter the drive,path and name"
+         LOCATE 4, 5
+         INPUT "of the GIF file you would like to save: ", Giffile$
+         Giffile$ = LTRIM$(RTRIM$(Giffile$))
+   LOOP
+           ' Get valid screen mode.
+   DO UNTIL (mode = 9) OR (mode = 12) OR (mode = 13)
+        LOCATE 6, 5: INPUT "which screen mode? (9,12,13): ", mode
+   LOOP
+          ' Get valid filename for BSAVE.
+   DO UNTIL (LEN(SaveName$) &lt; 9) AND (SaveName$ &lt;&gt; " ")
+         LOCATE 7, 5
+         INPUT "Filename you want to save it as? (8 chars): ", SaveName$
+   LOOP
+ 
+   IF mode = 9 THEN   ' Values used by PICEM210 to select screen mode.
+          view$ = "i"    ' For EGA cards this should be "g".
+   ELSEIF mode = 12 THEN
+          view$ = "m"
+   ELSEIF mode = 13 THEN
+         REDIM ColorBuf(0 TO 255) AS ColorType
+         REDIM BasicPalette(0 TO 255) AS ColorType
+         view$ = "l"
+         NumRegs = 256
+   END IF
+ 
+   SCREEN mode
+   CALL SaveBasicPalette(NumRegs, Save)       ' Save Basic's Palette.
+ 
+   LOCATE 1, 1
+   shellstr$ = view$ + " " + Giffile$
+   picem$ = "picem210 /e /k /v:" + shellstr$ ' Shell string for
+                                             ' PICEM210.
+   PRINT "hit a key when ready to display picture"
+   PRINT picem$
+   DO: LOOP UNTIL INKEY$ &lt;&gt; ""
+ 
+   SHELL picem$                    ' Shell to PICEM.
+ 
+   inregx.ax = &amp;H1017              ' Save picture's palette registers.
+   inregx.bx = 0
+   inregx.cx = NumRegs
+   inregx.es = VARSEG(ColorBuf(0))
+   inregx.dx = VARPTR(ColorBuf(0))
+   CALL INTERRUPTX(&amp;H10, inregx, outregx)
+ 
+   DEF SEG = VARSEG(ColorBuf(0))   ' BSAVE registers to file.
+   BSAVE SaveName$ + ".reg", VARPTR(ColorBuf(0)), 3 * NumRegs
+   DEF SEG
+ 
+   CALL EgaVgaSub(SaveName$, mode, Save)       ' BSAVE picture.
+ 
+   ERASE ColorBuf
+   COLOR 3
+   LOCATE 1, 1: PRINT "Picture has been saved, press key to quit"
+   DO: LOOP UNTIL INKEY$ &lt;&gt; ""
+ 
+   ' Restore Basic's Palette.
+   CALL SaveBasicPalette(NumRegs, LoadG)
+   SCREEN 0
+   CLS
+ END SUB
+</pre>
+</body>
+
+</html>

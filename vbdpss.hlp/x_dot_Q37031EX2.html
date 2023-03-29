@@ -1,0 +1,89 @@
+<html>
+
+<head>
+<title>Article Q37031, Example 2 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q37031, Example 2</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Printer Error Can Hang; CALL INTERRUPT to Check Printer, Example 2</b>
+ 
+ The following is a sample BASIC program that uses the CALL INTERRUPT
+ routine to check the printer status whenever the F1 key is pressed, or
+ after a BASIC error:
+ 
+ Example
+ -------
+ 
+ ' To try this example in VBDOS.EXE:
+ ' 1. From the File menu, choose New Project.
+ ' 2. Copy the code example to the Code window.
+ ' 3. Press F5 to run the program.
+ '
+ ' To run this program in the environment, you must invoke the
+ ' environment with the /L switch to load the default Quick library:
+ ' VBDOS.EXE /L for Visual Basic 1.0 for MS-DOS
+ DECLARE SUB PrinterStatus ()
+ DEFINT A-Z
+ ' Use the following include file for Visual Basic 1.0 for MS-DOS:
+ REM $INCLUDE: 'VBDOS.BI'
+ CLS
+ ON ERROR GOTO Trap
+ ON KEY(1) GOSUB CheckPrinter
+ KEY(1) ON
+ OPEN "lpt1:" FOR OUTPUT AS #1
+ FOR i = 1 TO 1000
+      PRINT #1, "dflkgjsaklfajds;lfk"
+ NEXT i
+ END
+ 
+ Trap:
+ CALL PrinterStatus
+ INPUT "Hit Any Key to Continue"; a$
+ RESUME
+ 
+ CheckPrinter:
+ PRINT "err = "; ERR
+ CALL PrinterStatus
+ INPUT "Hit Any Key to Continue"; a$
+ RESUME
+ 
+ SUB PrinterStatus STATIC
+ DIM ina AS RegType, outa AS RegType
+ DIM INFO$(7)
+ ina.ax = &amp;H200
+ ina.dx = &amp;H0
+ CALL INTERRUPT(&amp;H17, ina, outa)
+ outah = outa.ax \256
+ FOR i = 7 TO 0 STEP -1
+      result = (outah) AND (2 ^ i)
+      IF result = 0 THEN
+           INFO$(i) = "OFF"
+      ELSE
+           INFO$(i) = "ON"
+      END IF
+ NEXT i
+ PRINT "Bit 7 - Printer Not Busy : "; INFO$(7)
+ PRINT "Bit 6 - Acknowledge : "; INFO$(6)
+ PRINT "Bit 5 - Out of Paper : "; INFO$(5)
+ PRINT "Bit 4 - Printer Selected : "; INFO$(4)
+ PRINT "Bit 3 - I/O Error : "; INFO$(3)
+ PRINT "Bit 2 - Unused : "; INFO$(2)
+ PRINT "Bit 1 - Unused : "; INFO$(1)
+ PRINT "Bit 0 - Timed-Out : "; INFO$(0)
+ END SUB
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>IPmt# Function Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> IPmt# Function Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the IPmt# function to calculate how much you will pay
+' over the lifetime of a loan where all the payments are of equal value.
+ 
+' Note: To run this example you must use the FINANCE.QLB Quick library.
+' The FINANCE.BI include file must also be present.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+' $INCLUDE: 'FINANCE.BI'
+ 
+ CONST ENDPER = 0
+ CONST BEGINPER = 1
+ CONST DOLLARFORMAT$ = "$###,###,###.00"
+ FutrVal = 0
+ DEFDBL A-Z
+ DIM St  AS INTEGER
+ 
+ CLS                               ' Clear the screen
+ INPUT "Enter the annual percentage rate of your loan"; APR
+ PRINT
+ INPUT "What is the principal amount of your loan"; PresVal
+ PRINT
+ INPUT "How many monthly payments do you have to make"; Periods
+ PRINT
+ DO WHILE PaymentTypeString$ &lt;&gt; "B" AND PaymentTypeString$ &lt;&gt; "E"
+     PRINT "Payments due at the beginning (B) or end (E) of the month? ";
+     PaymentTypeString$ = UCASE$(INPUT$(1))
+ LOOP
+ ' Set up the correct payment type.
+ IF PaymentTypeString$ = "B" THEN
+     PaymtType = BEGINPER
+     PRINT "Beginning"
+ ELSE
+     PaymtType = ENDPER
+     PRINT "End"
+ END IF
+ PRINT
+ ' Put APR in proper form.
+ IF APR &gt; 1 THEN APR = APR / 100
+ FOR Per = 1 TO Periods
+     ' Calculate the Interest paid each month.
+ IntPmt = ABS(IPmt#(APR / 12, Per, Periods, -PresVal, FutrVal, PaymtType, St))
+     ' Check for an error.
+     IF St% THEN
+         PRINT "There was a calculation error."
+         END
+      END IF
+     ' Accumulate a total.
+     TotalInterest = TotalInterest + IntPmt
+ NEXT Per
+ TotalInterest$ = FORMAT$(TotalInterest, DOLLARFORMAT$)
+ PresentVal$ = FORMAT$(PresVal, DOLLARFORMAT$)
+ TotalPaid$ = FORMAT$(TotalInterest + PresVal, DOLLARFORMAT$)
+ PRINT
+ PRINT "You'll pay a total of "; TotalPaid$; " on your "; PresentVal$
+ PRINT "loan, of which "; TotalInterest$; " is interest."
+</pre>
+</body>
+
+</html>

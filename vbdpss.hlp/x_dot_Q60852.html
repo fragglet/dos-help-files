@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>Article Q60852 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q60852</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Passing Far Strings to C Using StringAddress and StringLength</b> - Q60852
+ 
+ The following program demonstrates how to pass a variable-length far
+ string to a Microsoft C function using the Basic run-time routines
+ StringAddress and StringLength. These routines are necessary to obtain
+ the string's far address and length.
+ 
+ Code Example
+ ------------
+ 
+ '----------- Here is the file TESTB.BAS
+ DECLARE SUB TestC CDECL (A$)
+ A$ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + CHR$(0)
+                 ' Add 0h at the end for the C printf function.
+ CLS : PRINT : PRINT
+ PRINT "BASIC: "; A$
+ PRINT "Len: "; LEN(A$)
+ PRINT
+ CALL TestC(A$)
+ LOCATE CSRLIN + 3
+ PRINT "Back in BASIC"
+ SYSTEM
+ 
+ // ---------- Here is the file TESTC.C
+ extern char far * pascal StringAddress(long near *);
+ extern int pascal StringLength(long near *);
+ 
+ void TestC (long near * Desc)
+ {
+   int  len;
+   char far *segadd;
+ 
+   len = StringLength( Desc );
+   segadd = StringAddress( Desc );
+   printf("C: %s\", segadd);
+   printf("Len: %i\", len);
+ }
+ 
+ Compile and link options, as follows:
+ 
+    BC /o TESTB;
+    CL -c -AM TESTC.C
+    LINK /noe TESTB TESTC;
+ 
+ The output should from this program should be as follows:
+ 
+    BASIC: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    Len: 27
+ 
+    C: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    Len: 27
+ 
+    Back in BASIC
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<title>StringAssign and StringRelease Routines Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> StringAssign and StringRelease Routines Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the StringAssign and StringRelease routines to get a
+' string from an assembly-language program.
+ 
+' Note: To run this program, you must compile the following code and link it
+' with the assembled MASM program (shown below in remarks) and the
+' appropriate run-time library (VBDCL10.LIB).
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DEFINT A-Z
+ 
+' Declare external MASM procedures.
+ DECLARE FUNCTION MakeString$
+ DECLARE SUB ReleaseIt
+ CLS                                 ' Clear the screen
+ 
+' Get string from MASM and print it.
+ PRINT MakeString
+ 
+' Have MASM release the variable-length string it created.
+ CALL ReleaseIt
+ 
+' ; *********************** MakeString ********************************
+'
+' ;This MASM program creates a fixed-length string and then assigns
+' ;it to a Basic variable-length string. It then releases the string
+' ;after Basic has used it.
+'
+'                 .model  medium, basic   ;Use same model as BASIC
+'
+' ;Declare routines to be used in Basic library.
+'                 extrn   StringAssign: far
+'                 extrn   StringRelease: far
+'
+'                 .data
+' ;Create MASM string and a place for Basic to create a variable-
+' ;length string descriptor.
+' String2         db      "This is a string created by MASM."
+' Descriptor      dd      0
+'
+'                 .code
+'
+' MakeString      proc                    ;Push arguments:
+'                 push        ds          ;MASM string segment.
+'                 lea     ax, String2     ;MASM string offset.
+'                 push        ax
+'                 mov     ax, 33          ;MASM string length.
+'                 push        ax
+'                 push        ds          ;Basic descriptor segment.
+'                 lea     ax, Descriptor
+'                 push        ax          ;BASIC descriptor offset
+'                 xor     ax, ax          ;variable-length indicator.
+'                 push        ax
+'                 call        StringAssign   ;Assign the string.
+'
+'                 lea     ax, descriptor  ;Return with descriptor
+'                 ret                     ;address in AX.
+' MakeString      endp
+'
+' ReleaseIt           proc                ;Routine to release
+'                 lea     ax, Descriptor  ;the string.
+'                 push        ax
+'                 call        StringRelease
+'                 ret
+' ReleaseIt           endp
+'                 end
+ 
+ 
+ 
+ 
+ 
+</pre>
+</body>
+
+</html>

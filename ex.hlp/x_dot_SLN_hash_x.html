@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>SLN# Function Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> SLN# Function Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+' This example uses the SLN# function to return the straight-line
+' depreciation of an asset for a single period of its useful life.
+ 
+' Note: To run this example, you must use the FINANCE.QLB Quick library.
+' The FINANCE.BI include file is also required.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+' $INCLUDE: 'FINANCE.BI'
+ 
+ CONST YEARMONTHS = 12
+ CONST DOLLARFORMAT$ = "$#,###,##0.00"
+ DEFDBL A-Z
+ DIM Status  AS INTEGER
+ 
+ CLS                                ' Clear the screen
+ PRINT "Assume you have a piece of expensive manufacturing equipment."
+ INPUT "Enter the original cost of the equipment"; Cost
+ PRINT
+ PRINT "Salvage value = asset value at the end of its useful life."
+ INPUT "What is the salvage value of the equipment"; SalvageVal
+ PRINT
+ INPUT "What is the useful life of the equipment in months"; Life
+ IF Life &lt; YEARMONTHS THEN
+     PRINT
+     PRINT "If the life is less than a year, it is not an asset."
+     INPUT "Reenter the useful life of the equipment in months"; Life
+ END IF
+ PRINT
+ YearsInLife = Life / YEARMONTHS
+ ' Round up to a whole year.
+ IF YearsInLife &lt;&gt; INT(Life / YEARMONTHS) THEN
+     YearsInLife = INT(YearsInLife + 1)
+ END IF
+ ' Calculate and format the results.
+ PeriodDepreciation = SLN#(Cost, SalvageVal, YearsInLife, Status)
+ ' Examine Status to determine success or failure of SLN#.
+ IF Status THEN
+     'If unsuccessful, announce a problem
+     PRINT "There was an error in calculating depreciation."
+ ELSE
+     ' If successful calculate, format, and display the results.
+     TotalDepreciation = Cost - SalvageVal
+     MonthDepreciation = PeriodDepreciation / YEARMONTHS
+     Cost$ = FORMAT$(Cost, DOLLARFORMAT$)
+     SalvageVal$ = FORMAT$(SalvageVal, DOLLARFORMAT$)
+     TotalDepreciation$ = FORMAT$(TotalDepreciation, DOLLARFORMAT$)
+     PeriodDepreciation$ = FORMAT$(PeriodDepreciation, DOLLARFORMAT$)
+     MonthDepreciation$ = FORMAT$(MonthDepreciation, DOLLARFORMAT$)
+     PRINT "If the original cost of your equipment is "; Cost$; ","
+     PRINT "and the salvage value of that equipment is "; SalvageVal$; ","
+     PRINT "the total depreciation at the end of its"; Life; "month lifetime"
+     PRINT "is "; TotalDepreciation$; ". "
+     PRINT
+     PRINT "The straight-line depreciation is "
+     PRINT PeriodDepreciation$; " per year, or "
+     PRINT MonthDepreciation$; " per month."
+ END IF
+</pre>
+</body>
+
+</html>

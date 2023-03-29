@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>CHAIN Statement Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> CHAIN Statement Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the COMMON statement to pass variables between two
+' chained programs. It uses the CHAIN statement in the first program
+' (PROG1) to load and run a second program (PROG2), which finds and prints
+' the average of the values.
+ 
+' Note: After running this example from the programming environment, you
+' will be left in PROG2.BAS.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DIM values(1 TO 50)                   ' Set up the variables that are
+ COMMON values(), NumValues%           ' passed from PROG1 to PROG2
+ 
+' The following lines of code create the second program on disk so that it
+' can load and run with the CHAIN statement. It is, in fact, a series of
+' PRINT # statements that puts the proper Basic statements in a file.
+ 
+ CLS                                   ' Clear the screen
+ OPEN "PROG2.BAS" FOR OUTPUT AS #1
+ PRINT #1, "' This is PROG2 for the CHAIN and COMMON statement examples."
+ PRINT #1, " DIM X(1 TO 50)"
+ PRINT #1, " COMMON X(), N%"
+ PRINT #1, " PRINT"
+ PRINT #1, " IF N% &gt; 0 THEN"
+ PRINT #1, "     Sum% = 0"
+ PRINT #1, "     FOR I% = 1 TO N%"
+ PRINT #1, "         Sum% = Sum% + X(I%)"
+ PRINT #1, "     NEXT I%"
+ PRINT #1, "     PRINT "; CHR$(34); "The average of the values is";
+ PRINT #1, CHR$(34); "; Sum% / N%"
+ PRINT #1, " END IF"
+ PRINT #1, " END"
+ CLOSE #1                              ' End of PROG2 creation section
+ 
+ CLS                                   ' Clear the screen
+ PRINT "Enter values one per line. Type 'END' to quit."
+ NumValues% = 0
+ DO
+     INPUT "-&gt; ", N$
+     IF I% &gt;= 50 OR UCASE$(N$) = "END" THEN EXIT DO
+     NumValues% = NumValues% + 1
+     values(NumValues%) = VAL(N$)
+ LOOP
+ PRINT "Press any key to continue... "
+ DO WHILE INKEY$ = ""
+ LOOP
+ CHAIN "PROG2.BAS"
+ END
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,64 @@
+<html>
+
+<head>
+<title>KeyDown, KeyUp Events (Shift Arguments and Bitfields) Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> KeyDown, KeyUp Events (Shift Arguments and Bitfields) Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' The example demonstrates a generic keyboard handler that responds to the F2
+' function key and to all of the associated Alt/Shift/Ctrl combinations. To
+' find the value of the key constants, look at CONSTANT.BI, or just load it
+' into your main module.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Choose New Form from the File menu to create a form with a text box
+' 3. Press Alt+F4 to return to the programming environment
+' 4. Copy the code example below to the form module
+' 5. Press F5 to run the example
+ 
+ 
+ SUB Text1_KeyDown (KeyCode AS INTEGER, Shift AS INTEGER)
+     CONST Key_F2 = &amp;H71                    ' Set constants as in CONSTANT.BI
+     CONST SHIFT_MASK = 1
+     CONST CTRL_MASK = 2
+     CONST ALT_MASK = 4
+     DIM txt AS STRING
+     ShiftDown% = (Shift AND SHIFT_MASK) &gt; 0
+     AltDown% = (Shift AND ALT_MASK) &gt; 0
+     CtrlDown% = (Shift AND CTRL_MASK) &gt; 0
+     IF KeyCode = Key_F2 THEN               ' Display key combinations
+          IF ShiftDown% AND CtrlDown% AND AltDown% THEN
+               txt$ = "Shift + Ctrl + Alt F2."
+          ELSEIF ShiftDown% AND AltDown% THEN
+               txt$ = "Shift + Alt F2."
+          ELSEIF ShiftDown% AND CtrlDown% THEN
+               txt$ = "Shift + Ctrl + F2."
+          ELSEIF CtlDown% AND AltDown% THEN
+               txt$ = "Ctl + Alt + F2."
+          ELSEIF ShiftDown% THEN
+               txt$ = "Shift F2."
+          ELSEIF CtrlDown% THEN
+               txt$ = "Ctrl F2."
+          ELSEIF AltDown% THEN
+               txt$ = "Alt F2."
+          ELSEIF Shift = 0 THEN
+               txt$ = "F2."
+          END IF
+               Text1.Text = "You pressed " + txt$
+     END IF
+ END SUB
+</pre>
+</body>
+
+</html>

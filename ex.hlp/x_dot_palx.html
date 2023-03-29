@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>PALETTE and PALETTE USING Statements Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> PALETTE and PALETTE USING Statements Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example illustrates the use of the PALETTE and PALETTE USING
+' statements. Note: This example requires a color graphics adapter.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ ' Using circles.
+ DEFINT A-Z
+ DIM SHARED PaletteArray(15)
+ CONST ASPECT = 1 / 3
+ SCREEN 8                         ' 640 x 200, 16 color resolution
+ FOR i = 0 TO 15                  ' Initialize PaletteArray
+     PaletteArray(i) = i
+ NEXT i
+ FOR ColorVal = 15 TO 1 STEP -1   ' Draw and paint concentric ellipses.
+     Radius = 20 * ColorVal
+     CIRCLE (320, 100), Radius, ColorVal, , , ASPECT
+     PAINT (320, 100), ColorVal
+ NEXT
+ DO                               ' Shift the palette until a key is pressed
+     FOR i = 1 TO 15
+          PaletteArray(i) = (PaletteArray(i) MOD 15) + 1
+     NEXT i
+     PALETTE USING PaletteArray(0)
+ 
+' Map the black background to some random color.
+     PALETTE 0, PaletteArray(INT(RND * 15))
+ LOOP WHILE INKEY$ = ""
+ WIDTH 80
+ SCREEN 0
+ 
+ ' Using squares.
+ PALETTE 0, 1
+ SCREEN 1
+ FOR i% = 0 TO 3: a%(i%) = i%: NEXT i%
+ LINE (138, 35)-(288, 165), 3, BF
+ LINE (20, 10)-(160, 100), 2, BF
+ DO
+     FOR i% = 0 TO 3
+          a%(i%) = (a%(i%) + 1) MOD 16
+     NEXT i%
+     PALETTE USING a%(0)
+     SLEEP 1
+ LOOP WHILE INKEY$ = ""
+ WIDTH 80
+ SCREEN 0
+ 
+ 
+</pre>
+</body>
+
+</html>

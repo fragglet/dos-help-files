@@ -1,0 +1,131 @@
+<html>
+
+<head>
+<title>DRAW Statement (Macro Language) Details - advr.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+advr.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DRAW Statement (Macro Language) Details</div>
+<pre>  <span class='grhilite'>◄</span><a href='unknown#DRAW'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#.drawx'>Example</a><span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ DRAW stringexpression$
+ 
+ Usage Notes
+   ■ You must be in a graphics screen mode (for example, screen mode 1) to
+     use the DRAW statement; otherwise, Visual Basic may generate the error
+     message, "Illegal function call." See: <span class='grhilite'>◄</span><a href='unknown#.SCREENS'>SCREEN Statement</a><span class='grhilite'>►</span>
+ 
+   ■ The current position defaults to the center of the screen when a program
+     begins execution.
+ 
+   ■ The argument stringexpression$ contains one or more drawing commands
+     which, when combined with other graphics statements (such as LINE and
+     COLOR), make up a graphics macro language. There are three types of
+     drawing commands:
+     • Line-drawing and cursor-movement
+     • Rotation, color, and scale-factor
+     • The "X" substring
+ 
+   ■ Cursor-movement commands initiate movement from the current graphics
+     position, which usually is the coordinates of the last point plotted
+     with a DRAW macro-language command or other graphics command.
+     See: <span class='grhilite'>◄</span><a href='unknown#line'>LINE Statement</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#pset'>PSET Statement</a><span class='grhilite'>►</span>
+ 
+   ■ The following prefix commands can precede any other movement commands
+     in stringexpression$:
+ 
+     Prefix     Action
+     ══════     ════════════════════════════════════════════════════════════
+     B          Move, but do not plot any points
+     N          Plot, but return to original position when done
+ 
+   ■ The following is a list of available line-drawing and cursor-movement
+     commands:
+ 
+     Command           Action
+     ═════════════     ═════════════════════════════════════════════════════
+     D[n%]             Moves cursor down n% units
+     E[n%]             Moves cursor up and right n% units
+     F[n%]             Moves cursor down and right n% units
+     G[n%]             Moves cursor down and left n% units
+     H[n%]             Moves cursor up and left n% units
+     L[n%]             Moves cursor left n% units
+     M[{+|-}]x%,y%     Moves cursor to point x%,y%; if x% is preceded by
+                       + or -, moves relative to the current point
+     R[n%]             Moves cursor right n% units
+     U[n%]             Moves cursor up n% units
+     [B]               (Optional) moves cursor without drawing
+     [N]               (Optional) draws and returns cursor to its original
+                       position
+ 
+   ■ If n% is omitted from line-drawing and cursor-movement commands, the
+     cursor moves 1 unit.
+ 
+   ■ The following rotation, color, and scale-factor commands allow you to
+     change the appearance of a drawing by rotating it, changing colors, or
+     scaling it:
+ 
+     Command   Description   Range of Values      Comments
+     ═══════   ═══════════   ══════════════════   ══════════════════════════
+     A n(1)    Set angle     n = 0 to 3, where:   Figures rotated 90° or
+               rotation          0 is 0°          270° are scaled so they
+                                 1 is 90°         appear the same size on a
+                                 2 is 180°        monitor screen with a 4:3
+                                 3 is 270°        aspect ratio.
+ 
+     TA n(1)   Turn an       -360 &lt;= n &lt;= 360     If n is positive, counter-
+               angle                              clockwise rotation.
+ 
+     S n(1)    Set scale     1 &lt;= n &lt;= 255        Set scale factor n, which
+                                                  can range from 0 to 255,
+                                                  inclusive. Increase or
+                                                  decrease length of moves.
+                                                  The default for n is 4,
+                                                  which causes no scaling.
+                                                  The scale factor multiplied
+                                                  by movement-command
+                                                  arguments (divided by 4)
+                                                  gives the actual distance
+                                                  moved.
+ 
+     C n(1)    Set color                          See: <span class='grhilite'>◄</span><a href='unknown#color.table'>Color Attributes</a><span class='grhilite'>►</span>
+                                                       <span class='grhilite'>◄</span><a href='unknown#color'>COLOR Statement</a><span class='grhilite'>►</span>
+                                                       <span class='grhilite'>◄</span><a href='unknown#palette'>PALETTE Statement</a><span class='grhilite'>►</span>
+                                                       <span class='grhilite'>◄</span><a href='unknown#.SCREENS'>SCREEN Statement</a><span class='grhilite'>►</span>
+ 
+     P p,b                                        Option p is the paint color
+                                                  for a figure's interior; b
+                                                  is the paint color for the
+                                                  figure's border.
+     ───────────────────────────────────────────────────────────────────────
+     (1) The commands above specify movement in terms of n units:
+         • The default unit size is one pixel
+         • Unit size can be modified by the S command (set scale factor)
+         • If no unit argument is supplied, the graphics cursor is moved one
+           unit
+ 
+   ■ The following example uses TA to draw spokes:
+ 
+         SCREEN 1
+         FOR D = 0 TO 360 STEP 10
+            DRAW "TA=" + VARPTR$(D) + "NU50"
+         NEXT D
+ 
+   ■ To execute a DRAW command substring from a DRAW command string, use
+     the "X" substring command. For example:
+ 
+         DRAW "X"+ VARPTR$(commandstring$)
+ 
+     See: <span class='grhilite'>◄</span><a href='unknown#.xsc'>"X", Substring Command</a><span class='grhilite'>►</span>
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+<html>
+
+<head>
+<title>CLOSE, OPEN Statements and FREEFILE Function Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> CLOSE, OPEN Statements and FREEFILE Function Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses FREEFILE to obtain the next available file number. It
+' uses the OPEN statement to open a sequential file, the CLOSE statement
+' to close the file, and the KILL statement to delete the file from the
+' disk.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DIM Filenum AS INTEGER
+ 
+ CLS                               ' Clear the screen
+ INPUT "Enter file name: ", filename$
+ Filenum% = FREEFILE
+ OPEN filename$ FOR OUTPUT AS Filenum%
+ PRINT : PRINT UCASE$(filename$); " opened for output as File #"; Filenum%
+ 
+' Put something in the file.
+ PRINT #Filenum%, "The quick brown fox jumped over the lazy yellow dog."
+ CLOSE Filenum%                   ' Close the file
+ Filenum% = FREEFILE
+ OPEN filename$ FOR INPUT AS Filenum%
+ PRINT : PRINT UCASE$(filename$); " has been reopened for input."
+ LINE INPUT #Filenum%, L$
+ PRINT : PRINT "The contents of the file are:"; L$
+ CLOSE Filenum%
+ KILL filename$                   ' Remove the file from disk
+</pre>
+</body>
+
+</html>

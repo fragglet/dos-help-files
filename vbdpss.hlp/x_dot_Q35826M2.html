@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<title>Article Q35826, Method 2 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q35826, Method 2</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> IEEE vs. Microsoft Binary Format; Rounding Issues (Complete)</b> - Q35826
+ 
+    Method 2
+    --------
+ 
+    This routine is much more complicated than the first method, though
+    it handles a much larger range of values. The value being rounded
+    is multiplied by 100# and this result must fit within the range of
+    valid double precision numbers.
+ 
+    ' To try this example in VBDOS.EXE:
+    ' 1. From the File menu, choose New Project.
+    ' 2. Copy the code example to the Code window.
+    ' 3. Press F5 to run the program.
+ 
+    FUNCTION round$ (number#) STATIC
+    number# = INT((number# + .005) * 100#) / 100#
+    hold$ = STR$(number#)
+    hold$ = RTRIM$(LTRIM$(hold$))
+ 
+    IF (MID$(hold$, 1, 1) = "-") THEN
+      new$ = "-"
+      hold$ = MID$(hold$, 2)
+    ELSE
+      new$ = ""
+    END IF
+ 
+    x = INSTR(hold$, "D")
+    DecimalLocation = INSTR(hold$, ".")
+ 
+    IF (x) THEN  ' Scientific notation.
+      exponent = VAL(MID$(hold$, x + 1, LEN(hold$)))
+      IF (exponent &lt; 0) THEN
+        new$ = new$ + "."
+        new$ = new$ + STRING$(ABS(exponent) - 1, ASC("0"))
+        round$ = new$ + MID$(hold$, 1, 1)
+      ELSE
+        new$ = new$ + MID$(hold$, 1, DecimalLocation - 1)
+        num = LEN(hold$) - 6
+        IF num &lt; 0 THEN
+          num = exponent
+        ELSE
+          num = exponent - num
+       new$ = new$+MID$(hold$, DecimalLocation+1, x-DecimalLocation-1)
+        END IF
+        new$ = new$ + STRING$(num, ASC("0")) + ".00"
+        round$ = new$
+      END IF
+ 
+    ELSE  ' Not scientific notation.
+      x = INSTR(hold$, ".") 'find decimal point
+      IF (x) THEN
+        IF MID$(hold$, x + 3, 1) = "9" THEN
+          xx = VAL(MID$(hold$, x + 2, 1)) + 1
+          hold1$ = LEFT$(hold$, x)
+          IF xx = 10 THEN
+      hold1$ = hold1$+LTRIM$(STR$(VAL(MID$(hold$, x + 1, 1)) + 1))+"0"
+            round$ = new$ + hold1$
+          ELSE
+            hold1$ = hold1$ + MID$(hold$, x + 1, 1) + LTRIM$(STR$(xx))
+            round$ = new$ + hold1$
+          END IF
+        ELSE
+          round$ = new$ + LEFT$(hold$, x + 2)
+        END IF
+      ELSE
+        round$ = new$ + hold$
+      END IF
+    END IF
+    END FUNCTION
+</pre>
+</body>
+
+</html>

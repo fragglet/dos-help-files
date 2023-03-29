@@ -1,0 +1,118 @@
+<html>
+
+<head>
+<title>Article Q43534, Example - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q43534, Example</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How to Use CALL INTERRUPT with Visual Basic for MS-DOS</b>
+ 
+ The following program gives an example of the CALL INTERRUPT statement
+ and provides two utility SUB programs for processing output:
+ 
+ To try this example in VBDOS.EXE:
+ 
+   1. From the File menu, choose New Project.
+   2. Copy the code example to the Code window.
+   3. Press F5 to run the program.
+ 
+ '__________________________ INTSKEL.BAS _________________________
+ '
+ '     Skeleton program for calling MS-DOS or ROM BIOS interrupts
+ '     from Visual Basic for MS-DOS.
+ '
+ '     NOTE: The VBDOS environment must be started with the
+ '           /L option to load the default QB.QLB Quick library.
+ '           The VBDOS.QLB Quick library provides support for
+ '           the CALL INTERRUPT and CALL INTERRUPTX statements.
+ '
+ '     There are also two SUBPROGRAMS, BreakWord() and IntToBin(), that
+ '     you may find useful when CALLing INTERRUPTs.
+ '_________________________________________________________________
+ 
+ DEFINT A-Z
+ CONST TRUE = -1
+ CONST FALSE = NOT TRUE      ' FALSE is assigned to 0 here.
+ 
+ '$INCLUDE: 'VBDOS.BI'       ' Take a look at what is in this file.
+ 
+ DIM inregs AS RegType, outregs AS RegType
+ 
+ '---------------------------------------------------------------------
+ ' Load Registers with the required input parameters for the call that
+ ' you want to make. (See any reference for MS-DOS and/or ROM BIOS
+ ' calls.)
+ '
+ ' Example: for Interrupt 10h, with function 0Ah (ROM BIOS Write
+ '          Char)
+ '          AH = 0Ah. Note: The function number usually goes in AH.
+ '          AL = Character Code (ASCII).
+ '          BH = Video Page Number = 0 normally.
+ '          BL = Color in graphics mode.
+ '          CX = Number of these characters to write to screen.
+ '--------------------------------------------------------------------
+ CLS
+ character% = &amp;HFB    ' ASCII character 251 decimal, square root symbol.
+ functnum%  = &amp;HA00   ' Remember you want function in the HIGH Byte of
+                      ' AX.
+ 
+   ' VERY IMPORTANT! Don't put the function number into the wrong byte
+   ' of AX, or the program may hang or give unpredictable results!
+ 
+ inregs.ax = character% OR &amp;HA00
+ inregs.cx = 2000      ' Fill the screen.
+ CALL interrupt(&amp;H10, inregs, outregs)
+ 
+ DEFINT A-Z
+ '_____________________________________________________________________
+ '
+ '     BreakWord() takes an integer argument and returns two integers
+ '     representing the high and low bytes of the original.
+ '_____________________________________________________________________
+ '
+ SUB BreakWord (dataword, highbyte, lowbyte)
+    IF dataword &lt; 0 THEN
+      highbyte = (dataword + 2 ^ 16) \256   ' Check for high BIT set.
+    ELSE
+      highbyte = dataword \256   ' Integer division to remove low byte.
+    END IF
+    lowbyte = dataword AND 255    ' AND operator to remove the top byte.
+ END SUB
+ 
+ DEFINT A-Z
+ '_____________________________________________________________________
+ '
+ '    The IntToBin() SUBprogram below takes an INTEGER argument
+ '    and produces a binary string representation of the INTEGER.
+ '_____________________________________________________________________
+ '
+ SUB IntToBin (byte%, bin$)
+ bin$ = ""
+ temp% = byte%
+ FOR i = 0 TO 7     ' Loop through bits 0 through 7 (8 total).
+    IF temp% AND 1 THEN
+       bin$ = "1" + bin$
+    ELSE
+       bin$ = "0" + bin$
+    END IF
+    temp% = temp% \2  ' Division by 2 shifts right 1 binary digit.
+ (bit)
+ NEXT
+ END SUB
+ 
+</pre>
+</body>
+
+</html>

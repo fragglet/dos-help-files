@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<title>SUB Statement Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> SUB Statement Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example demonstrates buffered input. User input is allowed to the
+' screen, but the total number of typed or input characters is limited.
+' The computer beeps if you exceed the limit.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DECLARE SUB BufInput (StringVar$, Limit%)
+ 
+ CLS                                   ' Clear the screen
+ Limit% = 10 'Number of characters to input
+ 
+ LOCATE 10, 5                          ' Prompt for the input string
+ PRINT "PLEASE INPUT A STRING OF TEN CHARACTERS: ";
+ COLOR 0, 7: PRINT SPACE$(Limit%)
+ LOCATE 10, 46
+ 
+ CALL BufInput(a$, Limit%)             ' Input a buffered string
+ 
+ COLOR 7, 0
+ CLS
+ 
+ LOCATE 10, 10                         ' Print the result
+ PRINT "THE STRING YOU INPUT WAS: ";
+ COLOR 0, 7
+ PRINT a$
+ COLOR 7, 0
+ END
+ 
+ SUB BufInput (StringVar$, Limit%)
+ BackSp$ = CHR$(8)
+ Enter$ = CHR$(13)
+ Length% = 0
+ 
+ 'Loop waiting for input. ENTER terminates the routine.
+ WHILE char$ &lt;&gt; Enter$
+ char$ = INKEY$
+    IF char$ &lt;&gt; "" THEN
+      IF (Length% &lt; Limit%) OR (char$ = BackSp$) THEN
+         SELECT CASE char$
+         CASE " " TO "~"  ' Input printable characters only
+            StringVar$ = StringVar$ + char$
+            PRINT char$;
+            Length% = Length% + 1
+         CASE BackSp$  'If BackSpace is pressed, erase.
+           IF Length% &lt;&gt; 0 THEN
+              Length% = Length% - 1
+              StringVar$ = LEFT$(StringVar$, Length%)
+              CurrX% = CSRLIN
+              CurrY% = POS(0) - 1
+              LOCATE CurrX%, CurrY%
+              PRINT " "
+              LOCATE CurrX%, CurrY%
+           END IF
+         END SELECT
+      ELSE
+         PLAY "o1AL32"
+      END IF
+    END IF
+ WEND
+ 
+ END SUB
+ 
+</pre>
+</body>
+
+</html>

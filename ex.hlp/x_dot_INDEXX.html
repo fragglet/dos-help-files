@@ -1,0 +1,67 @@
+<html>
+
+<head>
+<title>Index Property Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Index Property Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example illustrates use of the Index property and how controls can be
+' added or deleted at run time. This example starts with two option buttons
+' and adds new option buttons to the form each time the "Add" command button
+' is clicked. Clicking the "Delete" command button deletes  the last added
+' control from the array. You can also click an option button to display the
+' index value of the selected option button and change the background color
+' in the picture box.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Choose New Form from the File menu to create a form with:
+'   • Two option buttons
+'   • Two command button
+'   • Large picture box
+' 3. Set object properties:
+'    • For Command1, Caption = "Add"
+'    • For Command2, Caption = "Delete"
+'    • For Option1, CtlName = "OptGroup"
+'    • For Option2, CtlName = "OptGroup" (this will create a control array)
+' 4. Press Alt+F4 to return to the programming environment
+' 5. Copy the code example below to the form module
+' 6. Press F5 to run the example
+ 
+ DIM Shared MaxIdx%
+ 
+ SUB Command1_Click ()
+  IF MaxIdx% &gt; 4 THEN EXIT SUB             ' Put only 5 buttons on form
+  IF MaxIdx% = 0 THEN MaxIdx% = 1          ' Preset MaxIdx%
+     MaxIdx% = MaxIdx% + 1                 ' Increment index
+     LOAD OptGroup(MaxIdx%)                ' Create new item in array
+     ' Set location of new option button under previous button.
+     OptGroup(MaxIdx%).Top = OptGroup(MaxIdx% - 1).Top + 1
+     OptGroup(MaxIdx%).Visible = -1        ' Make new button visible
+ END SUB
+ 
+ SUB Command2_Click ()
+     IF MaxIdx% = 1 THEN EXIT SUB
+     UNLOAD OptGroup(MaxIdx%)
+     MaxIdx% = (MaxIdx% - 1)
+ END SUB
+ 
+ SUB OptGroup_Click (Index AS INTEGER)
+    Picture1.CLS                           ' Clear picture
+    Picture1.BackColor = OptGroup(Index).Index + 1
+    Picture1.PRINT ("Button Index is #:" + STR$(OptGroup(Index).Index))
+ END SUB
+</pre>
+</body>
+
+</html>

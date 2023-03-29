@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>ON PEN and PEN Statements Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ON PEN and PEN Statements Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the PEN statement to enable event trapping and the PEN
+' function to display current light pen status and position. ON PEN GOSUB
+' passes control to the PenReport subroutine when a pen event occurs.
+ 
+' Note: Do not run this example if your mouse driver is enabled.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ CLS                         ' Clear the screen
+ COLOR 0, 7                  ' Set black on white
+ CLS                         ' Clear the screen
+ PEN ON                      ' Enable light pen
+ ON PEN GOSUB PenReport
+ DO
+     LOCATE 23, 12
+     PRINT "Press the light pen against the screen to see a report."
+     LOCATE 24, 17
+     PRINT "  Press the Spacebar to exit the program.     ";
+ LOOP UNTIL INKEY$ = " "
+ PEN OFF                     ' Disable light pen
+ COLOR 7, 0                  ' Set back to black on white
+ CLS                         ' Clear the screen
+ END
+ 
+PenReport:
+     DO
+          P = PEN(3)
+          LOCATE 10, 27  ' Report light pen status and get X and Y position
+          PRINT "A Pen event has occurred."
+          LOCATE 24, 17
+          PRINT "Press ANY key to exit the Light Pen report.";
+          LOCATE 12, 30
+          PRINT "Light Pen is ";
+          IF P THEN
+               PRINT "Down"
+               X = PEN(4): Y = PEN(5)
+          ELSE
+               PRINT "Up  "
+               X = 0: Y = 0
+          END IF
+          LOCATE 14, 22  ' Report the X and Y position
+          PRINT "X Position ="; X; "   "
+         LOCATE 14, 40
+         PRINT "Y Position ="; Y; "   "
+     LOOP WHILE INKEY$ = ""
+     RETURN
+ 
+</pre>
+</body>
+
+</html>

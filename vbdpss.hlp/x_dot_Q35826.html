@@ -1,0 +1,143 @@
+<html>
+
+<head>
+<title>Article Q35826 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q35826</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> IEEE vs. Microsoft Binary Format; Rounding Issues (Complete)</b> - Q35826
+ 
+ This application note discusses the following:
+ 
+  - Why Microsoft uses the IEEE (Institute of Electrical and
+    Electronics Engineers) Floating Point format instead of the
+    Microsoft Binary Format (MBF) in Microsoft Visual Basic version 1.0
+    for MS-DOS
+ 
+  - Differences between IEEE Floating Point format and the Microsoft
+    Binary Format (MBF), and numeric rounding issues in IEEE
+ 
+  - Microsoft's plan to use IEEE instead of Microsoft Binary Format
+    (MBF) in the future
+ 
+ This information applies to:
+ 
+  - The Standard and Professional Editions of Microsoft Visual Basic
+    version 1.0 for MS-DOS
+  - Microsoft QuickBasic versions 3.0, 4.0, 4.0b, and 4.5 for MS-DOS
+  - Microsoft Basic Compiler versions 6.0 and 6.0b for MS-DOS
+  - Microsoft Basic Professional Development System (PDS) versions 7.0
+    and 7.1 for MS-DOS
+ 
+ More Information:
+ 
+                         IEEE and Rounding
+                         =================
+ 
+ 1. Why use IEEE instead of MBF?
+ 
+    Microsoft Visual Basic version 1.0 for MS-DOS uses the IEEE format,
+    which has been the math package format of choice for Microsoft
+    Basic products since QuickBasic version 4.0 and Microsoft Basic
+    Compiler 6.0. The IEEE format allows for mixed-language calling
+    and is more accurate than Microsoft Binary Format (MBF).
+    Calculations are performed in an 80-bit temporary area rather than
+    a 64-bit area. (Note, the Alternate-Math Libraries use a 64-bit
+    temporary area.) The additional bits provide for more accurate
+    calculations and decrease the possibility that the final result has
+    been degraded by excessive roundoff errors. Keep in mind that
+    precision errors are inherent in any binary floating-point math.
+    Not all numbers can be accurately represented in a binary
+    floating-point notation.
+ 
+    IEEE also can take advantage of a math coprocessor chip (such as
+    the 8087, 80287, and 80387) for greater speed. MBF cannot take
+    advantage of a coprocessor.
+ 
+ 2. If the calculations are more accurate, why are numbers such as
+    .07#, 8.05#, and 9.96# displayed with a 1 in the 16th digit?
+    Microsoft Binary Format (MBF) does not do this.
+ 
+    MBF is accurate to 15 digits, while IEEE is accurate to 15 or 16
+    digits. Since the numbers are stored in different formats, the
+    last digit may vary. MBF double-precision values are stored in
+    the following format:
+ 
+       -------------------------------------------------
+      |              |    |                             |
+      |8 Bit Exponent|Sign|   55 Bit Mantissa           |
+      |              | Bit|                             |
+       -------------------------------------------------
+ 
+    IEEE double precision values are stored in the following format:
+ 
+       -------------------------------------------------
+      |    |                | |                         |
+      |Sign| 11 Bit Exponent|1|  52 Bit Mantissa        |
+      | Bit|                | |                         |
+       -------------------------------------------------
+                             ^
+                             Implied Bit (always 1)
+ 
+    You will notice that Microsoft Binary Format (MBF) has 4 more bits
+    of precision in the mantissa. However, this does not mean that the
+    value is any more accurate. Precision is the number of bits you are
+    working with, while accuracy is how close you are to the real
+    number. In most cases, the IEEE value will be more accurate because
+    it was calculated in an 80-bit temporary. (When the IEEE standard
+    was proposed, the main consideration for double precision values
+    was range. As a minimum, the desire was that the product of any two
+    32-bit numbers should not overflow the 64-bit format.)
+ 
+ 3. Why doesn't my rounding algorithm eliminate the 1's in the 16th
+    place?
+ 
+    Your rounding algorithm is correctly rounding the numbers, but the
+    extra digit is occurring because of the inherent rounding errors
+    and format differences. For example, 6.99999999999999D-2 is rounded
+    to .07 but the internal IEEE representation of the value is
+    7.000000000000001D-2. (It is true that MBF displays the value as
+    .07, but the difference in values is not considered as a problem.
+    It is a difference between math packages.)
+ 
+ 4. Why doesn't the STR$ function get the proper strings from either
+    single or double-precision numbers?
+ 
+    The STR$ function works correctly. The value placed in the string
+    is the same as the value displayed on the screen with an
+    unformatted PRINT. If the IEEE representation of .07 is
+    7.000000000000001D-2, then the STR$ will return
+    7.000000000000001D-2.
+ 
+    There are a few ways to generate the desired string. The method
+    used depends on the range of numbers, other resources available,
+    and programmer's preference. Listed below are three possible
+    routines that can be used. Keep in mind that as soon as the string
+    is converted back to a number, it will no longer be truncated.
+        <span class='grhilite'>◄</span><a href='x_dot_Q35826M1.html'>See Method 1</a><span class='grhilite'>►</span>
+        <span class='grhilite'>◄</span><a href='x_dot_Q35826M2.html'>See Method 2</a><span class='grhilite'>►</span>
+        <span class='grhilite'>◄</span><a href='x_dot_Q35826M3.html'>See Method 3</a><span class='grhilite'>►</span>
+ 
+ 5. Does Microsoft plan to use Microsoft Binary Format (MBF) in future
+    versions of Basic?
+ 
+    At this time, there are no plans to return to MBF. The benefits of
+    IEEE (interlanguage calling and coprocessor support) are far
+    greater than those of MBF.
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<title>DEF SEG Statement, POKE Statement and PEEK Function Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DEF SEG Statement, POKE Statement and PEEK Function Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the DEF SEG statement, the PEEK function, and POKE
+' statement to turn the Caps Lock key on and off. The program uses the
+' LINE INPUT statement to prompt the user to enter a string, demonstrating
+' that the Caps Lock key is on.
+ 
+' Note: This program contains hardware-specific instructions. It works
+' correctly on IBM PC, XT, and AT computers.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DECLARE SUB CapsOn ()
+ DECLARE SUB CapsOff ()
+ DECLARE SUB PrntMsg (R%, C%, M$)
+ 
+ CLS                              ' Clear the screen
+ CapsOn
+ PrntMsg 24, 1, "&lt;Caps Lock On&gt;"
+ LOCATE 12, 10
+ LINE INPUT "Enter a string (all characters are caps): ", S$
+ CapsOff
+ PrntMsg 24, 1, "              "
+ PrntMsg 25, 1, "Press any key to continue..."
+ DO WHILE INKEY$ = "": LOOP
+ CLS                              ' Clear the screen
+ END
+ 
+ STATIC SUB CapsOff ()            ' Turn Caps Lock off
+   DEF SEG = 0
+   ' Set Caps Lock off (turn off bit 6 of &amp;H0417).
+   POKE &amp;H417, PEEK(&amp;H417) AND &amp;HBF
+   DEF SEG
+ END SUB
+ 
+ STATIC SUB CapsOn ()             ' Turn Caps Lock on
+   ' Set segment to low memory.
+   DEF SEG = 0
+   ' Set Caps Lock on (turn on bit 6 of &amp;H0417).
+   POKE &amp;H417, PEEK(&amp;H417) OR &amp;H40
+   ' Restore segment.
+   DEF SEG
+ END SUB
+ 
+ STATIC SUB PrntMsg (Row%, Col%, Message$)
+    ' Print message at Row%, Col% without changing cursor.
+    ' Save cursor position.
+    CurRow% = CSRLIN: CurCol% = POS(0)
+    LOCATE Row%, Col%: PRINT Message$;
+    ' Restore cursor.
+    LOCATE CurRow%, CurCol%
+ END SUB
+</pre>
+</body>
+
+</html>

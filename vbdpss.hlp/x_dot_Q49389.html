@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>Article Q49389 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q49389</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Example Passing Fixed-Length String from Basic to MASM (Far)</b> - Q49389
+ 
+ The two programs shown below demonstrate how Microsoft Basic passes a
+ fixed-length string to assembly language by far reference.
+ 
+ More Information:
+ 
+ The following Basic program is BFSTRF.BAS, which creates a
+<b> fixed-length string and passes it to assembly language to be printed.</b>
+ 
+ Code Example
+ ------------
+ 
+ DECLARE SUB RString(BYVAL ssg AS INTEGER, BYVAL soff AS INTEGER)
+ 
+ DIM a AS STRING * 20
+ 
+ CLS
+ a = "BASIC String$" ' "$" terminates string for assembly
+ 
+ CALL RString(VARSEG(a), VARPTR(a))
+ 
+ END
+ 
+ The following program is AFSTRF.ASM, which gets a fixed-length string
+<b> from Basic and prints it:</b>
+ 
+ .MODEL MEDIUM, BASIC
+ .CODE
+         PUBLIC RString
+ RString PROC
+         push bp
+         mov bp, sp      ; set stack frame
+         push ds
+         mov ds, [bp+8]  ; segment of string
+         mov dx, [bp+6]  ; offset of string
+         mov ah, 9       ; MS-DOS interrupt to print string
+         int 21h
+         pop ds
+         pop bp
+         ret 4
+ RString ENDP
+         END
+ 
+ To demonstrate these programs from an .EXE program, compile and link
+<b> as follows:</b>
+ 
+    BC BFSTRF.BAS;
+    MASM AFSTRF.ASM;
+    LINK BFSTRF AFSTRF;
+ 
+ BFSTRF.EXE produces the following output:
+ 
+ BASIC String
+</pre>
+</body>
+
+</html>

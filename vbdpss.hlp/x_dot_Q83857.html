@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<title>Article Q83857 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q83857</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How an ISAM SEEK Works with Multiple Indexes</b> - Q83857
+ 
+ When seeking on multiple index values, the ISAM SEEK statement
+ combines the binary images of all indexed columns to generate a key to
+ SEEK upon; the ISAM engine does not SEEK on each index value
+ individually or consecutively. If you expect the ISAM engine to SEEK
+ on multiple index values by SEEKing on the first value, then SEEKing
+ on the subset of the records in the table that match this SEEK using
+ the next index value, the SEEK routine may appear to work
+ inconsistently.
+ 
+ This behavior is by design and is only evident when using the SEEKGT
+ or SEEKGE statement, but not SEEKEQ. To find a specific record among
+ the subset of records matching a SEEK, you can SEEK on a single
+ indexed column and then use the MOVENEXT statement to move to the
+ desired record.
+ 
+ More Information:
+ 
+ When seeking on multiple indexes, ISAM concatenates the binary
+ representations of the indexes together to make one value, and then
+ does a bit-by-bit comparison to satisfy the SEEK statement. Therefore,
+ if you are doing a SEEKGT or a SEEKGE, the end result may be a record
+ that satisfies the first index, but not the second one.
+ 
+ The following is a simplified example that uses the binary
+ representations of three records in an ISAM database file:
+ 
+             Field1     Field2
+             ------     ------
+ 
+ Decimal       1          1
+            --------   --------
+ Binary    |00000001| |00000001|
+            --------   --------
+ 
+ Decimal       1          2
+            --------   --------
+ Binary    |00000001| |00000010|
+            --------   --------
+ 
+ Decimal       1          3
+            --------   --------
+ Binary    |00000001| |00000011|
+            --------   --------
+ 
+ In this example database file, when performing a SEEKGT with the value
+ 1 for both the first and second key values, you may expect to SEEK to
+ a record with a number greater than 1 in both the first and second
+ indexed columns. The actual current record after such a SEEK is the
+ second record in this list. The following is also a simplified example
+ of the way the ISAM database would see these concatenated records:
+ 
+            Field1 and Field2
+            -----------------
+ 
+ Decimal          257
+            ----------------
+ Binary    |0000000100000001|
+            ----------------
+ 
+ Decimal          258
+            ----------------
+ Binary    |0000000100000010|
+            ----------------
+ 
+ Decimal          259
+            ----------------
+ Binary    |0000000100000011|
+            ----------------
+ 
+ As you can see, 258 is greater than 257; therefore, the record that
+ ISAM would select for a statement such as
+ 
+    SEEKGT &lt;filenumber&gt;, 1, 1
+ 
+ is the second record in the sample database.
+ 
+ The following example program demonstrates this functionality.
+ 
+    <span class='grhilite'>◄</span><a href='x_dot_Q83857EX.html'>See Example</a><span class='grhilite'>►</span>
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,68 @@
+<html>
+
+<head>
+<title>Article Q62213 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q62213</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Visual Basic for MS-DOS: Obtaining Current Drive Information</b> - Q62213
+ 
+ Microsoft Visual Basic version 1.0 for MS-DOS programs can call MS-DOS
+ Interrupt 21h, function 19h to get the currently selected drive.
+ Before calling this interrupt, AH (the upper byte of the AX register)
+ must be set to 19h. The interrupt returns the number of the current
+ drive in AL (the lower byte of the AX register). The drive numbers
+ correspond to the letters of the alphabet (for example, 0 = A, 1 = B,
+ etc.).
+ 
+ More Information:
+ 
+ For more information on Interrupt 21h, function 19h, see Page 367 of
+ "Advanced MS-DOS Programming, Second Edition," by Ray Duncan
+ (Microsoft Press, 1988).
+ 
+ Note that the function "CURDIR$" can also be used to get the currently
+ selected drive. However, using this method requires some string
+ parsing. Although the code is smaller, it may be slower.
+ 
+ Code Example
+ ------------
+ 
+ The following example program reports the current drive.
+ 
+    ' To try this example in VBDOS.EXE:
+    ' 1. From the File menu, choose New Project.
+    ' 2. Copy the code example to the Code window.
+    ' 3. Press F5 to run the program.
+ 
+    ' Use the following include file for Visual Basic 1.0 for MS-DOS:
+    REM $INCLUDE: 'VBDOS.BI'
+    DIM Regs AS RegType
+ 
+    ' Set AH to 19h.
+    Regs.ax = &amp;H1900
+    ' Call the Interrupt,
+    CALL interrupt(&amp;H21, Regs, Regs)
+ 
+    ' Regs.ax must be ANDed with &amp;HFF so that AH will be cleared.
+    ' It must be cleared so the CHR$ function will be passed an
+    ' ASCII code in the range of the letters A-Z (65-90).
+    PRINT "The current drive is "; CHR$((Regs.ax AND &amp;HFF) + 65)
+ 
+    END
+</pre>
+</body>
+
+</html>

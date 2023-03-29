@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>Article Q26494 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q26494</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> "Subscript Out of Range" for Array &gt; 128K; Gaps in Far Heap</b> - Q26494
+ 
+ The program listed below when compiled with the /ah option (in
+ VBDOS.EXE or BC.EXE) to support a huge (larger than 64K) array,
+ produces a "Subscript out of range" error message for an array larger
+ than 128K, even though the FRE(-1) function indicates that there
+ should be enough available memory.
+ 
+ To make an array larger than 128K and avoid the "Subscript out of
+ range" error message, the number of bytes in each element of the huge
+ array must be a power of 2 (that is, evenly divisible into 64K), as
+ explained below.
+ 
+ More Information:
+ 
+ Space is allocated for a huge array contiguously in far heap, with the
+ restriction that no single array element (or record) is allowed to be
+ split across a 64K boundary. If a record size is not a power of 2,
+ then BASIC allocates the first array element at an offset high enough,
+ relative to the array's base segment address (returned by the VARSEG
+ function), such that no array element is split across the boundary at
+ exactly 64K above the base segment. (This creates a gap in the far
+ heap.) The value returned by the VARPTR function for the first element
+ of the array then indicates both the offset of the array, and also
+ the size of a gap created in the far heap. The size of the gap is also
+ equal to (65,536) MOD (array record size). This gap fragments far heap,
+ and is wasted, unused memory. In the worst case, the gap can be up to
+ (array record size) minus 1 in size.
+ 
+ A "Subscript out of range" error occurs when allocating a huge array
+ larger than 128K if the array elements have a size that is not an even
+ power of 2. Arrays larger than 128K must have an element (or record)
+ size that is a power of 2 (2, 4, 8, 16, 32, 64, etc.), since arrays
+ must be stored contiguously and no single array element is allowed to
+ span across a 64K boundary.
+ 
+ You can compensate for this limitation by padding each array element
+ to a size that can be evenly divided into 64K (that is, a power of 2,
+ such as 4, 8, 16, 32, 64, 128, or 512 bytes), as shown in the example
+ below.
+ 
+ A huge array must be DIMensioned as a dynamic array, either with a
+ variable in the array subscript or with the preceding metacommand REM
+ $DYNAMIC. The /AH option allows dynamic arrays of user-defined types,
+ fixed-length strings, and numeric data to occupy all of available
+ memory.
+ 
+ The following example shows how to work around the:
+     <span class='grhilite'>◄</span><a href='x_dot_Q26494EX1.html'>"Subscript out of range"</a><span class='grhilite'>►</span> error message.
+ 
+ The following code example demonstrates the:
+     <span class='grhilite'>◄</span><a href='x_dot_Q26494EX2.html'>"Subscript out of range"</a><span class='grhilite'>►</span> error message.
+ 
+</pre>
+</body>
+
+</html>

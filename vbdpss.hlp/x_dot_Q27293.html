@@ -1,0 +1,90 @@
+<html>
+
+<head>
+<title>Article Q27293 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q27293</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Passing a Basic Fixed-Length String to C by Far Reference</b> - Q27293
+ 
+ The example below demonstrates how to pass a fixed-length string from
+ Basic to Microsoft C by far reference.
+ 
+ This information applies to the Standard and Professional Editions of
+ Microsoft Visual Basic version 1.0 for MS-DOS and to Microsoft C
+ Compiler version 7.0.
+ 
+ To compile this example in Visual Basic for MS-DOS, execute the
+ following commands:
+ 
+    BC BMODULE.BAS;
+    CL -c -AM CMODULE.C
+    LINK BMODULE.OBJ CMODULE.OBJ;
+ 
+ Basic Program
+ -------------
+ 
+ DECLARE SUB StringFar CDECL (_
+             BYVAL p1o AS INTEGER,_
+             BYVAL p1s AS INTEGER,_
+             p3 AS INTEGER)
+ 
+ DIM a AS STRING * 15
+ 
+ CLS
+ a = "This is a test" + CHR$(0)
+ CALL StringFar(VARPTR(a), VARSEG(a), LEN(a))
+ END
+ 
+ C Routine
+ ---------
+ 
+ #include &lt;stdio.h&gt;
+ 
+ void StringFar(char far *a, int *len) {
+    int i;
+    printf("The string is : %Fs\\", a);
+    printf(" Index       Value       Character\");
+ 
+    for (i=0;i &lt; *len; i++) {
+       printf("  %2d          %3d            %c\", i, a[i], a[i]);
+    }
+ }
+ 
+ Output
+ ------
+ 
+ The string is : This is a test
+ 
+  Index       Value       Character
+    0           84            T
+    1          104            h
+    2          105            i
+    3          115            s
+    4           32
+    5          105            i
+    6          115            s
+    7           32
+    8           97            a
+    9           32
+   10          116            t
+   11          101            e
+   12          115            s
+   13          116            t
+   14            0
+</pre>
+</body>
+
+</html>

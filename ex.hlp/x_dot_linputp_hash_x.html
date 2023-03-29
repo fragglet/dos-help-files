@@ -1,0 +1,55 @@
+<html>
+
+<head>
+<title>WRITE # Statement Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WRITE # Statement Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the WRITE # statement to write customer information
+' to a data file. The LINE INPUT # statement is then used to read the
+' records from the file.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the example code below to the code window
+' 3. Press F5 to run the example
+ 
+ CLS                                   ' Clear the screen
+ OPEN "LIST" FOR OUTPUT AS #1
+ PRINT "CUSTOMER INFORMATION:"
+ DO                                    ' Get customer information
+     PRINT
+     INPUT "   LAST NAME:  ", LName$
+     INPUT "   FIRST NAME: ", FrName$
+     INPUT "   AGE:        ", Age$
+     INPUT "   SEX:        ", Sex$
+     Sex$ = UCASE$(Sex$)
+     WRITE #1, LName$, FrName$, Age$, Sex$
+     INPUT "Add another (Y/N)"; R$
+ LOOP WHILE UCASE$(R$) = "Y"
+ CLOSE #1
+ OPEN "LIST" FOR INPUT AS #1           ' Echo the file back
+ CLS
+ PRINT "Records in file:": PRINT
+ DO WHILE NOT EOF(1)
+     LINE INPUT #1, REC$               ' Read records from file
+     PRINT REC$                        ' Print the records on the screen
+ LOOP
+ 
+ 'Remove file from disk.
+ CLOSE #1
+ KILL "LIST"
+</pre>
+</body>
+
+</html>

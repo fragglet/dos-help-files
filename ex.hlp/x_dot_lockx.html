@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>LOCK and UNLOCK Statements Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> LOCK and UNLOCK Statements Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example illustrates the use of the LOCK and UNLOCK statements. A
+' sample data record is created in a random-access file containing a customer
+' record. The program allows you to update the file, locking the file while
+' you use it to prevent access from another terminal.
+ 
+' Note: To use this program, you must have MS-DOS version 3.1 or later, and
+' you must run the MS-DOS command SHARE (SHARE.EXE) to enable locking
+' operations before you start Visual Basic.
+ 
+TYPE AccountRec                        ' Define the record
+   Payer AS STRING * 20
+   Address AS STRING * 20
+   Place AS STRING * 20
+   Owe AS SINGLE
+ END TYPE
+ DIM CustRec AS AccountRec
+ ON ERROR GOTO ErrHandler              ' This section creates a
+                                       ' sample record to use
+ OPEN "MONITOR" FOR RANDOM SHARED AS #1 LEN = LEN(CustRec)
+ CustRec.Payer = "George Washington"
+ CustRec.Address = "1 Cherry Tree Lane"
+ CustRec.Place = "Mt. Vernon, VA"
+ CustRec.Owe = 12!
+ PUT #1, 1, CustRec                    ' Put one record in the file
+ CLOSE #1
+ 
+' This sections opens the sample record for updating.
+ OPEN "MONITOR" FOR RANDOM SHARED AS #1 LEN = LEN(CustRec)
+ DO
+     Number% = 0                       ' Reset to zero
+     DO UNTIL Number% = 1              ' Force user to input 1
+          CLS : LOCATE 10, 10
+         INPUT "Enter Customer Number? (enter 1)"; Number%
+     LOOP
+                          ' Lock the current record so another process
+     LOCK #1, Number%     ' doesn't change it while you're using it
+     GET #1, Number%, CustRec
+     LOCATE 11, 10: PRINT "Customer: "; CustRec.Payer
+     LOCATE 12, 10: PRINT "Address:  "; CustRec.Address
+     LOCATE 13, 10: PRINT "Currently owes: $"; CustRec.Owe
+     LOCATE 15, 10: INPUT "Change (+ or - amount)", Change!
+     CustRec.Owe = CustRec.Owe + Change!
+     PUT #1, Number%, CustRec
+     UNLOCK #1, Number%   ' Unlock the record so others can use it
+     LOCATE 17, 10: INPUT "Update another? ", Continue$
+     Update$ = UCASE$(LEFT$(Continue$, 1))
+ LOOP WHILE Update$ = "Y"
+ CLOSE #1
+ KILL "MONITOR"                        ' Remove file from disk
+ END
+ 
+ErrHandler:
+ IF ERR = 70 THEN                      ' Permission denied error
+     CLS
+     PRINT "You must run SHARE.EXE before running this example."
+     PRINT "Exit the programming environment, run SHARE.EXE, and"
+     PRINT "reenter the programming environment to run this"
+     PRINT "example. Do not shell to MS-DOS to run SHARE.EXE or you"
+     PRINT "may not be able to run other programs until you reboot."
+ END IF
+ END
+ 
+</pre>
+</body>
+
+</html>

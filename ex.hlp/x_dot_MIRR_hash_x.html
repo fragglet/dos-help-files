@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>MIRR# Function Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MIRR# Function Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the MIRR# function to determine the modified internal
+' rate of return for a series of periodic cash flows represented in an
+' array of values.
+ 
+' Note: To run this example, you must use the FINANCE.QLB Quick library.
+' The FINANCE.BI include file must also be present.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+'$INCLUDE: 'FINANCE.BI'
+ 
+ OPTION BASE 1
+ CONST PERCENTFORMAT$ = "##.##"
+ DEFDBL A-Z
+ DIM Status  AS INTEGER, NumFlows  AS INTEGER
+ NumFlows% = 6
+ DIM Values(NumFlows%) AS DOUBLE
+ LoanAPR = .1
+ InvestAPR = .12
+ 
+ ' Read cash flows into Values# array.
+ FOR I = 1 TO NumFlows%
+     READ Values#(I)
+ NEXT I
+ CLS
+ ' Calculate the internal rate of return.
+ ReturnRate = MIRR#(Values#(), NumFlows%, LoanAPR, InvestAPR, Status%)
+ 
+ ' Examine Status% to determine success or failure of MIRR#.
+ IF Status% THEN
+     ' If unsuccessful, announce a problem.
+     PRINT "There was an error in calculating the internal rate of return."
+ ELSE
+    ' Display the internal rate of return.
+    PRINT "Suppose you're a commercial fisherman and you've just completed"
+    PRINT "your fifth year of operation. When you started your business,"
+    PRINT "you borrowed $120,000 at 10% annual interest to buy a boat."
+    PRINT
+    PRINT "Your catch yielded $39,000, $30,000, $21,000, $37,000, and"
+    PRINT "$46,000 for each of the first five years. During the first five"
+    PRINT "years you reinvested your profits, earning 12% annually."
+    PRINT
+    PRINT "The modified internal rate of return for these cash flow figures"
+    PRINT "is ";
+    PRINT USING PERCENTFORMAT$; ReturnRate * 100;
+    PRINT "%."
+    PRINT
+ END IF
+ ' Cost of buying a commercial fishing boat (Negative cash flow).
+ DATA -120000
+ ' Net income each year for five successive years (Positive cash flow).
+ DATA 39000,30000,21000,37000,46000
+</pre>
+</body>
+
+</html>

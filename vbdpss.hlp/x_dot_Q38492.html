@@ -1,0 +1,100 @@
+<html>
+
+<head>
+<title>Article Q38492 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q38492</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> FILEATTR Gets MS-DOS File Handle to Get File Date/Time Stamp</b> - Q38492
+ 
+ When you open a file with the OPEN statement in a Basic program, the
+ file number that you provide is not the MS-DOS file handle. Instead,
+ the file number acts as a pointer into an internal table that BASIC
+ uses to hold the file handles. You can use the FILEATTR function to
+ obtain the actual MS-DOS file handle.
+ 
+ The syntax for getting the file handle is as follows:
+ 
+    FILEATTR(filenumber, 2)
+ 
+ The program example listed below shows how to obtain the MS-DOS file
+ handle of a file using the FILEATTR function. This program then uses
+ the file handle in an MS-DOS Interrupt call to return the file's date
+ and time stamp.
+ 
+ More Information:
+ 
+ The code example listed below invokes MS-DOS Interrupt 21h (33 decimal)
+ with function 57h (87 decimal) to get a file's date and time stamp from
+ the file's directory entry. This interrupt requires an MS-DOS file
+ handle as an argument. Basic's FILEATTR function is used to retrieve
+ the file handle before invoking the interrupt.
+ 
+ Code Example
+ ------------
+ 
+ DEFINT A-Z
+ ' To run this program in the environment, you must invoke the
+ ' environment with the /L switch to load the default Quick library:
+ '    VBDOS.EXE /L          for Visual Basic 1.0 for MS-DOS
+ ' Use the following include file for Visual Basic 1.0 for MS-DOS:
+ REM $INCLUDE: 'VBDOS.BI'
+ 
+ DIM inregs AS RegType, outregs AS RegType
+ ON ERROR GOTO ErrorHandler
+ CLS
+ INPUT "Enter filename:", filename$
+ 
+ OPEN filename$ FOR INPUT AS #1
+ filename$ = filename$ + CHR$(0)  ' ASCIIZ (Null on end).
+ inregs.ax = &amp;H5700
+ inregs.bx = FILEATTR(1, 2)       ' Get DOS File Handle.
+ CALL INTERRUPT(&amp;H21, inregs, outregs)
+ 
+ REM Date is returned in outregs.dx.
+ REM   Day   : Bits 0-4
+ REM   Month : Bits 5-8
+ REM   Year  : Bits 9-15 (from 1980)
+ Day = outregs.dx AND 31                ' Mask the upper bits.
+ Month = (outregs.dx \2 ^ 5) AND 15    ' Shift L 5 &amp; mask upper bits.
+ Year = 1980 + (outregs.dx \2 ^ 9)     ' Shift left 9 &amp; add 1980.
+ PRINT "Month ="; Month; "  Day ="; Day; "  Year ="; Year
+ 
+ REM Time is returned in outregs.cx
+ REM   Seconds : Bits 0-4 (2 second increments)
+ REM   Minutes : Bits 5-10
+ REM   Hours   : Bits 11-15
+ seconds = 2 * (outregs.cx AND 31) '  Mask the upper bits &amp; mult. by 2.
+ minutes = (outregs.cx \2 ^ 5) AND 63  ' Shift L 5 &amp; mask upper bits.
+ hours = outregs.cx     ' Shift left 11 - Be sure to shift in zeros!
+ hours = hours \2
+ hours = hours AND 32767
+ hours = hours \2 ^ 10
+ PRINT "Sec ="; seconds; "  Min ="; minutes; "  Hours ="; hours
+ SHELL "dir " + filename$
+ CLOSE #1
+ END
+ 
+ ErrorHandler:
+         IF ERR = 53 THEN    ' File Not Found.
+           PRINT "Incorrect path or File does not exist"
+         ELSE
+           PRINT ERR
+         END IF
+         END
+</pre>
+</body>
+
+</html>

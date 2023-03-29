@@ -1,0 +1,115 @@
+<html>
+
+<head>
+<title>Article Q45699 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q45699</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Complete Instructions to BLOAD and BSAVE EGA and VGA Screens</b> - Q45699
+ 
+ This article describes how to BLOAD and BSAVE EGA and VGA SCREEN modes
+ (7, 8, 9, 10, 11, 12, and 13) in Microsoft Visual Basic version 1.00
+ for MS-DOS.
+ 
+ More Information:
+ 
+ SCREEN modes 11, 12, and 13 require a VGA card, and SCREEN modes 7, 8,
+ 9, and 10 require an EGA or VGA card.
+ 
+ Using Visual Basic for MS-DOS, the BLOAD and BSAVE technique
+ required for EGA and VGA screens is more involved than the technique
+ used for CGA and Hercules screen modes. EGA and VGA screen modes 7, 8,
+ 9, 10, 11, and 12 are stored differently in video memory than other
+ screen modes. EGA and VGA memory (except SCREEN mode 13) is broken up
+ into four different bit planes: blue, green, red, and intensity.
+ 
+ Each bit plane is addressed in parallel; that is, the planes are all
+ in one location, stacked on top of one another. When manipulating a
+ particular address in video memory, the address refers to 4 bytes, not
+ just 1 (1 byte in each bit plane). To read or write EGA/VGA screens,
+ we need to send or retrieve information to or from each of the four
+ bit planes separately. Each plane can be accessed by placing
+ information in registers located on the Graphics Controller.
+ 
+ Programming EGA and VGA graphics depends heavily on the Graphics
+ Controller. The Graphics Controller manages the CPU and video memory
+ when executing EGA/VGA read and write operations. To access the
+ Graphics Controller, sending output to a set of ports is necessary.
+ Two registers are important when reading and writing EGA/VGA screens:
+ map mask and read map select. These registers are located on the
+ Graphics Controller.
+ 
+ Accessing the map mask and read map registers requires writing to two
+ ports. Writing to the first port (the address register) is necessary
+ to select the desired register, and the second (the data register) to
+ send information to the selected register. The second port is used by
+ all the registers. To select the map mask register for writing (i.e.,
+ BLOADing) EGA/VGA screens, send a 2 (the index for the map mask
+ register) to port &amp;H3C4 (the sequencer address register). Then, put
+ the bit plane number (0 to 3) you want to write to in port &amp;H3C5 (the
+ data register). To select the read map register for reading (i.e.,
+ BSAVEing) EGA/VGA screens, send a 4 (the index for the read map
+ register) to port &amp;H3CE (the graphics address register). Then, put the
+ bit plane number you want to read in port &amp;H3CF (the data register).
+ This procedure is demonstrated in the subprogram, GRAPHSUB.BAS, shown
+ below.
+ 
+ Different screen modes have different resolutions. Therefore, variable
+ amounts of EGA/VGA memory must be BLOADed or BSAVEd. The formula for
+ calculating the number of bytes to be BLOADed or BSAVEd (with the
+ exception of SCREEN mode 13) is:
+ 
+    Number of bytes = (Maximum y-coordinate)*(Maximum x-coordinate)/8
+ 
+ For example, SCREEN mode 9 has a resolution of 640 x 350. The number
+ of pixels in this screen mode is 640 * 350 or 224,000 pixels/bits. To
+ obtain the number of bytes to save or load, divide this number by 8.
+ Therefore, the number of bytes to save or load is 28,000.
+ 
+ In SCREEN mode 13 (VGA medium resolution), the Graphics Controller is
+ not used. As in other non-EGA/VGA modes, a contiguous block of memory
+ is BLOADed or BSAVEd. SCREEN mode 13 has a resolution of 320 x 200
+ with 256K colors (1 byte per pixel); therefore, 64,000 bytes need to
+ be saved or loaded.
+ 
+ References
+ ----------
+ 
+ The following are excellent resources for detailed information
+ concerning EGA and VGA screen modes and how to program for them:
+ 
+    "Programmer's Guide to PC and PS/2 Video Systems"
+    by Richard Wilton, published by Microsoft Press (1987)
+ 
+    "The New Peter Norton Programmer's Guide to the IBM PC and PS/2"
+    by Peter Norton, published by Microsoft Press (1988)
+ 
+    "The Waite Group's Microsoft C Programming for the PC Revised
+    Edition"
+    by Robert Lafore, published by The Waite Group, Inc. (1989)
+ 
+    "The Programmer's PC Sourcebook"
+    by Thom Hogan, published by Microsoft Press (1988)
+ 
+ Illustrated in the example below is a BASIC program, MAIN.BAS, which is a
+ driver program that CALLs the BLOAD and BSAVE EGA/VGA subprogram EgaVgaSub
+ further below. The EgaVgaSub subprogram module can be easily pasted into
+ your own programs.
+ 
+    <span class='grhilite'>◄</span><a href='x_dot_Q45699EX.html'>See Example</a><span class='grhilite'>►</span>
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,174 @@
+<html>
+
+<head>
+<title>Article Q45699, Example - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q45699, Example</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Complete Instructions to BLOAD and BSAVE EGA and VGA Screens, Example</b>
+ 
+ BLOAD/BSAVE Example
+ -------------------
+ 
+ Listed below is a BASIC program, MAIN.BAS, which is a driver program
+ that CALLs the BLOAD and BSAVE EGA/VGA subprogram EgaVgaSub further
+ below. The EgaVgaSub subprogram module can be easily pasted into your
+ own programs. MAIN.BAS is as follows:
+ 
+ ' To try this example in VBDOS.EXE:
+ ' 1. From the File menu, choose New Project.
+ ' 2. Copy the code example to the Code window.
+ ' 3. Press F5 to run the program.
+ '********************************************************************
+ ' Sample program that calls the EgaVgaSub subprogram.
+ '********************************************************************
+ DECLARE SUB EgaVgaSub (FileName$, Mode AS INTEGER, RW AS INTEGER)
+ 
+ TYPE ModeType            ' Type to describe the SCREEN mode selected.
+      MaxX AS INTEGER     ' Maximum value of x coordinate.
+      MaxY AS INTEGER     ' Maximum value of y coordinate.
+      Mode AS INTEGER     ' Mode selected in the SCREEN statement.
+      NoColors AS INTEGER ' Max. # of colors available in selected mode.
+ END TYPE
+ 
+ DIM ScreenRec AS ModeType
+ DIM ReadWrite AS INTEGER
+ 
+ CLS
+ PRINT "Please input the correct options below. NOTE: if BLOADing a"
+ PRINT "file, please make sure the file exists in the current"
+ PRINT "directory or the program may hang!"
+ PRINT : PRINT "Option to BLOAD or BSAVE EGA screen data files--"
+ INPUT "Enter (1) for BLOAD or (2) for BSAVE: ", ReadWrite
+ PRINT : PRINT "Enter the filename (maximum 7 characters) to BLOAD or"
+ PRINT "BSAVE EGA screen data to or from (do not include extension):";
+ INPUT FileName$
+ CLS
+ 
+          ' CHANGE AS NEEDED:
+ SCREEN 9 ' SCREEN statement that invokes EGA 640x350 16 color mode.
+          ' Can substitute mode 9 with mode 7, 8, 10, 11, 12 or 13 here.
+ 
+ ScreenRec.MaxX = 640  ' CHANGE AS NEEDED:
+                       ' Maximum x coordinate for mode 9 is 640.
+ ScreenRec.MaxY = 350  ' CHANGE AS NEEDED:
+                       ' Maximum y coordinate for mode 9 is 350.
+ ScreenRec.Mode = 9    ' CHANGE AS NEEDED: Mode selected in the SCREEN
+                       ' statement.
+ ScreenRec.NoColors = 15   ' CHANGE AS NEEDED:
+                           ' Maximum number of colors available in
+                           ' mode 9 (0 to 15 colors).
+ 
+ IF ReadWrite = 1 THEN GOTO CallSub ' BLOAD- no need to output graphics.
+ 
+ FOR i = 1 TO 200          ' Generate random lines in random colors.
+     x1 = INT(ScreenRec.MaxX * RND)
+     y1 = INT(ScreenRec.MaxY * RND)
+     x2 = INT(ScreenRec.MaxX * RND)
+     y2 = INT(ScreenRec.MaxY * RND)
+     co = INT(ScreenRec.NoColors * RND)
+     LINE (x1, y1)-(x2, y2), co
+ NEXT i
+ 
+ CallSub: CALL EgaVgaSub(FileName$, ScreenRec.Mode, ReadWrite)
+ 
+ INPUT "Press &lt;ENTER&gt; to restore screen ...", a$
+ END
+ 
+ SUB EgaVgaSub (FileName$, mode AS INTEGER, RW AS INTEGER) STATIC
+ ' ---------------------------------------------------------------
+ ' EgaVgaSub is a SUBprogram that will BSAVE or BLOAD a given
+ ' file to or from SCREEN mode 7, 8, 9, 10, 11, 12 or 13.
+ ' SCREENs 11, 12, and 13 require a VGA card, and
+ ' SCREENs 7, 8, 9, and 10 require an EGA or VGA card.
+ ' EgaVgaSub will produce four files with extension .GRA which
+ ' contain graphics information from each bit plane (with the
+ ' exception of SCREEN modes 10 and 13).
+ ' Variable:
+ ' FileName$-- the name of the file to be BLOADed or BSAVEd.
+ ' Mode     -- the SCREEN mode being used.
+ ' RW       -- the choice to BLOAD or BSAVE the file. If RW=1,
+ '             then the file is BLOADed. Otherwise, the file is
+ '             BSAVEd.
+ ' ---------------------------------------------------------------
+ 
+ SELECT CASE mode     ' Determine how much to BSAVE.
+ 
+ ' Mode 7 is 320x200- save/load 8000 bytes.
+ ' Mode 8 is 640x200- save/load 16000 bytes.
+ ' Modes 9 and 10 are 640x350- save/load 28000 bytes.
+ ' Modes 11 and 12 are 640x480- save/load 38400 bytes.
+ ' Mode 13 is 320x200x(1byte/256 colors)- save/load 64000 bytes.
+ 
+   CASE 7
+        total! = 8000
+   CASE 8
+        total! = 16000
+   CASE 9 TO 10
+        total! = 28000
+   CASE 11 TO 12
+        total! = 38400
+   CASE 13
+        total! = 64000
+   CASE ELSE
+        PRINT "ERROR: Non EGA/VGA graphics mode!"
+        GOTO NonEGAorVGA
+ END SELECT
+ 
+ IF mode = 10 THEN    ' SCREEN mode 10 only has two bit planes
+    cycle = 1         ' because it is used on a monochrome display.
+ ELSE
+    cycle = 3         ' SCREEN modes 7, 8, 9, 11, and 12 have four
+ END IF               ' bit planes.
+ 
+ DEF SEG = &amp;HA000   ' Define the segment for EGA/VGA graphics.
+                    ' BSAVEing and BLOADing SCREEN mode 13 does not
+ IF mode = 13 THEN  ' require the use of the graphics map register.
+  IF RW = 1 THEN                   ' BLOAD the file.
+    f$ = FileName$ + "0" + ".GRA"  ' Load the file into VGA memory.
+    BLOAD f$, 0                    ' 0 is the offset to page 0.
+  ELSE                             ' BSAVE the file.
+    f$ = FileName$ + "0" + ".GRA"  ' Save VGA memory in a file.
+    BSAVE f$, 0, total!        ' Save the visual page, at offset 0.
+  END IF
+ 
+ ELSE
+  FOR i = 0 TO cycle     ' Cycle through each bit plane of EGA/VGA.
+      IF RW = 1 THEN          ' BLOAD files.
+         OUT &amp;H3C4, 2         ' We want to index the map register.
+         OUT &amp;H3C5, 2 ^ i     ' Bit plane we want to reference.
+ 
+         ' Load each file into its corresponding bit plane.
+         f$ = FileName$ + CHR$(i + 48) + ".GRA"
+         BLOAD f$, 0          ' 0 is the offset to page 0.
+      ELSE                    ' BSAVE files.
+         OUT &amp;H3CE, 4         ' Select Read Map Select Register.
+         OUT &amp;H3CF, i         ' Select the bit plane to save.
+ 
+         ' Save each bit plane in its own file.
+         f$ = FileName$ + CHR$(i + 48) + ".GRA"
+         BSAVE f$, 0, total!  ' Save the visual page, at offset 0.
+      END IF
+  NEXT i
+ END IF
+ 
+ DEF SEG                      ' Restore the segment.
+ 
+ NonEGAorVGA:
+ END SUB
+</pre>
+</body>
+
+</html>

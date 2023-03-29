@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<title>Article Q49398 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q49398</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Example of Passing Basic Two-Dimensional Integer Array to MASM</b> - Q49398
+ 
+ The two programs shown below demonstrate how a Microsoft Basic program
+ can pass a two-dimensional integer array to assembly language.
+ 
+ More Information:
+ 
+ The following Basic program is BTWODIMI.BAS, which passes an
+<b> uninitialized two-dimensional integer array to an assembly routine</b>
+<b> that initializes the array.</b>
+ 
+ Code Example
+ ------------
+ 
+ DECLARE SUB TwoInt(BYVAL ASeg AS INTEGER, BYVAL AOff AS INTEGER)
+ 
+ DIM IntArray(1 TO 2, 1 TO 3) AS INTEGER
+ 
+ CALL TwoInt(VARSEG(IntArray(1, 1)), VARPTR(IntArray(1, 1)))
+ FOR row% = 1 TO 2
+    FOR col% = 1 TO 3
+       PRINT IntArray(row%, col%)
+    NEXT
+ NEXT
+ END
+ 
+ The following program is ATWODIMI.ASM, which initializes a
+<b> two-dimensional integer array passed from Basic:</b>
+ 
+ .MODEL MEDIUM, BASIC
+ .DATA
+         i11 DW 11           ; Initialize data table.
+         i21 DW 21
+         i12 DW 12
+         i22 DW 22
+         i13 DW 13
+         i23 DW 23
+ .CODE
+         PUBLIC TwoInt
+ TwoInt  PROC
+         push bp
+         mov bp, sp          ; Set stack frame.
+         push es
+         push si
+         push di
+ 
+         mov es, [bp+8]      ; Segment of array.
+         mov di, [bp+6]      ; Offset of array.
+         mov si, OFFSET i11
+         mov cx, 6           ; Number of items to copy.
+         rep movsw           ; Copy data to array.
+         pop di
+         pop si
+         pop es
+         pop bp
+         ret 4
+ TwoInt  ENDP
+         END
+ 
+ To demonstrate these programs from an .EXE program, compile and link
+<b> as follows:</b>
+ 
+    BC BTWODIMI.BAS;
+    MASM ATWODIMI.ASM;
+    LINK BTWODIMI ATWODIMI;
+ 
+ BTWODIMI.EXE produces the following output:
+ 
+ 11
+ 12
+ 13
+ 21
+ 22
+ 23
+</pre>
+</body>
+
+</html>

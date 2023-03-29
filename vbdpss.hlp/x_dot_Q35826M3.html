@@ -1,0 +1,106 @@
+<html>
+
+<head>
+<title>Article Q35826, Method 3 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q35826, Method 3</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> IEEE vs. Microsoft Binary Format; Rounding Issues (Complete)</b> - Q35826
+ 
+    Method 3
+    --------
+ 
+    This method requires the use of a Microsoft C version 5.x or
+    later compiler. It uses the C library routine sprintf(). This
+    routine takes formatted screen output and stores it in a string
+    variable.
+ 
+    C Routine:
+ 
+    struct basic_string {
+       int length;
+        char *address;
+        } ;
+ 
+      void round(number,string)
+      double *number;
+      struct basic_string *string;
+      {
+      sprintf(string-&gt;address,"%.2f",*number);
+      }
+ 
+    Basic Program:
+ 
+    ' To try this example in VBDOS.EXE:
+    ' 1. From the File menu, choose New Project.
+    ' 2. Copy the code example to the Code window.
+    ' 3. Press F5 to run the program.
+ 
+    DECLARE SUB Round CDECL (number#, answer$)
+    CLS
+    b# = .05#
+    FOR i = 1 TO 10
+         b# = b# + .01#
+         answer$ = SPACE$(50)
+         CALL Round(b#, answer$)
+         PRINT b#, LTRIM$(RTRIM$(answer$))
+         PRINT
+         cnt = cnt + 4
+         IF cnt &gt; 40 THEN
+            cnt = 0
+            INPUT a$
+         END IF
+    NEXT i
+ 
+    The same screen formatting can be accomplished with Basic's PRINT
+    USING statement. However, Basic has no direct means of storing this
+    information in a string. The information can be sent to a
+    Sequential file and then read back into string variables.
+ 
+    You can also write the information to the screen and read this
+    information using the SCREEN function. The SCREEN function returns
+    the ASCII value of the specified screen location. Consider the
+    following example:
+ 
+    ' To try this example in VBDOS.EXE:
+    ' 1. From the File menu, choose New Project.
+    ' 2. Copy the code example to the Code window.
+    ' 3. Press F5 to run the program.
+ 
+    x# = 7.000000000000001D-02
+    CLS
+    LOCATE 1, 1
+    PRINT USING "#################.##"; x#
+    FOR i = 1 TO 20
+    num = SCREEN(1, i)
+    SELECT CASE num
+      CASE ASC(".")
+        number$ = number$ + "."
+      CASE ASC("-")
+        number$ = "-"
+      CASE ASC("0") TO ASC("9")
+        number$ = number$ + CHR$(num)
+      CASE ELSE
+    END SELECT
+    NEXT i
+    PRINT number$
+ 
+    The PRINT USING statement would display 17 spaces and then .07. The
+    value of number$ would be .07.
+ 
+</pre>
+</body>
+
+</html>

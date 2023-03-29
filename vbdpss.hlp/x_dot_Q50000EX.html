@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<title>Article Q50000, Example - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q50000, Example</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How to Save and Restore the VGA Palette Registers, Example</b>
+ 
+ Code Example
+ ------------
+ 
+ TYPE colortype           ' Structure to hold RGB color palette.
+    red AS STRING * 1
+    green AS STRING * 1
+    blue AS STRING * 1
+ END TYPE
+ 
+ ' Use the following include file for Visual Basic 1.0 for MS-DOS:
+ REM $INCLUDE: 'VBDOS.BI'
+ 
+ DIM inregsx AS RegTypeX
+ DIM outregsx AS RegTypeX
+ DIM colorbuf(255) AS colortype
+ SCREEN 13
+ 
+ inregsx.ax = &amp;H1017      ' BIOS interrupt to save palette registers.
+ inregsx.bx = 0
+ inregsx.cx = 256         ' Save all 256 color registers.
+ inregsx.es = VARSEG(colorbuf(0))  ' Address of array holding palette.
+ inregsx.dx = VARPTR(colorbuf(0))
+ 
+ CALL INTERRUPTX(&amp;H10, inregsx, outregsx)  ' Save palette registers.
+ 
+ FOR i% = 2 TO 255      ' Display colorful pattern.
+    LINE (i%, 10)-(i%, 199), i%
+ NEXT
+ 
+ LOCATE 1, 1
+ COLOR 1
+ PRINT "press any key to blank palette"
+ WHILE INKEY$ = "": WEND
+ 
+ FOR i% = 2 TO 255  ' Set all but first palette register to black.
+         PALETTE i%, 0
+ NEXT
+ 
+ LOCATE 1, 1
+ PRINT "press any key to restore palette"
+ 
+ WHILE INKEY$ = "": WEND
+ 
+ inregsx.ax = &amp;H1012      ' BIOS interrupt to restore palette registers.
+ inregsx.bx = 0
+ inregsx.cx = 256         ' Restore all 256 color registers.
+ inregsx.es = VARSEG(colorbuf(0))  ' Address of array holding palette.
+ inregsx.dx = VARPTR(colorbuf(0))
+ 
+ CALL INTERRUPTX(&amp;H10, inregsx, outregsx)  ' Restore palette registers.
+</pre>
+</body>
+
+</html>

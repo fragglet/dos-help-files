@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>Article Q27324 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q27324</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Passing Numeric Variables between Basic and C by Far Reference</b> - Q27324
+ 
+ The following example demonstrates how to pass numeric values from
+ compiled Basic to Microsoft C by far reference.
+ 
+ This information applies to the Standard and Professional Editions of
+ Microsoft Visual Basic version 1.0 for MS-DOS and to Microsoft C
+ Compiler version 7.0.
+ 
+ To compile this example in Visual Basic for MS-DOS, execute the
+ following commands:
+ 
+    BC BMODULE.BAS;
+    CL -c -AM CMODULE.C
+    LINK BMODULE.OBJ CMODULE.OBJ;
+ 
+ Basic Program
+ -------------
+ 
+ DECLARE SUB NumericFar CDECL (_
+         BYVAL p1o AS INTEGER, BYVAL p1s AS INTEGER,_
+         BYVAL p2o AS INTEGER, BYVAL p2s AS INTEGER,_
+         BYVAL p3o AS INTEGER, BYVAL p3s AS INTEGER,_
+         BYVAL p4o AS INTEGER, BYVAL p4s AS INTEGER)
+ 
+ a% = 32767
+ b&amp; = 32769
+ c! = 123.312
+ d# = 129381.333#
+ 
+ CLS
+ CALL NumericFar(VARPTR(a%), VARSEG(a%),_
+                 VARPTR(b&amp;), VARSEG(b&amp;),_
+                 VARPTR(c!), VARSEG(c!),_
+                 VARPTR(d#), VARSEG(d#))
+ LOCATE 5, 1
+ END
+ 
+ C Routine
+ ---------
+ 
+ #include &lt;stdio.h&gt;
+ void NumericFar(int far *a, long far *b, float far *c, double far *d)
+ {
+    printf("INTEGER  %d\", *a);
+    printf("LONG     %ld\", *b);
+    printf("FLOAT    %f\", *c);
+    printf("DOUBLE   %lf\", *d);
+ }
+ 
+ Output
+ ------
+ 
+ INTEGER  32767
+ LONG     32769
+ FLOAT    123.311996
+ DOUBLE   129381.333000
+</pre>
+</body>
+
+</html>

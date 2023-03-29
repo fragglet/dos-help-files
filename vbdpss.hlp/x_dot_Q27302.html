@@ -1,0 +1,102 @@
+<html>
+
+<head>
+<title>Article Q27302 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q27302</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Passing a Basic Array of User-Defined Type to C</b> - Q27302
+ 
+ The following example demonstrates how to pass an array of
+ user-defined-type records from compiled Basic to Microsoft C.
+ 
+ This information applies to the Standard and Professional Editions of
+ Microsoft Visual Basic version 1.0 for MS-DOS and to Microsoft C
+ Compiler version 7.0.
+ 
+ To compile this example in Visual Basic for MS-DOS, execute the
+ following commands:
+ 
+    BC BMODULE.BAS;
+    CL -c -AM CMODULE.C
+    LINK BMODULE.OBJ CMODULE.OBJ;
+ 
+ Basic Program
+ -------------
+ 
+ TYPE record
+    a AS INTEGER
+    b AS STRING * 20
+    c AS SINGLE
+ END TYPE
+ 
+ DECLARE SUB TypeArray CDECL (_
+             BYVAL p1o AS INTEGER,_
+             BYVAL p1s AS INTEGER)
+ 
+ DIM element(10) AS record
+ 
+ CLS
+ 
+ FOR I = 0 TO 10
+    element(I).a = 128 + I
+    element(I).b = STR$(I) + ". " + DATE$ + CHR$(0)
+    element(I).c = 39.6 * I
+ NEXT I
+ 
+ CALL TypeArray(VARPTR(element(0)), VARSEG(element(0)))
+ END
+ 
+ C Routine
+ ---------
+ 
+ #include &lt;stdio.h&gt;
+ 
+ struct record {
+    int a;
+    char b[20];
+    float c;
+ };
+ 
+ void TypeArray(struct record far *element) {
+    int i;
+ 
+    for (i=0; i&lt;3; i++) {
+       printf("Record[%d].A = %d\",  i, element-&gt;a);
+       printf("Record[%d].B = %Fs\", i, element-&gt;b);
+       printf("Record[%d].C = %f\",  i, element-&gt;c);
+       printf("\");
+       element++;
+    }
+  }
+ 
+ Output
+ ------
+ 
+ Record[0].A = 128
+ Record[0].B =  0. 02-02-1988
+ Record[0].C = 0.000000
+ 
+ Record[1].A = 129
+ Record[1].B =  1. 02-02-1988
+ Record[1].C = 39.599998
+ 
+ Record[2].A = 130
+ Record[2].B =  2. 02-02-1988
+ Record[2].C = 79.199997
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,152 @@
+<html>
+
+<head>
+<title>Article Q39255 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q39255</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How To Change COM1 or COM2 Parameters While Port Is Open</b> - Q39255
+ 
+ When using the communications ports in Basic, once the COM port is
+ OPENed (with an OPEN "COM1:..." or OPEN "COM2:..." statement), the
+ port's configuration normally cannot be changed by any Basic statement
+ without closing and then reopening the COM port. However, the
+ parameters to the COM port (the baud rate, parity, stop bits, data
+ bits, etc.) can be changed by directly communicating with the UART
+ (Universal Asynchronous Receiver Transmitter) using Basic's OUT and
+ INP statements. The UART in the IBM PC is the 8250 Asynchronous
+ Communications Element, a dedicated microprocessor chip.
+ 
+ This article contains advanced programmer's information, and should be
+ only used by advanced programmers who are very familiar with the
+ operations of the communications ports.
+ 
+ More Information:
+ 
+ To change the communications parameters for a COM port, you must first
+ disable the communications interrupts. You can do this by setting
+ bit 4 (for COM1) or bit 3 (for COM2) of the Interrupt Mask Register
+ (IMR, I/O port &amp;H21) (where bits are numbered starting at bit zero;
+ that is, 0, 1, 2, etc.). Note that when this is done, the other bits
+ of this register should remain unchanged, so you should "OR" the
+ current value with the bit value needed, and place the new value back
+ into the register. For example, the following disables the COM1 port:
+ 
+    OUT &amp;H21, INP(&amp;H21) OR 16
+ 
+ The following disables the COM2 port:
+ 
+    OUT &amp;H21, INP(&amp;H21) OR 8
+ 
+ Once the COM interrupt is disabled, you can alter the communications
+ parameters. The first of the parameters that you may change is the
+ baud rate. To do this, you must first set the line-control register to
+ allow a change in the baud rate by sending a &amp;H80 to port &amp;H3FB, the
+ line-control register for COM1, or to port &amp;H2FB, the line-control
+ register for COM2. Then, send the appropriate least-significant byte
+ (LSB) and most-significant byte (MSB) of the desired baud rate to
+ ports &amp;H3F8 and &amp;H3F9, respectively, for COM1, or to ports &amp;H2F8 and
+ &amp;H2F9, respectively, for COM2. The LSB and MSB bytes for the baud
+ rates are shown in the following table:
+ 
+    Baud Rate    MSB    LSB
+    ---------    ---    ---
+ 
+     300         01H    80H
+     600         00H    C0H
+    1200         00H    60H
+    2400         00H    30H
+    3600         00H    20H
+    4800         00H    18H
+    9600         00H    0CH
+ 
+ Now that the baud rate has been changed, the other parameters must be
+ set (for example, parity type, stop bits, data bits, etc.). These
+ parameters are set by sending the appropriate byte to the line-control
+ register (port &amp;H3FB for COM1, or port &amp;H2FB for COM2). The byte to
+ send is established by setting the appropriate bits according to the
+ following diagram:
+ 
+                        THE LINE-CONTROL REGISTER
+ 
+             |-----|-----|-----|-----|-----|-----|-----|-----|
+             |  7  |  6  |  5  |  4  |  3  |  2  |  1  |  0  |
+             |-----|-----|-----|-----|-----|-----|-----|-----|
+                |     \    |     |     |     |     |     |   Character
+                |      \   |     |     |     |     |     |    length
+ I/O Addressing &lt;       \  |     |     |     |     0  +  0 = 5 bits
+  0 = Normal value       \_|     |     |     |     0  +  1 = 6 bits
+  1 = To address baud       |     |     |     |     1  +  0 = 7 bits
+      rate divisor          |     |     |     |     1  +  1 = 8 bits
+      registers             |     |     |     |
+                            |     |     |     &gt; Stop bits
+        Set these bits to 0 &lt;     |     |      0 = 1 stop bit
+                                  |     |      1 = 1.5 stop bits if
+                                  |     |          5-bit character
+                                  |     |          length
+                                  |     |      1 = 2 if 6-, 7-, or 8-bit
+                                  |     |          character length
+                      Parity type &lt;     &gt; Parity
+                         0 = even         0 = No parity bit generated
+                         1 = odd          1 = Parity bit generated
+ 
+ (This table is taken from page 180 of "8088 Assembler Language
+ Programming: The IBM PC, Second Edition" by Willen and Krantz [Howard
+ W. Sams &amp; Company, Inc., 1988]. Please read Chapter 7, "Serial
+ Communications," for more technical details.)
+ 
+ After setting these other parameters, the COM interrupt can be
+ reenabled by setting the bit for the COM port back to 0 in the IMR. As
+ before, you must be careful not to disrupt any of the other bits in
+ this register, so to mask the particular bit to 0, logically "AND" the
+ current value of the register with 255 minus the bit value. For
+ example:
+ 
+    OUT &amp;H21, INP(&amp;H21) AND 239    ' Enables COM1 (255 - 16 = 239).
+    OUT &amp;H21, INP(&amp;H21) AND 247    ' Enables COM2 (255 - 8 = 247).
+ 
+ Once this step is done, communication can resume at the new
+ communication settings. Included below is a code example listing that
+ changes the baud rate and parameters of COM1 to 9600,N,8,1.
+ 
+ The following book contains more information about hardware addresses:
+ 
+    "The Programmer's PC Sourcebook," by Thom Hogan
+    (Microsoft Press, 1988)
+ 
+ The following is a code example:
+ 
+ ' To try this example in VBDOS.EXE:
+ ' 1. From the File menu, choose New Project.
+ ' 2. Copy the code example to the Code window.
+ ' 3. Press F5 to run the program.
+ 
+       x% = INP(&amp;H21)                    ' Disable COM1...
+       x% = x% OR 16
+       OUT &amp;H21, x%
+       OUT &amp;H3FB, &amp;H80                   ' Set for BAUD change.
+    REM OUT &amp;H3F8, &amp;H60 ' BAUD-rate-divisor register; &amp;H60 sets 1200
+                        ' baud.
+       OUT &amp;H3F8, &amp;H0C  ' BAUD-rate-divisor register; &amp;H0C sets 9600
+                        ' baud.
+       OUT &amp;H3F9, &amp;H0   ' High byte of BAUD-rate-divisor register.
+       OUT &amp;H3FB, &amp;H3                    ' N,8,1
+       x% = INP(&amp;H21)                    ' Reenable COM1...
+       x% = x% AND 239
+       OUT &amp;H21, x%                      ' All done!
+</pre>
+</body>
+
+</html>

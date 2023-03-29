@@ -1,0 +1,91 @@
+<html>
+
+<head>
+<title>SYD# Function Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> SYD# Function Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the SYD# function to return the depreciation of an asset
+' for a specific period using sum-of-years' digits method based on the
+' asset's initial cost, salvage value, and useful life.
+ 
+' Note: To run this example, you must use the FINANCE.QLB Quick library.
+' The FINANCE.BI include file is also required.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+' $INCLUDE: 'FINANCE.BI'
+ 
+ CONST YEARMONTHS = 12
+ CONST DOLLARFORMAT$ = "$#,###,##0.00"
+ DEFDBL A-Z
+ DIM Status  AS INTEGER
+ 
+ CLS                                ' Clear the screen
+ PRINT "Assume you have a piece of expensive manufacturing equipment."
+ INPUT "Enter the original cost of the equipment"; Cost
+ PRINT
+ PRINT "Salvage value is the value of the asset"
+ PRINT "at the end of its useful life."
+ INPUT "What is the salvage value of the equipment"; SalvageVal
+ PRINT
+ INPUT "What is the useful life of the equipment in months"; Life
+ IF Life &lt; YEARMONTHS THEN
+     PRINT
+     PRINT "If the life is less than a year, it is not an asset."
+     INPUT "Reenter the useful life of the equipment in months"; Life
+ END IF
+ YearsInLife = Life / YEARMONTHS
+ ' Round up to a whole year.
+ IF YearsInLife &lt;&gt; INT(Life / YEARMONTHS) THEN
+     YearsInLife = INT(YearsInLife + 1)
+ END IF
+ PRINT
+ PRINT "For what year of the asset's life do you want to calculate ";
+ INPUT "depreciation "; DeprYear
+ DO WHILE Depr &lt; YearsInLife AND DeprYear &gt; YearsInLife
+     PRINT
+     PRINT "The year you enter must be at least 1, and not more than";
+     PRINT YearsInLife
+     INPUT "Reenter the year"; DeprYear
+ LOOP
+ PRINT
+ ' Calculate and format the results.
+ PeriodDepr = SYD#(Cost, SalvageVal, YearsInLife, DeprYear, Status)
+ ' Examine Status to determine success or failure of SYD#.
+ IF Status THEN
+     ' If unsuccessful, announce a problem.
+     PRINT "There was an error in calculating depreciation."
+ ELSE
+     ' If successful, calculate, format, and display the results.
+     TotalDepr = Cost - SalvageVal
+     MonthDepr = PeriodDepr / YEARMONTHS
+     Cost$ = FORMAT$(Cost, DOLLARFORMAT$)
+     SalvageVal$ = FORMAT$(SalvageVal, DOLLARFORMAT$)
+     TotalDepr$ = FORMAT$(TotalDepr, DOLLARFORMAT$)
+     PeriodDepr$ = FORMAT$(PeriodDepr, DOLLARFORMAT$)
+     MonthDepr$ = FORMAT$(MonthDepr, DOLLARFORMAT$)
+     PRINT "If the original cost of your equipment is "; Cost$; ","
+     PRINT "and the salvage value of that equipment is "; SalvageVal$; ","
+     PRINT "the total depreciation at the end of its"; Life; "month"
+     PRINT "lifetime is "; TotalDepr$; ". ";
+     PRINT "The depreciation in year"; DeprYear
+     PRINT "is "; PeriodDepr$; " or "; MonthDepr$; " per month."
+ END IF
+</pre>
+</body>
+
+</html>

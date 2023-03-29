@@ -1,0 +1,140 @@
+<html>
+
+<head>
+<title>Article Q49385 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q49385</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Example Passing Numerics from Basic to MASM by Far Reference</b> - Q49385
+ 
+ The two programs below demonstrate how a Basic program can
+ pass standard numeric types to assembly language routines.
+ 
+ The following Basic program is BNUMFAR.BAS, which passes standard
+<b> numeric types to assembly language routines:</b>
+ 
+ Code Example
+ ------------
+ 
+ DECLARE SUB Numint(SEG i%)
+ DECLARE SUB Numlong(SEG lng&amp;)
+ DECLARE SUB Numsng(SEG s!)
+ DECLARE SUB Numdbl(SEG d#)
+ 
+ i% = 2
+ lng&amp; = 4
+ s! = 3.4
+ d# = 5.6
+ 
+ CLS
+ PRINT "         BEFORE","AFTER"
+ PRINT "Integer: ";i%,,
+ CALL Numint(i%)
+ PRINT i%
+ 
+ PRINT "Long   : ";HEX$(lng&amp;),,
+ CALL Numlong(lng&amp;)
+ PRINT HEX$(lng&amp;)
+ 
+ PRINT "Single : ";s!,
+ CALL Numsng(s!)
+ PRINT s!
+ 
+ PRINT USING "Double : ##.####            ";d#,
+ CALL Numdbl(d#)
+ PRINT USING "##.####"; d#
+ END
+ 
+ The following program is ANUMFAR.ASM, which accepts standard numerics
+<b> by far reference and alters their values:</b>
+ 
+ .MODEL MEDIUM, BASIC
+ .CODE
+         PUBLIC Numint, Numlong, Numsng, Numdbl
+ Numint  PROC
+         push bp
+         mov bp, sp        ; Set stack frame.
+         push es
+         mov es, [bp+8]    ; Get seg.
+         mov bx, [bp+6]    ; Get offset.
+         mov ax, es:[bx]   ; Get actual integer.
+         shl ax, 1         ; Multiply by 2.
+         mov es:[bx], ax   ; Put back new value.
+         pop es
+         pop bp
+         ret 4
+ Numint  ENDP
+ Numlong PROC
+         push bp
+         mov bp, sp        ; Set stack frame.
+         push es
+         mov es, [bp+8]    ; Get seg.
+         mov bx, [bp+6]    ; Get offset.
+         mov cx, es:[bx]   ; Get actual long.
+         mov ax, es:[bx+2] ; Switch high and low words.
+         mov es:[bx+2], cx ; Put back new value.
+         mov es:[bx], ax
+         pop es
+         pop bp
+         ret 4
+ Numlong ENDP
+ 
+ Numsng  PROC
+         push bp
+         mov bp, sp        ; Set stack frame.
+         push es
+         mov es, [bp+8]    ; Get seg.
+         mov bx, [bp+6]    ; Get offset.
+         mov ax, es:[bx+2] ; Get actual single.
+         or ah, 80h        ; Set sign bit.
+         mov es:[bx+2], ax ; Put back new value.
+         pop es
+         pop bp
+         ret 4
+ Numsng  ENDP
+ 
+ Numdbl  PROC
+         push bp
+         mov bp, sp         ; Set stack frame.
+         push es
+         mov es, [bp+8]     ; Get seg.
+         mov bx, [bp+6]     ; Get offset.
+         mov ax, es:[bx+6]  ; Get actual double.
+         or ah, 80h         ; Set sign bit.
+         mov es:[bx+6], ax  ; Put back new value.
+         pop es
+         pop bp
+         ret 4
+ Numdbl  ENDP
+         END
+ 
+ To demonstrate these programs from an .EXE program, compile and link
+<b> as follows:</b>
+ 
+    BC /O BNUMFAR.BAS;
+    MASM ANUMFAR.ASM;
+    LINK BNUMFAR ANUMFAR;
+ 
+ BNUMFAR.EXE produces the following output:
+ 
+           BEFORE    AFTER
+ Integer:   2         4
+ Long   :  4         40000
+ Single :   3.4      -3.4
+ Double :   5.6000   -5.6000
+</pre>
+</body>
+
+</html>

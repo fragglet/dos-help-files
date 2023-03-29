@@ -1,0 +1,52 @@
+<html>
+
+<head>
+<title>SADD and SSEG Functions Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> SADD and SSEG Functions Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example creates a string and then calculates its offset and segment
+' using the SADD and SSEG functions. The information is then passed to a
+' Basic SUB procedure which mimics the performance of a non-Basic print
+' routine.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DECLARE SUB printit (Segment%, Offset%, Length%)
+ DEFINT A-Z
+ Text$ = ".... a few well-chosen words"     ' Create the string
+ 
+' Calculate the offset, segment and length of the string.
+ Offset = SADD(Text$)
+ Segment = SSEG(Text$)
+ Length = LEN(Text$)
+ 
+' Pass these arguments to the print routine.
+ CALL printit(Segment, Offset, Length)
+ END
+ 
+ SUB printit (Segment, Offset, Length)
+     CLS
+     DEF SEG = Segment                      ' Set the segment for peeking
+     FOR i = 0 TO Length - 1
+          ' Get each character from memory, convert to ASCII, and display
+          PRINT CHR$(PEEK(i + Offset));
+     NEXT i
+ END SUB
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,112 @@
+<html>
+
+<head>
+<title>FRE, STACK Functions and STACK Statement Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> FRE, STACK Functions and STACK Statement Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the FRE function to report the availability of memory
+' resources.  The STACK function is used to show free DGROUP.
+' The STACK statement is used to set the STACK size.
+'
+' If Visual Basic is invoked with the /Ea switch, the integer arrays used in
+' this example will be placed in available EMS memory space; otherwise, they
+' will occupy far memory. If the arrays are placed in EMS, each array will
+' reduce available EMS memory by 16K. If not in EMS, far memory will be
+' reduced by the number of bytes occupied by the array rounded up to an even
+' 16 bytes.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DECLARE SUB MakeSubString ()
+ DECLARE SUB Printit (a$)
+ DECLARE SUB Recursive (n%)
+ DECLARE SUB Pause ()
+ CLS                               ' Clear the screen
+ 
+ STACK 4096                        ' Set Stack size to 4k
+ 
+' Report the way things are to begin with
+ PRINT "Remaining space (in bytes) to begin with is:"
+ CALL Printit(a$)
+ 
+ String1$ = STRING$(32767, 90)     ' Create a 32K string and give report
+ PRINT "The remaining space after creating a 32K far string is:"
+ CALL Printit(String1$)
+ 
+ MakeSubString                     ' Make a substring and give report
+ PRINT "The remaing space after returning from a sub is:"
+ CALL Printit(String2$)
+ 
+ n% = 60                           ' Do 60 recursive calls to a SUB
+ CALL Recursive(n%)
+ PRINT "After performing 60 recursive calls, the space is:"
+ CALL Printit(a$)
+ 
+ REDIM a%(999)                     ' Dimension a 1001 element dynamic array
+                                   ' in EMS
+ PRINT "After dimensioning a 1000-element integer array, the space is:"
+ CALL Printit(a$)
+ 
+ PRINT "After dimensioning a 2nd 1000-element integer array, the space is:"
+ REDIM B%(999)
+ CALL Printit(a$)
+ 
+ SUB MakeSubString ()
+    SHARED String1$
+    String2$ = STRING$(32767, 90)
+    PRINT "The space remaining after creating a 32K sub string is:"
+    CALL Printit(String1$)
+ END SUB
+ 
+ SUB Pause ()
+    PRINT "Press any key for next calculation"
+    WHILE INKEY$ = "": WEND
+ END SUB
+ 
+ SUB Printit (a$)
+    PRINT "Dgroup + Current Stack"; TAB(30); STACK
+    ' STACK function returns what the largest stack that can be
+    ' be dimensioned.  This is free DGROUP plus current stack.
+ 
+    PRINT "Far Memory"; TAB(30); FRE(-1)
+    PRINT "STACK 'low water' mark"; TAB(30); FRE(-2)
+    ' FRE(-2) reports what the lowest amount of free stack space
+    ' your program has had prior to executing the FRE(-2) function.
+ 
+    PRINT "String Segment"; TAB(30); FRE(a$)
+    PRINT "Temp. Segment"; TAB(30); FRE("")
+    PRINT "EMS Memory"; TAB(30); FRE(-3); "K"
+    PRINT
+    CALL Pause
+    PRINT
+ END SUB
+ 
+ SUB Recursive (n%)
+    SHARED String1$
+    n% = n% - 1
+    IF n% = 0 THEN
+        PRINT "The remaining space after 50 recursive calls is:"
+        CALL Printit(String1$)
+        EXIT SUB
+    ELSE
+        CALL Recursive(n%)
+    END IF
+ END SUB
+</pre>
+</body>
+
+</html>

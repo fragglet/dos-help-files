@@ -1,0 +1,131 @@
+<html>
+
+<head>
+<title>COMMON Statement Details - advr.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+advr.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> COMMON Statement Details</div>
+<pre>  <span class='grhilite'>◄</span><a href='unknown#COMMON'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#.cmmnx'>Example</a><span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ COMMON [SHARED] [/blockname/] variablelist
+ 
+ Usage Notes
+   ■ Use DIM rather than COMMON when you want to share access to variables
+     within a single module. See: <span class='grhilite'>◄</span><a href='unknown#dim'>DIM Statement</a><span class='grhilite'>►</span>
+ 
+   ■ When using COMMON SHARED to share arrays between forms, the correct
+     syntax is:
+ 
+         COMMON SHARED MyArray() AS INTEGER
+ 
+     This statement must appear at the module level of all forms that will
+     share the array. Use REDIM in a Form_Load event procedure to dimension
+     the array. See: <span class='grhilite'>◄</span><a href='unknown#redim'>REDIM Statement</a><span class='grhilite'>►</span>
+ 
+   ■ Errors caused by mismatched COMMON statements are subtle and difficult
+     to find. You can avoid mismatched COMMON statements by:
+     • Placing COMMON declarations in a single include file
+     • Using the $INCLUDE metacommand in each module
+     See: <span class='grhilite'>◄</span><a href='unknown#$include'>$INCLUDE Metacommand</a><span class='grhilite'>►</span>
+ 
+   ■ The following code fragment shows how to use the $INCLUDE metacommand
+     to share a file containing COMMON statements among programs:
+ 
+         '$INCLUDE:'COMDEF.BI'         ' This file is MENU.BAS
+         .
+         .
+         .
+         CHAIN "Prog1"
+         END
+ 
+         '$INCLUDE:'COMDEF.BI'         ' This file is PROG1.BAS
+         .
+         .
+         .
+         END
+ 
+         DIM A(100),B$(200)            ' This file is COMDEF.BI
+         COMMON I,J,K,A()
+         COMMON A$,B$(),X,Y,Z          ' End COMDEF.BI
+ 
+   ■ When you compile a program using the Visual Basic Compiler (BC.EXE) with
+     the /O option, common variables are not preserved across the chain. To
+     preserve values across a chain, you must either:
+     • Compile without the /O option (using BC)
+     • Select the EXE Requiring Run-Time Module option from the Make EXE File
+       dialog box (using VBDOS)
+ 
+   ■ Unless it has been declared as a static array in a preceding DIM
+     statement, an array variable in a COMMON statement is a dynamic array.
+     Its dimensions must be set in a later DIM or REDIM statement.
+     See: <span class='grhilite'>◄</span><a href='unknown#dim'>DIM Statement</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#redim'>REDIM Statement</a><span class='grhilite'>►</span>
+ 
+   ■ Both static and dynamic arrays are placed in COMMON by using the array
+     name followed by parentheses. Follow these rules when dimensioning an
+     array:
+     • For static arrays, dimensions must be set with integer-constant
+       subscripts in a DIM statement preceding a COMMON statement
+     • For dynamic arrays, dimensions must be set in a later DIM or REDIM
+       statement
+ 
+   ■ The elements of a dynamic array are not allocated in the COMMON block.
+     Only an array descriptor is placed in COMMON.
+ 
+   ■ A COMMON statement establishes storage for variables in a special area
+     that allows them to be shared between modules or with other programs
+     invoked with a CHAIN statement. See: <span class='grhilite'>◄</span><a href='unknown#.Uscwc'>Using COMMON with CHAIN</a><span class='grhilite'>►</span>
+ 
+   ■ Because COMMON statements establish global variables for an entire
+     program, they precede before any executable statements. All statements
+     are executable except the following:
+ 
+         COMMON                        CONST
+         DATA                          DECLARE
+         DEFtype                       DIM (for static arrays)
+         $DYNAMIC                      $FORM
+         $INCLUDE                      OPTION BASE
+         OPTION EXPLICIT               REM
+         SHARED                        $STATIC
+         STATIC                        TYPE...END TYPE
+ 
+   ■ When blockname is used, the COMMON block is a named COMMON block. When
+     blockname is omitted, the block is a blank COMMON block. Items in a
+     named COMMON block are not preserved across a chain to a new program.
+     See: <span class='grhilite'>◄</span><a href='unknown#.usnc'>Using Named COMMON</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#.uscwc'>Using COMMON With CHAIN</a><span class='grhilite'>►</span>
+ 
+   ■ The size of a common area can be different from that in another module
+     or chained program if a blank COMMON block has been used. When a Visual
+     Basic program shares COMMON blocks with a routine in the user library,
+     the calling program may not redefine the COMMON block to a larger size.
+ 
+   ■ Use the blockname argument to share only specific groups of variables.
+     You cannot use a type-declaration character (%, &amp;, !, #, @, $) as part
+     of blockname.
+ 
+   ■ Variables in COMMON blocks are matched by position and type, not by
+     name. Thus, variable order is significant in COMMON statements. For
+     example, in the following fragment, the order of variables in COMMON
+     statements links the variables, not the names:
+ 
+         COMMON A, D, E                ' Module level
+         A = 5 : D = 8 : E = 10
+         .
+         .
+         .
+         COMMON A, E, D                ' Common statement in another module
+         .                             ' A = 5, E = 8, D = 10
+         .
+         .
+ 
+</pre>
+</body>
+
+</html>

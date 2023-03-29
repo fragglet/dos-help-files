@@ -1,0 +1,113 @@
+<html>
+
+<head>
+<title>Article Q45909 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q45909</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Example of How to Use 1- and 2-Byte Return Codes from INKEY$</b> - Q45909
+ 
+ The INKEY$ function returns a 1- or 2-byte string containing a
+ character read from the standard input device. A null string is
+ returned if no character is waiting there. A 1-character string
+ contains the actual character read from the keyboard, while a
+ 2-character string indicates an extended code, the first character
+ of which is hexadecimal 00.
+ 
+ When two bytes are received from an extended key, the second character
+ of the string is the scan code associated with the extended key. The
+ chart in the version 4.50 QuickBASIC Advisor and Microsoft Advisor
+ on-line Help system for BASIC Professional Development System (PDS)
+ version 7.00 contains the scan code listing. The extended keys
+ include the function keys, arrow keys, HOME, PGUP, END, PGDN, and
+ SHIFT+TAB keys.
+ 
+ More Information:
+ 
+ The following program example demonstrates how to use the INKEY$
+ function to return either a 1-byte character or 2-byte extended code.
+ The length, ASCII representation, and the numeric representation for
+ each key that is pressed are displayed. In addition, the arrow keys
+ and the SHIFT+TAB key combination are trapped for 2-byte returns, and
+ the ESC, TAB, and SPACEBAR are trapped for 1-byte returns.
+ 
+ Code Example
+ ------------
+ 
+ ' To try this example in VBDOS.EXE:
+ ' 1. From the File menu, choose New Project.
+ ' 2. Copy the code example to the Code window.
+ ' 3. Press F5 to run the program.
+ 
+ ' SCAN CODES to be used with a 2-byte return code from INKEY$.
+ CONST left = &amp;H4B
+ CONST right = &amp;H4D
+ CONST up = &amp;H48
+ CONST down = &amp;H50
+ CONST tabscan = 15
+ 
+ ' ASCII CODES  to be used with a 1-byte return from INKEY$.
+ CONST escape = 27
+ CONST tabchar = 9
+ CONST space = 32
+ 
+ CLS
+ DO UNTIL UCASE$(t$) = "Q"  ' PROGRAM ENDS WHEN 'Q' OR 'q' IS ENTERED.
+  LOCATE 23, 35
+  PRINT "Q to quit"
+  t$ = INKEY$
+  IF t$&lt;&gt;"" THEN
+   LOCATE 10, 1
+   length% = LEN(t$)
+   PRINT "length "; length%
+   PRINT "ASCII representation "; t$
+   PRINT "numeric representation ";
+   SELECT CASE length%
+          CASE 2
+            FOR i = 1 TO 2
+              PRINT ASC(MID$(t$, i, 1)); " ";
+            NEXT i
+                  SELECT CASE ASC(RIGHT$(t$, 1))
+                          CASE up
+                           PRINT "up           "
+                          CASE down
+                           PRINT "down         "
+                          CASE left
+                           PRINT "left         "
+                          CASE right
+                           PRINT "right        "
+                          CASE tabscan
+                           PRINT "Shift tab"
+                  END SELECT
+          CASE 1
+            PRINT ASC(t$);
+            SELECT CASE ASC(LEFT$(t$, 1))
+                  CASE escape
+                    PRINT "escape       "
+                  CASE tabchar
+                    PRINT "tab character"
+                  CASE space
+                    PRINT "space        "
+            END SELECT
+          CASE ELSE
+            PRINT "                    "
+   END SELECT
+  END IF
+ LOOP
+ END
+</pre>
+</body>
+
+</html>

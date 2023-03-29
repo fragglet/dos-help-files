@@ -1,0 +1,100 @@
+<html>
+
+<head>
+<title>GET, PUT Statements (File I/O) Details - advr.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+advr.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GET, PUT Statements (File I/O) Details</div>
+<pre>  <span class='grhilite'>◄</span><a href='unknown#GET'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#.gfiox'>Example</a><span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ GET [#]filenumber%[,[recordnumber&amp;][,variable]]
+ PUT [#]filenumber%[,[recordnumber&amp;][,variable]]
+ 
+ Usage Notes
+   ■ Do not use GET or PUT on ISAM files.
+ 
+   ■ If you omit recordnumber&amp;, the next record or byte (the one after the
+     last GET or PUT, or the one pointed to by the last SEEK) is read into
+     the buffer (GET) or written to (PUT). The largest possible record number
+     is 2,147,483,647 (equivalent to 2^31 -1).
+ 
+   ■ The first record or byte position in a file is 1.
+ 
+   ■ A record cannot be longer than 32,767 bytes.
+ 
+   ■ If you specify a variable, you do not need either:
+     • CVI, CVL, CVS, CVD, or CVC to convert record fields to numbers
+     • MKI$, MKL$, MKS$, MKD$, or MKC$ to convert numeric fields before
+       writing
+     See: <span class='grhilite'>◄</span><a href='unknown#cvi'>CVx Functions</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#mki$'>MKx$ Functions</a><span class='grhilite'>►</span>
+ 
+   ■ You cannot use a FIELD statement with the file if you use the variable
+     argument. See: <span class='grhilite'>◄</span><a href='unknown#field'>FIELD Statement</a><span class='grhilite'>►</span>
+ 
+   ■ For random-access files, you can use any variable as long as the length
+     of the variable is less than or equal to the length of the record.
+     Usually, a record variable defined to match the fields in a data record
+     is used.
+ 
+   ■ For binary-mode files, you can use any variable. The GET statement reads
+     as many bytes as there are in the variable; the PUT statement writes as
+     many bytes to the file as there are bytes in the variable.
+ 
+   ■ When you use a variable-length string variable, the statement reads
+     (GET) or writes (PUT) as many bytes as there are characters in the
+     string's value. For example, the following two statements use GET to
+     read 10 bytes from file number 1:
+ 
+         VarStrings$=STRING$ (10, " ")
+         GET #1,,VarString$
+ 
+   ■ The following two statements use PUT to write 15 bytes to file number 1:
+ 
+         VarString$=STRING$(15, "X")
+         PUT #1,,VarString$
+ 
+   ■ You can omit the arguments recordnumber&amp;, variable, or both. If you
+     omit the recordnumber&amp; but include a variable, you must still include
+     the commas:
+ 
+         GET #4,,FileBuffer
+         PUT #4,,FileBuffer
+ 
+   ■ If you omit both arguments, do not include the commas:
+ 
+         GET #4
+         PUT #4
+ 
+   ■ GET and PUT statements allow fixed-length input and output for Visual
+     Basic communications files. Use GET carefully, because if there is a
+     communications failure, GET waits indefinitely for recordnumber&amp;
+     characters.
+ 
+   ■ When you use GET with the FIELD statement, you can use INPUT # or LINE
+     INPUT # after GET to read characters from the random-access file
+     buffer. You can use the EOF function after a GET statement to see if
+     GET went beyond the end of the file.
+     See: <span class='grhilite'>◄</span><a href='unknown#eof'>EOF Function</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#input'>INPUT Statement</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#input'>LINE INPUT Statement</a><span class='grhilite'>►</span>
+ 
+   ■ When using a file buffer defined by a FIELD statement, LSET, RSET,
+     PRINT #, and WRITE # can be used to put characters in the random-file
+     buffer before executing a PUT statement.
+     See: <span class='grhilite'>◄</span><a href='unknown#field'>FIELD Statement</a><span class='grhilite'>►</span>    <span class='grhilite'>◄</span><a href='unknown#lset'>LSET Statement</a><span class='grhilite'>►</span>     <span class='grhilite'>◄</span><a href='unknown#rset'>RSET Statement</a><span class='grhilite'>►</span>
+          <span class='grhilite'>◄</span><a href='unknown#.psf'>PRINT # Statement</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#write'>WRITE # Statement</a><span class='grhilite'>►</span>
+ 
+   ■ In the case of WRITE #, Visual Basic pads the buffer with spaces up to
+     the carriage return. If you attempt to read or write past the end of
+     the buffer, Visual Basic generates the error message, "FIELD overflow."
+ 
+</pre>
+</body>
+
+</html>

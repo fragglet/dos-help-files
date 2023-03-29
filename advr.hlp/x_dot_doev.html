@@ -1,0 +1,67 @@
+<html>
+
+<head>
+<title>DOEVENTS Function Details - advr.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+advr.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DOEVENTS Function Details</div>
+<pre>  <span class='grhilite'>◄</span><a href='unknown#DOEVENTS'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#.doevx'>Example</a><span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ DOEVENTS()
+ 
+ Usage Notes
+   ■ Form events are not processed within standard event-handling procedures.
+     Some procedures may contain code which takes several seconds to run.
+     Therefore, if you want to respond to form events while these procedures
+     are running, you must intersperse calls to DOEVENTS in the procedure.
+     For example:
+     • In response to a Click event, you may want to sort a list containing
+       thousands of items.
+     • While the list is being sorted, you display a message box with a
+       Cancel button that asks the user to wait until the sort has been
+       completed.
+     • For the Cancel button to work, you must place a call to DOEVENTS
+       in the sorting routine. This allows the Click event for the Cancel
+       button to be processed during the sort. Without DOEVENTS, the Click
+       event for the Cancel button cannot be processed until the sort is
+       completed.
+ 
+   ■ Be careful using DOEVENTS. If you use a DOEVENTS function in a Click
+     event procedure, you can receive a second click (during DOEVENTS
+     processing) before control returns from processing the first Click
+     event. This type of re-entrancy error could occur in the sort example
+     above if:
+     • The user is allowed to click the button that starts the sort routine
+       while the sort is being performed.
+     • The second Click procedure attempts to open the list file, which has
+       already been opened by the first Click procedure.
+ 
+   ■ If the startup module in your program is a form module, form events
+     processing begins automatically. If the start-up module in your program
+     is not a form module, you must call DOEVENTS to begin form event
+     handling. When the first form in the program is made visible, use
+     DOEVENTS in a continual loop to begin processing form events. For
+     example:
+ 
+         Form1.SHOW
+         WHILE DOEVENTS():WEND
+ 
+   ■ DOEVENTS causes form events to be processed until there are no forms
+     loaded.
+ 
+   ■ Be aware of global variables when using DOEVENTS. It is possible for an
+     event procedure that is called during DOEVENTS processing to reset the
+     value of a global variable upon which the original procedure depends.
+ 
+</pre>
+</body>
+
+</html>

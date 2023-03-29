@@ -1,0 +1,56 @@
+<html>
+
+<head>
+<title>SSEGADD Function Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> SSEGADD Function Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the SSEGADD function to obtain the Basic string address
+' of a string used by a C procedure. The Basic program calls the printmessage
+' C procedure which, in turn, calls Basic to obtain the string address.
+ 
+' Note: To run this example, you must first compile the C procedure (shown
+' below in remarks) and either incorporate it in a Quick library or link it
+' to the compiled Basic program.
+ 
+' To run this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DEFINT A-Z
+ DECLARE SUB printmessage CDECL (BYVAL farstring AS LONG)
+ 
+ CLS                                  ' Clear the screen
+' Create the message as an ASCIIZ string, as required by the C printf
+' function.
+ a$ = "This is a short example of a message" + CHR$(0)
+ CALL printmessage(SSEGADD(a$))       ' Call the C procedure with pointers
+ 
+' /* C Routine printmessage */
+' /* Prints a BASIC far string on the screen.*/
+'
+' #include &lt;stdio.h&gt;
+'
+' /* Define a procedure which inputs a string far pointer */
+' void  printmessage (char far *farpointer)
+'    {
+'    /* print the string addressed by the far pointer */
+'    printf( "%s\n", farpointer);
+'    }
+'
+ 
+</pre>
+</body>
+
+</html>

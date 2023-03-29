@@ -1,0 +1,105 @@
+<html>
+
+<head>
+<title>Article Q37031 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q37031</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Printer Error Can Hang; CALL INTERRUPT to Check Printer</b> - Q37031
+ 
+ Detecting printer errors with the ON ERROR GOTO statement is usually
+ very slow. While the printer is waiting to time-out due to an error,
+ the program may appear to be hung. Depending on the type of computer,
+ MS-DOS or a Visual Basic for MS-DOS program may take from 20 seconds
+ to more than two minutes before displaying a printer time-out error.
+ This is expected behavior. The printer time-out period is determined
+ by the ROM BIOS of your computer.
+ 
+ A printer time-out error is one of the most likely reasons for a
+ Visual Basic for MS-DOS hanging problem. (If you wait more than a few
+ minutes without getting an error message, then a printer time-out
+ error is probably not the problem.)
+ 
+ Listed below are two alternatives to waiting for the printer time-out
+ error: checking the status of the printer periodically throughout a
+ program using ROM BIOS Interrupt 17h with function 2, or changing the
+ ROM BIOS time-out value used for the printer port.
+ 
+ More Information:
+ 
+ The easiest way to check for printer errors is to send output to the
+ printer and trap any errors with an ON ERROR GOTO statement. However,
+ this method is slow and not always reliable, as in the case where you
+ send out less than a full buffer to the printer. When a program sends
+ out less than a full buffer to the printer, an error may go undetected
+ by the program until the program fills the buffer later, at which
+ point the program appears to hang until the printer times out.
+ 
+ If you print a file from MS-DOS or a Visual Basic for MS-DOS program
+ when the printer is offline, it may take up to several minutes for an
+ error to be returned. The time allowed for a response varies from
+ version to version of the computer's ROM BIOS.
+ 
+ Using PEEK and POKE to Change Printer Time-Out Period
+ -----------------------------------------------------
+ 
+ You can change the time-out value used by the ROM BIOS to decrease or
+ increase the amount of time it takes to generate a printer error. You
+ can accomplish this in BASIC by using the DEF SEG, PEEK, and POKE
+ statements to modify the ROM BIOS table entry for the desired printer
+ time-out duration.
+ 
+ The following code example shows how to change the printer time-out
+ value for printer 1 in the ROM BIOS table. If your program changes the
+ printer time-out value, then you should also restore the original
+ time-out value before stopping the program.
+ 
+    <span class='grhilite'>◄</span><a href='x_dot_Q37031EX1.html'>See Example 1</a><span class='grhilite'>►</span>
+ 
+ Checking Printer Status with a ROM BIOS Interrupt
+ -------------------------------------------------
+ 
+ You can also check the status of the printer periodically throughout a
+ program by using the ROM BIOS Interrupt 17h, with function 2. This
+ interrupt returns the printer status in the AH register. Each bit
+ returned in AH represents the following printer conditions:
+ 
+     Bit     Condition
+     ---     ---------
+ 
+     Bit 7   Printer Not Busy (0 = Busy)
+     Bit 6   Acknowledge
+     Bit 5   Out of Paper
+     Bit 4   Printer Selected
+     Bit 3   I/O Error
+     Bit 2   Unused
+     Bit 1   Unused
+     Bit 0   Timed-Out
+ 
+ For example, to determine if the printer is out of paper, the
+ interrupt could be called and bit 5 could be examined. To call MS-DOS
+ interrupts from Visual Basic for MS-DOS, use the CALL INTERRUPT
+ routine.
+ 
+ The following is a sample BASIC program that uses the CALL INTERRUPT
+ routine to check the printer status whenever the F1 key is pressed, or
+ after a BASIC error:
+ 
+    <span class='grhilite'>◄</span><a href='x_dot_Q37031EX2.html'>See Example 2</a><span class='grhilite'>►</span>
+ 
+</pre>
+</body>
+
+</html>

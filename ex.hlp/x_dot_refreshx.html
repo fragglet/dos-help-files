@@ -1,0 +1,51 @@
+<html>
+
+<head>
+<title>REFRESH Method Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> REFRESH Method Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' The example uses the REFRESH method to refresh a file list box as test
+' files are being created.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Choose New Form from the File menu to create a form with a file list box
+' 3. Press Alt+F4 to return to the programming environment
+' 4. Copy the code example below to the form module
+' 5. Press F5 to run the example
+ 
+ DECLARE SUB RefreshDemo ()
+ 
+ SUB Form_Click ()
+     CALL RefreshDemo
+ END SUB
+ SUB RefreshDemo ()
+     File1.Pattern = "TestFile.*"                ' Set file pattern
+     FOR I% = 1 TO 9                             ' Do 9 times
+         FileName$ = "TESTFILE." + LTRIM$(STR$(I%))
+         OPEN FileName$ FOR OUTPUT AS FREEFILE   ' Create null file
+         File1.REFRESH                           ' Refresh file list box
+         CLOSE                                   ' Close file
+     NEXT I%
+     Msg$ = "Choose OK to remove the created test files."
+     MSGBOX Msg$                                 ' Display message
+     KILL "TESTFILE.*"                           ' Remove test files
+     File1.Pattern = "*.*"
+     File1.REFRESH                               ' Update file list box
+ END SUB
+ 
+</pre>
+</body>
+
+</html>

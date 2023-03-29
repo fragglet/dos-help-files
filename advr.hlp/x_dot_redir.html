@@ -1,0 +1,111 @@
+<html>
+
+<head>
+<title>REDIM Statement Details - advr.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+advr.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> REDIM Statement Details</div>
+<pre>  <span class='grhilite'>◄</span><a href='unknown#REDIM'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#.redix'>Example</a><span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ REDIM [PRESERVE] [SHARED] variable(subscripts) [AS type]
+                         [,variable(subscripts) [AS type]]...
+ 
+ Usage Notes
+   ■ The REDIM statement is often used in the initial Form_Load event
+     procedure to define the dimensions of an array shared between form
+     modules. See: <span class='grhilite'>◄</span><a href='unknown#load'>Load Event</a><span class='grhilite'>►</span>
+ 
+   ■ Although you can change the size of an array's dimensions with REDIM,
+     you cannot change the number of dimensions. For example, the following
+     statements are legal:
+ 
+         DIM A(50,50)                  ' $DYNAMIC
+         ERASE A
+         REDIM A(20,15)                ' Array A still has two dimensions
+ 
+     However, the following statements are illegal, and produce the error
+     message, "Wrong number of dimensions":
+ 
+         DIM A(50,50)                  ' $DYNAMIC
+         ERASE A
+         REDIM A(5,5,5)                ' Changed number of dimensions
+                                       'from two to three
+ 
+   ■ You can also use REDIM to declare or resize an array of user-defined
+     types. In the following example, the variable Card is declared as a
+     user-defined type; REDIM allocates space for an array called Deck that
+     consists of 52 Card elements:
+ 
+         TYPE Card
+              Suit AS STRING * 9
+              Value AS INTEGER
+         END TYPE
+ 
+         DIM Deck()
+ 
+         REDIM Deck(1 TO 52) AS Card
+ 
+     Note: The user-defined type declaration (using the TYPE statement) can
+     only exist at the module level; REDIM statement can only be used in a
+     module or procedure. See: <span class='grhilite'>◄</span><a href='unknown#type'>TYPE Statement</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#.dtp.user'>User-Defined Data Types</a><span class='grhilite'>►</span>
+ 
+   ■ If the PRESERVE keyword is not used, REDIM initializes all:
+     • Elements of numeric arrays to zero
+     • Elements of string arrays to null strings
+     • Fields of record variables to zero, including fixed-length string
+       elements
+ 
+   ■ REDIM is used to size or resize a dynamic array that has already been
+     formally declared using DIM with empty parentheses (no dimension
+     subscripts).
+ 
+   ■ If you first declare a dynamic array using a DIM statement and no
+     dimension subscripts, the maximum number of dimensions you can later
+     specify with REDIM is 8.
+ 
+   ■ If your array requires more than 8 dimensions, you can use REDIM in a
+     SUB or FUNCTION procedure to initially declare a local dynamic array
+     variable; if this is the case, your array can have up to 60 dimensions.
+ 
+   ■ When a REDIM statement is compiled, all arrays declared in the
+     statement are treated as dynamic. At run time, when a REDIM statement
+     is executed, the array is deallocated (if it is already allocated) and
+     then reallocated with the new dimensions. Note: If the PRESERVE keyword
+     is not used, old array element values are lost.
+ 
+   ■ The PRESERVE keyword allows you to raise or lower the outer bounds of a
+     dynamic array without erasing data. For example, the following
+     statements keep any data entered in arrayX() and add space for more
+     elements in the third dimension of the array:
+ 
+         REDIM X(10, 10, 10)
+         .
+         .
+         .
+         REDIM PRESERVE X(10, 10, 15)
+ 
+     The third dimension of X() is the rightmost bound of the array. To
+     change the leftmost bound, you must compile the program with /R.
+     See: <span class='grhilite'>◄</span><a href='unknown#.bc.exe'>BC Command-Line Options</a><span class='grhilite'>►</span>
+ 
+   ■ Use UBOUND after REDIM PRESERVE to determine how many filled elements
+     there are in an array since they will all be filled.
+     See: <span class='grhilite'>◄</span><a href='unknown#ubound'>UBOUND Function</a><span class='grhilite'>►</span>
+ 
+   ■ When used with DIM, the SHARED keyword shares variables among all
+     procedures in a module. In contrast, the SHARE statement shares
+     variables between a single procedure and the module-level code.
+     See: <span class='grhilite'>◄</span><a href='unknown#shared'>SHARED Statement</a><span class='grhilite'>►</span>
+ 
+</pre>
+</body>
+
+</html>

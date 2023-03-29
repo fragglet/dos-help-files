@@ -1,0 +1,69 @@
+<html>
+
+<head>
+<title>Absolute Routine Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Absolute Routine Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the Absolute routine to execute a machine-language
+' program stored in an array. The program prints a message indicating
+' whether or not a math coprocessor is installed.
+ 
+' Note: The Absolute routine requires the Quick library VBDOS.QLB. To load
+  VBDOS.QLB, start Visual Basic with the /L switch.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ CONST nASMBYTES = 14      ' AsmBytes is a label
+ DEFINT A-Z                ' nASMBYTES is a symbolic constant
+ DIM AsmProg(1 TO (nASMBYTES / 2))
+ 
+ CLS                       ' Clear the screen
+' The machine-language program stored as data to read into the array
+AsmBytes:
+ DATA &amp;H55              :  ' PUSH BP        Save base pointer
+ DATA &amp;H8B, &amp;HEC        :  ' MOV  BP,SP     Get our own
+ DATA &amp;HCD, &amp;H11        :  ' INT  11H       Make the ROM-BIOS call
+ DATA &amp;H8B, &amp;H5E, &amp;H06  :  ' MOV  BX,[BP+6] Get argument address
+ DATA &amp;H89, &amp;H07        :  ' MOV  [BX],AX   Save list in argument
+ DATA &amp;H5D              :  ' POP  BP        Restore base pointer
+ DATA &amp;HCA, &amp;H02, &amp;H00  :  ' RET  2         Pop argument off stack
+                           '                and make far return
+ 
+' Poke the machine-language program into the array
+ P = VARPTR(AsmProg(1))           ' Get the starting offset of the array
+ DEF SEG = VARSEG(AsmProg(1))     ' Change the segment
+ FOR i = 0 TO nASMBYTES - 1
+     READ J
+     POKE (P + i), J
+ NEXT i
+ 
+' Execute the program. The program expects a single integer argument
+ CALL ABSOLUTE(X%, VARPTR(AsmProg(1)))
+ DEF SEG                          ' Restore the segment
+                                  ' X% now contains bit-encoded
+                                  ' equipment list returned by MS-DOS
+ CoProcessor = X% AND &amp;H2         ' Mask off all but the coprocessor bit
+ IF CoProcessor = 2 THEN          ' Print the appropriate message
+     PRINT "Math coprocessor present."
+ ELSE
+     PRINT "No math coprocessor."
+ END IF
+ END
+</pre>
+</body>
+
+</html>

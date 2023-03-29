@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<title>Article Q49401 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q49401</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Example of Passing Array of Doubles from Basic to MASM</b> - Q49401
+ 
+ The two programs shown below demonstrate how a Microsoft Basic program
+ can pass an array of double-precision variables to assembly language.
+ 
+ More Information:
+ 
+ The following Basic program is BDBL.BAS, which passes an uninitialized
+<b> array of double precision numbers to an assembly routine that</b>
+<b> initializes the array.</b>
+ 
+ Code Example
+ ------------
+ 
+ DECLARE SUB FillDbl(BYVAL ASeg AS INTEGER, BYVAL AOff AS INTEGER)
+ 
+ DIM DblArray(1 TO 5) AS DOUBLE
+ 
+ CALL FillDbl(VARSEG(DblArray(1)), VARPTR(DblArray(1)))
+ FOR i% = 1 TO 5
+    PRINT DblArray(i%)
+ NEXT
+ END
+ 
+ 
+ The following program is ADBL.ASM, which initializes an array of
+<b> double-precision numbers passed from Basic:</b>
+ 
+ .MODEL MEDIUM, BASIC
+ .DATA
+         Dbl1 DQ 123.45       ; Initialize data table.
+         Dbl2 DQ 456.78
+         Dbl3 DQ 98765.432
+         Dbl4 DQ 12345.678
+         Dbl5 DQ 777.888
+ .CODE
+         PUBLIC FillDbl
+ FillDbl PROC
+         push bp
+         mov bp, sp           ; Set stack frame.
+         push es
+         push di
+         push si
+         mov es, [bp+8]       ; Segment of array.
+         mov di, [bp+6]       ; Offset of array.
+         mov si, OFFSET Dbl1  ; Get offset of data table.
+         mov cx, 40           ; Length of data in table.
+         rep movsb            ; Copy data table to array.
+         pop si
+         pop di
+         pop es
+         pop bp
+         ret 4
+ FillDbl ENDP
+         END
+ 
+ To demonstrate these programs from an .EXE program, compile and link
+<b> as follows:</b>
+ 
+    BC BDBL.BAS;
+    MASM ADBL.ASM;
+    LINK BDBL ATWODBL;
+ 
+ BDBL.EXE produces the following output:
+ 
+ 123.45
+ 456.78
+ 98765.432
+ 12345.678
+ 777.888
+</pre>
+</body>
+
+</html>

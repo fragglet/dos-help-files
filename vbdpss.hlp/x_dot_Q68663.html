@@ -1,0 +1,158 @@
+<html>
+
+<head>
+<title>Article Q68663 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q68663</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Passing Basic Numeric Arrays from Basic to C and Back to Basic</b> - Q68663
+ 
+ The following example demonstrates how to pass numeric arrays from
+ compiled BASIC to Microsoft C then back to BASIC using BASIC's "by
+ reference" calling convention.
+ 
+ More Information:
+ 
+ The example listed below differs from the other Basic-to-C
+ array-passing examples in that the example below lets you pass array
+ data from BASIC to C then back to BASIC. Other Basic-to-C examples
+ pass array data from Basic to C, but not back to Basic.
+ 
+ Code Example
+ ============
+ 
+ Compile and link the sample programs below as follows:
+ 
+    BC /O ByRefB.BAS ;
+    CL /c /W3 /AM ByRefC.C
+    LINK /NOE ByRefB ByRefC ;
+ 
+ ByRefB.BAS
+ ----------
+ 
+ ' Declare the BASIC and C routines to use the same calling
+ ' convention. In this case we want the default Basic "BY REFERENCE"
+ ' calling convention.
+ 
+ DECLARE SUB BTest (Array1%(), Array2!(), Array3#(), Array4&amp;())
+ DECLARE SUB CTest (Array1%(), Array2!(), Array3#(), Array4&amp;())
+ ' $STATIC
+ DIM A%(10), B!(10) ' Define some STATIC data in "DGROUP".
+ ' $DYNAMIC
+ DIM C#(10), D&amp;(10) ' And, some DYNAMIC data.
+ CLS
+ FOR i% = 0 TO 10   ' Initialize the arrays.
+     A%(i%) = i%
+     B!(i%) = .5 * i%
+     C#(i%) = 1.5 * i%
+     D&amp;(i%) = i% * i%
+ NEXT i%
+ CTest A%(), B!(), C#(), D&amp;()
+ PRINT A%(10), B!(10), C#(10), D&amp;(10)
+ END
+ SUB BTest (Array1%(), Array2!(), Array3#(), Array4&amp;())
+     PRINT
+     FOR i% = 0 TO 10
+         PRINT Array1%(i%), Array2!(i%), Array3#(i%), Array4&amp;(i%)
+     NEXT i%
+ END SUB
+ 
+ ByRefC.C
+ --------
+ 
+ #include &lt;stdio.h&gt;
+ 
+ /**
+  ** Use "typedef" to reduce complexity/readability of code.
+  **
+  ** BASIC's BY REFERENCE is a near handle to a far pointer for the
+  ** actual data of numeric arrays.
+  **/
+ typedef int    far * near * HInt ;
+ typedef long   far * near * HLng ;
+ typedef float  far * near * HSng ;
+ typedef double far * near * HDbl ;
+ 
+ /**
+  ** Define the BASIC routine as a "standard BASIC" call so the
+  ** parameters will be the same.
+  **/
+ extern void pascal BTest ( HInt, HSng, HDbl, HLng ) ;
+ 
+ /**
+  ** Define our C routine as a "standard BASIC" routine so we look
+  ** like BASIC. This simplifies the parameter passing since we
+  ** all look the same on the stack.
+  **/
+ void pascal CTest (HInt IntArray, HSng SngArray,
+                    HDbl DblArray, HLng LngArray)
+     {
+         int j, i;
+         printf ("\Original Array Values\") ;
+         BTest ( IntArray, SngArray, DblArray, LngArray ) ;
+         for (i = 0, j = 10; i &lt; 6; i++, j--)
+             {
+                 (*IntArray)[i] = (*IntArray)[j] ;
+                 (*LngArray)[i] = (*LngArray)[j] ;
+                 (*SngArray)[i] = (*SngArray)[j] ;
+                 (*DblArray)[i] = (*DblArray)[j] ;
+             }
+      printf ("\Modified Array Values\") ;
+         BTest ( IntArray, SngArray, DblArray, LngArray ) ;
+         printf ("\Modified Last Array Elements\") ;
+         (*IntArray) [10] = (int)    3 ;
+         (*SngArray) [10] = (float)  4.45 ;
+         (*DblArray) [10] = (double) 30.303 ;
+         (*LngArray) [10] = (long)   445 ;
+     }
+ 
+ Program Output
+ ==============
+ 
+  Original Array Values
+ 
+   0             0             0             0
+   1             .5            1.5           1
+   2             1             3             4
+   3             1.5           4.5           9
+   4             2             6             16
+   5             2.5           7.5           25
+   6             3             9             36
+   7             3.5           10.5          49
+   8             4             12            64
+   9             4.5           13.5          81
+   10            5             15            100
+ 
+  Modified Array Values
+ 
+   10            5             15            100
+   9             4.5           13.5          81
+   8             4             12            64
+   7             3.5           10.5          49
+   6             3             9             36
+   5             2.5           7.5           25
+   6             3             9             36
+   7             3.5           10.5          49
+   8             4             12            64
+   9             4.5           13.5          81
+   10            5             15            100
+ 
+  Modified Last Array Elements
+ 
+   3             4.45          30.303        445
+</pre>
+</body>
+
+</html>

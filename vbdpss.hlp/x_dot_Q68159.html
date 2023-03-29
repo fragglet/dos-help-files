@@ -1,0 +1,137 @@
+<html>
+
+<head>
+<title>Article Q68159 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q68159</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How to Truncate a File Using MS-DOS Interrupts from Basic</b> - Q68159
+ 
+ The following Basic code shows how to truncate a file using MS-DOS
+ functions. A more clumsy approach in Basic would be to read a
+ specified amount of records one at a time, writing these records to
+ another file, deleting the first file, and then renaming the new file
+ to the old file. The approach using MS-DOS functions (below) is
+ quicker and more efficient.
+ 
+ More information:
+ 
+ You can invoke MS-DOS service functions using the CALL INTERRUPT
+ statement in Basic.
+ 
+ You can set the size of any file to any arbitrary value by executing
+ MS-DOS Interrupt 21h with service 40h using CX = 00h. The usual
+ technique is to call service 42h to set the file pointer location and
+ then immediately call service 40h with CX = 00h to update the new file
+ size.
+ 
+ The program below is written so that the Truncate% FUNCTION is generic
+ as possible and works with any file. ProcessFile() sets up the
+ file-specific information, which in turn calls the Truncate% FUNCTION.
+ Truncate% generates the specific interrupt calls to truncate the file
+ at the specified record. The two SUB programs PrintFile() and
+ CreateFile() are only needed as an example.
+ 
+ Program Example
+ ---------------
+ 
+ To try this example in VBDOS.EXE:
+ 
+   1. From the File menu, choose New Project.
+   2. Copy the code example to the Code window.
+   3. Press F5 to run the program.
+ 
+ ' To run this program in the environment, you must invoke the
+ ' environment with the /L switch to load the default Quick library:
+ ' VBDOS.EXE /L for Visual Basic 1.0 for MS-DOS
+ 
+ CONST NumRec = 10
+ TYPE TheType
+      i AS INTEGER
+ END TYPE
+ DIM SHARED TheDim AS TheType
+ ' Use the following include file for Visual Basic 1.0 for MS-DOS:
+ REM $INCLUDE: 'VBDOS.BI'
+ CALL CreateFile
+ CALL PrintFile
+ CALL ProcessFile(7)
+ CALL PrintFile
+ 
+ '################### File specific SUB #############################
+ SUB ProcessFile (LastRec%)
+ ' Get the information about "TEST.DAT" and also the information
+ ' about the location of the LASTREC% where the file will be truncated.
+      OPEN "test.dat" FOR RANDOM AS #1 LEN = LEN(TheDim)
+      FilePointer% = LastRec% * LEN(TheDim)
+      IF FilePointer% &lt;&gt; Truncate%(FILEATTR(1, 2), FilePointer%) THEN
+           PRINT "error..."
+      END IF
+      CLOSE
+ END SUB
+ 
+ '################## Generic INT file truncator ####################
+ FUNCTION Truncate% (handle%, FilePointer%)
+ ' Generic function that will truncate any file at specified offset.
+ '
+ ' Receives:
+ '       1. A MS-DOS file handle;
+ '       2. A file pointer offset in bytes, pointing where to truncate.
+ ' Returns:
+ '       1. If successful, position of file pointer; or
+ '       2. If error, flags register.
+ '
+  DIM Regs AS RegType
+      Regs.ax = &amp;H4200                     ' INT 21h, service 42h.
+      Regs.bx = handle%                    ' MS-DOS Handle.
+      Regs.dx = FilePointer%               ' Offset in bytes from start.
+      CALL Interrupt(&amp;H21, Regs, Regs)
+      IF Regs.ax &lt;&gt; FilePointer% THEN      ' AX returns pointer position.
+           Truncate% = Regs.flags          ' If error, return flag.
+      END IF
+      Regs.ax = &amp;H4000                     ' INT 21h, service 40h.
+      Regs.bx = hande%                     ' MS-DOS handle.
+      Regs.cx = &amp;H0
+      CALL Interrupt(&amp;H21, Regs, Regs)
+      IF Regs.ax &lt;&gt; 0 THEN                 ' Must be zero bytes written.
+          Truncate% = Regs.flags           ' If error, return flag.
+      END IF
+      Truncate% = FilePointer%             ' Return offset location.
+ END FUNCTION
+ 
+ '############ Create Sample File using RANDOM Access ################
+ SUB CreateFile
+      KILL "test.dat"
+      OPEN "test.dat" FOR RANDOM AS #1 LEN = LEN(TheDim)
+      FOR j = 1 TO NumRec
+           TheDim.i = j
+           PUT #1, j, TheDim
+      NEXT j
+      CLOSE #1
+ END SUB
+ 
+ '########### Print contents of TEST.DAT ##################
+ SUB PrintFile
+      OPEN "test.dat" FOR RANDOM AS #1 LEN = LEN(TheDim)
+      Max = LOF(1) / LEN(TheDim)
+      FOR j = 1 TO Max
+           GET #1, j, TheDim
+           PRINT TheDim.i
+      NEXT j
+      CLOSE
+ END SUB
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+<html>
+
+<head>
+<title>Article Q47348 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q47348</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Example of Passing Fixed-Length Strings from C to Basic</b> - Q47348
+ 
+ To pass a string from Microsoft C to compiled Basic, the string must
+ originate in Basic. A fixed-length string works best for this purpose.
+ In the C module, you can modify the string, and Basic will recognize
+ this modification because Basic is referencing the address of the
+ string.
+ 
+ More Information:
+ 
+ The following program is an example of passing a fixed-length string
+ from C to Basic (where the string is first allocated in Basic). Please
+ note that the C module needs to use the medium memory model.
+ 
+ Code Example
+ ------------
+ 
+ Compile Steps
+ -------------
+ 
+    BC callc.bas /o;
+ 
+    cl /c /AM stringf.c
+ 
+ Link Step
+ ---------
+ 
+    LINK callc+stringf /nod /noe ,,,vbdcl10e+mlibce;
+ 
+ Basic Program
+ -------------
+ 
+ 'CALLC.BAS
+ DECLARE SUB StringFar CDECL (_
+             BYVAL p1o AS INTEGER,_
+             BYVAL p1s AS INTEGER,_
+             p3 AS INTEGER)
+ 
+ DIM array AS STRING * 15
+ 
+ CLS
+ array = "This is a test" + CHR$(0)
+ CALL StringFar(VARPTR(array), VARSEG(array), LEN(array))
+ LOCATE 20,20
+ PRINT array
+ END
+ 
+ C Program
+ ---------
+ 
+ /* stringf.c */
+ 
+ #include &lt;stdio.h&gt;
+ 
+ void StringFar(char far *a, int *len) {
+    int i;
+ 
+    printf("The string is : %Fs\\",a);
+    printf(" Index       Value       Character\");
+ 
+    for (i = 0;i &lt; *len; i++) {
+       printf("  %2d       %3d      %c\", i, a[i], a[i]);
+    }
+ 
+ /* This loop writes over the end of the string */
+    for (i = 10; i &lt; *len; i++) {
+       a[i] = 64;    // ASCII value for '@'
+    }
+ }
+ 
+ Output
+ ------
+ 
+ The string is : This is a test
+ 
+ Index       Value       Character
+  0           84          T
+  1          104          h
+  2          105          i
+  3          115          s
+  4           32
+  5          105          i
+  6          115          s
+  7           32
+  8                       a
+  9           32
+ 10          116          t
+ 11          101          e
+ 12          115          s
+ 13          116          t
+ 
+                     This is a @@@@
+</pre>
+</body>
+
+</html>

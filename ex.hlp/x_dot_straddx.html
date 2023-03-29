@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>StringAddress and StringLength Routines Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> StringAddress and StringLength Routines Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the StringAddress routine to pass a Basic string to
+' an assembly-language program. The StringLength routine is used to
+' determine the length of the string.
+ 
+' Note: To run this program, you must compile the following code and link
+' it with the assembled MASM program (shown below in remarks) and the
+' appropriate run-time library (VBDCL10.LIB).
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DEFINT A-Z
+ 
+ CLS                                 ' Clear the screen
+' Create a variable-length string.
+ Message1$ = "This string was sent to MASM for printing."
+ CALL PrintMessage1(Message1$)       ' Pass it to MASM to be printed
+ 
+' ; *************************PrintMessage1************************
+' ;   This MASM procedure prints a string passed to it by Basic.
+'
+'             .model      medium, basic       ;Use same model as Basic
+' ;Define external (BASIC library) procedures
+'             extrn   StringAddress: far
+'             extrn   StringLength: far
+'
+'             .code
+' ;Define procedure with one word argument
+' PrintMessage1  proc     uses ds,  descriptor
+'
+'             mov     ax, descriptor          ;Find length of string.
+'             push        ax
+'             call        StringLength
+'             push        ax                  ;Save length on stack.
+'
+'             mov         ax, descriptor      ;Go find out the
+'             push    ax                      ;address of the string
+'             CALL    StringAddress           ;data.
+'
+'             mov         ds, dx              ;Address of string.l.
+'             mov         dx, ax
+'             mov     bx, 01                  ;Handle of printer
+'             pop     cx                      ;Length of string
+'             mov     ah, 40h                 ;Have MS-DOS print it
+'             int         21h
+'             ret
+' PrintMessage1   endp
+'
+'             end
+ 
+ 
+ 
+ 
+</pre>
+</body>
+
+</html>

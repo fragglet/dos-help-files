@@ -1,0 +1,49 @@
+<html>
+
+<head>
+<title>POINT Function Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> POINT Function Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the POINT function to find the border of the ellipse by
+' testing for a change in color while redrawing an ellipse drawn with the
+' CIRCLE statement.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DEFINT X-Y
+ CLS                                 ' Clear the screen
+ INPUT "Enter angle of tilt in degrees (0 to 90): ", Ang
+ SCREEN 1                            ' Medium resolution screen
+ Ang = (3.1415926# / 180) * Ang      ' Convert degrees to radians
+ Cs = COS(Ang): Sn = SIN(Ang)
+ CIRCLE (45, 70), 50, 2, , , 2       ' Draw ellipse
+ PAINT (45, 70), 2                   ' Paint interior of ellipse
+ FOR y = 20 TO 120
+     FOR x = 20 TO 70
+          IF POINT(x, y) &lt;&gt; 0 THEN   ' Check each point in rectangle
+          ' enclosing ellipse; if the point is in the ellipse, plot a
+          ' corresponding point in the "tilted" ellipse
+          Xnew = (x * Cs - y * Sn) + 200: Ynew = (x * Sn + y * Cs)
+          PSET (Xnew, Ynew), 2
+          END IF
+     NEXT
+ NEXT
+ END
+</pre>
+</body>
+
+</html>

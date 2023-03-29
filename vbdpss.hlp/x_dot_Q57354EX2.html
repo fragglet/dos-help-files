@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>Article Q57354, Example 2 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q57354, Example 2</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How to Print Visual BASIC Video Screens to Epson Printers, Example</b>
+ 
+ Printing Hercules Screen Mode 3:
+ 
+ The following subprogram prints SCREEN Page 0 of a Hercules graphics
+ screen to an Epson or Epson-compatible printer. To print SCREEN Page
+ 1, use a DEF SEG = &amp;HB800 statement (instead of &amp;HB000 for Page 0).
+ 
+ To try this example in VBDOS.EXE:
+ 
+    1. From the File menu, choose New Project.
+    2. Copy the code example to the Code window.
+    3. Press F5 to run the program.
+ 
+ 
+    DECLARE SUB HerculesPrintScreen ()
+    ' Before using Hercules SCREEN 3, you must run MSHERC.COM (included
+    ' with VBDOS).
+    SCREEN 3
+    ' Put your screen graphics commands here - and take out commands
+    ' between these markers:
+    ' --------------------------------------------------------------
+      FOR i% = 1 TO 719 STEP 10
+        LINE (1, 1)-(i%, 348)
+        LINE (1, 348)-(i%, 1)
+      NEXT i%
+    ' --------------------------------------------------------------
+    CALL HerculesPrintScreen
+ 
+    SUB HerculesPrintScreen STATIC
+       DEF SEG = &amp;HB000  ' Set segment to SCREEN 3, video Page 0.
+       OPEN "LPT1" FOR BINARY AS #1 ' Open printer port in binary mode.
+       WIDTH #1, 255                ' Set print width to 256 bytes wide.
+       adv872$ = CHR$(27) + "A" + CHR$(8)
+       dots408$ = CHR$(27) + "K" + CHR$(92) + CHR$(1)
+       linefeed$ = CHR$(10)
+ 
+       PUT #1, , adv872$       ' Set printer linefeed to 8/72".
+       FOR x = 0 TO 89
+          PUT #1, , dots408$   ' Set printer for bit image graphic mode.
+          FOR y = 7740 + x TO x STEP -90
+             FOR z = 24576 + y TO y STEP -8192
+                image$ = CHR$(PEEK(z))
+                PUT #1, , image$  ' Send bit-image graphics to printer.
+             NEXT z
+          NEXT y
+          PUT #1, , linefeed$   ' Send a linefeed to the printer.
+       NEXT x
+ 
+       ResetPrn$ = CHR$(27) + "@"
+       PUT #1, , ResetPrn$      ' Reset the printer to default settings.
+       CLOSE #1
+    END SUB
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,69 @@
+<html>
+
+<head>
+<title>Article Q79149 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q79149</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How to Remember Current ISAM Record for Different Indexes</b> - Q79149
+ 
+ Method 2
+ --------
+ 
+ A temporary variable can be used to maintain the key value(s) for the
+ current record for the desired index. These key values could be used
+ in a SEEKEQ statement when the original index is returned to, making
+ the record with those key values the current record. Assume the
+ following type and index are used in the example below:
+ 
+ TYPE DataType
+   Element1 AS STRING * 15
+   Element2 AS CURRENCY
+ END TYPE
+ 
+ DIM Temp AS DataType
+ OPEN "test.mdb" FOR ISAM DataType "tabletype" AS #1
+ CREATEINDEX #1, "One", 1, "Element1", "Element2"   ' Note Unique Index.
+ SETINDEX #1, "One"
+ ...
+ RETRIEVE #1, Temp      ' Marker for record to return to.
+ SETINDEX #1, "Two"
+ ...
+ SETINDEX #1, "One"
+ SEEKEQ #1, Temp.Element1, Temp.Element2     ' Return to marked record.
+ 
+ When this is done, the unique index property ensures that the current
+ record is the same as it was when the index was changed away from
+ index "One". This method is much faster than the previous one because
+ ISAM does the searching; however, this method requires that the index
+ in question be unique so there is only one possible record for the
+ SEEKEQ statement to find. With a non-unique index, this method may
+ not find the desired record, because there could be several records
+ that match the seek criteria.
+ 
+ The element Temp.RecordPosition can be used as a marker in correlation
+ with the second part of Method 1 (for example, Index1Pos =
+ Temp.RecordPosition). Index1Pos can be used to count to the record
+ that was current when the index was last used. Also, any time a
+ RETRIEVE is done with index "One", the associated record number can be
+ displayed (for example, LOCATE 25, 77: PRINT Temp.RecordPosition).
+ Note that the RecordPosition field of records would have to be updated
+ any time records are INSERTed, UPDATEd or DELETEed, because these
+ operations could change the order of the records in the index.
+ 
+</pre>
+</body>
+
+</html>

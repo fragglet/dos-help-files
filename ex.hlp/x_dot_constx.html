@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<title>CONST Statement Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> CONST Statement Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the CONST statement to declare symbolic constants for
+' the ASCII values of nonprinting characters such as tab and linefeed.
+' Constants also make programs easier to modify.
+ 
+' Note: You must supply a text file when you run this example, either by:
+' • Using a text file you have already created
+' • Creating a file with a text editor
+' • Specifying the CONSTANT.BI text file
+ 
+' If you use CONSTANT.BI, you may need to include a path specification with
+' the file name.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+' This program counts words, lines, and characters.
+' A word is any sequence of nonblank characters.
+ DEFINT A-Z
+ CONST BLANK = 32, ENDFILE = 26, CR = 13, LF = 10
+ CONST TABC = 9, YES = -1, NO = 0
+ 
+ CLS                              ' Clear the screen
+ FileName$ = COMMAND$             ' Get the file name from the command line
+ IF FileName$ = "" THEN
+     INPUT "Enter input file name: ", FileName$
+     IF FileName$ = "" THEN END
+ END IF
+ OPEN FileName$ FOR INPUT AS #1
+ Words = 0
+ Lines = 0
+ Characters = 0
+                        ' Set a flag to indicate you're not looking at a
+ InaWord = NO           ' word, then get the first character from the file
+ DO UNTIL EOF(1)
+     C = ASC(INPUT$(1, #1))
+     Characters = Characters + 1
+     IF C = BLANK OR C = CR OR C = LF OR C = TABC THEN
+     ' If the character is a blank, carriage return,
+     ' line feed, or tab, you're not in a word
+          IF C = CR THEN Lines = Lines + 1
+               InaWord = NO
+          ELSEIF InaWord = NO THEN
+                                  ' The character is a printing character,
+               InaWord = YES      ' so this is the start of a word
+               Words = Words + 1  ' Count the word and set the flag
+          END IF
+ 
+ LOOP
+ PRINT "Number of: "              ' Display results
+ LOCATE 3, 13: PRINT "Characters = "; Characters
+ LOCATE 4, 13: PRINT "Words =      "; Words
+ LOCATE 5, 13: PRINT "Lines =      "; Lines
+ END
+ 
+ 
+</pre>
+</body>
+
+</html>

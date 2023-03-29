@@ -1,0 +1,53 @@
+<html>
+
+<head>
+<title>INP Function and OUT Statement Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> INP Function and OUT Statement Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the OUT statement and the INP function to control the
+' timer and speaker to produce a note.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DECLARE SUB Sounds (Freq!, Length!)   ' Play a scale using speaker and timer
+ CONST WHOLE = 5000!, QRTR = WHOLE / 4!
+ CONST C = 523!, D = 587.33, E = 659.26, F = 698.46, G = 783.99, A = 880!
+ CONST B = 987.77, C1 = 1046.5
+ CLS                                   ' Clear the screen
+ CALL Sounds(C, QRTR): CALL Sounds(D, QRTR)
+ CALL Sounds(E, QRTR): CALL Sounds(F, QRTR)
+ CALL Sounds(G, QRTR): CALL Sounds(A, QRTR)
+ CALL Sounds(B, QRTR): CALL Sounds(C1, WHOLE)
+ 
+ STATIC SUB Sounds (Freq!, Length!)
+     Clicks% = CINT(1193280! \ Freq!) ' Ports 66, 67, and 97 control timer
+     LoByte% = Clicks% AND &amp;HFF        ' and speaker; divide clock frequency
+     HiByte% = Clicks% \ 256          ' by sound frequency to get number of
+                                       ' "clicks" clock must produce
+     OUT 67, 182                       ' Tell timer that data is coming
+     OUT 66, LoByte%                   ' Send count to timer
+     OUT 66, HiByte%
+     SpkrOn% = INP(97) OR &amp;H3          ' Turn speaker on by setting bits 0 and
+     OUT 97, SpkrOn%                   ' 1 of PPI chip
+     FOR I! = 1 TO Length!: NEXT I!    ' Leave speaker on
+     SpkrOff% = INP(97) AND &amp;HFC       ' Turn speaker off
+     OUT 97, SpkrOff%
+ END SUB
+</pre>
+</body>
+
+</html>

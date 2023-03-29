@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<title>FV# Function Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> FV# Function Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the FV# function to return the future value of an
+' investment. You are prompted to input required information.
+ 
+' Note: To run this example you must use the FINANCE.QLB Quick library.
+' The FINANCE.BI include file must also be present.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+' $INCLUDE: 'FINANCE.BI'
+ 
+ CONST ENDPERIOD = 0
+ CONST BEGINPERIOD = 1
+ CONST DOLLARFORMAT$ = "$#,###,##0.00"
+ CONST PERCENTFORMAT$ = "##.00"
+ 
+ DEFDBL A-Z
+ DIM APR AS SINGLE
+ DIM PaymentType AS INTEGER, Status AS INTEGER
+ 
+ CLS
+ INPUT "Enter the expected annual percentage rate "; APR
+ PRINT
+ INPUT "How much do you plan to invest each month"; Payment
+ PRINT
+ DO WHILE PaymentTypeString$ &lt;&gt; "B" AND PaymentTypeString$ &lt;&gt; "E"
+     PRINT "Make payments at the beginning (B) or end (E) of the month? ";
+     PaymentTypeString$ = UCASE$(INPUT$(1))
+ LOOP
+ ' Set up the correct payment type.
+ IF PaymentTypeString$ = "B" THEN
+     PaymentType = BEGINPERIOD
+     PRINT "Beginning"
+ ELSE
+     PaymentType = ENDPERIOD
+     PRINT "End"
+ END IF
+ PRINT
+ INPUT "How long, in months, do you expect to invest"; Period
+ PRINT
+ INPUT "What is the current value, if any, of this investment"; CurVal
+ PRINT
+ ' Calculate and format the results.
+ ' Put APR in proper form.
+ IF APR &lt;= 1 THEN
+     PercentageRate$ = FORMAT$(APR * 100, PERCENTFORMAT$) + "%"
+ ELSE
+     PercentageRate$ = FORMAT$(APR, PERCENTFORMAT$) + "%"
+     APR = APR / 100
+ END IF
+ Payment$ = FORMAT$(Payment, DOLLARFORMAT$)
+ CurValue$ = FORMAT$(CurVal, DOLLARFORMAT$)
+ FutrVal = FV#(APR / 12, Period, -Payment, -CurVal, PaymentType, Status)
+ FutureValue$ = FORMAT$(FutrVal, DOLLARFORMAT$)
+ ' Examine Status to determine success or failure of FV#
+ IF Status THEN
+    ' If unsuccessful, announce a problem.
+     PRINT "There was an error in calculating the future value."
+ ELSE
+     ' If successful, display the results.
+     PRINT
+     PRINT "At "; PercentageRate$; " interest, your "; Payment$; " per month"
+     IF PaymentType = BEGINPERIOD THEN
+         PRINT "(paid at the beginning of each month), "
+     ELSE
+         PRINT "(paid at the end of each month), "
+     END IF
+     IF CurVal &gt; 0 THEN
+         PRINT "plus the "; CurValue$; " your investment is currently worth,"
+     END IF
+     PRINT "will be worth "; FutureValue$; " after"; Period; "months."
+ END IF
+</pre>
+</body>
+
+</html>

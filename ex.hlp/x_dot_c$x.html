@@ -1,0 +1,84 @@
+<html>
+
+<head>
+<title>COMMAND$ Function Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> COMMAND$ Function Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the COMMAND$ function to break the command line into
+' separate arguments. Each argument is separated from adjoining arguments
+' by one or more blanks or tabs on the command line.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DEFINT A-Z           ' Default variable type is integer in this module
+ 
+' Declare the Comline SUB procedure, as well as the number and type of
+' its parameters.
+ 
+ DECLARE SUB Comline (N, A$(), Max)
+ CLS                           ' Clear the screen
+ DIM A$(1 TO 15)
+ CALL Comline(N, A$(), 10)     ' Get what was typed on the command line
+ PRINT "Number of arguments = "; N ' Print out each part of the command line
+ PRINT "Arguments are: "
+ FOR I = 1 TO N: PRINT A$(I): NEXT I
+ 
+' The following is a sample command line and output for a stand-alone
+' executable file (assumes program name is ARG.EXE):
+'
+' arg one  two   three    four     five      six
+ 
+' Use SUB procedure to get command line and split into arguments.
+' Parameters:  NumArgs : Number of command-line arguments found
+'              Args$() : Array in which to return arguments
+'              MaxArgs : Maximum number of arguments array can return
+ 
+ STATIC SUB Comline (NumArgs, Args$(), MaxArgs)
+ CONST TRUE = -1, FALSE = 0
+ 
+     NumArgs = 0: In = FALSE
+     ' Get the command line using the COMMAND$ function
+     Cl$ = COMMAND$
+     L = LEN(Cl$)
+     ' Go through the command line a character at a time
+     FOR I = 1 TO L
+          C$ = MID$(Cl$, I, 1)
+          ' Test for character being a blank or a tab
+          IF (C$ &lt;&gt; " " AND C$ &lt;&gt; CHR$(9)) THEN
+          ' Neither blank nor tab; test if you're already inside
+          ' an argument
+               IF NOT In THEN
+               ' You've found the start of a new argument
+                    ' Test for too many arguments
+                      IF NumArgs = MaxArgs THEN EXIT FOR
+                      NumArgs = NumArgs + 1
+                      In = TRUE
+               END IF
+               ' Add the character to the current argument
+               Args$(NumArgs) = Args$(NumArgs) + C$
+          ELSE
+          ' Found a blank or a tab.
+               ' Set "Not in an argument" flag to FALSE
+               In = FALSE
+          END IF
+     NEXT I
+ 
+ END SUB
+</pre>
+</body>
+
+</html>

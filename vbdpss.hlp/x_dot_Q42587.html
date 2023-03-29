@@ -1,0 +1,172 @@
+<html>
+
+<head>
+<title>Article Q42587 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q42587</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> VB for MS-DOS Sample to Change the Mouse Shape in Graphics Mode</b> - Q42587
+ 
+ The code shown below demonstrates a method of creating a mouse cursor
+ of a different shape when in a graphics mode. This example shape is
+ taken from Page 7-31 of the "Microsoft Mouse Programmer's Reference
+ Guide" and requires an IBM EGA or IBM VGA or compatible graphics
+ adapter.
+ 
+ The sample BASIC code on Page 6-15 of the same manual is not
+ appropriate for Visual Basic for MS-DOS. The following
+ changes must be made to the program:
+ 
+ 1. The array "CURSOR" must be dimensioned.
+ 
+ 2. The array "CURSOR" must be in a COMMON block.
+ 
+ 3. The fourth parameter passed to MOUSE on line 4500 must be
+    VARPTR(CURSOR(0,0))
+ 
+ Code Example
+ ------------
+ 
+ ' To try this example in VBDOS.EXE:
+ ' 1. From the File menu, choose New Project.
+ ' 2. Copy the code example to the Code window.
+ ' 3. Press F5 to run the program.
+ 
+ DECLARE SUB mouse (m1%, m2%, m3%, m4%)
+ DECLARE FUNCTION MouseInit% ()
+ DECLARE SUB MouseShow ()
+ DECLARE SUB MouseButPos (ButStat%, CurHor%, CurVert%)
+ 
+ ' To run this program in the environment, you must invoke the
+ ' environment with the /L switch to load the default Quick library:
+ '    VBDOS.EXE /L          for Visual Basic 1.0 for MS-DOS
+ 
+ ' Use the following include file for Visual Basic 1.0 for MS-DOS:
+ REM $INCLUDE: 'VBDOS.BI'
+ 
+ DEFINT A-Z
+ DIM cursor(16, 2)
+ COMMON cursor()
+ 
+ ' Data for an HOUR Glass shape.
+ 'Array Screen Mask             binary
+ Cursor(0, 0) = &amp;H07E0         '0000011111100000
+ Cursor(1, 0) = &amp;H0180         '0000000110000000
+ Cursor(2, 0) = &amp;H0000         '0000000000000000
+ Cursor(3, 0) = &amp;HC003         '1100000000000011
+ Cursor(4, 0) = &amp;HF00F         '1111000000001111
+ Cursor(5, 0) = &amp;HC003         '1100000000000011
+ Cursor(6, 0) = &amp;H0000         '0000000000000000
+ Cursor(7, 0) = &amp;H0180         '0000000110000000
+ Cursor(8, 0) = &amp;H07E0         '0000011111100000
+ Cursor(9, 0) = &amp;HFFFF         '1111111111111111
+ Cursor(10, 0) = &amp;HFFFF         '1111111111111111
+ Cursor(11, 0) = &amp;HFFFF        '1111111111111111
+ Cursor(12, 0) = &amp;HFFFF        '1111111111111111
+ Cursor(13, 0) = &amp;HFFFF        '1111111111111111
+ Cursor(14, 0) = &amp;HFFFF        '1111111111111111
+ Cursor(15, 0) = &amp;HFFFF        '1111111111111111
+ 
+ ' Cursor mask                 binary
+ Cursor(0, 1) = &amp;H0000         '0000000000000000
+ Cursor(1, 1) = &amp;H700E         '0111000000001110
+ Cursor(2, 1) = &amp;H1C38         '0001110000111000
+ Cursor(3, 1) = &amp;H0660         '0000011001100000
+ Cursor(4, 1) = &amp;H03C0         '0000001111000000
+ Cursor(5, 1) = &amp;H0660         '0000011001100000
+ Cursor(6, 1) = &amp;H1C38         '0001110000111000
+ Cursor(7, 1) = &amp;H700E         '0111000000001110
+ Cursor(8, 1) = &amp;H0000         '0000000000000000
+ Cursor(9, 1) = &amp;H0000         '0000000000000000
+ Cursor(10, 1) = &amp;H0000        '0000000000000000
+ Cursor(11, 1) = &amp;H0000        '0000000000000000
+ Cursor(12, 1) = &amp;H0000        '0000000000000000
+ Cursor(13, 1) = &amp;H0000        '0000000000000000
+ Cursor(14, 1) = &amp;H0000        '0000000000000000
+ Cursor(15, 1) = &amp;H0000        '0000000000000000
+ 
+ 
+ Button$(0) = "Left Up   / Right Up  "
+ Button$(1) = "Left Down / Right Up  "
+ Button$(2) = "Left Up   / Right Down"
+ Button$(3) = "Left Down / Right Down"
+ 
+ SCREEN 9
+ ' This part initializes the mouse.
+ IF MouseInit = 0 THEN
+   PRINT "can not initialize mouse"
+   END
+ END IF
+ 
+ ' This is the part that makes the shape.
+ m1 = 9
+ m2 = 7
+ m3 = 7
+ m4 = VARPTR(cursor(0, 0))
+ CALL mouse(m1, m2, m3, m4)
+ 
+ ' This call turns the mouse cursor on.
+ MouseShow
+ 
+ LOCATE 10, 10: PRINT "Button Status :";
+ LOCATE 11, 10: PRINT "Horizontal pos :";
+ LOCATE 12, 10: PRINT "Vertical pos  :";
+ 
+ WHILE INKEY$ = ""
+ CALL MouseButPos(ButStat, CurHor, CurVert)
+ 
+ LOCATE 10, 25: PRINT Button$(ButStat)
+ LOCATE 11, 25: PRINT CurHor
+ LOCATE 12, 25: PRINT CurVert
+ WEND
+ 
+ SUB mouse (m1, m2, m3, m4)
+   DIM InRegs AS RegType
+   InRegs.ax = m1
+   InRegs.bx = m2
+   InRegs.cx = m3
+   InRegs.dx = m4
+   CALL INTERRUPT(51, InRegs, InRegs)
+   m1 = InRegs.ax
+   m2 = InRegs.bx
+   m3 = InRegs.cx
+   m4 = InRegs.dx
+ 
+ END SUB
+ 
+ SUB MouseButPos (ButStat, CurHor, CurVert)
+   m1 = 3
+   CALL mouse(m1, m2, m3, m4)
+   ButStat = m2
+   CurHor = m3
+   CurVert = m4
+ END SUB
+ 
+ FUNCTION MouseInit
+    m1 = 0
+    CALL mouse(m1, m2, m3, m4)
+    MouseInit = m1
+ 
+ END FUNCTION
+ 
+ SUB MouseShow
+   m1 = 1
+   CALL mouse(m1, m2, m3, m4)
+ 
+ END SUB
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>Article Q27287 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q27287</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How to Assign High &amp; Low Registers for CALL INTERRUPT, INT86</b> - Q27287
+ 
+ When you invoke MS-DOS and ROM BIOS interrupts from Visual Basic for
+ MS-DOS, you pass full-word (two-byte) register variables such as AX,
+ instead of the half registers AH (high byte of AX) and AL (low byte
+ of AX). This article describes how to assign or read half registers
+ before or after calling the interrupt routines.
+ 
+ More Information:
+ 
+ You can use any of the following methods to assign values to high and
+ low half-registers and load them into the full-word (two-byte)
+ registers:
+ 
+ 1. The simplest method is to combine the hexadecimal values of the
+    high and low registers into one hexadecimal constant:
+ 
+    AX = &amp;H0941             ' Where AH=&amp;H09, AL=&amp;H41
+    BX = &amp;H0002             ' Where BH=&amp;H00, BL=&amp;H02
+    CX = &amp;H07D0             ' Where CH=&amp;H07, CL=&amp;HD0
+ 
+ 2. The following is a more flexible method, letting you assign
+    variables to the high and low registers with a formula:
+ 
+    AX%, BX%, CX%, or DX% = (high% * 256) + low%
+ 
+    In this case, "high%" and "low%" contain the decimal values that
+    you want to assign to the high and low half-registers (where high%
+    can be a value from 0 to 127). For example:
+ 
+    high% = 9                   ' 9 = &amp;H09
+    low% = 65                   ' 65 = &amp;H41
+    AX% = (high% * 256) + low%    ' AX = 2369 = &amp;H0941
+ 
+    You will get an integer "Overflow" error if high% is 128 or larger.
+    Use method 3 below if you need high% between 128 and 255.
+ 
+ 3. If you need the high byte (AH, BH, CH, or DH) to be a value from
+    1 to 255, then you can POKE the value as follows:
+ 
+    high% = 255
+    low% = 65
+    AX% = low%            ' Assigns low byte into AX%
+    POKE VARPTR(AX%)+1,high%   ' Pokes the high byte into AX%
+ 
+ Note that the following is a quick way to convert a decimal number to
+ hexadecimal using the Immediate window in the VBDOS.EXE environment:
+ 
+ PRINT HEX$(number)
+ 
+ (To open the Immediate window select Immediate from the Window menu.
+ Pressing F6 in the VBDOS.EXE environment lets you switch between
+ windows. Pressing F4 toggles between viewing the editor and viewing
+ the output screen.)
+ 
+ The following formulas return the contents of the half registers,
+ which are stored in the two bytes of a full register, such as AX,
+ returned from an interrupt routine:
+ 
+ AL% = AX% MOD 256 ' MOD operator returns integer remainder of division
+ PRINT "The AL register contains &amp;H"; HEX$(AL%)
+ 
+ AH% = AX% \256  ' Integer division by 256 removes the lower byte.
+ PRINT "The AH register contains &amp;H"; HEX$(AH%)
+</pre>
+</body>
+
+</html>

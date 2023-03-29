@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<title>VARPTR and VARSEG Functions Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VARPTR and VARSEG Functions Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the VARPTR and VARSEG functions in a CALL statement
+' to pass a Basic array to a C function.
+ 
+' Note: To run this example, you must separately compile the C function
+' with the large-model (/AL) switch and either place the object module in
+' a Quick library or link it to the Basic program.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DEFINT A-Z
+ DECLARE SUB AddArr CDECL (BYVAL Offs, BYVAL Segm, BYVAL Num)
+ DIM A(1 TO 100) AS INTEGER
+ 
+ CLS                          ' Clear the screen
+ FOR I = 1 TO 15              ' Fill the array with the numbers 1 to 15
+     A(I) = I
+ NEXT I
+ 
+' Call the C function. AddArr expects a far address (segment and offset).
+' Because CDECL puts things on the stack from right to left, place the
+' offset VARPTR(A(1)) first in the list, followed by the segment
+' VARSEG(A(1)).
+ 
+ CALL AddArr(VARPTR(A(1)), VARSEG(A(1)), 15)
+ FOR I = 1 TO 15              ' Print the modified array
+     PRINT A(I)
+ NEXT I
+ END
+ 
+' /* C Function AddArr */
+' /* Add one to the first num elements of array arr.*/
+' void far addarr(arr,num)
+' int far *arr;
+' int num;
+' {
+'     int i;
+'     for(i=0;i&lt;num;i++) arr[i]++;
+' }
+ 
+ 
+ 
+</pre>
+</body>
+
+</html>

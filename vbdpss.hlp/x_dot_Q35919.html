@@ -1,0 +1,102 @@
+<html>
+
+<head>
+<title>Article Q35919 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q35919</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How to Force CAPS LOCK On or Off with PEEK and POKE</b> - Q35919
+ 
+ This article describes how to programmatically force the CAPS LOCK key
+ on or off without actually pressing the CAPS LOCK key.
+ 
+ You can determine the state of the CAPS LOCK key with the following
+ PEEK command:
+ 
+    DEF SEG = 0
+    X = PEEK(1047) AND 64
+ 
+ If CAPS LOCK is off, the value of "X" will be "0". If CAPS LOCK is on,
+ the value will be 64.
+ 
+ To force the CAPS LOCK off, use the following command:
+ 
+    DEF SEG = 0
+    POKE 1047, PEEK(1047) AND 191
+ 
+ To force the CAPS LOCK on, use the following:
+ 
+    DEF SEG = 0
+    POKE 1047, PEEK(1047) OR 64
+ 
+ More Information:
+ 
+ Each bit of location 1047 reflects the status of a keyboard flag. This
+ includes NUM LOCK, SCROLL LOCK, CAPS LOCK, INSert mode, and whether or
+ not the LEFT SHIFT and RIGHT SHIFT keys, the ALT key, or the CTRL
+ (Control) key is currently pressed or not. See the following table for
+ more information:
+ 
+    Bit No.        Decimal Value           Keyboard Flag
+    -------         -------------           -------------
+ 
+    0               1                       RIGHT SHIFT
+    1               2                       LEFT SHIFT
+    2               4                       CTRL (Control)
+    3               8                       ALT
+    4               16                      SCROLL LOCK
+    5               32                      NUM LOCK
+    6               64                      CAPS LOCK
+    7               128                     INSert mode
+ 
+ To determine the state of any flag, the following command will return
+ "0" if the flag is clear (off or not pressed), and will return &lt;bval&gt;
+ if the flag is set (on or pressed):
+ 
+    PEEK(1047) AND &lt;bval&gt;
+    (where &lt;bval&gt; is the decimal value of the bit that represents the
+    flag you want)
+ 
+ To force the flag on (which applies only to the LOCK keys and the
+ INSert mode), you need to set the appropriate bit. You can do this
+ with the following POKE command:
+ 
+    POKE 1047, PEEK(1047) OR &lt;bval&gt;
+    (where &lt;bval&gt; is the decimal value of the flag you want to set)
+ 
+ To force the flag off, you can use the following similar command:
+ 
+    POKE 1047, PEEK(1047) AND (255 - &lt;bval&gt;)
+ 
+ Note that simply poking the bit value into 1047 would effectively set
+ the flag, but would also clear all other flags. Therefore be sure to
+ retain the previous values of the other flags by using the above
+ strategies.
+ 
+ Note that instead of using the PEEK command, you may also get the
+ status of keyboard flags with IBM ROM BIOS Interrupt 16h, using
+ function number 2. This interrupt returns the ROM BIOS flags byte
+ that describes the state of the following keyboard toggles and SHIFT
+ keys:
+ 
+ RIGHT SHIFT or LEFT SHIFT key down, CTRL key down, ALT key down,
+ SCROLL LOCK on, NUM LOCK on, CAPS LOCK on, INSert on.
+ 
+ Reference(s):
+ "Advanced MS-DOS," Ray Duncan, 1986, Microsoft Press
+</pre>
+</body>
+
+</html>

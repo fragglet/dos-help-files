@@ -1,0 +1,135 @@
+<html>
+
+<head>
+<title>GET, PUT Statements (Graphics) Details - advr.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+advr.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GET, PUT Statements (Graphics) Details</div>
+<pre>  <span class='grhilite'>◄</span><a href='unknown#.ggx'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#.getput'>Example</a><span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ GET [STEP](x1!y1!)-[STEP](x2!,y2!), arrayname[(index%)]
+ PUT [STEP](x1!,y1!), arrayname[(index%)] [,actionverb]
+ 
+ Usage Notes
+   ■ You must be in a graphics screen mode (for example, screen mode 1) to
+     use the GET or PUT statement; otherwise, Visual Basic may generate the
+     error message, "Illegal function call." See: <span class='grhilite'>◄</span><a href='unknown#.SCREENS'>SCREEN Statement</a><span class='grhilite'>►</span>
+ 
+   ■ Unless the array type is integer or long, the contents of an array after
+     a GET operation appear meaningless when inspected directly. Examining or
+     manipulating noninteger arrays that contain graphics images can cause
+     run-time errors.
+ 
+   ■ The STEP keyword makes the specified coordinates relative to the most
+     recent point. For example, if the last point plotted were (10,10), then
+     the actual coordinates referred to by STEP (5,10) would be (5+10,10+10)
+     or (15,20). If the second coordinate pair in a GET statement has a STEP
+     argument, it is relative to the first coordinate pair.
+ 
+   ■ GET (x1!,y1!)-(x2!,y2!) specifies the screen coordinates of opposite
+     corners of the rectangular image to store.
+ 
+   ■ PUT (x1!,y1!) specifies the coordinates for the upper-left corner of
+     the rectangle enclosing the image to be placed in the current output
+     window. The entire rectangle must be within the bounds of the current
+     viewport.
+ 
+   ■ The argument arrayname can be of any numeric type; its dimensions must
+     be large enough to hold the entire image.
+ 
+   ■ The GET statement transfers a screen image into the array specified by
+     arrayname. The PUT statement, associated with GET, transfers the image
+     stored in the array onto the screen.
+ 
+   ■ The following formula gives the required size of the array in bytes:
+ 
+         4+INT(((x2-x1+1)*(bits-per-pixel-per-plane)+7)/8)*planes*((y2-y1)+1)
+ 
+   ■ The bits-per-pixel-per-plane and planes values depend on the screen
+     mode set by the SCREEN statement. The following table shows the number
+     of bits-per-pixel-per-plane ("Bits" below) and the number of planes
+     ("Planes" below) for each screen mode:
+ 
+         Screen Mode                    Bits     Planes
+         ══════════════════════════     ════     ═══════════════════════════
+         1                              2        1
+         2                              1        1
+         7                              1        4
+         8                              1        4
+         9 (&gt; 64K EGA memory)           1        4
+         9 (64K EGA memory)             1        2
+         10                             1        2
+         11                             1        1
+         13                             8        1
+ 
+   ■ The bytes per element of an array are:
+ 
+         Bytes per Element     Array Type
+         ═════════════════     ═════════════════════════════════════════════
+         2                     Integer
+         4                     Long-integer
+         4                     Single-precision
+         8                     Double-precision
+         8                     Currency
+ 
+   ■ For example, suppose you want to use the GET statement to store an image
+     in high resolution (SCREEN 2). If the coordinates of the upper-left
+     corner of the image are (0,0), and the coordinates of the lower-right
+     corner are (32,32), then the required size of the array is:
+ 
+         4 + INT((33 * 1 + 7)/8) * 1 * (33)  ' or 169 bytes
+ 
+     This means that an integer array with 85 elements would be large enough
+     to hold the image.
+ 
+   ■ GET and PUT statements operating on the same image should be executed in
+     matching screen modes. This can be either the same screen mode or any
+     screen modes with the same values for planes and bits-per-pixel-per-
+     plane.
+ 
+   ■ GET and PUT arguments can be used to display a stored image with special
+     effects such as animation.
+ 
+   ■ The argument actionverb determines the interaction between the stored
+     image and the one already displayed on screen:
+ 
+     Keyword       Description
+     ═══════       ═════════════════════════════════════════════════════════
+     XOR           (Default) Inverts the points on the screen where a point
+                   exists in the array image:
+                   • When an image is placed on the screen against a complex
+                     background twice, the background is restored; this
+                     behavior is exactly like that of the cursor.
+                   • You can move an object around the screen without erasing
+                     the background, thus creating animation effects.
+     PSET          Transfers the data point-by-point onto the screen. Each
+                   point has the exact color attribute it had when it was
+                   taken from the screen with GET.
+     PRESET        The same as PSET, except that a negative image is produced
+                   - for example, black on white.
+     AND           Transfers the image only if an image already exists under
+                   the transferred image:
+                   • The resulting image is the result of a logical AND
+                     operation on the stored image and the screen.
+                   • Points that have the same color in both the existing
+                     image and the stored image remain the same color.
+                   • Points that do not have the same color in both the
+                     existing image and the stored image do not remain the
+                     same color.
+     OR            Superimposes the image onto an existing image:
+                   • The resulting image is the product of a logical OR
+                     operation of the stored image and the screen image.
+                   • The stored image does not erase the previous screen
+                     contents.
+</pre>
+</body>
+
+</html>

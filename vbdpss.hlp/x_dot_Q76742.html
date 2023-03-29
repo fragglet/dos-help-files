@@ -1,0 +1,132 @@
+<html>
+
+<head>
+<title>Article Q76742 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q76742</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> COM1-COM4 May Be Accessed from Basic Through MS-DOS Service</b> - Q76742
+ 
+ Microsoft Visual Basic version 1.0 for MS-DOS does not allow access to
+ the COM3 or COM4 device through the Basic OPEN "COMx:" statement.
+ However, COM3 and COM4 may be accessed by opening the device as a
+ sequential file from Basic, which will access the device through
+ MS-DOS.
+ 
+ To access COM3 or COM4 in this manner, you must be using MS-DOS
+ version 3.3 or later. Note that using Basic sequential file I/O to
+ access the serial port involves polling the port for data. This
+ polling system is not guaranteed to be completely reliable, especially
+ at baud rates above 1200. For higher baud rates and greater
+ reliability, it is recommended that you use a third party library for
+ interrupt-driven communications.
+ 
+ More Information:
+ 
+ You can perform both input and output to COM3 or COM4 by opening a
+ sequential file of that name from Basic. Because opening a device this
+ way will go through the MS-DOS open services, which are general file
+ and device I/O routines, any modifications needed to the baud rate or
+ parity must be made by using the MS-DOS MODE command.
+ 
+ For example, to set the baud and parity to 2400 bps and no parity with
+ 8 data and 1 stop bits, use the following command at the MS-DOS
+ prompt:
+ 
+    mode com3:2400,N,8,1
+ 
+ The MODE command can be accessed from inside a Basic program via the
+ SHELL statement. To avoid possible conflicts with shelling to MODE,
+ which is a terminate-and-stay-resident (TSR) program, you should run
+ MODE at least once before starting a program that will shell to it.
+ 
+ The following program will open COM3 as a sequential file and write to
+<b> the port:</b>
+ 
+ ' To try this example in VBDOS.EXE:
+ ' 1. From the File menu, choose New Project.
+ ' 2. Copy the code example to the Code window.
+ ' 3. Press F5 to run the program.
+ 
+ SHELL "MODE COM3:9600,N,8,1"
+ OPEN "COM3" FOR OUTPUT AS #1
+ PRINT #1, "HELLO COM3";
+ CLOSE #1
+ 
+ The following program will open COM3 as a sequential device, accept
+<b> input from COM3, and allow the user to terminate the program by</b>
+<b> entering a Q:</b>
+ 
+ ' To try this example in VBDOS.EXE:
+ ' 1. From the File menu, choose New Project.
+ ' 2. Copy the code example to the Code window.
+ ' 3. Press F5 to run the program.
+ 
+ SHELL "MODE COM3:9600,N,8,1"
+ OPEN "COM3" FOR INPUT AS #1
+ DO WHILE INKEY$ &lt;&gt; "q"
+         A$ = INPUT$(1, 1)          ' Get 1 character from COM3.
+         IF A$ &lt;&gt; "" THEN
+                 PRINT A$;
+                A$ = ""
+         END IF
+ LOOP
+ CLOSE #1
+ 
+ Note that because you are accessing the serial port as a sequential
+ file, all the rules of sequential file I/O apply. Data will always be
+ transmitted as ASCII characters, and a carriage return plus linefeed
+ pair will be appended to the end of each block of data written by a
+ Basic PRINT statement (unless you place a semicolon [;] at the end of
+ the PRINT statement). Errors during communication will not be noted in
+ Basic, but may result in a Basic file I/O error instead.
+ 
+ Why Basic Does Not Support COM3 or COM4
+ ---------------------------------------
+ 
+ Adding support for COM3 and COM4 communications ports would require
+ a larger code size in the development environment, compiler, and
+ run-time module. Also, COM3 and COM4 support requires MS-DOS
+ version 3.3 or later, plus implementation in the computer's ROM BIOS.
+ Microsoft Basic products are targeted to run on as wide a variety of
+ systems as possible, but COM3 and COM4 have not been widely available
+ on the existing hardware base.
+ 
+ A combination of these and other factors have resulted in Microsoft
+ not currently supporting COM3 and COM4.
+ 
+ COM3 and COM4 Support from Third-Party Developers
+ -------------------------------------------------
+ 
+ In addition to the method mentioned above, it may be possible for a
+ compiled Basic program to access COM3 and COM4 ports by calling
+ third-party library routines. These libraries are listed in catalogs
+ such as the "Programmer's Connection Buyer's Guide", which can be
+ obtained by calling Programmer's Connection at (800) 336-1166 in the
+ United States; (800) 225-1166 in Canada; or (216) 494-8899 (customer
+ service).
+ 
+ For example, you can use this catalog to find the number for Software
+ Interphase, (401) 397-2340, to determine if their product QuickComm
+ supports COM3 and COM4 called from a compiled Microsoft Visual Basic
+ version 1.0 for MS-DOS program.
+ 
+ Also, Crescent Software (800-35-BASIC) offers a product called
+ PDQComm to support COM3 and COM4. (For more details on PDQComm, call
+ Crescent Software.)
+</pre>
+</body>
+
+</html>

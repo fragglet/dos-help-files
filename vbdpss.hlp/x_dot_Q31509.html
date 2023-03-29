@@ -1,0 +1,121 @@
+<html>
+
+<head>
+<title>Article Q31509 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q31509</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How To Have More than 15 Files Open in MS-DOS 3.3 and Later</b> - Q31509
+ 
+ To open more than 15 files at once in a program under Microsoft
+ MS-DOS, you must do the following:
+ 
+  - Use MS-DOS version 3.3 or later. (You can determine the
+    MS-DOS version number with the VER command at the command prompt.)
+ 
+  - Add the statement FILES=n to the CONFIG.SYS file.
+ 
+  - Call MS-DOS Interrupt 21h with function 67h from the program, as
+    shown in the example listed below.
+ 
+  - If you are using the SHARE.EXE utility, you must also invoke
+    SHARE/F:nnnnn to increase the area for file-sharing information
+    above the default of 2048 bytes. See your MS-DOS manual for more
+    information about the SHARE utility.
+ 
+    The following is an example of using SHARE/F:
+ 
+       share/f:16384
+ 
+ More Information:
+ 
+ This technique will retain the file handle table size across a CHAIN
+ for programs compiled without the BC /O option. Programs that are
+ compiled with the BC /O (stand-alone .EXE) option and CHAINed will
+ revert to the original file handle table size.
+ 
+ Please note that even if you follow the above steps and specify
+ FILES=255 in the MS-DOS CONFIG.SYS file, you may not be able to access
+ that many files at once in your program because there may not be
+ enough memory available inside the DGROUP data segment to allocate
+ file buffers. Also note that five file handles are taken up by the
+ MS-DOS standard input/output devices.
+ 
+ We recommend that you use the Basic SETMEM function to reduce the size
+ of memory available to Basic as it loads. This method provides more
+ memory to the operating system, which may be necessary to open
+ more than 15 files at the same time. If the interrupt call fails
+ with the return code of 8 (in OUTREGS.AX), indicating insufficient
+ memory, use the SETMEM function to force Basic to release some memory
+ to MS-DOS to make more memory available for file handles.
+ 
+ You almost always need to use the SETMEM function if you are calling
+ this interrupt in an MS-DOS session running in Microsoft Windows (the
+ call to the interrupt returns with the carry flag set and AX = 8,
+ indicating insufficient memory). In addition to using SETMEM to run
+ this program under Microsoft Windows, you must also add/increase
+ "perVMFILES=n", where n is 0 to 255 (default 10) in the [386enh]
+ section of the Windows SYSTEM.INI file. This entry specifies the
+ number of private file handles that Windows should allocate to each
+ virtual machine. For this entry to take effect, you must NOT use the
+ SHARE.EXE utility. If Share is installed, this setting is ignored.
+ 
+ To call the "set handle count" interrupt, load 67h into the AX
+ register, and load the number of desired handles in the BX register.
+ Under MS-DOS version 3.3, you must use an odd number ranging from 21
+ to 255 for the number of desired handles, because even numbers may
+ make the interrupt fail. This problem was corrected in MS-DOS
+ version 3.30a. Even or odd numbers can be used for the number of
+ desired handles when using Interrupt 67h in MS-DOS version 3.30a.
+ 
+ The following is a Basic code example that uses an MS-DOS interrupt
+ to access more than 20 MS-DOS file handles.
+ 
+ Code Example
+ ------------
+ 
+ ' To run this program in the environment, you must invoke the
+ ' environment with the /L switch to load the default Quick library:
+ '    VBDOS.EXE /L          for Visual Basic 1.0 for MS-DOS
+ 
+ ' To try this example in VBDOS.EXE:
+ ' 1. From the File menu, choose New Project.
+ ' 2. Copy the code example to the Code window.
+ ' 3. Press F5 to run the program.
+ 
+ ' Use the following include file for Visual Basic 1.0 for MS-DOS:
+ REM $INCLUDE: 'VBDOS.BI'
+ DIM InRegs AS RegType, OutRegs AS RegType
+ y = SETMEM(-16384)   ' Must usually SETMEM in MS-DOS session under
+                      ' Windows.
+ 
+ InRegs.ax = &amp;H6700         ' SetFileHandles function.
+ ' Value in BX register must be odd in MS-DOS version 3.3; odd or even
+ '  in later MS-DOS versions; ranging from 21 to 255:
+ x = 30
+ InRegs.bx = x              ' x is the number of files to open.
+ CALL INTERRUPT(&amp;H21, InRegs, OutRegs)
+ 
+ FOR I% = 1 TO x - 5 ' Five file handles are reserved for MS-DOS
+                     ' standard I/O.
+   File$ = "Junk" + STR$(I%)
+   OPEN File$ FOR OUTPUT AS I%
+   PRINT I%
+ NEXT
+ END
+</pre>
+</body>
+
+</html>

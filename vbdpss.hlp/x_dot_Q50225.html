@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<title>Article Q50225 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q50225</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How to Convert VGA Colors to Their Equivalent Gray Scale</b> - Q50225
+ 
+ In Microsoft Visual Basic version 1.0 for MS-DOS, VGA colors can be
+ converted to their equivalent gray scale values using the
+ CALL INTERRUPT statement. This can be useful when printing an image
+ or having the image scanned by devices that do not support color.
+ 
+ This procedure can be used to convert a color image to a monochrome
+ equivalent before printing out the image on a dot-matrix printer.
+ 
+ Once the color registers are converted to their gray scale
+ equivalents, the original red, green, and blue values are lost. If
+ this information needs to be restored, the VGA color registers should
+ be saved before doing the gray scale summing, and then restored
+ afterward.
+ 
+ More Information:
+ 
+ The following program is GRAY.BAS, which displays a multicolored
+ image in VGA SCREEN 13, then converts all of the colors to their
+ equivalent gray scale values:
+ 
+ Example
+ -------
+ 
+ ' To run this program in the environment, you must invoke the
+ ' environment with the /L switch to load the default Quick library:
+ '    VBDOS.EXE /L              for Visual Basic 1.0 for MS-DOS
+ ' To try this example in VBDOS.EXE:
+ ' 1. From the File menu, choose New Project.
+ ' 2. Copy the code example to the Code window.
+ ' 3. Press F5 to run the program.
+ ' Use the following include file for Visual Basic 1.0 for MS-DOS:
+ REM $INCLUDE: 'VBDOS.BI'
+ 
+ DIM inregs AS RegType
+ DIM outregs AS RegType
+ SCREEN 13
+ 
+ FOR i% = 2 TO 255      ' Display colorful pattern.
+         LINE (i%, 10)-(i%, 199), i%
+ NEXT
+ 
+ LOCATE 1, 1
+ COLOR 7
+ PRINT "press any key to convert to gray scale"
+ WHILE INKEY$ = "": WEND
+ 
+ inregs.ax = &amp;H101B     ' ROM BIOS call to set gray scale values.
+ inregs.bx = 0          ' Start at color register 0.
+ inregs.cx = 256        ' Convert all 256 color registers.
+ CALL INTERRUPT(&amp;H10, inregs, outregs)
+ 
+ LOCATE 1, 1
+ PRINT "press any key to end                   "
+ WHILE INKEY$ = "": WEND
+ END
+ 
+ To demonstrate this program as an .EXE program, compile and link as
+ follows:
+ 
+    BC GRAY.BAS;
+    LINK GRAY,,,VBDOS.LIB;
+</pre>
+</body>
+
+</html>

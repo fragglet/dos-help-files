@@ -1,0 +1,260 @@
+<html>
+
+<head>
+<title>Article Q57354 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q57354</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How to Print Visual BASIC Video Screens to Epson Printers</b> - Q57354
+ 
+ The following document explains how Microsoft Visual Basic for MS-DOS
+ programs can print video screen images to Epson-compatible printers.
+ If you have a printer other than an Epson, you must change the printer
+ control codes used in the following programs for setting line spacing
+ and graphics mode. Control codes can be found in your printer's manual.
+ 
+ More Information:
+ 
+           How to Print BASIC Video Screens to Epson Printers
+           --------------------------------------------------
+ 
+ Introduction
+ ------------
+ 
+ This document explains how Microsoft BASIC programs can print video
+ screen images to Epson-compatible printers. If you have a printer
+ other than an Epson, you must change the printer control codes used in
+ the following programs for setting line spacing and graphics mode.
+ Control codes can be found in your printer's manual.
+ 
+ The routines presented below are divided based on SCREEN modes. SCREEN
+ modes 0 through 2 use one method of printing, SCREEN 3 uses another,
+ SCREEN modes 7 through 12 are all combined into one routine, and
+ SCREEN 13 is another separate routine.
+ 
+ The routines for printing EGA and VGA SCREEN modes 7 through 13 are
+ required only if you are not running under MS-DOS version 4.0 or
+ later. In MS-DOS version 4.0 and later, the program GRAPHICS.COM
+ supports all standard EGA and VGA SCREEN modes. Thus, the routine
+ given below for printing CGA SCREEN modes can be used to print EGA
+ and VGA SCREENs in MS-DOS version 4.0 and later.
+ 
+ Each of these groups of SCREEN modes uses different methods of storing
+ graphics information in video memory. A brief explanation of this is
+ given before each program. If you want further information about
+ graphics memory and the various graphics modes, please refer to the
+ following book, which is available in bookstores or by calling
+ Microsoft Press at (800) 888-3303 or (206) 882-8661:
+ 
+     "Programmer's Guide to PC and PS/2 Video Systems," by Richard
+     Wilton (published by Microsoft Press, 1987)
+ 
+ Printing CGA Screen Modes 0 Through 2
+ -------------------------------------
+ 
+ The following are two methods of performing a CGA screen dump to a
+ graphics printer:
+ 
+   Note: These methods will also support all standard EGA and VGA
+   SCREEN modes (SCREENs 7 through 13) if you are using
+   GRAPHICS.COM provided in MS-DOS version 4.0 or later.
+ 
+ 1. You can manually execute a screen dump to a graphics printer of a
+    CGA SCREEN 0, 1, or 2 in BASIC by doing the following:
+ 
+    a. Run GRAPHICS.COM, which is a terminate-and-stay resident (TSR)
+       program located on the MS-DOS disk (run GRAPHICS.COM only once
+       per boot session).
+ 
+    b. Press SHIFT+PRINT SCREEN (that is, press the PRINT SCREEN key
+       while holding down the SHIFT key).
+ 
+       The above SHIFT+PRINT SCREEN screen dump also can print the
+       screen in GW-BASIC, in IBM BASICA, or in most programs that use
+       CGA text or graphics.
+ 
+    Note: If SHIFT+PRINT SCREEN is implemented when running an
+          application in the VBDOS environment, you may experience
+          problems with editing and keystrokes when you finish the
+          program and return to the environment. It is suggested that
+          you not use this method while in the VBDOS environment.
+ 
+ 2. A hardware Interrupt 5 also can be invoked to perform a CGA screen
+    dump to a graphics printer from a Microsoft BASIC program run on an
+    IBM PC. To perform the screen dump, do the following:
+ 
+    a. Run the GRAPHICS.COM program provided with the MS-DOS disk (run
+       GRAPHICS.COM only once per boot session).
+ 
+    b. Once GRAPHICS.COM is resident in memory, using SHIFT+PRINT
+       SCREEN or hardware Interrupt 5 will print screens displayed by
+       the IBM CGA card. In versions of MS-DOS earlier than 4.0, the
+       IBM GRAPHICS.COM program does not support the printing of EGA or
+       VGA screens, and only BASIC SCREENs 0, 1, and 2 can be printed.
+ 
+ The following example program, DUMP.BAS, shows the preferred method to CALL
+ hardware Interrupt 5 to perform a screen dump.
+ 
+    <span class='grhilite'>◄</span><a href='x_dot_Q57354EX1.html'>See Example 1</a><span class='grhilite'>►</span>
+ 
+ Printing Hercules Screen Mode 3
+ -------------------------------
+ 
+ Understanding how to print graphics screens generated by Hercules and
+ Hercules-compatible graphics adapters requires familiarity with how
+ Hercules graphics memory is set up.
+ 
+ Hercules memory starts at hex-paragraph B000 (decimal 45056). Graphics
+ memory starts with Page 0 at hex-paragraph B000 (decimal 45056), and
+ Page 1 at hex-paragraph B800 (decimal 47104). (Paragraphs mark
+ segment boundaries, and there are 16 bytes per paragraph.)
+ 
+ However, graphics memory is interleaved, and is not contiguous. Each
+ line of pixels in SCREEN mode 3 consists of 90 bytes. Thus, the top
+ line of pixels (line 0) on Page 0 will start at hex-paragraph B000 at
+ offset 0 and go for 90 bytes.
+ 
+ To draw a line of pixels at the top of the screen (in line 0 of Page
+ 0), POKE 255 into positions 0 through 89 (where 255 means all 8 bits
+ per byte being "on"), as follows:
+ 
+    SCREEN 3
+    DEF SEG = &amp;HB000
+    FOR x = 0 TO 89    ' B000:0000h to B000:0059h (in
+       POKE x, 255     ' segment:offset notation)
+    NEXT x
+ 
+ To perform this procedure on Page 1, change the value of the DEF SEG
+ statement to hex-paragraph &amp;HB800.
+ 
+ Because graphics memory is interleaved and not contiguous, if you
+ continue to POKE at an offset 90 bytes after hex-paragraph B000, the
+ next line will appear on the screen at the fourth line down. To draw a
+ line just one line down (on line 1), add 2000h (8192 decimal) to
+ the offset of the first byte on line 0, then POKE as follows:
+ 
+    DEF SEG = &amp;HB000
+    FOR x = 8192 TO 8281     ' Or B000:2000h to B000:2059h (in
+       POKE x, 255           ' segment:offset notation).
+    NEXT x
+ 
+ This procedure must also be performed for line 2 and line 3. (Note
+ that line numbering starts at 0.) As a result, the first byte of line
+ 2 will be B000:4000h, and the first byte of line 3 will be
+ B000:6000h. The interleaving cycles every four lines, thus the first
+ byte of line 4 will be B000:005Ah (45056:0090 decimal), and
+ subsequent lines will follow the previous pattern, at offset intervals
+ of 2000h (8192 decimal).
+ 
+ The following diagram shows how the scan lines relate to the
+ interleaved video buffer:
+ 
+                Video Buffer                    Display
+ 
+       B000:0000 +---------+                       +-------------
+                 |         |&lt;----------Scan Line 0 | ............
+            005A |---------|       +---Scan Line 1 | ............
+                 |         |&lt;---+  |  *Scan Line 2 | ............
+            00B4 |---------|    |  |  *Scan Line 3 | ............
+                 .        .   +------Scan Line 4 | ............
+                 .        .      |               |
+       B000:2000 |---------|       |
+                 |         |&lt;------+
+            205A |---------|          * NOTE:
+                 .        .           Scan line 2 is at B000:4000h
+                 .        .           Scan line 3 is at B000:6000h
+ 
+ This same interleaving is used in video Page 1, which begins at hex-
+ paragraph B800. Please see the figure on Page 89 of the "Programmer's
+ Guide to PC and PS/2 Video Systems" for a more complete diagram of the
+ display memory for Hercules graphics mode.
+ 
+ The following subprogram prints SCREEN Page 0 of a Hercules graphics
+ screen to an Epson or Epson-compatible printer. To print SCREEN Page
+ 1, use a DEF SEG = &amp;HB800 statement (instead of &amp;HB000 for Page 0).
+ 
+    <span class='grhilite'>◄</span><a href='x_dot_Q57354EX2.html'>See Example 2</a><span class='grhilite'>►</span>
+ 
+ Printing EGA or VGA Screen Modes 7 Through 12
+ ---------------------------------------------
+ 
+ Because EGA and VGA memory are stored in contiguous blocks per
+ "plane," printing the screen to a printer can be a fairly simple
+ operation. The method used in the program below prints the image
+ sideways, which avoids the need to do any bit-shifting and uses a
+ simple two-dots-per-pixel shading pattern to represent different
+ colors.
+ 
+ To produce different patterns for different colors, each color plane
+ must be analyzed. In SCREEN modes with four video planes (7, 8, 9, and
+ 12), each of the four different base EGA/VGA colors --  blue, green,
+ red, and intensity -- is represented in a separate memory bank or
+ plane of EGA/VGA memory. Each bit in a color plane represents a pixel
+ on the screen; thus, each pixel on the screen has a color attribute
+ depicted by four bits, one in each color plane.
+ 
+ Each plane is addressed for reading/writing by selecting the bank of
+ memory to access with an OUT instruction. This program logically OR's
+ the blue and red planes together and does the same with the green and
+ intensity planes. This effectively reduces the number of pattern
+ (color) combinations from 16 to 4. Therefore, some colors that appear
+ to be different on the screen have the same appearance on paper.
+ 
+ SCREEN modes 10 and 11 are almost identical, except that there are
+ only two color planes; thus, each pixel on the screen has a color
+ attribute depicted by two bits, one in each of the two color planes.
+ Because there are only two bits per pixel and two pins are being
+ fired, no OR'ing of the color planes needs to be done.
+ 
+ The Epson printer can fire up to eight pins per graphics byte sent.
+ Thus, moving from left to right, a loop that reads screen data from
+ the bottom of the screen upward can access eight vertical columns at a
+ time. This behavior coincides with the printer firing eight pins at a
+ time and creates eight horizontal columns on the page, turning the
+ printout sideways.
+ 
+    <span class='grhilite'>◄</span><a href='x_dot_Q57354EX3.html'>See Example 3</a><span class='grhilite'>►</span>
+ 
+ Printing VGA Screen Mode 13
+ ---------------------------
+ 
+ Printing SCREEN mode 13 can also be fairly simple. The method used in
+ the program below prints the image sideways, which avoids the need to
+ do any bit-shifting and uses a simple eight-dots-per-pixel shading
+ pattern to represent different colors.
+ 
+ To produce different patterns for different colors, each byte of pixel
+ information must be analyzed. In SCREEN 13, each pixel is represented
+ by 1 contiguous byte of information, thus allowing 256 colors per
+ pixel. Since 8 printer pins are fired for each pixel, a direct mapping
+ of the pixel byte to the printer pins to be fired is done.
+ 
+ As stated before, 8 pins are fired for each pixel; the pins are fired
+ in a 2 by 4 pattern. Since this is not square, some slight image
+ distortion does occur.
+ 
+ The Epson printer can fire up to eight pins per graphics byte sent.
+ Thus, moving from left to right, a loop that reads screen data from
+ the bottom of the screen upward can access eight vertical columns at a
+ time. This behavior coincides with the printer firing eight pins at a
+ time and creates eight horizontal columns on the page, turning the
+ printout sideways.
+ 
+    <span class='grhilite'>◄</span><a href='x_dot_Q57354EX4.html'>See Example 4</a><span class='grhilite'>►</span>
+ 
+</pre>
+</body>
+
+</html>

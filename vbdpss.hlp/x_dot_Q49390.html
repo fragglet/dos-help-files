@@ -1,0 +1,113 @@
+<html>
+
+<head>
+<title>Article Q49390 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q49390</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> Example of Passing Numerics from MASM to Basic</b> -Q49390
+ 
+ The two programs shown below demonstrate how Microsoft assembly
+ language can pass common numeric types to Basic subprograms.
+ 
+ More Information:
+ 
+ The following Basic program is BNUM.BAS, which contains subprograms
+<b> that receive common numeric types passed from assembly language:</b>
+ 
+ Code Example
+ ------------
+ 
+ DECLARE SUB AssemSub(dummy AS INTEGER)
+ 
+ CALL AssemSub(dummy%)
+ END
+ 
+ SUB NumInt(i AS INTEGER)
+    PRINT "Integer : "; i
+ END SUB
+ 
+ SUB NumLong(lng AS LONG)
+    PRINT "Long    : "; lng
+ END SUB
+ 
+ SUB NumSingle(s AS SINGLE)
+    PRINT "Single  : "; s
+ END SUB
+ 
+ SUB NumDouble(d AS DOUBLE)
+    PRINT "Double  : "; d
+ END SUB
+ 
+ The following program is ANUM.ASM, which passes common numeric types
+<b> to Basic subprograms:</b>
+ 
+ .MODEL MEDIUM, BASIC
+          EXTRN NumInt:PROC         ; Declare Basic procedures.
+          EXTRN NumLong:PROC
+          EXTRN NumSingle:PROC
+          EXTRN NumDouble:PROC
+ .DATA
+          intnum dw 32767           ; Initialize data.
+          Longnum dd 37999
+          Singlenum dd 123.45
+          Doublenum dq 1234.14159
+ 
+ .CODE
+ 
+          PUBLIC AssemSub
+ AssemSub PROC
+          push bp
+          mov bp, sp
+ 
+          mov ax, OFFSET intnum     ; Get address of integer.
+          push ax
+          call NumInt
+ 
+          mov ax, OFFSET Longnum    ; Get address of long.
+          push ax
+          call NumLong
+ 
+          mov ax, OFFSET Singlenum  ; Get address of single.
+          push ax
+          call NumSingle
+ 
+          mov ax, OFFSET Doublenum  ; Get address of double.
+          push ax
+          call NumDouble
+ 
+          pop bp
+          ret 2
+ AssemSub ENDP
+ 
+          END
+ 
+ To demonstrate these programs from an .EXE program, compile and link
+<b> as follows:</b>
+ 
+    BC BNUM.BAS;
+    MASM ANUM.ASM;
+    LINK BNUM ANUM;
+ 
+ BNUM.EXE produces the following output:
+ 
+ Integer : 32767
+ Long    : 37999
+ Single  : 123.45
+ Double  : 1234.14159
+</pre>
+</body>
+
+</html>

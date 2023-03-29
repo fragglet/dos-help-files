@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>IRR# and NPV# Function Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> IRR# and NPV# Function Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the IRR# function to determine the internal rate of
+' return for a series of periodic cash flows represented in an array of
+' values. It then uses the NPV# function to determine the net present value
+' for the same periodic cash flows used to determine the internal rate of
+' return.
+ 
+' Note: To run this example you must use the FINANCE.QLB Quick library.
+' The FINANCE.BI include file must also be present.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+' $INCLUDE: 'FINANCE.BI'
+ 
+ OPTION BASE 1
+ CONST DOLLARFORMAT$ = "$#,###.##"
+ CONST PERCENTFORMAT$ = "##.##"
+ DEFDBL A-Z
+ DIM Status  AS INTEGER, NumFlows  AS INTEGER
+ NumFlows% = 6
+ DIM Values(NumFlows%) AS DOUBLE
+ Guess = .1
+ 
+ ' Read cash flows into Values# array.
+ FOR I = 1 TO NumFlows%
+     READ Values#(I)
+ NEXT I
+ ' Calculate the internal rate of return.
+ ReturnRate = IRR#(Values#(), NumFlows%, Guess, Status%)
+ ' Examine Status% to determine success or failure of IRR
+ IF Status% THEN
+     ' If unsuccessful, announce a problem.
+     PRINT "There was an error in calculating the internal rate of return."
+ ELSE
+     ' Display the internal rate of return.
+     PRINT "You're starting a printing business. You estimate that it will"
+     PRINT "cost you $70,000.00 in start-up costs. Your net annual income "
+     PRINT "for the next five years is expected to be $12,000, $15,000, "
+     PRINT "$18,000, $21,000, and $26000, respectively."
+     PRINT
+     PRINT "The internal rate of return for these cash flow figures is";
+     PRINT USING PERCENTFORMAT$; ReturnRate * 100;
+     PRINT "%."
+     PRINT
+     ' Calculate the net present value.
+     NetPresentValue = NPV#(ReturnRate, Values#(), NumFlows%, Status%)
+     IF Status% THEN
+         PRINT "There was an error in calculating the net present value."
+     ELSE
+         PRINT "The net present value of the cash flows used to calculate"
+         PRINT "the internal rate of return is effectively ";
+         PRINT USING DOLLARFORMAT$; NetPresentValue;
+         PRINT "."
+     END IF
+ END IF
+ ' Estimated cost of starting up a printing business (Negative cash flow).
+ DATA -70000
+ ' Net income each year for 5 successive years (Positive cash flow).
+ DATA 12000,15000,18000,21000,26000
+</pre>
+</body>
+
+</html>

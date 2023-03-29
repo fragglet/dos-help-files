@@ -1,0 +1,107 @@
+<html>
+
+<head>
+<title>Article Q78888, Example 2 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q78888, Example 2</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How to Save Color Registers After BSAVE of (PICEM) Graphics, Example 2</b>
+ 
+ EXAMPLE 2: (LOD7TO12.BAS)
+ -------------------------
+ 
+ To try this example in VBDOS.EXE:
+ 
+   1. From the File menu, choose New Project.
+   2. Copy the code example to the Code window.
+   3. Press F5 to run the program.
+ 
+ ' To run this program in the environment, you must invoke the
+ ' environment with the /L switch to load the default Quick library:
+ ' VBDOS.EXE /L for Visual Basic 1.0 for MS-DOS
+ '
+ ' This program loads BSAVEd files from disk into video
+ ' memory and restores the graphics image's registers
+ ' for screen 7,8,9, or 12. It assumes the picture files
+ ' were BSAVEd using code from SAV7TO12.BAS. The values of
+ ' the variables MODE%, and YOURFILE must be written into
+ ' the code. The graphics image files should be in the default
+ ' directory.
+ 
+ DECLARE SUB ConvrtPic ()
+ TYPE colortype
+         red AS STRING * 1
+         green AS STRING * 1
+         blue AS STRING * 1
+ END TYPE
+ 
+ ' Use the following include file for Visual Basic 1.0 for MS-DOS:
+ REM $INCLUDE: 'VBDOS.BI'
+ CALL ConvrtPic()
+ END
+ 
+ SUB Convrt Pic()
+ 
+ DIM inregx AS RegTypeX
+ DIM outregx AS RegTypeX
+ DIM colorbuf(15) AS colortype
+ 
+ SCREEN MODE%
+ ' Where MODE% = 7  for screen 7,
+ '             = 8  for screen 8,
+ '             = 9  for screen 9,
+ '             = 12 for screen 12.
+ CLS
+ 
+ ' If necessary, save the current color registers of the
+ ' existing screen using code from SAV7TO12.BAS before
+ ' changing colors to the graphics image's palette.
+ 
+ ' BLOAD the graphics image's palette into array.
+ DEF SEG = VARSEG(colorbuf(0))
+ BLOAD "YOURFILE.REG", VARPTR(colorbuf(0))
+ ' Where YOURFILE.REG is the BSAVEd file created in
+ ' SAV7TO12.BAS which contains the color registers.
+ 
+ DEF SEG
+ ' Call interrupt to restore graphics image's palette to registers.
+ inregx.ax = &amp;H1012
+ inregx.bx = 0
+ inregx.cx = 16
+ inregx.es = VARSEG(colorbuf(0))
+ inregx.dx = VARPTR(colorbuf(0))
+ CALL INTERRUPTX(&amp;H10, inregx, outregx)
+ 
+ ' BLOAD 4 bit planes created in SAV7TO12.BAS.
+ DEF SEG = &amp;HA000
+ 
+ FOR k = 0 TO 3
+         OUT &amp;H3C4, 2
+          ' Makes the port at &amp;H3C4 enable the data register at &amp;H3C5.
+         OUT &amp;H3C5, 2 ^ k
+          ' Selects next bit plane.
+         f$ = "YOURFILE.B_" + CHR$(k + 48)
+         ' Where YOURFILE.B_ is the filename of the converted graphics
+         ' image.
+         BLOAD f$, 0
+ NEXT k
+ 
+ DEF SEG
+ END SUB
+ 
+</pre>
+</body>
+
+</html>

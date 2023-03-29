@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>Article Q79149 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q79149</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How to Remember Current ISAM Record for Different Indexes</b> - Q79149
+ 
+ Method 3
+ --------
+ 
+ In some situations, you may want to know the physical position of a
+ record within an index. This position could be used to display the
+ relative position of the current record to the user of the database
+ application, giving them an indication of "where they are" in their
+ database file. Knowing the record's position also allows you to easily
+ return to that record when indexes are changed. To do this, keep a
+ position element in the type used to create the table as in the
+ example below:
+ 
+ TYPE DataType
+ LastName AS STRING * 15
+ PhoneNumber AS STRING * 12
+ RecordPosition AS INTEGER  ' Keeps track of record's position in index.
+ END TYPE
+ 
+ DIM Temp AS DataType
+ 
+ OPEN "test.mdb" FOR ISAM DataType "tabletype" AS #1
+ 
+ ' Miscellaneous code goes here that would insert records into table,
+ ' leaving the RecordPosition element empty (zero).
+ 
+ CREATEINDEX #1, "One", 0, "LastName"
+ SETINDEX #1, "One"      ' Forces first record to be current record.
+ count = 0
+ WHILE NOT EOF(1)
+  count = count + 1      ' Mark first record with a one, etc.
+  RETRIEVE #1, Temp
+  Temp.RecordPosition = count
+  UPDATE #1, Temp
+  MOVENEXT #1
+ WEND
+ ...
+ 
+ The element Temp.RecordPosition can be used as a marker in correlation
+ with the second part of Method 1 (for example, Index1Pos =
+ Temp.RecordPosition). Index1Pos can be used to count to the record
+ that was current when the index was last used. Also, any time a
+ RETRIEVE is done with index "One", the associated record number can be
+ displayed (for example, LOCATE 25, 77: PRINT Temp.RecordPosition).
+ Note that the RecordPosition field of records would have to be updated
+ any time records are INSERTed, UPDATEd or DELETEed, because these
+ operations could change the order of the records in the index.
+</pre>
+</body>
+
+</html>

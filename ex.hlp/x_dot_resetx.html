@@ -1,0 +1,46 @@
+<html>
+
+<head>
+<title>RESET Statement Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> RESET Statement Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the RESET statement to close several files at once. The
+' program attempts to write to the previously opened files, causing an error
+' and demonstrating that all files are closed.
+ 
+ DEFINT A-Z
+ ON ERROR GOTO ErrHandler          ' Set up the error handling routine
+ 
+ CLS                               ' Clear the screen
+ FOR I = 1 TO 3
+     OPEN "Test" + RIGHT$(STR$(I), 1) + ".dat" FOR OUTPUT AS FREEFILE
+     PRINT "File #"; I; "has been opened for output."
+ NEXT I
+ PRINT : PRINT "Press any key to RESET all open files."
+ PRINT
+ Z$ = INPUT$(1)
+ RESET
+ FOR I = 1 TO 3
+     PRINT "Trying to write to file #"; I
+     PRINT #I, "Test data"
+ NEXT I
+ END
+ 
+ErrHandler:                        ' Error 52 is "Bad File Name or Number"
+     IF ERR = 52 THEN PRINT "  File #"; I; "not open. RESET closed it."
+     RESUME NEXT
+</pre>
+</body>
+
+</html>

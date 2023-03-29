@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>ERDEV, ERDEV$ Functions Details - advr.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+advr.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ERDEV, ERDEV$ Functions Details</div>
+<pre>  <span class='grhilite'>◄</span><a href='unknown#ERDEV'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#.erdevx'>Example</a><span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ ERDEV
+ ERDEV$
+ 
+ Usage Notes
+   ■ ERDEV is set by the critical error handler (interrupt 24H) when MS-DOS
+     detects a critical MS-DOS call error from a character or block device.
+     It also is set by a timeout error on a communications port.
+ 
+   ■ For block device errors, bits 0 - 7 (the low byte) of ERDEV contain the
+     MS-DOS error code. Bits 8 - 15 (the high byte) contain the following
+     device-attribute information:
+ 
+         Bit(s)     Value     Meaning
+         ══════     ═════     ══════════════════════════════════════════════
+         0 - 7      xxH       Contains MS-DOS error code xxH
+         8          0         Read operation
+                    1         Write operation
+         9 - 10               Indicates the affected disk area:
+                    00        • MS-DOS
+                    01        • File allocation table
+                    10        • Root directory
+                    11        • Files area
+         11(1)      0         Fail response not allowed
+                    1         Fail response allowed
+         12(1)      0         Retry response not allowed
+                    1         Retry response allowed
+         13(1)      0         Ignore response not allowed
+                    1         Ignore response allowed
+         14                   Not used
+         15         0         Always zero
+         ───────────────────────────────────────────────────────────────────
+         (1) Bits 11, 12, and 13 apply only to MS-DOS version 3.1 and later
+ 
+   ■ For character device errors, bits 0-7 contain the MS-DOS error code. The
+     upper bits are not significant.
+ 
+   ■ For COM timeout errors, ERDEV returns a value indicating which option
+     in the OPEN COM statement is experiencing the timeout. Therefore, it's
+     not necessary to break ERDEV into low and high bytes:
+ 
+          ERDEV Value     OPEN COM Option Timeout
+          ═══════════     ══════════════════════════════════════════════════
+          80H             CS (CTS timeout)
+          81H             DS (DSR timeout)
+          82H             CD (RLSD timeout)
+ 
+     See: <span class='grhilite'>◄</span><a href='unknown#.opcom'>OPEN COM Statement</a><span class='grhilite'>►</span>
+ 
+   ■ Because ERDEV and ERDEV$ return meaningful information only after an
+     error, they usually are used in error handlers specified by an ON ERROR
+     statement. See: <span class='grhilite'>◄</span><a href='unknown#.onerr'>ON ERROR Statement</a><span class='grhilite'>►</span>
+ 
+   ■ ERDEV and ERDEV$ cannot be used on the left side of an assignment.
+ 
+   ■ The following example extracts the low and high bytes from the ERDEV
+     value. DosErrCode stores the block or character device error code, while
+     DevAttr stores the block device attribute information:
+ 
+         DosErrCode = ERDEV AND &amp;HFF             'Low byte of ERDEV
+         DevAttr    = (ERDEV AND &amp;HFF00) \ 256  'High byte of ERDEV
+ 
+ 
+</pre>
+</body>
+
+</html>

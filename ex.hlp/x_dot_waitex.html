@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>WAIT Statement Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WAIT Statement Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the WAIT statement to suspend program execution while
+' monitoring the status of COM1.
+ 
+' Note: To run this example, you must have an ASCII terminal connected to
+' COM1 at 9600 baud, 8 data bits, 1 stop bit, and no parity.
+ 
+ CLS                                             ' Clear the screen
+ 
+ OPEN "COM1:9600,N,8,1,BIN" FOR RANDOM AS #1     ' Open and close the port
+ CLOSE #1                                        ' at the proper baud rate
+ PortNum% = &amp;H3F8 'COM1
+ NonPrintCharMask% = 96
+ 
+' Wait until there's some activity on COM1.
+' Mask out characters less than 32 for the first input character.
+ LOCATE 12, 15: PRINT "Waiting for a printable input character. "
+ WAIT PortNum%, NonPrintCharMask%
+ 
+' Once a printable character comes in, accept all characters.
+ DO
+     A% = INP(PortNum%)                 ' Get a character from the port
+     SELECT CASE A%                     ' Evaluate the character
+          CASE 7
+               Character$ = "   BELL    "
+          CASE 8
+               Character$ = "BACK SPACE "
+          CASE 9
+               Character$ = "    TAB    "
+          CASE 13
+               Character$ = "    CR     "
+          CASE 32
+               Character$ = "   SPACE   "
+          CASE 127
+               Character$ = "    DEL    "
+          CASE IS &lt; 31, IS &gt; 127
+               Character$ = "unprintable"
+          CASE ELSE
+               Character$ = SPACE$(5) + CHR$(A%) + SPACE$(5)
+     END SELECT
+     LOCATE 12, 15
+ 
+     PRINT "Numeric Value                    ASCII Character"
+     LOCATE 14, 20
+     PRINT A%; TAB(50); Character$      ' Report the input character
+     IF A% &gt; 127 THEN STOP
+     LOCATE 23, 25
+     PRINT "Press ANY key to quit."
+ LOOP WHILE INKEY$ = ""
+ END
+</pre>
+</body>
+
+</html>

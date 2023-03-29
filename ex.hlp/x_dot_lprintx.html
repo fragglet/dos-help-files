@@ -1,0 +1,52 @@
+<html>
+
+<head>
+<title>LPOS Function Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> LPOS Function Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the LPOS function is used to determine the position of
+' the print head and avoid printing past the end of the line. Note: To run
+' this program, you must have a printer connected to LPT1.
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ CLS                                     ' Clear the screen
+ LPRINT "Team Members"; TAB(76); "TEAM"
+ LPRINT
+ INPUT "How many teams"; TEAMS
+ INPUT "How many players per team"; PPT
+ PRINT
+ FOR T = 1 TO TEAMS
+     INPUT "Team name: ", TEAM$
+     FOR P = 1 TO PPT
+          INPUT "   Enter player name: ", PLAYER$
+          LPRINT PLAYER$;
+          IF P &lt; PPT THEN
+               IF LPOS(0) &gt; 55 THEN      ' Print a new line if print
+                                         ' head past column 55
+                    LPRINT : LPRINT "     ";
+               ELSE
+                    LPRINT ", ";         ' Otherwise, print a comma
+               END IF
+          END IF
+     NEXT P
+     LPRINT STRING$(80 - LPOS(0) - LEN(TEAM$), "."); TEAM$
+ NEXT T
+</pre>
+</body>
+
+</html>

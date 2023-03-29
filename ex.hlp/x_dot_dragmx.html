@@ -1,0 +1,103 @@
+<html>
+
+<head>
+<title>Directory List Box Control and DRAG Method Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Directory List Box Control and DRAG Method Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the DRAG method to drag a file name to a text box
+' where the path and the name of the file are displayed. When the program
+' begins you will be able to browse your file system and find the CONSTANT.BI
+' file in the C:\VBDOS subdirectory using the drive, directory, and file list
+' box controls. Once you've located the file, click the file name and drag it
+' to the text control.
+'
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Choose New Form from the File menu to create a form with:
+'    • Drive list box
+'    • Directory list box
+'    • File list box
+'    • Label
+'    • Text box
+'    Note: Use the default names for the controls in all cases. Size and
+'    position all controls so they can be easily seen and used. The size and
+'    position of the label is not important, since it will be changed at run
+'    time.
+' 3. Press Alt+F4 to return to the programming environment
+' 4. Copy the code example below to the form module
+' 5. Press F5 to run the example
+'
+ SUB Dir1_Change ()                 ' Any change in Dir1
+     File1.Path = Dir1.Path         ' is reflected in File1
+ END SUB
+ 
+ SUB Dir1_Dragover (Source AS CONTROL, X AS SINGLE, Y AS SINGLE, State _
+     AS INTEGER)
+     ' Change pointer to no drop.
+     IF State = 0 THEN Source.MousePointer = 12
+     ' Use default mouse pointer.
+     IF State = 1 THEN Source.MousePointer = 0
+ END SUB
+ 
+ SUB Drive1_Change ()           ' Any change in Drive1
+     Dir1.Path = Drive1.Drive   ' is reflected in Dir1
+ END SUB
+ 
+ SUB Drive1_DragOver (Source AS CONTROL, X AS SINGLE, Y AS SINGLE, _
+     State AS INTEGER)
+     ' Change pointer to no drop.
+     IF State = 0 THEN Source.MousePointer = 12
+     ' Use default mouse pointer.
+ IF State = 1 THEN Source.MousePointer = 0
+ END SUB
+ 
+ SUB File1_DragOver (Source AS CONTROL, X AS SINGLE, Y AS SINGLE, State _
+     AS INTEGER)
+     ON ERROR RESUME NEXT
+     IF State = 0 AND RIGHT$(File1.Filename, 3) = ".bi" THEN
+        Label1.Text = File1.Path + "\" + File1.Filename
+        IF ERR THEN MSGBOX "The file file could not be loaded."
+    ELSEIF State = 1 THEN
+    END IF
+ END SUB
+ 
+ SUB File1_MouseDown (Button AS INTEGER, Shift AS INTEGER, X AS SINGLE, _
+     Y AS SINGLE)
+     DY = TEXTHEIGHT("A")                     ' Get height of one line
+     Label1.MOVE File1.Left, File1.Top + Y - DY / 2, File1.Width, DY
+     Label1.DRAG                              ' Drag label outline
+ END SUB
+ 
+ SUB Form_DragOver (Source AS CONTROL, X AS SINGLE, Y AS SINGLE, State _
+     AS INTEGER)
+     ' Change pointer to no drop.
+     IF State = 0 THEN Source.MousePointer = 12
+     ' Use default mouse pointer.
+     IF State = 1 THEN Source.MousePointer = 0
+ END SUB
+ 
+ SUB Form_Load ()
+     Label1.Visible = 0      ' Make the label invisible
+     File1.Pattern = "*.BI"  ' Set file patterns
+ END SUB
+ 
+ SUB Text1_DragDrop (Source AS CONTROL, X AS SINGLE, Y AS SINGLE)
+     ON ERROR RESUME NEXT
+     Text1.Text = File1.Path + "\ + File1.Filename
+     IF ERR THEN MSGBOX "The file could not be loaded."
+ END SUB
+</pre>
+</body>
+
+</html>

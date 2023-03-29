@@ -1,0 +1,111 @@
+<html>
+
+<head>
+<title>VARPTR, VARSEG Functions Details - advr.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+advr.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VARPTR, VARSEG Functions Details</div>
+<pre>  <span class='grhilite'>◄</span><a href='unknown#VARPTR'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#.varvarx'>Example</a><span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ VARPTR(variablename)
+ VARSEG(variablename)
+ 
+ Usage Notes
+   ■ VARPTR and VARSEG return different values depending on the type of
+     variable specified in variablename:
+ 
+     Variable Type      Return Value (VARPTR)
+     ═════════════      ════════════════════════════════════════════════════
+     Numeric            Offset of the variable within its segment as an
+                        unsigned integer
+     String             Offset of string descriptor
+     Not defined        Creates the variable and returns its address
+ 
+     Variable Type      Return Value (VARSEG)
+     ═════════════      ════════════════════════════════════════════════════
+     Numeric            Segment address as an unsigned integer
+     String             Segment address
+     Not defined        Creates the variable and returns its address
+ 
+   ■ Because many Visual Basic statements move variables in memory, use the
+     values returned by VARPTR and VARSEG immediately after the functions
+     are used.
+ 
+   ■ VARPTR and VARSEG are often used with Absolute, BLOAD, BSAVE, Interrupt,
+     PEEK, POKE, or when passing arrays to procedures written in other
+     languages. See: <span class='grhilite'>◄</span><a href='unknown#task.mlp'>Mixed-Language Programming Commands</a><span class='grhilite'>►</span>
+ 
+   ■ When using VARPTR or VARSEG to get the address of an array, use the
+     first element of the array as the argument:
+ 
+         DIM A(150)
+         .
+         .
+         .
+         ArrAddress=VARPTR(A(1))
+ 
+   ■ You can use VARPTR alone to get the address of a numeric variable stored
+     in DGROUP. You must use both VARPTR and VARSEG to get the complete
+     address of a numeric variable stored in far memory.
+ 
+   ■ It is not meaningful to use VARSEG and VARPTR for strings. Since Visual
+     Basic stores strings far, the format of the descriptor is different from
+     previous versions of Basic. Use SSEG, SADD, and SSEGADD to return the
+     address of string variables in Basic code. Use StringAddress to return
+     the address of string variables from procedures written in other
+     languages.  See: <span class='grhilite'>◄</span><a href='unknown#SADD'>SADD Function</a><span class='grhilite'>►</span>     <span class='grhilite'>◄</span><a href='unknown#SSEG'>SSEG Function</a><span class='grhilite'>►</span>
+                      <span class='grhilite'>◄</span><a href='unknown#SSEGADD'>SSEGADD Function</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#StringAddress'>StringAddress Routine</a><span class='grhilite'>►</span>
+ 
+   ■ You cannot use VARPTR to get the address of a file's buffer. Instead,
+     use the FILEATTR function to get information about a file.
+     See: <span class='grhilite'>◄</span><a href='unknown#fileattr'>FILEATTR Function</a><span class='grhilite'>►</span>
+ 
+   ■ Programs written in Microsoft Basic version 3.0 or earlier that used
+     VARPTR to access numeric arrays may no longer work. You must now use a
+     combination of VARPTR and VARSEG. For example, the following Microsoft
+     QuickBasic fragment no longer works correctly:
+ 
+         DIM Cube(675)
+         .
+         .
+         .
+         BSAVE "graph.dat",VARPTR(Cube(1)),2700
+ 
+     The fragment can be rewritten as follows to work in the current version
+     of Visual Basic:
+ 
+         DIM Cube(675)
+         .
+         .
+         .                                     ' Change segment to segment
+         DEF SEG=VARSEG(Cube(1))               ' containing Cube
+         BSAVE "graph.dat",VARPTR(Cube(1)),2700
+         DEF SEG                               ' Restore Visual Basic segment
+ 
+   ■ The VARSEG function, combined with VARPTR, replaces the PTR86
+     subprogram used in earlier versions of Basic.
+ 
+   ■ Do not pass expanded memory arrays to non-Basic procedures. If you
+     start Visual Basic (VBDOS.EXE) with the /Ea switch, any of these arrays
+     may be stored in expanded memory:
+     • Numeric arrays &lt; 16K in size
+     • Fixed-length string arrays &lt; 16K in size
+     • User-defined-type arrays &lt; 16K in size
+     See: <span class='grhilite'>◄</span><a href='unknown#.vbdos.exe'>VBDOS Command-Line Options</a><span class='grhilite'>►</span>
+ 
+   ■ If you want to pass arrays to non-Basic procedures, first start Visual
+     Basic (VBDOS.EXE) without the /Ea switch. Note: Without the /Ea switch,
+     no arrays are stored in expanded memory.
+ 
+</pre>
+</body>
+
+</html>

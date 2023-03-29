@@ -1,0 +1,156 @@
+<html>
+
+<head>
+<title>Article Q57354, Example 4 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q57354, Example 4</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> How to Print Visual BASIC Video Screens to Epson Printers, Example</b>
+ 
+ Printing VGA Screen Mode 13:
+ 
+ Example
+ -------
+ 
+ To try this example in VBDOS.EXE:
+ 
+    1. From the File menu, choose New Project.
+    2. Copy the code example to the Code window.
+    3. Press F5 to run the program.
+ 
+    ' To run this program in the environment, you must invoke the
+    ' environment with the /L switch to load the default Quick library:
+    ' VBDOS.EXE /L for Visual Basic 1.0 for MS-DOS
+ 
+    DECLARE SUB VGAtoEpson (f$, flip%)
+ 
+    '--- VGAEPSON.BAS
+    '--- Demonstrates the use of VGAtoEpson, a subprogram that
+    '--- dumps a SCREEN 13 image to an Epson printer.
+    '--- Copyright (c) 1988 Microsoft Corp.
+ 
+    ' Use the following include file for Visual Basic 1.0 for MS-DOS:
+    REM $INCLUDE: 'VBDOS.BI'
+    DIM SHARED inregs AS regtype
+    DIM SHARED outregs AS regtype
+ 
+    SCREEN 13
+    '--- Draw picture on screen.
+    xmax% = 319
+    ymax% = 199
+    halfx% = xmax% / 2
+    halfy% = ymax% / 2
+    x% = halfx%
+    c% = 1
+    FOR y% = ymax% TO halfy% STEP -2
+      LINE (halfx%, y%)-(x%, halfy%), c%
+      LINE (x%, ymax%)-(xmax%, y%), c% + 20
+      LINE (halfx%, (ymax% - y%))-(x%, halfy%), c% + 40
+      LINE (x%, 0)-(xmax%, (ymax% - y%)), c% + 60
+      LINE (halfx% + 1, y%)-((xmax% - x%), halfy%), c% + 80
+      LINE ((xmax% - x%), ymax%)-(0, y%), c% + 100
+      LINE (halfx%, (ymax% - y%))-((xmax% - x%), halfy% + 1), c% + 120
+      LINE ((xmax% - x%), 0)-(0, (ymax% - y%)), c% + 140
+      x% = x% + (((xmax% + 1) / (ymax% + 1)) * 5)
+      c% = c% + 1
+    NEXT y%
+ 
+    CALL VGAtoEpson("LPT1", 1)
+    SCREEN 0
+    END
+ 
+    SUB VGAtoEpson (f$, flip%) STATIC
+    '--- Sends the image on SCREEN 13 to an Epson graphics printer.
+    '--- Parameters:
+    '         f$    -   Name of file or device to send image to
+    '         flip% -   Invert flag (0 = normal, not 0 = invert)
+ 
+      OPEN f$ FOR BINARY AS 1         ' Open the output file.
+      WIDTH #1, 255
+      esc$ = CHR$(27)
+      line$ = esc$ + "A" + CHR$(8)
+      PUT #1, , line$   ' Set printer to 8/72 lpi.
+      DEF SEG = &amp;HA000                ' Start of VGA screen memory.
+      '--- This loop is the horizontal byte location.
+      FOR Col% = 0 TO 79
+         '--- Set the printer to receive 800 bytes of graphics data.
+         line$ = esc$ + "L" + MKI$(800)
+         PUT #1, , line$  '(for init)
+ 
+         '--- This loop is the vertical byte position.
+         FOR row% = 199 TO 0 STEP -1
+ 
+            place&amp; = row% * 320&amp;
+            place&amp; = place&amp; + Col% * 4
+            ' 4 bytes of pixel information are read in. Each
+            '  of these bytes is broken up across 4 variables
+            '  that are used to fire the printer pins. 2 bits
+            '  from each pixel byte are stored to each of the
+            '  variables.
+            mem1% = 0           ' Initialize storage bytes for
+            mem2% = 0           '   color information.
+            mem3% = 0
+            mem4% = 0
+            FOR byte% = 0 TO 3
+               newplace&amp; = place&amp; + byte%
+               shift% = 2 ^ ((7 - 2 * byte%) - 1)
+               mem% = PEEK(newplace&amp;)
+               mem% = mem% AND 3
+               mem% = mem% * shift%
+               mem1% = mem1% OR mem%
+ 
+               mem% = PEEK(newplace&amp;)
+               mem% = (mem% AND 12) / 4
+               mem% = mem% * shift%
+               mem2% = mem2% OR mem%
+ 
+               mem% = PEEK(newplace&amp;)
+               mem% = (mem% AND 48) / 16
+               mem% = mem% * shift%
+               mem3% = mem3% OR mem%
+ 
+               mem% = PEEK(newplace&amp;)
+               mem% = (mem% AND 192) / 64
+               mem% = mem% * shift%
+               mem4% = mem4% OR mem%
+            NEXT
+ 
+            '--- Flip the byte, if called from.
+            IF flip% &lt;&gt; 0 THEN
+               mem1% = 255 - mem1%
+               mem2% = 255 - mem2%
+               mem3% = 255 - mem3%
+               mem4% = 255 - mem4%
+            END IF
+ 
+            '--- Send bytes to device.
+            line$ = CHR$(mem1%) + CHR$(mem2%)
+ 
+            line$ = line$ + CHR$(mem3%) + CHR$(mem4%)
+            PUT #1, , line$
+         NEXT
+         line$ = CHR$(13) + CHR$(10)
+         PUT #1, , line$
+      NEXT
+      ResetPrn$ = esc$ + "@"
+      PUT #1, , ResetPrn$  ' Reset printer.
+      line$ = CHR$(12)
+      PUT #1, , line$      ' Send formfeed (page eject).
+      CLOSE 1              ' All done.
+    END SUB
+</pre>
+</body>
+
+</html>

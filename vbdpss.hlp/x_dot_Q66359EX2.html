@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<title>Article Q66359, Example 2 - vbdpss.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+vbdpss.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Article Q66359, Example 2</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_contents.html'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='../vbdos.hlp/blang_dot_index.html'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+─────────────────────────────────────────────────────────────────────────────
+                           <span class='grhilite'>◄</span><a href='index.html'>Knowledge Base Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_dot_a.html'>Knowledge Base Index</a><span class='grhilite'>►</span>
+ 
+<b> PICEM Views .PCX, .PIC, .GIF Files, and Saves in BSAVE Format, Example 2</b>
+ 
+ Method 2
+ --------
+ 
+ Listed below is a more complicated way to save a picture in
+ BSAVE/BLOAD format (as an alternative in case PICEM does not create
+ the correct BSAVE format):
+ 
+ 1. Create a .PCX, .PIC, .GIF, or .IMG image file.
+ 
+    For example, make an image in Microsoft Windows PaintBrush version
+    3.0, which comes with Microsoft Windows version 3.0. Save the
+    image in PCX format (by choosing Save As from the File Menu, then
+    clicking the Options button, then clicking PCX). Name the file
+    "IMAGE.PCX".
+ 
+ 2. Write a Basic program that does the following:
+ 
+    a. Uses the SCREEN statement to invoke a graphics mode that
+       matches the video mode specified by PICEM /V (for example,
+       SCREEN 13 matches PICEM /V:L, which in turn matches with a
+       Windows Paintbrush .PCX file created on a VGA monitor):
+ 
+          SCREEN 13
+ 
+    b. SHELLs to PICEM, which is invoked to match the Basic SCREEN
+       mode and to load a graphics file. For example:
+ 
+          SHELL "PICEM /E /V:L  IMAGE.PCX"
+ 
+       (The /E option causes PICEM to leave the screen in graphics mode
+       and not clear the screen.)
+ 
+    c. BSAVEs the picture.
+ 
+       For example:
+ 
+          DEF SEG= &amp;HA000
+          BSAVE "IMAGE.BSA",0,64000
+ 
+       Then you can later BLOAD as follows:
+ 
+          DEF SEG= &amp;HA000
+          BLOAD "IMAGE.BSA",0
+ 
+ If you do not match Basic's screen mode with the mode used by PICEM,
+ method 2 above will not work because Basic will reset the screen mode
+ after the SHELL if the mode does not match.
+ 
+ Visual Basic for MS-DOS has a limited number of graphics modes. The
+ best resolution you can get is 640x480x16 (Basic's SCREEN 12;
+ PICEM /V:M) or 320x200x256 (Basic's SCREEN 13; PICEM /V:L). Using
+ method 2 above, you cannot BSAVE a 640x480x256 image or the more
+ common standard mode 640x400x256. Basic does not know these modes, and
+ therefore, will reset the screen contents immediately after the SHELL
+ statement.
+ 
+ You can try method 1 (Example 1) if you want to create a BSAVE
+ format file from a graphics file that uses a non-Basic screen mode.
+    <span class='grhilite'>◄</span><a href='x_dot_Q66359EX1.html'>See Example 1</a><span class='grhilite'>►</span>
+ 
+ Code Example for Method 2
+ -------------------------
+ 
+ ' To try this example in VBDOS.EXE:
+ ' 1. From the File menu, choose New Project.
+ ' 2. Copy the code example to the Code window.
+ ' 3. Press F5 to run the program.
+ 
+ SCREEN 13
+ SHELL "PICEM /E /V:L IMAGE.PCX"
+ ' Mode 13 is 320x200x(1 byte for 256 colors), thus saves/loads 64000
+ ' bytes.
+ total! = 64000
+ DEF SEG = &amp;HA000   ' Define the segment for VGA graphics.
+ ' How to BSAVE the file:
+  f$ = "IMAGE.BSA" ' Save VGA memory in a file.
+  BSAVE f$, 0, total!        ' Save the visual page, at offset 0.
+ ' How to BLOAD the file:
+  BLOAD f$, 0            ' 0 is the offset to page 0.
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<title>CALL[S] Statement (Non-Basic Procedures) Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> CALL[S] Statement (Non-Basic Procedures) Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the CALL and CALLS statements to pass a Basic array to a
+' C function.
+ 
+' Note: To run this program, you must:
+' • Compile the C function Separately with the medium-model (/AM) switch
+' • Place the object module in a Quick library or link it to the Basic main
+'   program
+ 
+' To try this example:
+' 1. Choose New Project from the File menu
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DEFINT A-Z
+ DECLARE SUB AddArr CDECL (SEG Array, SEG Num)
+ DIM A(1 TO 100) AS INTEGER
+ 
+ CLS                    ' Clear the screen
+ N = 15                 ' Fill the array with the numbers 1 to N
+ FOR I = 1 TO N
+     A(I) = I
+ NEXT I
+ 
+ CALLS AddArr(A(1), N)  ' Call the C function using CALLS the first time
+                        ' and increment all array elements by 1
+ CALL AddArr(A(1), N)   ' Call the same C function again using CALL and
+                        ' increment all array elements by 1
+ 
+ FOR I = 1 TO N         ' Print the modified array; all elements will be
+     PRINT A(I),        ' incremented by a total of two - for example,
+ NEXT I                 ' what was 1 will now be 3
+ END
+ 
+' C Function addarr.
+'
+' /* Add one to the first num elements of array arr.*/
+' void far addarr(arr,num)
+' int far *arr;
+' int far *num;
+' {
+'    int i;
+'    for(i=0;i&lt;*num;i++) arr[i]++;
+' }
+ 
+</pre>
+</body>
+
+</html>

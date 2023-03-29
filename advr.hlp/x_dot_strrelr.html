@@ -1,0 +1,56 @@
+<html>
+
+<head>
+<title>StringRelease Routine Details - advr.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+advr.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> StringRelease Routine Details</div>
+<pre>  <span class='grhilite'>◄</span><a href='unknown#StringRelease'>Summary</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#.strasx'>Example</a><span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+ StringRelease(string-descriptor%);
+ 
+ Usage Notes
+   ■ The StringRelease syntax is for the C language.
+ 
+   ■ Use the StringRelease routine only to deallocate variable-length strings
+     that have been transferred to Visual Basic's string space from a non-
+     Basic routine. Never use it on strings created by Visual Basic.
+ 
+   ■ Calls to the StringRelease routine are made from a non-Basic routine
+     to free up space in Visual Basic's data area.
+ 
+   ■ Visual Basic automatically deallocates strings allocated by Basic.
+     However, strings that have been transferred to Visual Basic from a non-
+     Basic routine should be deallocated from the non-Basic routine using the
+     StringRelease routine.
+ 
+   ■ Using StringRelease to deallocate strings from a non-Basic routine is
+     necessary because StringAssign transfers only strings, not string
+     descriptors. Without the string descriptor, Visual Basic cannot
+     deallocate the string.
+ 
+     For example, assume that you have passed a string from a MASM routine
+     to Visual Basic's string space using StringAssign. To deallocate this
+     string, assuming a descriptor for the variable-length string exists at
+     offset descriptor, the code is:
+ 
+         .model
+          extrn        stringrelease: far
+ 
+         .code
+          lea          ax, descriptor        ; offset of descriptor
+          push         ax
+          call         stringrelease
+ 
+</pre>
+</body>
+
+</html>

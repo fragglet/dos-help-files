@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<title>PCOPY and SCREEN Statement Example - ex.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ex.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> PCOPY and SCREEN Statement Example</div>
+<pre>                        <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span>                <span class='grhilite'>◄</span><a href='unknown#-9996'>Contents</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#-9997'>Index</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+──────────────────────────────────────────────────────────────────────────────
+' This example uses the SCREEN statement to set up a multipage EGA or VGA
+' mode 7 (320x200) display. A help screen is displayed for several seconds,
+' then copied (using the PCOPY statement) to page 2 for later use. A cube is
+' displayed and rotated on the screen. By pressing Alt+F1, the user can
+' again see the help screen, after which the cube display is resumed.
+ 
+' To try this example:
+' 1. From the File menu, choose New Project
+' 2. Copy the code example below to the code window
+' 3. Press F5 to run the example
+ 
+ DEFINT A-Z
+ 
+' Define a macro string to draw a cube and paint its sides.
+ One$ = "BR30 BU25 C1 R54 U45 L54 D45 BE20 P1, 1G20 C2 G20"
+ Two$ = "R54 E20 L54 BD5 P2, 2 U5 C4 G20 U45 E20 D45 BL5 P4, 4"
+ Plot$ = One$ + Two$
+ APage% = 0                  ' Initialize values for active page, visual
+ VPage% = 1                  ' page, and angle of rotation
+ HPage% = 2
+ Angle% = 0
+ CLS                         ' Clear the screen
+ SCREEN 7, 0, VPage%, VPage% ' Create a help screen on the visual page
+ LOCATE 1, 18
+ PRINT "HELP"
+ LOCATE 5, 1
+ PRINT "Press 'Alt+F1' keys to see this HELP"
+ PRINT "screen  while the  cube is  rotating"
+ PRINT "around the  center of  the  screen. "
+ PRINT
+ PRINT "After a  brief delay, the  cube will"
+ PRINT "resume  at  the  next  point in  its"
+ PRINT "rotation."
+ PRINT
+ PRINT "Press  any  other  key  to  exit the"
+ PRINT "program. "
+ PCOPY VPage%, HPage%                       ' Put a copy of the help
+ SLEEP 5                                    ' screen in page 2
+ DO
+     SCREEN 7, 0, APage%, VPage%
+     CLS 1                                  ' Clear the active page
+     DRAW "TA" + STR$(Angle%) + Plot$       ' Rotate the cube Angle% degrees
+     Angle% = (Angle% + 15) MOD 360         ' Multiple of 15 degrees
+ 
+     ' Drawing is complete. Make the cube visible in its new position
+     ' by swapping the active and visual pages.
+     SWAP APage%, VPage%
+     Kbd$ = INKEY$                          ' Check the keyboard input
+     SELECT CASE Kbd$
+          CASE CHR$(0) + CHR$(104)          ' If Alt+F1 is pressed, show
+               PCOPY HPage%, APage%         ' the help page
+               SLEEP 3
+          CASE ""                           ' Do nothing if no key pressed
+          CASE ELSE
+               EXIT DO
+     END SELECT
+ LOOP
+ END
+</pre>
+</body>
+
+</html>
