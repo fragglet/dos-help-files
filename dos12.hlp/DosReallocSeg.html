@@ -1,0 +1,98 @@
+<html>
+
+<head>
+<title>DosReallocSeg (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosReallocSeg (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='memory.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#memory management 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80d6.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosResumeThread.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMEMMGR
+ 
+USHORT DosReallocSeg(usNewSize, sel)
+USHORT usNewSize;    /* new segment size */
+SEL sel;             /* segment selector */
+ 
+The DosReallocSeg function reallocates a segment. The function changes the
+size of the segment to the number of bytes specified by the usNewSize
+parameter.
+ 
+The DosReallocSeg function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>usNewSize</i>  Specifies the new size (in bytes). The size can be any number
+           from 0 through 65,535. If it is 0, the function allocates 65,536
+           bytes.
+ 
+<i>sel</i>        Specifies the selector of the segment to be reallocated. The
+           selector must have been created previously by using DosAllocSeg
+           or DosAllocShrSeg.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_ACCESS_DENIED
+     ERROR_NOT_ENOUGH_MEMORY
+ 
+<b>Comments</b>
+ 
+The DosReallocSeg function does not change the shareable and discardable
+attributes of the segment. If it was originally a shareable or discardable
+segment, it remains a shareable or discardable segment. If DosReallocSeg
+reallocates a discardable segment, however, it also locks the segment. You
+must use the DosUnlockSeg function to unlock the segment and permit
+discarding.
+ 
+If the DosReallocSeg function is used to reallocate a shared segment to a
+size smaller than its original size, the segment must have been created
+using the DosAllocSeg function with the SEG_SIZEABLE attribute set. This
+request can be issued from ring 2 or ring 3; the segment to be reallocated
+can be a ring-2 or a ring-3 segment.
+ 
+The DosReallocSeg function cannot be used to reallocate a segment created by
+the DosCreateCSAlias function.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restriction applies to the DosReallocSeg
+function:
+ 
+♦  The usNewSize parameter is rounded up to the next paragraph (16-byte)
+   value.
+ 
+<b>Example</b>
+ 
+This example allocates a segment with 16,000 bytes, and then calls
+<b>DosReallocSeg</b> to increase the size to 32,000 bytes:
+ 
+SEL sel;
+ 
+DosAllocSeg(16000, &amp;sel, SEG_NONSHARED);   /* allocates memory   */
+    .
+    .
+    .
+DosReallocSeg(32000, sel);                 /* reallocates memory */
+ 
+<b>See Also</b>
+ 
+<b>DosAllocSeg, DosFreeSeg, DosLockSeg, DosReallocHuge, DosUnlockSeg</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,164 @@
+<html>
+
+<head>
+<title>GpiSetAttrs (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiSetAttrs (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='markers.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Marker Primitives 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiSetBackColor.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+BOOL GpiSetAttrs(hps, flPrimType, flAttrsMask, flDefsMask, pbunAttrs)
+HPS hps;              /* presentation-space handle           */
+LONG flPrimType;      /* primitive type                      */
+ULONG flAttrsMask;    /* attribute mask                      */
+ULONG flDefsMask;     /* defaults mask                       */
+PBUNDLE pbunAttrs;    /* address of structure for attributes */
+ 
+The GpiSetAttrs function sets attributes for the specified primitive type.
+The function uses the flPrimType parameter to determine the type of
+primitive attribute to set, then uses the flAttrsMask parameter to determine
+which attributes to set for that primitive. If the flDefsMask parameter
+specifies an attribute that is also specified by flAttrsMask, the function
+sets the attribute to its default value. Otherwise, the function uses the
+value found in the appropriate field of the buffer pointed to by pbunAttrs.
+ 
+The GpiSetAttrs function does not accept default values in the buffer
+fields. To set an attribute to its default value, both the flAttrsMask and
+<i>flDefsMask</i> parameters must specify the attribute. Any attribute not
+specified by flAttrsMask remains unchanged, regardless of the flDefsMask
+setting. If the attribute mode is AM_PRESERVE (as set by the GpiSetAttrMode
+function), the system saves the previous value of each attribute that is
+changed.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>          Identifies the presentation space.
+ 
+<i>flPrimType</i>   Specifies which primitive type to set attributes for. It can be
+             one of the following values:
+ 
+             Value        Meaning
+             ───────────────────────────────────────────────────────────────
+             PRIM_AREA    Area primitives
+ 
+             PRIM_CHAR    Character primitives
+ 
+             PRIM_IMAGE   Image primitives
+ 
+             PRIM_LINE    Line and arc primitives
+ 
+             PRIM_MARKER  Marker primitives
+ 
+<i>flAttrsMask</i>  Specifies which attributes to set. The values for this
+             parameter depend on the primitive type specified by flPrimType.
+             It can be any combination of the following values for a
+             specific type:
+ 
+             Type         Values
+             ───────────────────────────────────────────────────────────────
+             PRIM_AREA    ABB_COLOR, ABB_BACK_COLOR, ABB_MIX_MODE,
+                          ABB_BACK_MIX_MODE, ABB_SET, ABB_SYMBOL,
+                          ABB_REF_POINT
+ 
+             PRIM_CHAR    CBB_COLOR, CBB_BACK_COLOR, CBB_MIX_MODE,
+                          CBB_BACK_MIX_MODE, CBB_SET, CBB_MODE, CBB_BOX,
+                          CBB_ANGLE, CBB_SHEAR, CBB_DIRECTION
+ 
+             PRIM_IMAGE   IBB_COLOR, IBB_BACK_COLOR, IBB_MIX_MODE,
+                          IBB_BACK_MIX_MODE
+ 
+             PRIM_LINE    LBB_COLOR, LBB_MIX_MODE, LBB_WIDTH,
+                          LBB_GEOM_WIDTH, LBB_TYPE, LBB_END, LBB_JOIN
+ 
+             PRIM_MARKER  MBB_COLOR, MBB_BACK_COLOR, MBB_MIX_MODE,
+                          MBB_BACK_MIX_MODE, MBB_SET, MBB_SYMBOL, MBB_BOX
+ 
+             If this parameter is zero, no attributes are set, regardless of
+             the value of the flDefsMask and pbunAttrs parameters.
+ 
+<i>flDefsMask</i>   Specifies which attributes to set to default values. The values
+             for this parameter depend on the primitive type specified by
+             flPrimType. Although it can be any combination of the values
+             specified for the flAttrsMask parameter, only the attributes
+             that are also specified by flAttrsMask are set.
+ 
+<i>pbunAttrs</i>    Points to a buffer that contains attribute values for each
+             attribute specified by flAttrsMask and not also specified by
+             flDefsMask. The buffer format depends on the primitive type
+             specified by flPrimType. The following structures can be used
+             for the specified primitive types:
+ 
+             Type         Structure
+             ───────────────────────────────────────────────────────────────
+             PRIM_AREA    AREABUNDLE
+ 
+             PRIM_CHAR    CHARBUNDLE
+ 
+             PRIM_IMAGE   IMAGEBUNDLE
+ 
+             PRIM_LINE    LINEBUNDLE
+ 
+             PRIM_MARKER  MARKERBUNDLE
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_BACKGROUND_COL_ATTR
+     PMERR_INV_BACKGROUND_MIX_ATTR
+     PMERR_INV_CHAR_ANGLE_ATTR
+     PMERR_INV_CHAR_DIRECTION_ATTR
+     PMERR_INV_CHAR_MODE_ATTR
+     PMERR_INV_CHAR_SET_ATTR
+     PMERR_INV_CHAR_SHEAR_ATTR
+     PMERR_INV_COLOR_ATTR
+     PMERR_INV_COORDINATE
+     PMERR_INV_GEOM_LINE_WIDTH_ATTR
+     PMERR_INV_HPS
+     PMERR_INV_IN_IMAGE_DEFN
+     PMERR_INV_LINE_END_ATTR
+     PMERR_INV_LINE_JOIN_ATTR
+     PMERR_INV_LINE_TYPE_ATTR
+     PMERR_INV_LINE_WIDTH_ATTR
+     PMERR_INV_MARKER_BOX_ATTR
+     PMERR_INV_MARKER_SET_ATTR
+     PMERR_INV_MARKER_SYMBOL_ATTR
+     PMERR_INV_MIX_ATTR
+     PMERR_INV_PATTERN_ATTR
+     PMERR_INV_PATTERN_REF_PT_ATTR
+     PMERR_INV_PATTERN_SET_ATTR
+     PMERR_INV_PRIMITIVE_TYPE
+     PMERR_PS_BUSY
+     PMERR_UNSUPPORTED_ATTRIBUTE
+ 
+<b>See Also</b>
+ 
+<b>GpiQueryAttrs, GpiSetBackMix, GpiSetCharAngle, GpiSetCharBox, GpiSetColor,</b>
+<b>GpiSetCp, GpiSetLineType, GpiSetLineWidth, GpiSetMarkerBox, GpiSetMarker</b>Set,
+<b>GpiSetMix, GpiSetPattern, GpiSetPatternRefPoint, GpiSetPatternS</b>et,
+<b>AREABUNDLE, CHARBUNDLE, IMAGEBUNDLE, LINEBUNDLE, MARKERBUNDLE</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

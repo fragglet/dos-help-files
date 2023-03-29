@@ -1,0 +1,90 @@
+<html>
+
+<head>
+<title>DosStartSession (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosStartSession (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Multitasking_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#multitasking 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80de.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosStopSession.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSSESMGR
+ 
+USHORT DosStartSession(pstdata, pidSession, ppid)
+PSTARTDATA pstdata;    /* pointer to structure with session data     */
+PUSHORT pidSession;    /* pointer to variable for session identifier */
+PUSHORT ppid;          /* pointer to variable for process identifier */
+ 
+The DosStartSession function starts a session (screen group) and specifies
+which program to start in that session. This function creates an independent
+session or a child session, depending on the value of the Related field in
+the STARTDATA structure.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pstdata     Points to</i> the STARTDATA structure that contains data describing
+            the session to start.
+ 
+<i>pidSession</i>  Points to the variable that receives the identifier of the child
+            session.
+ 
+<i>ppid</i>        Points to the variable that receives the process identifier of
+            the child process.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value.
+ 
+<b>Comments</b>
+ 
+The MS OS/2 session manager writes a data element into the specified queue
+when the child session created by the DosStartSession function terminates. A
+parent session can be notified when a child session has terminated by using
+the DosReadQueue function. When the child session terminates, the request
+value returned by DosReadQueue is zero, and the data-element format consists
+of two unsigned values: the session identifier and the result code.
+ 
+Only the process that calls the DosStartSession function should call the
+<b>DosReadQueue</b> function. Only this process can address the notification data
+element. After reading and processing the data element, the calling process
+must use the DosFreeSeg function to free the segment that contains the data
+element.
+ 
+A child session is created when the Related field of the STARTDATA structure
+is set to TRUE.
+ 
+The process identifier of the child process cannot be used with MS OS/2
+functions, such as DosSetPrty, that require a parent process/child process
+relationship.
+ 
+An independent session is created when the Related field of the STARTDATA
+structure is set to FALSE. An independent session is not under the control
+of the starting session. The DosStartSession function does not copy session
+and process identifiers for an independent session to the pidSession and
+<i>ppid</i> parameters.
+ 
+New sessions can be started in the foreground only when the caller's session
+(or one of the caller's descendant sessions) is currently executing in the
+foreground. The new session appears in the shell switch list.
+ 
+<b>See Also</b>
+ 
+<b>DosCreateQueue, DosExecPgm, DosFreeSeg, DosReadQueue, DosSelectSession,</b>
+<b>DosSetPrty, DosSetSession, DosStopSession, STARTDATA</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

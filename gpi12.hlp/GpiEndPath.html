@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>GpiEndPath (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiEndPath (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Path_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Paths 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiEqualRegion.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPATHS
+ 
+BOOL GpiEndPath(hps)
+HPS hps;    /* presentation-space handle */
+ 
+The GpiEndPath function ends a path bracket──that is, it ends the sequence
+of functions (starting with the GpiBeginPath function) that define the
+outline of a path.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_NOT_IN_PATH
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiEndPath function to end a path bracket. When the
+path bracket is ended, a subsequent call to the GpiFillPath function draws
+and fills the path.
+ 
+POINTL ptlStart = { 0, 0 };
+POINTL ptlTriangle[] = { 100, 100, 200, 0 };
+ 
+GpiBeginPath(hps, 1L);                  /* start the path bracket */
+GpiMove(hps, &amp;ptlStart);                /* move to starting point */
+GpiPolyLine(hps, 2L, ptlTriangle);      /* draw the three sides   */
+GpiCloseFigure(hps);                    /* close the triangle     */
+GpiEndPath(hps);                        /* end the path bracket   */
+GpiFillPath(hps, 1L, FPATH_ALTERNATE);  /* draw and fill the path */
+ 
+<b>See Also</b>
+ 
+<b>GpiBeginPath, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,105 @@
+<html>
+
+<head>
+<title>Using Window Timers (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Window Timers (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Window_Timers.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#timer functions 1.2'>Function Group</a><span class='grhilite'>►</span>                     <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Windows.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                            Using Window Timers
+ 
+You can start a timer with the WinStartTimer function. You supply the window
+handle and a time-out value. The function associates the timer with the
+specified window. The new timer starts counting down as soon as it is
+created. The following code fragment demonstrates starting a timer and
+setting it for every half second (500 milliseconds):
+ 
+WinStartTimer(hab,    /* anchor-block handle */
+    hwnd,             /* window handle       */
+    0,                /* timer ID (not used) */
+    500);             /* 500 milliseconds    */
+ 
+You can set the timer anywhere in your application as long as you have a
+valid window handle. To process the timer message, you need to add a
+<b>WM_TIMER</b> case to the window procedure for the given window. You can use the
+case to carry out any actions related to the timer. If the timer is no
+longer needed, you can stop it by using the WinStopTimer function. The
+following code fragment shows a typical case statement:
+ 
+case WM_TIMER:
+        .
+        . /* Carry out timer-related tasks. */
+        .
+ 
+    WinStopTimer(hab, hwnd, 0);   /* stops the timer for this window */
+    return (0L);
+ 
+You can reset the time-out value for the timer for a given window by calling
+the WinStartTimer function again. You can reset the timer without stopping
+it.
+ 
+If you supply a window handle, you can start only one timer for that window.
+If you attempt to create another timer using the same window handle, the
+system just resets the time-out for the previous timer. If you need more
+than one timer for a window or application, you can create multiple timers
+by using a NULL window handle. The WinStartTimer function creates a timer
+and returns a timer identifier that uniquely identifies it. The following
+code fragment creates two timers:
+ 
+USHORT idTimer1, idTimer2;
+ 
+idTimer1 = WinStartTimer(hab, NULL, 0, 500);
+idTimer2 = WinStartTimer(hab, NULL, 0, 1000);
+ 
+Since there is no window associated with these timers, the application must
+process the timer messages once they are retrieved from the message queue;
+since the timer messages have no window handles, the WinDispatchMsg function
+in the message loop cannot dispatch them. The following code fragment shows
+a message loop that handles the window timers:
+ 
+HWND hwndTimerHandler; /* handle of window for timer messages */
+QMSG qmsg;             /* queue-message structure             */
+ 
+while (WinGetMsg(hab, &amp;qmsg, NULL, 0, 0)) {
+    switch(qmsg.msg) {
+        case WM_TIMER:
+            qmsg.hwnd = hwndTimerHandler;
+ 
+        default:
+           WinDispatchMsg(hab, &amp;qmsg);
+    }
+}
+ 
+If a window receives multiple timer messages, it can use the first message
+parameter of the message to identify the timer, because the system copies
+the timer identifier to this parameter.
+ 
+If you need to change the time-out value for a timer, you must specify the
+timer identifier with the new time-out value. The following code fragment
+sets the second timer to 2 seconds:
+ 
+idTimer2 = WinStartTimer(hab, NULL, idTimer2, 2000);
+ 
+When you first start a timer that has no associated window, the
+<b>WinStartTimer</b> function creates an arbitrary timer identifier unless you
+explicitly provide one. You can request your own timer identifier when you
+first start a timer, but you must make sure it is not one of the reserved
+system timers.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

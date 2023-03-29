@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>WinGetPS (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinGetPS (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Presentation space functions'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Presentation Spaces and Device Contexts 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinGetScreenPS.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINWINDOWMGR
+ 
+HPS WinGetPS(hwnd)
+HWND hwnd;    /* handle of the window */
+ 
+The WinGetPS function retrieves a cache presentation space that is a cache
+micro presentation space present in the system. This space can be used for
+simple drawing operations that do not depend on long-term data being stored
+in the presentation space.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwnd</i>       Identifies the window to retrieve a presentation space for.
+ 
+<b>Return Value</b>
+ 
+The return value identifies presentation space that can be used for drawing
+in the window.
+ 
+<b>Comments</b>
+ 
+The initial state of the presentation space is the same as that of a
+presentation space created using the GpiCreatePS function. The color table
+is in default color-index mode. The visible region associated with the
+presentation space depends on the window and class styles of the window
+identified by the hwnd parameter. The visible region can have one of the
+following values:
+ 
+<b>Value            Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>WS_CLIPCHILDREN</i>  All the window's child windows are excluded.
+ 
+<i>WS_CLIPSIBLINGS</i>  All the window's sibling windows are excluded.
+ 
+<i>WS_PARENTCLIP</i>    The visible region is the same as that of the window's
+                 parent window.
+ 
+Note that any presentation spaces created with the WinGetPS function must be
+released by calling the WinReleasePS function. This must be done before the
+application terminates.
+ 
+The WinGetPS function should not be called by any thread which does not have
+a message queue (see WinCreateMsgQueue).
+ 
+<b>Example</b>
+ 
+This example processes an application-defined message (IDM_FILL). It calls
+<b>WinGetPS</b> to get a presentation space to the entire window. It gets the
+dimensions of the current window, fills the window, and calls WinReleasePS
+to release the presentation space.
+ 
+case IDM_FILL:
+    hps = WinGetPS(hwnd);           /* get ps for the entire window */
+    WinQueryWindowRect(hwnd, &amp;rcl);    /* get window dimensions     */
+    WinFillRect(hps, &amp;rcl, CLR_WHITE); /* clear entire window       */
+    WinReleasePS(hps);                 /* release the ps            */
+    return 0L;
+ 
+<b>See Also</b>
+ 
+<b>GpiCreatePS, WinCreateMsgQueue, WinGetClipPS, WinGetScreenPS, WinReleasePS</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

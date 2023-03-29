@@ -1,0 +1,442 @@
+<html>
+
+<head>
+<title>Using the Clipboard (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using the Clipboard (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Clipboard.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#clipboard functions 1.2'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#clipboard messages'>Message Group</a><span class='grhilite'>►</span>    <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a></i><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Combination_Box_controls.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                            Using the Clipboard
+ 
+Applications should use the clipboard when cutting, copying, or pasting
+data. Typically, an application places data on the clipboard for cut and
+copy operations and removes data from the clipboard for paste operations. An
+application can use the standard clipboard-data formats or create its own
+formats. An application that uses custom clipboard formats often becomes the
+clipboard owner, assuming control of drawing or freeing data on the
+clipboard.
+ 
+Clipboard data does not need to be generated, or rendered, when it is placed
+on the clipboard. Instead, an application can delay rendering, waiting until
+the data is requested by another application.
+ 
+Finally, an application can become the clipboard viewer, showing the
+clipboard contents, and receiving messages when the clipboard contents
+change.
+ 
+<b>Putting Data on the Clipboard</b>
+ 
+To put data on the clipboard, an application must first call the
+<b>WinOpenClipbrd</b> function to verify that other applications are not trying to
+retrieve or set clipboard data. The WinOpenClipbrd function does not return
+if another thread has the clipboard open. The WinOpenClipbrd function waits
+until the clipboard is free or there is a message in the calling thread's
+message queue. In practice, this means that the WinOpenClipbrd function
+waits until the clipboard is available or until the calling application
+responds to a message. If the clipboard cannot be opened before a message
+arrives, the application receives the message and the WinOpenClipbrd
+function continues to try to open the clipboard. The WinOpenClipbrd function
+does not return until the clipboard is open. However, the application
+continues receiving messages.
+ 
+Once an application successfully opens the clipboard, it should remove any
+previously stored data on the clipboard by calling the WinEmptyClipbrd
+function. Although the clipboard supports many data formats, all the formats
+on the clipboard should represent the same data at any one time. For this
+reason, it is important to clear the clipboard of old data before writing
+new data. If the clipboard is not cleared, writing a format that already
+exists on the clipboard will replace the old data with the new data.
+ 
+When the clipboard is cleared, an application should write its data to the
+clipboard in as many standard formats as possible. For each format, the
+application should pass the data to the clipboard by calling the
+<b>WinSetClipbrdData</b> function, specifying the data format. Because the
+clipboard is not cleared when a new format is written to the clipboard, all
+new data formats coexist with each other until the clipboard is cleared by
+the next clipboard user.
+ 
+Data passed to the clipboard can take many forms, depending on the format of
+the data. For text data, the data handle is a selector to a shared segment
+containing the text. For bitmap data, the data handle is a bitmap handle.
+For a metafile format, the data handle is a metafile handle. If an
+application passes NULL for the data handle, it renders the data on
+request.
+ 
+Once an application passes a selector or a handle to the clipboard, the
+application should not alter the contents of that segment or handle. The
+clipboard owns that data from then on.
+ 
+Finally, when an application finishes writing the clipboard data, it should
+release the clipboard by calling the WinCloseClipbrd function so that other
+applications can use the clipboard.
+ 
+The following code fragment shows how an application places text data on the
+clipboard, how it opens the clipboard, copies the text to a shared segment,
+empties the clipboard, and passes the selector to the clipboard:
+ 
+if (WinOpenClipbrd(hab)) {
+ 
+    /*
+     * Allocate a shareable segment for the data szClipString in the
+     * application's copy of the text.
+     */
+ 
+    if (usSuccess = DosAllocSeg(strlen(szClipString) + 1,
+            &amp;sel, SEG_GIVEABLE )) {
+ 
+        /* Make a far pointer (selector:0) out of the selector. */
+ 
+        pszDest = MAKEP(sel, 0);
+ 
+        /* Set up the source pointer to point to text. */
+ 
+        pszSrc = &amp;szClipString[0];
+ 
+        /* Copy the string to the segment. */
+ 
+        while (*pszDest++ = *pszSrc++);
+ 
+        /* Clear old data from the clipboard. */
+ 
+        WinEmptyClipbrd(hab);
+ 
+        /*
+         * Pass the selector to the clipboard in CF_TEXT format. Note that
+         * the selector must be a ULONG value.
+         */
+ 
+        fSuccess = WinSetClipbrdData(hab, (ULONG) sel,
+            CF_TEXT, CFI_SELECTOR);
+ 
+        /* Close the clipboard. */
+ 
+        WinCloseClipbrd(hab);
+    }
+}
+ 
+<b>Retrieving Data from the Clipboard</b>
+ 
+To retrieve data from the clipboard, an application must first call the
+<b>WinOpenClipbrd</b> function to verify that no other applications are trying to
+retrieve or set the clipboard data.
+ 
+Once an application successfully opens the clipboard, it should call the
+<b>WinQueryClipbrdData</b> function, specifying a preferred format. If that format
+is not available, indicated by a NULL return from the WinQueryClipbrdData
+function, the application should repeat calls to the WinQueryClipbrdData
+function for other possible formats until it either receives the data or
+runs out of format choices.
+ 
+If the clipboard contains one of the requested formats, the
+<b>WinQueryClipbrdData</b> function returns a 32-bit integer, the meaning of which
+depends on the particular format. For text data, the return value is a
+selector (in the lower 16 bits of the long integer) to a shareable segment
+containing the text. For bitmap data, the return value is a bitmap handle.
+For metafile data, the return value is a metafile handle.
+ 
+Whatever the format, the handle or selector returned is valid only while the
+clipboard remains open. An application can use the data while the clipboard
+is open or copy the data to its own memory and use it after the clipboard is
+closed.
+ 
+It is important that an application close the clipboard as soon as possible
+so that other applications can access it.
+ 
+The following code fragment shows how to open the clipboard, retrieve data
+in the requested format, copy the data to a local segment, and close the
+clipboard:
+ 
+if (WinOpenClipbrd(hab)) {
+   if (hText = WinQueryClipbrdData(hab, CF_TEXT)) {
+ 
+      /* Turn the selector into a pointer. */
+ 
+      pszClipText = MAKEP((SEL) hText, 0);
+ 
+      /* Copy text from the selector segment to a local segment. */
+ 
+      while (*pszLocalText++ = *pszClipText++);
+   }
+   WinCloseClipbrd(hab);
+}
+ 
+<b>Becoming the Clipboard Viewer</b>
+ 
+A window can become a clipboard viewer and display the current contents of
+the clipboard. The clipboard viewer is informed whenever the clipboard
+contents change. Typically, the clipboard viewer is a window that can draw
+the standard clipboard formats. The clipboard viewer is a convenience for
+the user; it does not have any effect on the data-transaction functions of
+the clipboard.
+ 
+To create a clipboard viewer, an application calls the WinSetClipbrdViewer
+function, specifying the window in which the clipboard data will be
+displayed. This is usually the client window of an application. There can
+only be one clipboard viewer at any time in the system, so setting a
+clipboard viewer replaces any previous clipboard viewer. The
+<b>WinQueryClipbrdViewer</b> function receives the handle to the current clipboard
+viewer so that the application can reset it when finished with the clipboard
+viewer.
+ 
+Once a window becomes the clipboard viewer, it receives WM_DRAWCLIPBOARD
+messages whenever the contents of the clipboard change. The window should
+respond to these messages by drawing the contents of the clipboard.
+ 
+The clipboard viewer displays all the standard formats and should process
+CFI_OWNERDISPLAY items by sending the appropriate message to the clipboard
+owner.
+ 
+Three special formats exist for of the clipboard viewer: CF_DSPTEXT,
+CF_DSPBITMAP, and CF_DSPMETAFILE. Applications that write data to the
+clipboard in private formats should also write the data in one of these
+formats. These DSP formats should be a representation of the private
+formats. If the clipboard viewer does not find one of the standard formats
+(CF_TEXT, CF_BITMAP, or CF_METAFILE), it can search for one of the DSP
+formats. Display strategies for these formats are the same as for the
+corresponding standard formats.
+ 
+The following code fragment shows how a sample clipboard viewer responds to
+the WM_DRAWCLIPBOARD message, drawing text and bitmap data in its window.
+Note that the code uses the data retrieved from the clipboard before closing
+the clipboard. An alternate strategy would be to copy the data to a local
+segment and then close the clipboard. In any case, the original data from
+the clipboard cannot be used after the clipboard is closed.
+ 
+case WM_DRAWCLIPBOARD:
+    if (!WinOpenClipbrd(hab))
+        return 0L;
+ 
+    if (hText = WinQueryClipbrdData(hab, CF_TEXT)) {
+        pszText = MAKEP((SEL) hText, 0);
+ 
+        hps = WinGetPS(hwnd);
+        WinQueryWindowRect(hwnd, &amp;rect);
+ 
+        WinDrawText(hps,
+            0xFFFF,                      /* null-terminated string  */
+            pszText,                     /* the string              */
+            &amp;rect,                       /* where to put the string */
+            CLR_BLACK,                   /* foreground color        */
+            CLR_WHITE,                   /* background color        */
+            DT_CENTER | DT_VCENTER | DT_ERASERECT);
+        WinValidateRect(hwnd, (PRECTL) NULL, FALSE);
+        WinReleasePS(hps);
+    }
+    else if (hBitmap = WinQueryClipbrdData(hab, CF_BITMAP)) {
+        hps = WinGetPS(hwnd);
+        ptlDest.x = ptlDest.y = 0;
+        WinQueryWindowRect(hwnd, &amp;rect);
+        WinFillRect(hps, &amp;rect, CLR_WHITE);
+        WinDrawBitmap(hps,
+            hBitmap,
+            (PRECTL) NULL,               /* draws entire bitmap     */
+            &amp;ptlDest,                    /* destination             */
+            CLR_BLACK,                   /* foreground color        */
+            CLR_WHITE,                   /* background color        */
+            DBM_NORMAL);                 /* bitmap flags            */
+        WinValidateRect(hwnd, (PRECTL) NULL, FALSE);
+        WinReleasePS(hps);
+    }
+ 
+    WinCloseClipbrd(hab);                /* closes the clipboard    */
+    return 0L;
+ 
+The clipboard viewer uses a similar sequence of calls to get clipboard data
+when responding to a WM_PAINT message.
+ 
+The clipboard viewer is also responsible for sending messages to the
+clipboard owner when clipboard data has the attribute CFI_OWNERDISPLAY.
+Typically, an application sets the attribute CFI_OWNERDISPLAY only for
+private clipboard formats and not for any standard formats. The clipboard
+viewer must send messages to the clipboard owner when the clipboard owner
+does not provide a standard clipboard format in addition to its private
+formats. In this case, the viewer sends messages to the clipboard owner of a
+CFI_OWNERDISPLAY format to draw, scroll, and resize the clipboard-image
+data.
+ 
+The clipboard viewer determines the attributes of a particular clipboard
+format by calling the WinQueryClipbrdFmtInfo function. The identity of the
+current owner can be found by calling the WinQueryClipbrdOwner function.
+ 
+<b>Becoming the Clipboard Owner</b>
+ 
+The clipboard owner is any application window that is connected to the
+clipboard data. To become the clipboard owner, an application must call the
+<b>WinSetClipbrdOwner</b> function. The following are situations in which an
+application should call the WinSetClipbrdOwner function to become the
+clipboard owner:
+ 
+♦  The application calling the WinSetClipbrdData function passes a NULL
+   selector or handle to the clipboard, indicating that the application
+   renders the data in a particular format on request. As a result, the
+   system sends rendering requests to the current clipboard owner.
+ 
+♦  The application calling the WinSetClipbrdData function passes data with
+   the attribute CFI_OWNERFREE, indicating that the application frees memory
+   for data when the clipboard is emptied. As a result, the system sends
+   owner-free requests to the current clipboard owner.
+ 
+♦  The application calling the WinSetClipbrdData function passes data with
+   the attribute CFI_OWNERDISPLAY, indicating that the owner application
+   draws the data in the clipboard viewer. As a result, the clipboard viewer
+   sends drawing-related requests to the current clipboard owner.
+ 
+The window specified in the call to the WinSetClipbrdOwner function should
+respond to the following messages:
+ 
+<b>Message              Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>WM_RENDERFMT</i>         Sent by the system to the clipboard owner when a
+                     particular format with delayed rendering must be
+                     rendered. The receiver should render the data in the
+                     specified format and pass it to the clipboard by
+                     calling the WinSetClipbrdData function.
+ 
+<i>WM_RENDERALLFMTS</i>     Sent by the system to the clipboard owner just before
+                     the owner application terminates. The receiver should
+                     render the clipboard data in all formats on the
+                     clipboard with delayed rendering. It should pass the
+                     data for each format to the clipboard by calling the
+                     WinSetClipbrdData function.
+ 
+<i>WM_DESTROYCLIPBOARD</i>  Sent by the system to the clipboard owner when the
+                     clipboard is cleared by another application calling the
+                     WinEmptyClipbrd function. The receiver should free the
+                     memory occupied by any clipboard formats using the
+                     attribute CFI_OWNERFREE.
+ 
+<i>WM_SIZECLIPBOARD</i>     Sent by the clipboard viewer to the clipboard owner
+                     when the clipboard contains the data handle with the
+                     attribute CFI_OWNERDISPLAY and when the
+                     clipboard-viewer changes size. When the clipboard
+                     viewer is being destroyed or reduced to an icon, this
+                     message is sent with the coordinates of the opposite
+                     corners set to (0,0), which permits the owner to free
+                     its display resources.
+ 
+<i>WM_VSCROLLCLIPBOARD</i>  Sent by the clipboard viewer to the clipboard owner
+                     when the clipboard contains data with the attribute
+                     CFI_OWNERDISPLAY and when an event occurs in the
+                     clipboard-viewer scroll bars. The receiver should
+                     respond to this message by scrolling the image,
+                     invalidating the appropriate area of the clipboard
+                     viewer, and updating the scroll-bar position.
+ 
+<i>WM_HSCROLLCLIPBOARD</i>  Sent by the clipboard viewer to the clipboard owner
+                     when the clipboard contains data with the attribute
+                     CFI_OWNERDISPLAY and when an event occurs in the scroll
+                     bars of the clipboard viewer. The receiver should
+                     respond to this message by scrolling the image,
+                     invalidating the appropriate area of the clipboard
+                     viewer, and updating the scroll-bar position.
+ 
+<i>WM_PAINTCLIPBOARD</i>    Sent by the clipboard viewer to the clipboard owner
+                     when the clipboard contains data with the attribute
+                     CFI_OWNERDISPLAY and when the clipboard-viewer client
+                     area needs repainting. The receiver should respond to
+                     this message by painting the requested format (by
+                     calling WinGetPS for the window handle of the clipboard
+                     viewer).
+ 
+An application automatically loses ownership of the clipboard when the
+clipboard data is cleared by the WinEmptyClipbrd function. Ownership is
+necessary only when data is present on the clipboard. Typically, an
+application loses ownership when another application places data on the
+clipboard.
+ 
+<b>Custom Clipboard Formats</b>
+ 
+Applications often use custom clipboard formats when standard formats are
+insufficient for representing clipboard data. For example, a word processor
+might have a rich-text format that contains font and style information in
+addition to the usual text characters. Clearly, if the word processor uses
+the clipboard to support cut, copy, and paste operations for moving data in
+its documents, a standard text format would be inadequate.
+ 
+Such a word processor should write at least two formats to the clipboard for
+each cut or copy operation: a standard text format representing the text of
+the current selection, and a private rich-text format representing the true
+state of the selection. If the word processor performs a paste operation
+using clipboard data, it can use the rich-text format to retain all
+formatting. If another application requests the same data, it can use the
+standard-text format if it does not recognize the private format. The word
+processor should also be able to render data in CF_BITMAP and CF_METAFILE
+formats for painting or drawing applications.
+ 
+<b>Assigning a Unique Format ID</b>
+ 
+Each private format must have an identification number when it is written to
+the clipboard. To obtain a unique ID number for a private clipboard format,
+the application should register the name of the format in the system atom
+table. The system assigns a unique ID number for the format name. Other
+applications that know the format name can query the system atom table for
+the format ID. An application can interpret its own private formats and can
+request them from the clipboard for cutting and pasting its own data. Other
+applications that know the private format ID can also interpret the
+formatted data. The following code fragment illustrates how an application
+obtains a unique identification number for a clipboard format. This
+technique can be used either by the application that creates the format or
+by another application.
+ 
+hatomtbl = WinQuerySystemAtomTable();
+formatID = WinAddAtom(hatomtbl, "SuperCAD_Format");
+ 
+<b>Display Formats</b>
+ 
+Three standard display formats exist for applications that use private
+formats: CF_DSPTEXT, CF_DSPBITMAP, and CF_DSPMETAFILE. These three formats
+correspond to the standard text, bitmap, and metafile formats with the
+exception that they are intended only for use by the clipboard viewer. An
+application that uses a private format should write one of the DSP formats
+that approximates the appearance of the private data so that the clipboard
+viewer can display the data regardless of the format. For example, a word
+processor using the rich-text format should also write a CF_DSPBITMAP
+formatted picture of the selected text that contains all the type fonts and
+styles. Note that you might choose delayed rendering for DSP formats because
+there may not always be a clipboard viewer active on the screen. With
+delayed rendering, an application does not actually render the format unless
+it is requested to do so.
+ 
+<b>Delayed Rendering</b>
+ 
+An application can pass NULL instead of a selector or a handle, indicating
+that the data is rendered only when another application requests it from the
+clipboard. This is useful if an application supports several clipboard
+formats that are time-consuming to render. With delayed rendering, an
+application can send NULL handles for each clipboard format that it
+supports, and render individual formats only when the format is actually
+requested from the clipboard. An application can either write data for
+standard formats or choose delayed rendering for more complex formats.
+ 
+When an application uses delayed rendering for one or more of its clipboard
+formats, it must become the clipboard owner. As long as the application is
+the clipboard owner, it receives a WM_RENDERFMT message whenever a request
+is received by the clipboard for a format using delayed rendering. When the
+application receives such a message, it should render the data and pass the
+selector or handle to the clipboard by calling the WinSetClipbrdData
+function. The rules for shared-memory access for rendered data are the same
+as those for standard clipboard data. This is simply a delayed execution of
+the operation that occurs if the data does not have delayed rendering.
+ 
+The clipboard owner with one or more delayed-rendering formats on the
+clipboard receives a WM_RENDERALLFMTS message just before the clipboard
+owner application terminates. This insures that the application renders all
+of its data before terminating.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

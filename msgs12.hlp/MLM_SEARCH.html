@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<title>MLM_SEARCH (1.2) - msgs12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msgs12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MLM_SEARCH (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='mle.html'>Message Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#MLE controls 1.2'>Overview</a><span class='grhilite'>►</span>            </i>               <span class='grhilite'>◄</span><a href='messages.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MLM_SETBACKCOLOR.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMLE
+ 
+<b>MLM_SEARCH</b>
+mp1 = MPFROMLONG(ulStyle);  /* search style                          */
+mp2 = MPFROMP(pmlesearch);  /* address of structure with search data */
+ 
+An application sends an MLM_SEARCH message to search for (and optionally
+replace) text within a multiple-line entry field (MLE).
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>ulStyle     Low and h</i>igh word of mp1. Specifies the style of the search.
+            This parameter can be any combination of the following values:
+ 
+            Value                    Meaning
+            ────────────────────────────────────────────────────────────────
+            MLFSEARCH_CASESENSITIVE  Specifies that the search is
+                                     case-sensitive.
+ 
+            MLFSEARCH_SELECTMATCH    Specifies that if the text is found, it
+                                     should be highlighted and scrolled into
+                                     view (if necessary). This is identical
+                                     to sending the MLM_SETSEL message.
+ 
+            MLFSEARCH_CHANGEALL      Specifies that all text found is to be
+                                     replaced by the text in the pchReplace
+                                     field of the MLE_SEARCHDATA structure.
+ 
+<i>pmlesearch  Low and high word of mp2. Points to th</i>e MLE_SEARCHDATA structure
+            that contains the search data.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the search is successful, or it is FALSE,
+indicating that the search string was not found.
+ 
+<b>Comments</b>
+ 
+If the MLFSEARCH_CHANGEALL flag is not set and a match is found, the
+<b>iptStart field of the ML</b>E_SEARCHDATA structure is set to the offset (number
+of characters from the beginning of the text) of the first character that
+matches the search string. The cchFound field is set to the number of
+characters that match the search string. The current cursor position is not
+changed unless the MLFSEARCH_SELECTMATCH flag is set.
+ 
+While the MLE is searching, it periodically sends an MLN_SEARCHPAUSE message
+that contains the current position of the search. You can terminate the
+search by returning TRUE to the MLN_SEARCHPAUSE notification message.
+ 
+<b>Example</b>
+ 
+This example searches for all occurrences of the word bonnie and replaces it
+with the word jeannette:
+ 
+MLE_SEARCHDATA search;
+search.cb = sizeof(search);
+search.pchFind = "bonnie";
+search.pchReplace = "jeannette";
+search.cchFind = 6;
+search.cchReplace = 9;
+search.iptStart = 0;   /* from the beginning of the text */
+search.iptStop = -1;   /* to the end of the text         */
+WinSendMsg(hwndMle, MLM_SEARCH, MLFSEARCH_CHANGEALL, (MPARAM) &amp;search);
+ 
+<b>See Also</b>
+ 
+<b>MLM_SETSEL, MLN_SEARCHPAUSE, WM_CONTROL, MLE_SEARCHDATA</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

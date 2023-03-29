@@ -1,0 +1,85 @@
+<html>
+
+<head>
+<title>VioSetMode (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioSetMode (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L8079.html'>Changes</a><span class='grhilite'>►</span>                       </i>          <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioSetOrg.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioSetMode(pviomi, hvio)
+PVIOMODEINFO pviomi;    /* pointer to structure for screen mode */
+HVIO hvio;              /* video handle                         */
+ 
+The VioSetMode function sets the screen mode. The screen mode defines the
+display mode (text or graphics), the number of colors being used (2, 4, or
+16), and the width and height of the screen in both character cells and
+pels. VioSetMode also initializes the cursor position and type but does not
+clear the screen.
+ 
+The VioSetMode function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pviomi     Points </i>to the VIOMODEINFO structure that specifies the screen
+           mode.
+ 
+<i>hvio</i>       This parameter must be NULL.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_VIO_INVALID_HANDLE
+     ERROR_VIO_INVALID_LENGTH
+     ERROR_VIO_MODE
+ 
+<b>Comments</b>
+ 
+Not all screen-mode values are valid for all displays.
+ 
+The hvio parameter can be only NULL. This function cannot be used by an
+advanced video-input-and-output application.
+ 
+When VioSetMode is called from a VIO-window application (as opposed to an
+application that is running in its own screen group), it does not change the
+size of a character cell.
+ 
+<b>Example</b>
+ 
+This example calls the VioGetMode function to retrieve the current display
+mode, changes the mode, and calls VioSetMode to enable the new display
+mode.
+ 
+VIOMODEINFO viomi;
+viomi.cb = sizeof(viomi);
+VioGetMode(&amp;viomi, 0);
+if (viomi.vres &gt; 350)                          /* VGA display */
+    viomi.row = (viomi.row == 50) ? 25 : 50;
+else                                           /* EGA display */
+    viomi.row = (viomi.row == 43) ? 25 : 43;
+VioSetMode(&amp;viomi, 0);
+ 
+<b>See Also</b>
+ 
+<b>VioGetMode, VioSetState, VIOMODEINFO</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

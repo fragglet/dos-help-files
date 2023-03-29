@@ -1,0 +1,155 @@
+<html>
+
+<head>
+<title>DosWriteAsync (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosWriteAsync (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80e4.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosWriteQueue.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosWriteAsync(hf, hsemRam, pusErrCode, pvBuf, cbBuf,
+    pcbBytesWritten)
+HFILE hf;                   /* file handle                                */
+PULONG hsemRam;             /* pointer to RAM semaphore                   */
+PUSHORT pusErrCode;         /* pointer to variable for error value        */
+PVOID pvBuf;                /* pointer to buffer containing data to write */
+USHORT cbBuf;               /* number of bytes in buffer                  */
+PUSHORT pcbBytesWritten;    /* pointer to variable for bytes written      */
+ 
+The DosWriteAsync function writes one or more bytes of data to a specified
+file. The function writes the data asynchronously──that is, the function
+returns immediately, but continues to copy data to the specified file while
+the process continues with other tasks.
+ 
+<b>Parameter        Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hf</i>               Identifies the file that receives the data. This handle
+                 must have been created previously by using the DosOpen
+                 function.
+ 
+<i>hsemRam</i>          Points to the RAM semaphore that indicates when the
+                 function has finished reading the data.
+ 
+<i>pusErrCode</i>       Points to the variable that receives an error value.
+ 
+<i>pvBuf</i>            Points to the buffer that contains the data to write.
+ 
+<i>cbBuf</i>            Specifies the number of bytes to write.
+ 
+<i>pcbBytesWritten</i>  Points to the variable receiving the number of bytes
+                 written.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_ACCESS_DENIED
+     ERROR_BROKEN_PIPE
+     ERROR_INVALID_HANDLE
+     ERROR_LOCK_VIOLATION
+     ERROR_NO_PROC_SLOTS
+     ERROR_NOT_DOS_DISK
+     ERROR_WRITE_FAULT
+ 
+<b>Comments</b>
+ 
+The DosWriteAsync function starts writing at the current file-pointer
+position. The file-pointer position can be changed by using the
+<b>DosChgFilePtr</b> function.
+ 
+If the specified file has been opened using the write-through flag, the
+<b>DosWriteAsync</b> function writes data to an internal file buffer and to the
+disk before returning. If the write-through flag has not been set, the
+system collects the data in an internal file buffer and writes the data to
+the disk only when the buffer is full.
+ 
+The DosWriteAsync function may write fewer bytes to the file than the number
+specified in the cbBuf parameter if there is not enough space on the disk
+for all the requested bytes. The cbBuf parameter can be zero without causing
+an error──that is, writing no bytes is acceptable.
+ 
+When the DosWriteAsync function has written the data, it clears the RAM
+semaphore pointed to by the hsemRam parameter. If the process uses the
+semaphore to determine when data is available, it must use the DosSemSet
+function to set the semaphore before calling DosWriteAsync.
+ 
+The efficiency with which the DosWriteAsync function writes to a disk is
+improved when the cbBuf parameter is set to a multiple of the disk's
+bytes-per-sector size. When cbBuf is set this way, the function writes
+directly to the disk, without first copying the data to an internal file
+buffer. (The DosQFSInfo function retrieves the bytes-per-sector value for a
+disk.)
+ 
+<b>DosWriteAsync</b> can be used to write bytes or messages to a pipe. Each write
+to a message pipe writes a message whose size is specified by the cbBuf
+parameter; DosWriteAsync automatically encodes message lengths in the pipe,
+so applications need not encode this information in the buffer being
+written.
+ 
+In blocking mode, write operations always write all requested bytes before
+returning. In nonblocking mode, write operations return either with all
+bytes written or none written; the latter occurs in cases where
+<b>DosWriteAsync</b> has to block in order to complete the request (for example, if
+there is no room in the pipe buffer or if the buffer is currently being
+written to by another process).
+ 
+When the function tries to write to a pipe whose other end has been closed,
+it returns the error ERROR_BROKEN_PIPE.
+ 
+<b>Example</b>
+ 
+This example creates the file abc.ext, sets a RAM semaphore, and calls the
+<b>DosWriteAsync function to write the con</b>tents of the buffer abBuf to a file.
+When any additional processing is finished, the example calls the
+<b>DosSemWait function to wait un</b>til DosWriteAsync has finished writing to the
+file.
+ 
+ULONG hsemWrite = 0;
+BYTE abBuf[1024];
+HFILE hf;
+USHORT usAction, cbBytesWritten;
+USHORT usWriteAsyncError;
+DosOpen("abc.ext", &amp;hf, &amp;usAction, 0L, FILE_NORMAL,
+    FILE_CREATE,
+    OPEN_ACCESS_WRITEONLY | OPEN_SHARE_DENYWRITE, 0L);
+ 
+DosSemSet(&amp;hsemWrite);         /* sets semaphore           */
+DosWriteAsync(hf,              /* file handle              */
+    &amp;hsemWrite,                /* semaphore address        */
+    &amp;usWriteAsyncError,        /* return-code address      */
+    abBuf,                     /* buffer address           */
+    sizeof(abBuf),             /* buffer size              */
+    &amp;cbBytesWritten);          /* address of bytes written */
+    .
+    . /* Other processing would go here. */
+    .
+DosSemWait(&amp;hsemWrite, -1L);   /* waits for DosWriteAsync  */
+if (usWriteAsyncError) {
+    .
+    . /* Error processing would go here. */
+    .
+ 
+<b>See Also</b>
+ 
+<b>DosChgFilePtr, DosOpen, DosQFSInfo, DosReadAsync, DosSemSet, DosSemWait,</b>
+<b>DosWrite</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>MM_SETITEMATTR (1.2) - msgs12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msgs12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MM_SETITEMATTR (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Menu_messages.html'>Message Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Menus 1.2'>Overview</a><span class='grhilite'>►</span>                           <span class='grhilite'>◄</span><a href='messages.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MM_SETITEMHANDLE.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMENUS
+ 
+<b>MM_SETITEMATTR</b>
+mp1 = MPFROM2SHORT((USHORT) idItem, (BOOL) fIncludeSubMenus);
+mp2 = MPFROM2SHORT((USHORT) rgfMask, (USHORT) rgfData);
+ 
+An application sends an MM_SETITEMATTR message to change the state of a menu
+item's attributes.
+ 
+<b>Parameter         Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>idItem            </i>Low word of mp1. Identifies the item.
+ 
+<i>fIncludeSubMenus  High word of mp1. Specifies wh</i>ether to include submenus in
+                  the search for an item that matches the idItem parameter.
+ 
+<i>rgfMask           Low</i> word of mp2. Specifies a mask of the attributes to
+                  set. This parameter can be any combination of the
+                  following values:
+ 
+                  Value         Meaning
+                  ──────────────────────────────────────────────────────────
+                  MIA_CHECKED   A check mark appears to the left of the menu
+                                item.
+ 
+                  MIA_DISABLED  The menu item is disabled.
+ 
+                  MIA_FRAMED    The menu item is framed by vertical lines to
+                                the left and right.
+ 
+                  MIA_HILITED   The menu item is selected (highlighted).
+ 
+<i>rgfData           Hig</i>h word of mp2. Specifies the new state of the menu
+                  item's attributes.
+ 
+<b>Comments</b>
+ 
+More than one attribute can be set with a single message by combining the
+attributes to set in the rgfMask parameter and their new values in the
+<i>rgfData</i> parameter.
+ 
+<b>Example</b>
+ 
+The following example sends an MM_SETITEMATTR message to set the IDM_LARGE
+menu item's state to checked, and then sends another MM_SETITEMATTR message
+to set the IDM_MEDIUM menu item's state to unchecked.
+ 
+WinSendMsg(hwndActionBar, MM_SETITEMATTR,
+    MPFROM2SHORT(IDM_LARGE, TRUE),
+    MPFROM2SHORT(MIA_CHECKED, MIA_CHECKED));
+WinSendMsg(hwndActionBar, MM_SETITEMATTR,
+    MPFROM2SHORT(IDM_MEDIUM, TRUE),
+    MPFROM2SHORT(MIA_CHECKED, FALSE));
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the operation is successful or FALSE if an error
+occurs.
+ 
+<b>See Also</b>
+ 
+<b>MM_QUERYITEMATTR, MM_SETITEM</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

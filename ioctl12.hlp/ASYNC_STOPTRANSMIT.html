@@ -1,0 +1,68 @@
+<html>
+
+<head>
+<title>ASYNC_STOPTRANSMIT (1.2) - ioctl12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ioctl12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ASYNC_STOPTRANSMIT (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='IOCtls.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ASYNC_TRANSMITIMM.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVIOCTL
+ 
+USHORT DosDevIOCtl(0L, 0L, 0x0047, 0x0001, hDevice)
+HFILE hDevice;    /* device handle */
+ 
+The ASYNC_STOPTRANSMIT function stops the device from transmitting. This
+function stops data transmission by preventing the device driver from
+sending additional data to the transmit hardware. This function is similar
+to the device receiving the XOFF character.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hDevice</i>    Identifies the serial device that receives the device-control
+           function. The handle must have been created previously by using
+           the DosOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful or an error value if
+an error occurs.
+ 
+<b>Comments</b>
+ 
+If automatic-transmission control is enabled, this request causes the device
+driver to behave exactly as if it received the XOFF character. Transmission
+can be resumed if an XON character is received by the device driver, if an
+<b>ASYNC_STARTTRANSMIT</b> (0x0001,0x0048) function is received, or if the device
+driver is told to disable automatic-transmission control and in the previous
+state automatic-transmission control was enabled.
+ 
+If automatic-transmission control is disabled, the ASYNC_STARTTRANSMIT
+function (0x0001,0x0048) must be called for transmission to resume. If,
+after this request is received, the device driver is told to enable
+automatic-transmission control, transmission is still disabled. It can be
+re-enabled by any of the scenarios discussed above.
+ 
+There still may be other reasons why transmission may be disabled. For more
+information, see the ASYNC_GETCOMMSTATUS  function (0x0001,0x0064).
+ 
+<b>See Also</b>
+ 
+<b>DosOpen, ASYNC_GETCOMMSTATUS, ASYNC</b>_STARTTRANSMIT
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

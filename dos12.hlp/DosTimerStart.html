@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>DosTimerStart (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosTimerStart (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Timer_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Timers 1.2'>Overview</a><span class='grhilite'>►</span>        </i>                  <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosTimerStop.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDATETIME
+ 
+USHORT DosTimerStart(ulTime, hsem, phtimer)
+ULONG ulTime;       /* time before semaphore is cleared     */
+HSEM hsem;          /* system-semaphore handle              */
+PHTIMER phtimer;    /* pointer to variable for timer handle */
+ 
+The DosTimerStart function creates a timer that counts for a specified
+number of milliseconds, then clears the specified semaphore. The function
+repeats this process continually, counting the time and clearing the
+semaphore, until the process stops it by using the DosTimerStop function.
+The timer handle is used in the DosTimerStop function to cancel the timer.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>ulTime</i>     Specifies the time (in milliseconds) before the semaphore is
+           cleared.
+ 
+<i>hsem</i>       Identifies the system semaphore that signals the end of the
+           timer. This handle must have been created previously by using the
+           DosCreateSem function, and it must have been created with the
+           CSEM_PUBLIC flag.
+ 
+<i>phtimer</i>    Points to the variable that receives the timer handle.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_TS_NOTIMER
+     ERROR_TS_SEMHANDLE
+ 
+<b>Comments</b>
+ 
+The timer runs asynchronously──that is, while the timer counts the time, the
+function returns to let the process continue to execute other tasks.
+ 
+The given semaphore must be a system semaphore. If the process uses the
+semaphore to determine when data is available, it must use the DosSemSet
+function to set the semaphore before calling the DosTimerStart function.
+ 
+If necessary, the DosTimerStart function rounds up the ulTime parameter to
+the next clock tick.
+ 
+The timer may clear the semaphore several times before a process that is
+waiting for the semaphore resumes execution. If the process requires an
+accurate count of the time it waited, it should retrieve the current system
+time from the global information segment before and after waiting for the
+semaphore and compare these times.
+ 
+<b>See Also</b>
+ 
+<b>DosCreateSem, DosGetInfoSeg, DosSemSet, DosTimerStop</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

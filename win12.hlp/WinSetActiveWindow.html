@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>WinSetActiveWindow (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinSetActiveWindow (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinSetCapture.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINWINDOWMGR
+ 
+BOOL WinSetActiveWindow(hwndDesktop, hwnd)
+HWND hwndDesktop;    /* handle of the desktop               */
+HWND hwnd;           /* handle of the window to make active */
+ 
+The WinSetActiveWindow function makes the frame window of hwnd the active
+window. It does this by finding the first frame window parent of hwnd, using
+<i>hwnd</i> if it is a frame window. It then finds the last window associated with
+this frame window that had the focus. Then the focus is set to this window
+that previously had the focus, using the function WinSetFocus. This sets the
+focus to this window and activates all frame windows that are parents of
+this window.
+ 
+The window handle of the window that receives the focus is stored in the
+frame window's reserved memory. This memory can be queried by using a
+QWL_HWNDFOCUSSAVE index with the WinQueryWindowULong function.
+ 
+If the active window is changing, the following events occur:
+ 
+♦  If the action of setting the active window results in a different window
+   receiving the focus, the window that currently has the focus will receive
+   a WM_SETFOCUS message indicating the loss of focus.
+ 
+♦  If the action of setting the active window results in a different window
+   becoming active, a WM_ACTIVATE message is sent to the current active
+   window, indicating a loss of the active status.
+ 
+♦  The new active window is established.
+ 
+♦  A WM_ACTIVATE message indicating the acquisition of active status is sent
+   to the new window.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwndDesktop</i>  Identifies the desktop window. This parameter can be
+             HWND_DESKTOP or the desktop window handle.
+ 
+<i>hwnd</i>         Identifies either a frame window or the child of a frame
+             window. If it is a child, the parent frame window will become
+             the active window.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful. Otherwise, it is
+FALSE, indicating that an error occurred.
+ 
+<b>See Also</b>
+ 
+<b>WinQueryActiveWindow, WinQueryFocus, WinQueryWindowULong, WinSetFocus,</b>
+<b>WM_ACTIVATE, WM_QUERYFOCUSCHAIN, WM_SETFOCUS</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

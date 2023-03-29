@@ -1,0 +1,111 @@
+<html>
+
+<head>
+<title>WinSetHook (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinSetHook (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Hook_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Hooks 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinSetKeyboardStateTable.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINHOOKS
+ 
+BOOL WinSetHook(hab, hmq, iHook, pfnHook, hmod)
+HAB hab;         /* handle of the anchor block                   */
+HMQ hmq;         /* handle of the message queue                  */
+SHORT iHook;     /* type of hook chain                           */
+PFN pfnHook;     /* address of the hook procedure                */
+HMODULE hmod;    /* handle of the module with the hook procedure */
+ 
+The WinSetHook function installs an application procedure into a specified
+hook chain. In this function, queue hooks are called before system hooks.
+ 
+A call to WinSetHook installs the hook at the head of either the system or
+queue chain. The most recently installed hook is called first.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hab</i>        Identifies an anchor block.
+ 
+<i>hmq</i>        Identifies the queue to which the hook chain belongs. If this
+           parameter is NULL, the hook is installed in the system hook
+           chain. If it is HMQ_CURRENT, the hook is installed in the message
+           queue associated with the current thread (calling thread).
+ 
+<i>iHook</i>      Specifies the type of hook chain. This parameter can be one of
+           the following values:
+ 
+           Hook Type           Description
+           ─────────────────────────────────────────────────────────────────
+           HK_HELP             Monitors the WM_HELP message. Returns BOOL.
+                               If FALSE, next hook in chain is called. If
+                               TRUE, the next hook in the chain is not
+                               called.
+ 
+           HK_INPUT            Monitors messages in specified message queue.
+                               Returns BOOL. If FALSE, next hook in the
+                               chain is called. If TRUE, the message is not
+                               passed on to the next hook in the chain.
+ 
+           HK_JOURNALPLAYBACK  Allows applications to insert events into the
+                               system input queue. Returns LONG time-out
+                               value. This value is the time to wait (in
+                               milliseconds) before processing the current
+                               message. Never calls the next hook in the
+                               chain.
+ 
+           HK_JOURNALRECORD    Allows applications to record system input
+                               queue events. Returns VOID. Next hook in
+                               chain is always called.
+ 
+           HK_MSGFILTER        Monitors input events during system modal
+                               loops. Returns BOOL. If FALSE, next hook in
+                               the chain is called. If TRUE, the message is
+                               not passed on to the next hook in the chain.
+ 
+           HK_SENDMSG          Monitors messages sent with WinSendMsg.
+                               Returns VOID. Next hook in chain is always
+                               called.
+ 
+<i>pfnHook</i>    Points to an application hook procedure.
+ 
+<i>hmod</i>       Identifies the module that contains the hook procedure. This
+           parameter can be either the module handle returned by the
+           DosLoadModule function or NULL for the application's module.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful or FALSE if an error
+occurs.
+ 
+<b>Comments</b>
+ 
+You should use the handle returned from WinCreateMsgQueue for the hmq
+parameter. If this is not available, you can use the WinQueryWindowULong
+function with the index QWL_HMQ to obtain the queue handle associated with a
+window handle.
+ 
+Note: If a system hook is installed, the procedure must be contained in a
+DLL; the procedure may be called from different applications, which do not
+have access to code segments that are contained in a .exe file.
+ 
+<b>See Also</b>
+ 
+<b>DosLoadModule, WinCreateMsgQueue, WinQueryWindowULong, WinReleaseHook,</b>
+<b>WinSendMsg</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

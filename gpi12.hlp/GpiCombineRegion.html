@@ -1,0 +1,120 @@
+<html>
+
+<head>
+<title>GpiCombineRegion (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiCombineRegion (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Region_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Regions 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiComment.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIREGIONS
+ 
+LONG GpiCombineRegion(hps, hrgnDest, hrgnSrc1, hrgnSrc2, cmdMode)
+HPS hps;          /* presentation-space handle      */
+HRGN hrgnDest;    /* handle of destination region   */
+HRGN hrgnSrc1;    /* handle of first source region  */
+HRGN hrgnSrc2;    /* handle of second source region */
+LONG cmdMode;     /* combination method             */
+ 
+The GpiCombineRegion function combines two source regions identified by
+<i>hrgnSrc1 and hrgnSrc2. T</i>he new region replaces the destination region
+identified by hrgnDest. If one of the source regions is also given as the
+destination region, the function replaces that source region with the new
+region, but does not affect the other source region.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space. The presentation space must be
+           associated with a device context.
+ 
+<i>hrgnDest</i>   Identifies the destination region.
+ 
+<i>hrgnSrc1</i>   Identifies the first source region.
+ 
+<i>hrgnSrc2</i>   Identifies the second source region.
+ 
+<i>cmdMode</i>    Specifies how to combine the source regions. It can be one of the
+           following values:
+ 
+           Value      Meaning
+           ─────────────────────────────────────────────────────────────────
+           CRGN_AND   Creates the intersection of the source regions
+                      (hrgnSrc1 INTERSECT hrgnSrc2). The new region contains
+                      only the parts of the source regions that are common.
+ 
+           CRGN_COPY  Copies the first source region to the destination. The
+                      function does not use the hrgnSrc2 parameter.
+ 
+           CRGN_DIFF  Creates the difference of the source region (hrgnSrc1
+                      INTERSECT NOT hrgnSrc2). The new region contains the
+                      parts of the first source region that are not also in
+                      the second region.
+ 
+           CRGN_OR    Creates the union of the two source regions (hrgnSrc1
+                      UNION hrgnSrc2). The new region contains all parts of
+                      both source regions.
+ 
+           CRGN_XOR   Creates the "symmetric" difference of the source
+                      regions (hrgnSrc1 - hrgnSrc2). The new region contains
+                      only the parts of the source regions that are not
+                      common.
+ 
+<b>Return Value</b>
+ 
+The return value is RGN_NULL, RGN_RECT, or REGN_COMPLEX if the function is
+successful. The return value is RGN_ERROR if an error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_HRGN
+     PMERR_INV_REGION_MIX
+     PMERR_INV_REGION_MIX_MODE
+     PMERR_PS_BUSY
+     PMERR_REGION_IS_CLIP_REGION
+ 
+<b>Comments</b>
+ 
+The source and destination regions must belong to the same presentation
+space or to presentation spaces associated with a similar device context.
+ 
+<b>Example</b>
+ 
+This example uses the GpiCombineRegion function to create a complex region
+consisting of everything in two rectangles except where they overlap.
+ 
+HRGN hrgn1, hrgn2, hrgn3;
+RECTL rclRect1 = { 0, 0, 100, 100 };
+RECTL rclRect2 = { 50, 50, 200, 200 };
+ 
+hrgn1 = GpiCreateRegion(hps, 1L, &amp;rclRect1);    /* create first region  */
+hrgn2 = GpiCreateRegion(hps, 1L, &amp;rclRect2);    /* create second region */
+hrgn3 = GpiCreateRegion(hps, 0L, (RECTL) NULL); /* create empty region  */
+ 
+/* Combine first and second regions, replacing the empty region. */
+ 
+GpiCombineRegion(hrgn3, hrgn1, hrgn2, CRGN_XOR);
+ 
+<b>See Also</b>
+ 
+<b>GpiCreateRegion, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

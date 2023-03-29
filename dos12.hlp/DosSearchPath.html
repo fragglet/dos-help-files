@@ -1,0 +1,140 @@
+<html>
+
+<head>
+<title>DosSearchPath (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosSearchPath (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80d7.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosSelectDisk.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosSearchPath(fsSearch, pszPath, pszFileName, pbBuf, cbBuf)
+USHORT fsSearch;    /* search flags                                   */
+PSZ pszPath;        /* pointer to search path or environment variable */
+PSZ pszFileName;    /* pointer to filename                            */
+PBYTE pbBuf;        /* pointer to result buffer                       */
+USHORT cbBuf;       /* length of result buffer                        */
+ 
+The DosSearchPath function searches the specified search path for the given
+filename. The search path is a null-terminated string that consists of a
+sequence of directory paths separated by semicolons (;). The function
+searches for the filename by looking in each directory (one directory at a
+time) in the order given.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>fsSearch     Specifies h</i>ow to interpret the pszPath parameter and whether to
+             search the current directory. This parameter can be a
+             combination of the following values:
+ 
+             Value               Meaning
+             ───────────────────────────────────────────────────────────────
+             DSP_ENVIRONMENT     The pszPath parameter points to the name of
+                                 an environment variable. The function
+                                 retrieves the value of the environment
+                                 variable from the environment segment of
+                                 the process and uses it as the search path.
+                                 If this value is not specified, pszPath
+                                 points to a string that specifies the
+                                 search path. This value cannot be used with
+                                 the DSP_PATH value.
+ 
+             DSP_IGNORE_NET_ERR  If this value is set, the search ignores
+                                 any network errors encountered during
+                                 during processing and continues to search
+                                 the remainder of the path. If this value is
+                                 not specified, a network error (for
+                                 example, when a server is unavailable)
+                                 causes the search to halt.
+ 
+             DSP_CUR_DIRECTORY   The function searches the current directory
+                                 before it searches the first directory in
+                                 the search path. If this value is not
+                                 specified, the function searches the
+                                 current directory only if it is explicitly
+                                 given in the search path.
+ 
+             DSP_PATH            The pszPath parameter points to a string
+                                 that specifies the search path. This value
+                                 cannot be used with the DSP_ENVIRONMENT
+                                 value.
+ 
+<i>pszPath</i>      Points to the null-terminated string that specifies the search
+             path. If DSP_ENVIRONMENT is specified for the fsSearch
+             parameter, the pszPath parameter points to an environment
+             variable. Otherwise, the pszPath parameter points to one or
+             more paths to search. The paths are separated by semicolons
+             (;).
+ 
+<i>pszFileName</i>  Points to a null-terminated string that specifies the filename
+             to search for. The string must be a valid MS OS/2 filename and
+             can contain wildcard characters.
+ 
+<i>pbBuf</i>        Points to the buffer that receives the full path name of the
+             file if the filename is found.
+ 
+<i>cbBuf</i>        Specifies the length (in bytes) of the buffer pointed to by the
+             pbBuf parameter.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value.
+ 
+<b>Comments</b>
+ 
+If DosSearchPath finds a matching filename in any of the directories
+specified by the search path, the function copies the full, null-terminated
+path name to the buffer pointed to by the pbBuf parameter. If the filename
+pointed to by the pszFileName parameter contains wildcard characters, the
+resulting path name will also contain wildcard characters; the DosFindFirst
+function can be used to retrieve the actual filename(s).
+ 
+The DosSearchPath function does not check for the validity of filenames. If
+the filename is not valid, the function returns an error, indicating that
+the file was not found.
+ 
+<b>Example</b>
+ 
+This example uses the search path specified by the DPATH environment
+variable to search for the abc.txt filename:
+ 
+CHAR szFoundFile[CCHMAXPATH];
+DosSearchPath(DSP_ENVIRONMENT,   /* uses environment variable   */
+    "DPATH",                     /* uses DPATH search path      */
+    "abc.txt",                   /* filename                    */
+    szFoundFile,                 /* receives resulting filename */
+    sizeof(szFoundFile));        /* length of result buffer     */
+ 
+The following example is identical to the first example if the DPATH
+variable is defined as shown:
+ 
+DPATH=c:\sysdir;c:\init
+ 
+DosSearchPath(DSP_PATH,          /* uses search path            */
+    "c:\\sysdir;c:\\init",       /* search path                 */
+    "abc.txt",                   /* filename                    */
+    szFoundFile,                 /* receives resulting filename */
+    sizeof(szFoundFile));        /* length of result buffer     */
+ 
+<b>See Also</b>
+ 
+<b>DosFindFirst, DosScanEnv</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

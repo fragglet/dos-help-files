@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>ASYNC_SETLINECTRL (1.2) - ioctl12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ioctl12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ASYNC_SETLINECTRL (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='IOCtls.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ASYNC_SETMODEMCTRL.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVIOCTL
+ 
+USHORT DosDevIOCtl(0L, pbLineCtrl, 0x0042, 0x0001, hDevice)
+PBYTE pbLineCtrl;    /* pointer to structure with line settings */
+HFILE hDevice;       /* device handle                           */
+ 
+The ASYNC_SETLINECTRL function sets the line characteristics (stop bits,
+parity, and data bits) for the specified serial device.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pbLineCtrl  Points to the LINE</i>CONTROL structure that contains the settings
+            for the number of data bits, parity, and number of stop bits.
+ 
+<i>hDevice</i>     Identifies the serial device that receives the device-control
+            function. The handle must have been created previously by using
+            the DosOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful or an error value if
+any of the specified line characteristics is out of range. When an error
+occurs, line characteristics remain unchanged.
+ 
+<b>Comments</b>
+ 
+When a device is first opened, the initial line characteristics are 7 data
+bits, even parity, and 1 stop bit. After line characteristics are changed,
+they remain changed until the function is used again, even if the device is
+closed and reopened.
+ 
+If the number of data bits is less than 8, the device driver fills with
+zeros the unused high-order bits of each character it receives from the
+device; the device driver ignores the unused high-order bits of characters
+it receives from the program. Therefore, if the number of data bits is 7 but
+the XOFF character is 0x80, the device driver does not recognize the XOFF
+character even when automatic-transmission control is enabled. If the error
+substitution character is 0x80, the device driver still places 0x80 in the
+receive queue. Programs must see that these characters match the specified
+data size. Any characters that were in the receive queue before the function
+is called remain unchanged.
+ 
+<b>See Also</b>
+ 
+<b>DosOpen, ASYNC_GETLINECTRL, LINECON</b>TROL
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

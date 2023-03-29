@@ -1,0 +1,89 @@
+<html>
+
+<head>
+<title>DosQNmPHandState (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosQNmPHandState (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='named_pipes.html'>Function Group</a><span class='grhilite'>►</span>                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosQNmPipeInfo.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSNMPIPES
+ 
+USHORT DosQNmPHandState(hp, pfsState)
+HPIPE hp;            /* pipe handle                                */
+PUSHORT pfsState;    /* pointer to variable receiving handle state */
+ 
+The DosQNmPHandState function retrieves information about the state of a
+specified pipe handle.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hp</i>         Identifies the pipe to read from.
+ 
+<i>pfsState</i>   Points to the variable that receives the handle state. This
+           parameter is a combination of an instance count, a read-mode
+           flag, a type flag, an end-point flag, and a wait flag. The
+           possible values are:
+ 
+           Value                   Meaning
+           ─────────────────────────────────────────────────────────────────
+           NP_END_CLIENT           The handle is the client end of a named
+                                   pipe.
+ 
+           NP_END_SERVER           The handle is the server end of a named
+                                   pipe.
+ 
+           NP_NOWAIT               Reading from the pipe returns immediately
+                                   if no data is available. If this flag is
+                                   not set, reading from the pipe waits
+                                   until data is available.
+ 
+           NP_READMODE_MESSAGE     Read the pipe as a message stream. If
+                                   this flag is not set, the pipe is read as
+                                   a byte stream.
+ 
+           NP_TYPE_MESSAGE         The pipe is a message-stream pipe. If
+                                   this flag is not set, the pipe is a
+                                   byte-stream pipe.
+ 
+           NP_UNLIMITED_INSTANCES  Unlimited instances of the pipe can be
+                                   created. If this flag is not specified, a
+                                   value from 1 through 254 can be used for
+                                   the number of instances.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_BAD_PIPE
+     ERROR_PIPE_NOT_CONNECTED
+ 
+<b>Comments</b>
+ 
+If the handle is the server end of the pipe, the handle-state values are
+identical to those set by the call to the DosMakeNmPipe function that
+created the pipe. If the handle is the client end of the pipe, the
+handle-state values are determined by the DosOpen function that opened the
+pipe or are set by the DosSetNmPHandState function.
+ 
+<b>See Also</b>
+ 
+<b>DosMakeNmPipe, DosOpen, DosSetNmPHandState</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

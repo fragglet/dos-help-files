@@ -1,0 +1,165 @@
+<html>
+
+<head>
+<title>Using Window-Drawing Functions (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Window-Drawing Functions (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Drawing_in_Windows.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#window drawing functions 1.2'>Function Group</a><span class='grhilite'>►</span>            </i>         <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Dynamic_Data_Exchange.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                       Using Window-Drawing Functions
+ 
+The functions described in this topic are intended for simple drawing. The
+rectangle functions manipulate and combine rectangles. The drawing and
+scrolling functions perform within a presentation space's coordinate system.
+For more advanced drawing you should use the Gpi functions of MS OS/2.
+ 
+<b>Working with Points and Rectangles</b>
+ 
+MS OS/2 includes many functions for manipulating rectangles. Many of these
+functions change the coordinates of a rectangle. Other functions draw in a
+presentation space, using a rectangle to position the drawing operation.
+ 
+The WinFillRect function fills a rectangle with a specified color. For
+example, to fill an entire window with blue in response to a WM_PAINT
+message, you could use the following code fragment, which is taken from a
+window procedure:
+ 
+case WM_PAINT:
+    hps = WinBeginPaint(hwnd, NULL, NULL);
+    WinQueryWindowRect(hwnd, &amp;rect);
+    WinFillRect(hps, &amp;rect, CLR_BLUE);
+    WinEndPaint(hps);
+    return 0L;
+ 
+A more efficient way of painting a client window is to pass a rectangle to
+the WinBeginPaint function. The rectangle will be set to the coordinates of
+the rectangle that encloses the update region of the window. Drawing in this
+rectangle updates the window; this can make drawing faster if only a small
+portion of the window needs to be painted. This method is shown in the
+following code fragment. Notice that the WinFillRect function uses the
+presentation space and a rectangle defined in window coordinates to guide
+the paint operation.
+ 
+case WM_PAINT:
+    hps = WinBeginPaint(hwnd, NULL, &amp;rect);
+    WinFillRect(hps, &amp;rect, CLR_BLUE);
+    WinEndPaint(hps);
+    return 0L;
+ 
+Of course, you can draw the entire window during the WM_PAINT message, but
+the graphics output will be clipped to the update region.
+ 
+The default method of indicating that a particular portion of a window has
+been selected is for the WinInvertRect function to invert the rectangle's
+bits.
+ 
+The rest of the rectangle functions are mathematical and do not draw. They
+are used to manipulate and combine rectangles to produce new rectangles,
+which can then be used for drawing operations.
+ 
+The WinMapWindowPoints function converts the points from one
+window-coordinate space to another window-coordinate space. If one of the
+specified windows is HWND_DESKTOP, then screen coordinates are used. This
+function is useful for converting from window coordinates to screen
+coordinates and back again.
+ 
+<b>Scrolling Window Contents</b>
+ 
+An application normally responds to a click in a scroll bar by scrolling the
+contents of the window. This operation typically has three parts. First, the
+application changes its internal data-representation state to show what
+portion of the image should now be in the window. Next, the application
+moves the current image in the window. Finally, the application draws in the
+area that has been uncovered by the scrolling operation.
+ 
+For example, a simple text editor may display a small portion of several
+pages of text in a window. When the user clicks the down arrow of the
+vertical scroll bar, the application should move all the text up one line
+and display the next line at the bottom of the window.
+ 
+When the user clicks the down arrow of the vertical scroll bar, the client
+window of the frame window that owns the scroll bar receives a message. The
+application responds to this message by changing its internal
+data-representation state to show which line of text is topmost in the
+window, scrolling the text in the window up one line, and drawing the new
+line at the bottom of the window. There is normally no need to completely
+redraw the entire window, because the scrolled portion of the image remains
+valid.
+ 
+The WinScrollWindow function allows applications to scroll the contents of
+their windows. WinScrollWindow scrolls a specified rectangular area of the
+window by a specified x- and y-offset (in window coordinates). By setting
+the SW_INVALIDATERGN flag for this function, the areas uncovered by the
+scroll are automatically added to the window's update region, causing a
+<b>WM_PAINT</b> message to be sent to the window for those areas.
+ 
+For example, in the simple text editor described earlier, the following call
+scrolls the text up one line (assuming that iVScrollInc is the height of the
+current font) and adds the uncovered area at the bottom of the window to the
+update region.
+ 
+/* Scroll, adding new area to update region. */
+ 
+WinScrollWindow (hwnd, /* window                            */
+    0,                 /* x displacement                    */
+    -(iVScrollInc),    /* y displacement                    */
+    NULL,              /* scroll rectangle is entire window */
+    NULL,              /* clip rectangle is entire window   */
+    NULL,              /* update region                     */
+    NULL,              /* update rectangle                  */
+    SW_INVALIDATERGN); /* flags                             */
+ 
+When the uncovered area at the bottom of the window is added to the window's
+update region, a WM_PAINT message is sent to the window. When the message is
+received, the window draws the line of text at the bottom of the window. If
+the window has the WS_SYNCPAINT style, the WM_PAINT message is sent to the
+window before the WinScrollWindow function returns.
+ 
+To optimize scrolling speed for repeated scrolling operations, you can omit
+the SW_INVALIDATERGN flag from the call to the WinScrollWindow function.
+This prevents WinScrollWindow from adding the invalid region uncovered by
+the scroll to the window's update region. If the SW_INVALIDATERGN flag is
+omitted, you must pass a region or rectangle to WinScrollWindow. The
+rectangle or region will contain the area that needs to be updated after
+scrolling.
+ 
+<b>Drawing Bitmaps</b>
+ 
+The WinDrawBitmap function draws a bitmap, specified by a bitmap handle, in
+a specified rectangle. This function allows you to shrink or enlarge the
+bitmap from the source rectangle to the destination. WinDrawBitmap can also
+draw in several different copy modes, including using the OR operator to
+combine source and destination pels.
+ 
+<b>Drawing Text</b>
+ 
+There are many ways to draw text in a window in an MS OS/2 application. The
+simplest way is to use the WinDrawText function, which draws a single line
+of text in a specified rectangle, using a variety of alignment methods.
+ 
+The WinDrawText function allows you to set a flag so that the function does
+not draw any text; instead, it returns the number of characters in the
+string that will fit in the specified rectangle. For a section of running
+text, an application could alternate between computation and calls to
+<b>WinDrawText</b> to draw successive lines of text. The DT_WORDBREAK flag in the
+<b>WinDrawText</b> function can be set, when performing this kind of repetitive
+operation, to put line breaks on word boundaries rather than between
+arbitrary characters.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

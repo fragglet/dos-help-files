@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<title>DosMakePipe (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosMakePipe (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='x_at_L80ca.html'>Changes</a><span class='grhilite'>►</span>                                             <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosMemAvail.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSQUEUES
+ 
+USHORT DosMakePipe(phfRead, phfWrite, cbPipe)
+PHFILE phfRead;     /* pointer to variable for read handle  */
+PHFILE phfWrite;    /* pointer to variable for write handle */
+USHORT cbPipe;      /* number of bytes reserved for pipe    */
+ 
+The DosMakePipe function creates a pipe. The function creates the pipe,
+assigning the specified pipe size to the storage buffer, and also creates
+handles that the process can use to read from and write to the buffer in
+subsequent calls to the DosRead and DosWrite functions.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>phfRead</i>    Points to the variable that receives the read handle for the
+           pipe.
+ 
+<i>phfWrite</i>   Points to the variable that receives the write handle for the
+           pipe.
+ 
+<i>cbPipe</i>     Specifies the size (in bytes) to allocate for the storage buffer
+           for this pipe. This can be any value up to 65,536 minus the size
+           of the pipe header, which is currently 32 bytes. If this
+           parameter is zero, the default buffer size is used. (The buffer
+           size is advisory only. MS OS/2 may allocate more or less space.)
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_NOT_ENOUGH_MEMORY
+     ERROR_TOO_MANY_OPEN_FILES
+ 
+<b>Comments</b>
+ 
+Pipes are typically used by a pair of processes. One process creates the
+pipe and passes a handle to the other process. This lets one process write
+into the pipe and the other read from the pipe. Since MS OS/2 provides no
+permission checks on pipes, the cooperating processes must ensure that they
+do not attempt to write to or read from the pipe at the same time.
+ 
+When all of a pipe's handles are closed by using the DosClose function, MS
+OS/2 deletes that pipe. If two processes are communicating by using a pipe
+and the process that is reading the pipe ends, the next call to the
+<b>DosWrite</b> function for that pipe returns the "broken pipe" error value.
+ 
+MS OS/2 temporarily blocks any call to the DosWrite function that would
+write more data to the pipe than can fit in the storage buffer. The system
+removes the block as soon as enough data is read from the pipe to make room
+for the remaining unwritten data.
+ 
+<b>See Also</b>
+ 
+<b>DosClose, DosDupHandle, DosRead, DosWrite</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

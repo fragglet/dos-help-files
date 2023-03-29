@@ -1,0 +1,158 @@
+<html>
+
+<head>
+<title>GpiCreateBitmap (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiCreateBitmap (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Bitmap_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Bitmaps 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiCreateLogColorTable.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIBITMAPS
+ 
+HBITMAP GpiCreateBitmap(hps, pbmpFormat, flOptions, pbData, pbmiData)
+HPS hps;                        /* presentation-space handle              */
+PBITMAPINFOHEADER pbmpFormat;   /* address of structure for format data   */
+ULONG flOptions;                /* options                                */
+PBYTE pbData;                   /* address of buffer of image data        */
+PBITMAPINFO pbmiData;        /* address of structure for color and format */
+ 
+The GpiCreateBitmap function creates a bitmap and returns a bitmap handle
+identifying the bitmap. The new bitmap has the width, height, and format
+specified by fields of the structure pointed to by pbmpFormat. The
+<i>flOptions</i> parameter specifies whether to initialize the bitmap color and
+image. If the parameter is CBM_INIT, the function uses the bitmap image data
+pointed to by pbData and the bitmap color data pointed to by pbmiData to
+initialize the bitmap. If CBM_INIT is not given, the bitmap's initial image
+and color are undefined.
+ 
+The bitmap handle can be used in subsequent functions that accept bitmap
+handles. In most cases, the bitmap is set to a memory presentation space
+using the GpiSetBitmap function, then copied to the screen or a printer
+using the GpiBitBlt function.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>         Identifies the presentation space.
+ 
+<i>pbmpFormat  Points to the BITM</i>APINFOHEADER structure that contains the
+            bitmap format data.
+ 
+<i>flOptions</i>   Specifies whether to initialize the bitmap. It can one of the
+            following values:
+ 
+            Value     Meaning
+            ────────────────────────────────────────────────────────────────
+            CBM_INIT  Initializes the bitmap, using the bitmap image and
+                      color data specified by the pbData and pbmiData
+                      parameters.
+ 
+            0x0000    Does not initialize the bitmap.
+ 
+<i>pbData</i>      Points to the buffer that contains bitmap image data. The image
+            data defines the color of each pel in the bitmap. This parameter
+            is ignored if CBM_INIT is not given.
+ 
+<i>pbmiData    Points to a </i>BITMAPINFO structure that contains the bitmap format
+            and color data. The format data is identical to the data pointed
+            to by the pbmpFormat parameter. The color data follows
+            immediately after the format data, and consists of two or more
+            RGB color values. The exact number depends on the bitmap format.
+            This parameter is ignored if CBM_INIT is not given.
+ 
+<b>Return Value</b>
+ 
+The return value identifies the new bitmap if the function is successful, or
+is GPI_ERROR if an error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_INFO_TABLE
+     PMERR_INV_USAGE
+     PMERR_INV_USAGE_PARM
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+The full number of bitmap formats depends on what the associated device
+supports. However, most devices support the following standard bitmap
+formats:
+ 
+<b>Format      Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Monochrome</i>  1 bit per pel and 1 color plane
+ 
+<i>16-color</i>    4 bits per pel and 1 color plane
+ 
+<i>256-color</i>   8 bits per pel and 1 color plane
+ 
+<i>Full-color</i>  24 bits per pel and 1 color plane
+ 
+When initializing the bitmap, the bitmap color data must consist of an
+appropriate number of RGB color values. For monochrome format, it must have
+2 values; for 16-color format, 16 values; and for 256-color format, 256
+values. No color values are required for the full-color format, since the
+image data for each pel fully specifies the pel color.
+ 
+When CBM_INIT is given, the function continues to copy data from the buffer
+until the entire bitmap is initialized. The function expects each row of
+image data to contain a multiple of 32 bits (4 bytes). Although the bitmap
+width does not have to be a multiple of 32, the image data must be. Any
+extra bits at the end of a row are ignored.
+ 
+The new bitmap belongs to the device context associated with the given
+presentation space. It can be set to any presentation space having the same
+device context or having a compatible device context.
+ 
+<b>Example</b>
+ 
+The following example loads a bitmap resource from memory and uses the
+<b>GpiCreateBitmap</b> function to create the bitmap. This is similar to using the
+<b>GpiLoadBitmap</b> function, except it gives the application the chance to modify
+the bitmap image data before creating the bitmap.
+ 
+SEL sel;          /* selector for segment containing bitmap resource */
+PBITMAPFILEHEADER pbfh;  /* bitmap resource header information       */
+PBYTE pb;                /* address of bitmap image data in resource */
+HBITMAP hbm;             /* bitmap handle                            */
+ 
+/* load bitmap resource #1 */
+ 
+DosGetResource((HMODULE) NULL, RT_BITMAP, 1, &amp;sel);
+pbfh = MAKEP(sel, 0);              /* bitmap file header in resource */
+pb = MAKEP(sel, pbfh-&gt;offBits);    /* image data starts at offBits   */
+ 
+/* make any changes to bitmap image data here */
+ 
+hbm = GpiCreateBitmap(hps,             /* presentation space         */
+    &amp;(pbfh-&gt;bmp),                      /* bitmap information in file */
+    CBM_INIT,                          /* initialize the bitmap      */
+    pb,                                /* bitmap data                */
+    &amp;(pbfh-&gt;bmp));                     /* bitmap information in file */
+ 
+DosFreeSeg(sel);                       /* free bitmap resource       */
+ 
+<b>See Also</b>
+ 
+<b>DosFreeSeg, DosGetResource, GpiDeleteBitmap, GpiLoadBitmap,</b>
+<b>GpiQueryDeviceBitmapFormats, WinGetLastError, BITMAPINFO, BITMAPINFOHEADER</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

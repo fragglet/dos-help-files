@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>WinSubstituteStrings (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinSubstituteStrings (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='message_box_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Dialog Windows 1.2'>Overview</a><span class='grhilite'>►</span>            </i>              <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinSubtractRect.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINDIALOGS
+ 
+SHORT WinSubstituteStrings(hwnd, pszSrc, cchDstMax, pszDst)
+HWND hwnd;          /* handle of the window                     */
+PSZ pszSrc;         /* address of the source string             */
+SHORT cchDstMax;    /* size of destination string buffer        */
+PSZ pszDst;         /* address of buffer for destination string */
+ 
+The WinSubstituteStrings function performs a substitution process on a text
+string, replacing certain marker characters with text supplied by the
+application. The WinSubstituteStrings function is particularly useful for
+displaying variable information in dialog boxes, menus, and other
+user-interface functions. Variable information can include things such as
+filenames, which cannot be statically declared within resource files.
+ 
+This function is called by the system while creating the child windows in a
+dialog box. It allows the child windows to perform textual substitutions in
+their window text.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwnd</i>       Identifies the window that processes the function.
+ 
+<i>pszSrc</i>     Points to the null-terminated text string to perform the
+           substitution.
+ 
+<i>cchDstMax</i>  Specifies the maximum number of characters that can be returned
+           in the pszDst parameter.
+ 
+<i>pszDst</i>     Points to the null-terminated text string produced by the
+           substitution process. The string is truncated if it would
+           otherwise contain more than the number of characters specified by
+           the cchDstMax parameter. When truncation occurs, the last
+           character of the truncated string is always the NULL termination
+           character.
+ 
+<b>Return Value</b>
+ 
+The return value is the number of characters returned in pszDst, not
+including the terminating NULL character. The maximum value is (cchDstMax -
+1). It is zero if an error occurred.
+ 
+<b>Comments</b>
+ 
+When a string of the form %n is encountered in the source string, where n is
+a digit from 0 through 9, a WM_SUBSTITUTESTRING message is sent to the
+specified window. This message returns a text string to use as a
+substitution for the %n in the destination string, which is otherwise an
+exact copy of the source string.
+ 
+If % is encountered in the source, % is copied to the destination, but no
+other substitution occurs. If %x occurs in the source, where x is neither a
+digit nor %, then the source is copied to the destination unchanged.
+ 
+The source and destination strings must not overlap in memory.
+ 
+To use this function, your application must process WM_SUBSTITUTESTRING
+messages and perform the requested string substitution.
+ 
+<b>See Also</b>
+ 
+<b>WM_SUBSTITUTESTRING</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,212 @@
+<html>
+
+<head>
+<title>Using the Mouse (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using the Mouse (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Mouse.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#MOU'>Function Group</a><span class='grhilite'>►</span>                     <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='processes.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                              Using the Mouse
+ 
+Since mouse input for Presentation Manager applications is provided
+automatically through the message queue, only non-Presentation Manager
+programs use the MS OS/2 mouse functions. Typically, you use the mouse
+functions in character-based programs that need mouse input. The following
+sections explain how to use the mouse functions.
+ 
+<b>Opening the Mouse</b>
+ 
+You can open the mouse by using the MouOpen function. This function requires
+the name of the device driver and a pointer to the variable that receives
+the mouse handle. The following code fragment opens the mouse by using the
+default device driver:
+ 
+HMOU hmou;
+ 
+MouOpen(NULL, &amp;hmou);
+    .
+    .
+    .
+MouClose(hmou);
+ 
+In this example, NULL specifies the mouse-device driver designated in the
+first device command in the config.sys file. The MouOpen function opens the
+mouse and copies a handle to the variable hmou. You can use this handle in
+subsequent mouse functions to carry out tasks, such as reading from the
+event queue.
+ 
+You can close the mouse by using the MouClose function.
+ 
+<b>Drawing the Mouse Pointer</b>
+ 
+Once you have a mouse handle, you need to display the mouse pointer by using
+the MouDrawPtr function. When the mouse is first opened, the mouse pointer
+is hidden from view, so even though the user can use the mouse and your
+program can process mouse input, there is nothing to tell the user where the
+mouse is located. The following code fragment opens the mouse and then
+displays the mouse pointer:
+ 
+HMOU hmou;
+ 
+MouOpen(0L, &amp;hmou);
+MouDrawPtr(hmou);
+    .
+    .
+    .
+ 
+<b>Hiding the Mouse Pointer</b>
+ 
+If you plan to write to the screen when the mouse pointer is visible, you
+must be careful not to write directly over the pointer. The system displays
+the pointer by combining the pointer-shape masks with the contents of the
+screen at the current pointer position. When the user moves the mouse, the
+system restores the previous contents of the screen, destroying whatever is
+there. This means that if you write to the screen while the pointer is
+visible, what you write will be lost when the mouse next moves.
+ 
+If you need to write to a screen position that is occupied by the mouse
+pointer, you can hide the pointer temporarily by using the MouRemovePtr
+function. This function specifies an exclusion rectangle. The mouse pointer,
+upon moving into this rectangle, disappears. The following code fragment
+hides the mouse pointer before writing to the screen:
+ 
+NOPTRRECT mourt;
+ 
+mourt.row = 0;
+mourt.col = 0;
+mourt.cRow = 24;
+mourt.cCol = 79;
+ 
+MouRemovePtr(&amp;mourt, hmou);
+VioWrtNChar(&amp;ch, 1, 10, 10, 0);
+MouDrawPtr(hmou);
+ 
+The NOPTRRECT structure takes the coordinates of the upper-left corner of
+the screen and the width and height of the desired rectangle. This example
+specifies the entire screen as the exclusion rectangle, so the program must
+use the MouDrawPtr function to redraw the pointer after writing the
+character to the screen.
+ 
+<b>Using the Event Queue</b>
+ 
+You can use the MouReadEventQue function to read from the mouse-event queue.
+This function copies the next event (if any) in the queue to a MOUEVENTINFO
+structure. The structure has four fields: fs, time, row, and col. The fs
+field specifies the action that generated the event; for example, if the
+mouse moved, the field is set to 0x0001. The row and col fields specify the
+location of the mouse when the event occurred. The time field specifies the
+system time when the event occurred. If there is no event in the queue when
+you call the MouReadEventQue function, the function fills the structure with
+zeros. Since zero is a valid value for the fs, row, and col fields, you must
+check the time field to see if an event was received (if so, the field is
+nonzero).
+ 
+The following sample program opens the mouse and reads events from the
+mouse-event queue. Each time the user presses the mouse button, the program
+writes the letter A to the location of the mouse pointer on the screen.
+ 
+#define INCL_SUB
+#include &lt;os2.h&gt;
+ 
+NOPTRRECT mourt = { 0, 0, 24, 79 };
+ 
+main( )
+{
+    CHAR ch;
+    KBDKEYINFO kbci;
+    HMOU hmou;
+    MOUEVENTINFO mouev;
+    USHORT fWait = MOU_NOWAIT;
+ 
+    ch = ' ';
+    VioWrtNChar(&amp;ch, 2000, 0, 0, 0);
+    ch = 'A';
+ 
+    MouOpen(0L, &amp;hmou);
+    MouDrawPtr(hmou);
+ 
+    do {
+        MouReadEventQue(&amp;mouev, &amp;fWait, hmou);
+        if (mouev.time) {
+            if (mouev.fs &amp; MOUSE_BN1_DOWN) { /* is 1st button down? */
+                MouRemovePtr(&amp;mourt, hmou);
+                VioWrtNChar(&amp;ch, 1, mouev.row, mouev.col, 0);
+                MouDrawPtr(hmou);
+            }
+        }
+        KbdCharIn(&amp;kbci, IO_NOWAIT, 0);
+    } while (kbci.chChar != 'Q');
+ 
+    MouClose(hmou);
+}
+ 
+After retrieving an event from the queue (and verifying that it is a valid
+event), this sample program checks the fs field to see if it contains the
+value 0x0004. If it does, then the first mouse button (typically the
+leftmost button) is down. The program then hides the pointer and writes the
+letter A to the screen. After it restores the mouse pointer, the program
+checks the keyboard to determine whether the user has pressed the Q key. The
+program continues to read events from the queue until the user presses the Q
+key.
+ 
+<b>Specifying the Events to be Queued</b>
+ 
+You may have noticed that the program described in the previous section
+seemed to ignore some mouse events if you moved the mouse quickly. The
+program was not ignoring the events──it just was not receiving them. The
+mouse-event queue is small, and once it is full, any new event bumps the
+oldest event from the queue. This means that you may lose information if
+your program cannot read from the queue fast enough.
+ 
+One way to minimize the amount of information lost is to exclude certain
+events from being placed in the queue. You can do this by using the
+<b>MouSetEventMask</b> function. This function lets you disable the mouse events
+that you do not wish to process. For example, in the previous program, you
+do not need the mouse- motion events, so disabling them would reduce the
+chances of losing a button-down event.
+ 
+You disable an event by setting the bits in the event mask for only those
+events that you want to process. The following code fragment enables the
+first-button-down event but disables all other events:
+ 
+USHORT fsEvents;
+ 
+fsEvents = MOUSE_BN1_DOWN;
+ 
+MouSetEventMask(&amp;fsEvents, hmou);
+ 
+If you disable an event such as a button press, the system does nothing to
+the queue if the user presses that button, but it internally records that
+button press. If some recordable event occurs while the button is still
+down, the system adds this button-down information to the event that it
+passes to the queue. In other words, even if you have disabled button-down
+events, the fs field in the MOUEVENTINFO structure still indicates when that
+button is down.
+ 
+You can retrieve the number of buttons on the mouse by using the
+<b>MouGetNumButtons</b> function. This information can help you decide which events
+to enable and which to disable.
+ 
+You can use the MouGetNumQueEl function to retrieve the number of events in
+the queue. This function retrieves the size of the queue, as well as a count
+of the events in the queue. If you decide that you do not need the events
+already in the queue, you can flush them from the queue by using the
+<b>MouFlushQue</b> function.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

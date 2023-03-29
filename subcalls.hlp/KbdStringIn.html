@@ -1,0 +1,119 @@
+<html>
+
+<head>
+<title>KbdStringIn (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> KbdStringIn (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Keyboard 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='kbd.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='KbdSynch.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_KBD
+ 
+USHORT KbdStringIn(pchBuffer, psibLength, fWait, hkbd)
+PCH pchBuffer;              /* pointer to buffer for string           */
+PSTRINGINBUF psibLength;    /* pointer to structure for string length */
+USHORT fWait;               /* wait/no-wait flag                      */
+HKBD hkbd;                  /* keyboard handle                        */
+ 
+The KbdStringIn function reads a string of characters from a logical
+keyboard. The function copies the character value of each keystroke to the
+buffer pointed to by the pchBuffer parameter. Depending on the input mode of
+the keyboard and on the value of the fWait parameter, KbdStringIn continues
+to copy characters until it fills the buffer, retrieves the turn-around
+character, or reaches the end of the buffer.
+ 
+The KbdStringIn function is a family API function.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pchBuffer</i>   Points to the buffer that receives the character string.
+ 
+<i>psibLength  Points to the STRI</i>NGINBUF structure that contains the length of
+            the buffer that receives the string.
+ 
+<i>fWait</i>       Specifies whether to wait for the entire string to be read. If
+            this parameter is IO_WAIT, the function waits for all characters
+            up to the next turn-around character or until it reaches the end
+            of the buffer. If the parameter is IO_NOWAIT, the function
+            returns immediately with whatever characters are available.
+ 
+<i>hkbd</i>        Identifies the logical keyboard to read from. The handle must
+            have been created previously by using the KbdOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_KBD_DETACHED
+     ERROR_KBD_INVALID_HANDLE
+ 
+<b>Comments</b>
+ 
+The KbdStringIn function removes keystroke information from the input buffer
+of the specified logical keyboard as it copies a character. If echo and
+ASCII modes are turned on, the function echoes characters on the screen as
+they are typed. If the keyboard is in ASCII mode, the function retrieves a
+character for each key pressed, except shift keys and MS OS/2 CTRL and
+editing keys. If the keyboard is in binary mode, the function retrieves a
+character for any key pressed except shift keys.
+ 
+The KbdStringIn function can retrieve extended ASCII codes, such as when the
+ALT key, and another key, called the primary key, are pressed
+simultaneously. When the function retrieves an extended code, the first
+character is 0x0000 or 0x00E0 and the second is the extended code. The
+extended code is usually the scan code of the primary key. In ASCII mode,
+the function retrieves only complete extended codes, which means that if
+both bytes of the extended code do not fit in the buffer, neither byte is
+retrieved.
+ 
+In ASCII mode, KbdStringIn recognizes the MS OS/2 editing keys. These keys
+can be used to display and edit the previously entered string. The
+<b>KbdStringIn</b> function permits editing of the previous string only if the
+<b>cchIn field of </b>the STRINGINBUF structure is set to the length of the
+previous string before the function is called. If this field is set to zero,
+the line cannot be edited.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restriction applies to the KbdStringIn
+function:
+ 
+♦  The hkbd parameter is ignored.
+ 
+<b>Example</b>
+ 
+This example calls the KbdStringIn function to read a character string from
+the default keyboard. In ASCII mode, the function waits for the RETURN key
+to be pressed; in binary mode, it waits for the buffer to be filled:
+ 
+CHAR achBuf[40];
+STRINGINBUF kbsiBuf;
+kbsiBuf.cb = sizeof(achBuf);
+KbdStringIn(achBuf,            /* address of buffer           */
+    &amp;kbsiBuf,                  /* address of length structure */
+    IO_WAIT,                   /* waits for characters        */
+    0);                        /* keyboard handle             */
+VioWrtTTY("\n", 1, 0);         /* sends linefeed character    */
+VioWrtTTY(achBuf, kbsiBuf.cchIn, 0); /* displays string       */
+ 
+<b>See Also</b>
+ 
+<b>DosRead, KbdCharIn, KbdGetStatus, KbdOpen, KbdSetStatus, STRINGINBUF</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

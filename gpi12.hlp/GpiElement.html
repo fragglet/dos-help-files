@@ -1,0 +1,94 @@
+<html>
+
+<head>
+<title>GpiElement (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiElement (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='retained_graphics.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiEndArea.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPISEGEDITING
+ 
+LONG GpiElement(hps, lType, psz, cb, pb)
+HPS hps;       /* presentation-space handle                     */
+LONG lType;    /* element type                                  */
+PSZ psz;       /* address of element descriptor                 */
+LONG cb;       /* length in bytes of buffer for graphics orders */
+PBYTE pb;      /* address of buffer for graphics orders         */
+ 
+The GpiElement function draws an element. The element consists of one or
+more graphics orders in the buffer pointed to by pb. The function executes
+each order as if it were the corresponding Gpi function.
+ 
+The function adds the element to the current open segment if the drawing
+mode is DM_RETAIN or DM_DRAWANDRETAIN. Otherwise, it just draws the element.
+The element must not contain graphics orders for an element bracket.
+Similarly, the function cannot be used in an element bracket.
+ 
+The function sets the type and descriptor for the element to the values
+given by lType and psz. The type and descriptor are a useful way of uniquely
+identifying the element when it is added to a segment. The type and
+descriptor can be retrieved at any time by using the GpiQueryElementType
+function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>lType</i>      Specifies the integer value to use for the element type.
+ 
+<i>psz</i>        Points to the null-terminated string to use for the element
+           descriptor.
+ 
+<i>cb</i>         Specifies the length of graphics order data for the element.
+ 
+<i>pb</i>         Points to the buffer that contains the graphics orders for the
+           element. The buffer must not exceed 63K.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK or GPI_HITS if the function is successful. (It is
+GPI_HITS if the detectable attribute is set for the presentation space and a
+correlation hit occurs.) The return value is GPI_ERROR if an error occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_ALREADY_IN_ELEMENT
+     PMERR_DATA_TOO_LONG
+     PMERR_INV_HPS
+     PMERR_INV_LENGTH
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+<b>GpiElement</b> does not convert coordinates. This may affect drawing the element
+if the format for the coordinates in the graphics orders is not the correct
+format for the presentation space.
+ 
+<b>See Also</b>
+ 
+<b>GpiBeginElement, GpiDeleteElement, GpiEndElement, GpiQueryElement,</b>
+<b>GpiQueryElementPointer, GpiQueryElementType, GpiSetElementPointer,</b>
+<b>WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

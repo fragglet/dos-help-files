@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>DosTimerAsync (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosTimerAsync (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Timer_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Timers 1.2'>Overview</a><span class='grhilite'>►</span>        </i>                  <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosTimerStart.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDATETIME
+ 
+USHORT DosTimerAsync(ulTime, hsem, phtimer)
+ULONG ulTime;       /* time before semaphore is cleared     */
+HSEM hsem;          /* system-semaphore handle              */
+PHTIMER phtimer;    /* pointer to variable for timer handle */
+ 
+The DosTimerAsync function creates a timer that counts for a specified
+number of milliseconds, then clears a specified semaphore.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>ulTime</i>     Specifies the time (in milliseconds) before the semaphore is
+           cleared. This value is rounded up to the next clock tick, if
+           necessary.
+ 
+<i>hsem</i>       Identifies the system semaphore that signals the end of the
+           timer. This handle must have been created previously by using the
+           DosCreateSem function with the CSEM_PUBLIC flag.
+ 
+<i>phtimer</i>    Points to the variable that receives the timer handle.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_TS_NOTIMER
+     ERROR_TS_SEMHANDLE
+ 
+<b>Comments</b>
+ 
+The timer runs asynchronously──that is, while the timer counts the time, the
+<b>DosTimerAsync</b> function returns to let the process continue to execute other
+tasks. The timer counts the time only once.
+ 
+The given semaphore must be a system semaphore. If the process uses the
+semaphore to determine when data is available, it must use the DosSemSet
+function to set the semaphore before calling the DosTimerAsync function.
+ 
+The timer handle specified by the phtimer parameter can be used by the
+<b>DosTimerStop</b> function to cancel the timer.
+ 
+The DosTimerAsync function is similar to the DosSleep function except that
+<b>DosTimerAsync returns immediately; DosS</b>leep returns only after the specified
+time has elapsed.
+ 
+<b>See Also</b>
+ 
+<b>DosCreateSem, DosSemSet, DosSleep, DosTimerStart, DosTimerStop</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

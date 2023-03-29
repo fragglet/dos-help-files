@@ -1,0 +1,134 @@
+<html>
+
+<head>
+<title>DosPhysicalDisk (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosPhysicalDisk (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='system_information.html'>Function Group</a><span class='grhilite'>►</span>                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosPortAccess.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVICES
+ 
+USHORT DosPhysicalDisk(usFunction, pbOutBuf, cbOutBuf, pbParmBuf,
+    cbParmBuf)
+USHORT usFunction;    /* action to take                       */
+PBYTE pbOutBuf;       /* pointer to output buffer             */
+USHORT cbOutBuf;      /* output-buffer length                 */
+PBYTE pbParmBuf;      /* pointer to user-supplied information */
+USHORT cbParmBuf;     /* length of user-supplied information  */
+ 
+The DosPhysicalDisk function retrieves information about partitionable
+disks.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>usFunction</i>  Specifies the action to take. It can be one of the following
+            values:
+ 
+            Value                           Meaning
+            ────────────────────────────────────────────────────────────────
+            INFO_COUNT_PARTITIONABLE_DISKS  Retrieve the total number of
+                                            partitionable disks.
+ 
+            INFO_FREEIOCTLHANDLE            Release the handle obtained by a
+                                            previous call to
+                                            DosPhysicalDisk.
+ 
+            INFO_GETIOCTLHANDLE             Retrieve a handle to use with
+                                            Category 9 IOCtl functions
+                                            (Category 9 IOCtl functions have
+                                            the prefix PDSK_).
+ 
+<i>pbOutBuf</i>    Points to the buffer that receives output information.
+ 
+<i>cbOutBuf</i>    Specifies the length (in bytes) of the output buffer.
+ 
+<i>pbParmBuf</i>   Points to a buffer that contains parameter data.
+ 
+<i>cbParmBuf</i>   Specifies the length (in bytes) of the parameter buffer.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value.
+ 
+<b>Comments</b>
+ 
+When DosPhysicalDisk is used to obtain a handle to a partitionable physical
+drive (a usFunction value of INFO_GETIOCTLHANDLE), the pbParmBuf parameter
+should point to a null-terminated string that contains the drive number and
+a colon (:). The cbParmBuf parameter must contain the length of the entire
+string, including the trailing null character. For example, to obtain a
+handle for the first partitionable disk, pbParmBuf should point to "1:" and
+<i>cbParmBuf</i> should be 3.
+ 
+The organization and content of the output buffer depend on the given
+function, as follows:
+ 
+<b>Function                          cbOutBuf    pbOutBuf</b>
+────────────────────────────────────────────────────────────────────────────
+INFO_COUNT_PARTITIONABLE_DISKS    2           Total number of partitionable
+                                              disks in the system
+                                              (one-based).
+ 
+INFO_FREEIOCTLHANDLE              2           Handle for the specified
+                                              partitionable disk for the
+                                              Category 9 IOCtl functions.
+ 
+INFO_GETIOCTLHANDLE               0           None. Pointer must be NULL.
+ 
+The organization and content of the parameter buffer depend on the given
+function, as follows:
+ 
+<b>Function                          cbParmBuf        pbParmBuf</b>
+────────────────────────────────────────────────────────────────────────────
+INFO_COUNT_PARTITIONABLE_DISKS    0                None. Must be NULL.
+ 
+INFO_FREEIOCTLHANDLE              String length    Null-terminated string
+                                                   that specifies the
+                                                   partitionable disk. The
+                                                   string consists of a
+                                                   number that specifies the
+                                                   disk, immediately
+                                                   followed by a colon.
+                                                   Partitionable disk
+                                                   numbers start at 1.
+ 
+INFO_GETIOCTLHANDLE               2                Handle retrieved by the
+                                                   INFO_FREEIOCTLHANDLE
+                                                   function.
+ 
+<b>Example</b>
+ 
+This example calls the DosPhysicalDisk function to determine the total
+number of partitionable disks. The total value is placed in the
+<i>usDataBuffer</i> variable.
+ 
+USHORT usDataBuffer;
+ 
+DosPhysicalDisk(INFO_COUNT_PARTITIONABLE_DISKS,
+    (PBYTE) &amp;usDataBuffer,      /* address of data buffer    */
+    sizeof(USHORT),             /* length of data buffer     */
+    (PBYTE) NULL,               /* pointer to parameter list */
+    0);                         /* length of parameter list  */
+ 
+<b>See Also</b>
+ 
+<b>DosDevConfig, DosDevIOCtl</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

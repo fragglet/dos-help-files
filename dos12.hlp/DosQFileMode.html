@@ -1,0 +1,96 @@
+<html>
+
+<head>
+<title>DosQFileMode (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosQFileMode (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosQFSAttach.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosQFileMode(pszFileName, pusAttribute, ulReserved)
+PSZ pszFileName;         /* pointer to filename                     */
+PUSHORT pusAttribute;    /* pointer to variable for file attributes */
+ULONG ulReserved;        /* must be zero                            */
+ 
+The DosQFileMode function retrieves the attributes (mode) of the specified
+file. The file attributes are set when the file is created and can be
+changed at any time by using the DosSetFileMode function.
+ 
+The DosQFileMode function is a family API function.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pszFileName</i>   Points to a null-terminated string that specifies the name of
+              the file to be checked. The string must be a valid MS OS/2
+              filename, and cannot contain any wildcard characters.
+ 
+<i>pusAttribute</i>  Points to the variable that receives the file attributes. It
+              can be one or more of the following values:
+ 
+              Value           Meaning
+              ──────────────────────────────────────────────────────────────
+              FILE_NORMAL     File can be read from and written to.
+ 
+              FILE_READONLY   File can be read from but not written to.
+ 
+              FILE_HIDDEN     File is hidden and does not appear in a
+                              directory listing.
+ 
+              FILE_SYSTEM     File is a system file.
+ 
+              FILE_DIRECTORY  File is a subdirectory.
+ 
+              FILE_ARCHIVED   File has been archived.
+ 
+<i>ulReserved</i>    Specifies a reserved value; must be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_DRIVE_LOCKED
+     ERROR_FILE_NOT_FOUND
+     ERROR_NOT_DOS_DISK
+     ERROR_PATH_NOT_FOUND
+ 
+<b>Comments</b>
+ 
+You cannot use the DosQFileMode function to retrieve the attributes of the
+volume label. The attributes of a volume label can be retrieved by using the
+<b>DosQFSInfo</b> function.
+ 
+<b>Example</b>
+ 
+This example calls the DosQFileMode function and displays a message if the
+filename abc is a subdirectory:
+ 
+USHORT usAttribute;
+DosQFileMode("abc",     /* filename                                 */
+    &amp;usAttribute,       /* address of variable for file's attribute */
+    0L);                /* reserved                                 */
+if (usAttribute == FILE_DIRECTORY)
+    VioWrtTTY("abc is a subdirectory\r\n", 23, 0);
+ 
+<b>See Also</b>
+ 
+<b>DosQFHandState, DosQFSInfo, DosSetFileMode</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

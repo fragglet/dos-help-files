@@ -1,0 +1,191 @@
+<html>
+
+<head>
+<title>Using Atom Tables (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Atom Tables (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Atom_Tables.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#atom functions 1.2'>Function Group</a><span class='grhilite'>►</span>       </i>              <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Button_Controls.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                             Using Atom Tables
+ 
+Applications that use atom tables can create their own atom tables or use
+the system atom table. Once an atom table is created or acquired, the
+applications can add and delete atoms and retrieve information about
+individual atoms in the table. When the application is finished using the
+atom table, it should delete the table.
+ 
+There are two main reasons for using an atom table. First, registering atoms
+in the system atom table ensures that the resulting atom is unique
+system-wide. (It is important that atoms be unique when you define window
+messages or clipboard and DDE formats that are used between applications.)
+The system atom table is also useful when several applications using a
+common message or format must use the same atom to identify the message or
+format.
+ 
+The second use for an atom table is to allow an application to manage
+efficiently a large number of strings that are used only within the
+application. The application can create a private atom table for this
+purpose.
+ 
+<b>Obtaining an Atom-Table Handle</b>
+ 
+You must obtain a handle of an atom table before performing any atom-manager
+operations. To obtain a handle of the system atom table, call the
+<b>WinQuerySystemAtomTable</b> function. To create your own atom table, call the
+<b>WinCreateAtomTable</b> function. The atom-table handle returned by either of
+these calls must be used for all other atom-manager functions.
+ 
+<b>Creating an Atom</b>
+ 
+To create an atom you call the WinAddAtom function, passing an atom-table
+handle and a pointer to an atom string. The atom manager searches the
+specified atom table for an occurrence of the atom string. If the string
+already resides in the atom table, its use count is incremented and the
+corresponding atom is returned to the caller. Repeated calls to add the same
+atom string return the same atom. If the atom string does not exist in the
+table when WinAddAtom is called, the string is added to the table, its use
+count is set to one, and a new atom is returned.
+ 
+Atom strings can be specified by using a far pointer that can be interpreted
+in one of the following four ways:
+ 
+<b>Format                      Description</b>
+────────────────────────────────────────────────────────────────────────────
+"!",atom                    The pointer is to a string in which the atom is
+                            passed indirectly, as a value.
+ 
+#ddddd                      The pointer is to an integer atom specified as a
+                            decimal string.
+ 
+long word: FFFF(high word)  The atom is passed directly in the low word of
+                            the pszAtomName parameter of the WinAddAtom
+                            function. This format is used extensively by MS
+                            OS/2 to add predefined window classes and window
+                            messages to the system atom table. By adding the
+                            atoms as integers, the value of the atoms for
+                            these messages can be determined before
+                            compiling and included as constants in the MS
+                            OS/2 header files.
+ 
+<i>string atom name</i>            The pointer is to a string atom name. This is
+                            the pointer format most often used by
+                            applications to add an atom string to an atom
+                            table and receive an atom in return.
+ 
+The "!",atom and long word: FFFF(high word) formats are useful when
+incrementing the use count of an existing atom for which the original atom
+string is not known. For example, the system clipboard manager uses the long
+word: FFFF(high word) format to increment the use count of each
+clipboard-format atom when that format is placed on the clipboard. By using
+this format, the atom is not destroyed even if the original user of the atom
+deletes the atom, because the use count still shows that the clipboard is
+using the atom.
+ 
+<b>Creating a Unique Window-Message Atom</b>
+ 
+System-defined window messages are identified by word-length constants in
+the range zero through 0x1000 (WM_USER). An application that defines its own
+window messages can use WM_USER and higher values as long as it sends those
+messages only to itself. If an application sends its own window messages to
+other applications, either directly or by calling the WinBroadcastMsg
+function, it must add its message identifiers to the system atom table to
+obtain a message identifier that is unique for the entire system.
+ 
+Typically, an application registers its own window-message types with the
+system atom table only if those types are likely to be recognized by other
+applications. For example, two applications might communicate with each
+other with an agreed-upon message that is not defined by the system. These
+applications must use the same string identifier for the shared message
+type──for example, OUR_LINK_MESSAGE. Each time the applications run, they
+add this string to the system atom table and receive an atom in return.
+Because both applications register the same string in the system atom table,
+they both receive the same atom. This atom can then be used to identify the
+message without conflicting with other system-wide message identifiers.
+ 
+A consequence of using atoms to identify a window message is that the
+message cannot be decoded as a C-language case statement, as is typically
+done, because the value of the atom cannot be known until run time. For
+example, typical window-procedure code is similar to the following code
+fragment:
+ 
+/* This procedure does not work for interapplication messages. */
+ 
+switch (usMessage) {
+    case WM_PAINT:
+        hps = WinBeginPaint(hwnd, NULL, &amp;rect);
+        WinFillRect(hps, &amp;rect, CLR_WHITE);
+        WinEndPaint(hps);
+        return 0L;
+}
+return (WinDefWindowProc(hwnd, usMessage, mp1, mp2));
+ 
+Each case statement for a message uses a constant value to identify the
+message. This is not possible for messages registered with the atom manager
+at run time, since these messages cannot be determined at compile time and
+cannot be used in case statements. Instead, you must add a default case that
+checks the value of the message against the value of the atoms you have
+registered, as shown in the following code fragment:
+ 
+switch (usMessage) {
+    case WM_PAINT:
+        hps = WinBeginPaint(hwnd, NULL, &amp;rect);
+        WinFillRect(hps, &amp;rect, CLR_WHITE);
+        WinEndPaint(hps);
+        return 0L;
+ 
+    default:
+        if (usMessage == usMessageAtom)
+            return DoOurMessage(...);
+        break;
+ 
+}
+return (WinDefWindowProc(hwnd, usMessage, mp1, mp2));
+ 
+<b>Creating DDE Formats and a Unique Clipboard Format</b>
+ 
+The system defines several standard clipboard and DDE formats, identified by
+word-length constants. Applications that define their own clipboard or DDE
+formats must register those formats in the system atom table to avoid
+conflicting with the predefined formats and any formats used by other
+applications.
+ 
+An application must register any nonstandard clipboard format, even if the
+format is used only for cutting and pasting within the application. This is
+necessary because numbering conflicts can occur among nonstandard clipboard
+formats, since all formats on the clipboard are always available to all
+applications in the system. All nonstandard DDE formats must be registered
+in the system atom table, since they are always used by more than one
+application.
+ 
+All applications that share a clipboard or DDE format must use the same
+string to identify the format. Each application adds the common atom string
+to the system atom table and uses the resulting atom when using the
+clipboard or DDE functions. All applications receive the same atom from the
+system atom table; there is no conflict with other formats that are
+registered with the system atom table.
+ 
+<b>Deleting an Atom</b>
+ 
+When an application is finished using an atom, it should call the
+<b>WinDeleteAtom</b> function. This function reduces the atom's use count by one.
+If the use count is greater than zero, the atom remains in the atom table,
+since other processes are still accessing the atom. WinDeleteAtom removes an
+atom from the atom table only if the use count is zero.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

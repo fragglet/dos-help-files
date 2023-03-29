@@ -1,0 +1,217 @@
+<html>
+
+<head>
+<title>MouRegister (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MouRegister (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Mouse 1.2'>Overview</a><span class='grhilite'>►</span>                   </i>                         <span class='grhilite'>◄</span><a href='mou.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MouRemovePtr.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_MOU
+ 
+USHORT MouRegister(pszModuleName, pszEntryName, flFunctions)
+PSZ pszModuleName;    /* module-name string */
+PSZ pszEntryName;     /* entry-name string  */
+ULONG flFunctions;    /* function flags     */
+ 
+The MouRegister function registers a Mou subsystem for the specified mouse.
+The function temporarily replaces the one (or more) default Mou functions,
+as specified by the flFunctions parameter, with the functions in the module
+pointed to by the pszModuleName parameter. Once MouRegister replaces a
+function, MS OS/2 passes any subsequent calls to the replaced function to a
+function in the given module. If a function is not replaced, MS OS/2
+continues to call the default Mou function.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pszModuleName</i>  Points to the null-terminated string that contains the name
+               of the dynamic-link module containing the replacement Mou
+               functions.
+ 
+<i>pszEntryName</i>   Points to the null-terminated string that contains the
+               dynamic-link entry-point name of the function that replaces
+               the specified Mou function. For a full description, see the
+               following "Comments" section.
+ 
+<i>flFunctions    Specifies the flag</i>s of the Mou functions to replace. It can
+               be any combination of the following values:
+ 
+               Value                Meaning
+               ─────────────────────────────────────────────────────────────
+               MR_MOUGETNUMBUTTONS  Replace MouGetNumButtons.
+ 
+               MR_MOUGETNUMMICKEYS  Replace MouGetNumMickeys.
+ 
+               MR_MOUGETDEVSTATUS   Replace MouGetDevStatus.
+ 
+               MR_MOUGETNUMQUEEL    Replace MouGetNumQueEl.
+ 
+               MR_MOUREADEVENTQUE   Replace MouReadEventQue.
+ 
+               MR_MOUGETSCALEFACT   Replace MouGetScaleFact.
+ 
+               MR_MOUGETEVENTMASK   Replace MouGetEventMask.
+ 
+               MR_MOUSETSCALEFACT   Replace MouSetScaleFact.
+ 
+               MR_MOUSETEVENTMASK   Replace MouSetEventMask.
+ 
+               MR_MOUOPEN           Replace MouOpen.
+ 
+               MR_MOUCLOSE          Replace MouClose.
+ 
+               MR_MOUGETPTRSHAPE    Replace MouGetPtrShape.
+ 
+               MR_MOUSETPTRSHAPE    Replace MouSetPtrShape.
+ 
+               MR_MOUDRAWPTR        Replace MouDrawPtr.
+ 
+               MR_MOUREMOVEPTR      Replace MouRemovePtr.
+ 
+               MR_MOUGETPTRPOS      Replace MouGetPtrPos.
+ 
+               MR_MOUSETPTRPOS      Replace MouSetPtrPos.
+ 
+               MR_MOUINITREAL       Replace MouInitReal.
+ 
+               MR_MOUSETDEVSTATUS   Replace MouSetDevStatus.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_MOUSE_INVALID_ASCIIZ
+     ERROR_MOUSE_INVALID_MASK
+     ERROR_MOUSE_REGISTER
+ 
+<b>Comments</b>
+ 
+MS OS/2 passes a Mou function to the given module by preparing the stack and
+calling the function pointed to by the pszEntryName parameter. Specified
+module must export the entry-point function name. The entry-point function
+must check the function code on the stack to determine which function is
+being requested, then pass control to the appropriate function in the
+module. The entry-point function may then access any additional parameters
+placed on the stack by the MouRegister function.
+ 
+Only one process in a screen group may use the MouRegister function at any
+given time. That is, only one process at a time can replace Mou functions.
+The process can restore the default Mou functions by calling the
+<b>MouDeRegister function. A process can r</b>eplace a Mou function any number of
+times, but only by first restoring the default functions and then
+reregistering the new functions.
+ 
+The entry-point function (FuncName) must have the following form:
+ 
+     SHORT FAR FuncName(usReserved1, usFunction, ulReserved2,
+         usParam1, usParam2, usParam3, usParam4, usParam5)
+     USHORT usReserved1;
+     USHORT usFunction;
+     ULONG ulReserved2;
+     USHORT usParam1;
+     USHORT usParam2;
+     USHORT usParam3;
+     USHORT usParam4;
+     USHORT usParam5;
+ 
+<b>Parameter          Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>usReserved1</i>        Specifies a reserved value that must not be changed. This
+                   value represents a return address for the MS OS/2
+                   function that routes Mou function calls.
+ 
+<i>usFunction</i>         Specifies the function code that identifies the function
+                   request. It can be one of the following values:
+ 
+                   Value   Meaning
+                   ─────────────────────────────────────────────────────────
+                   0x0000  MouGetNumButtons called.
+ 
+                   0x0001  MouGetNumMickeys called.
+ 
+                   0x0002  MouGetDevStatus called.
+ 
+                   0x0003  MouGetNumQueEl called.
+ 
+                   0x0004  MouReadEventQue called.
+ 
+                   0x0005  MouGetScaleFact called.
+ 
+                   0x0006  MouGetEventMask called.
+ 
+                   0x0007  MouSetScaleFact called.
+ 
+                   0x0008  MouSetEventMask called.
+ 
+                   0x0009  MouGetHotKey called.
+ 
+                   0x000A  MouSetHotKey called.
+ 
+                   0x000B  MouOpen called.
+ 
+                   0x000C  MouClose called.
+ 
+                   0x000D  MouGetPtrShape called.
+ 
+                   0x000E  MouSetPtrShape called.
+ 
+                   0x000F  MouDrawPtr called.
+ 
+                   0x0010  MouRemovePtr called.
+ 
+                   0x0011  MouGetPtrPos called.
+ 
+                   0x0012  MouSetPtrPos called.
+ 
+                   0x0013  MouInitReal called.
+ 
+                   0x0014  MouFlushQue called.
+ 
+                   0x0015  MouSetDevStatus called.
+ 
+<i>ulReserved2</i>        Specifies a reserved value that must not be changed. This
+                   value represents the return address of the program that
+                   calls the specified Mou function.
+ 
+<i>usParam1-usParam5  Specifies up to five values pass</i>ed with the original Mou
+                   function call. The actual number and type of parameters
+                   used depend on the specific function.
+ 
+The registered function should return -1 if it wants the original function
+called, 0 if no error occurred, or an error value.
+ 
+The entry-point function should determine which function is requested and
+then carry out an appropriate action using the passed parameters. If
+necessary, the entry-point function can call a replacement function within
+the given module to carry out the task. The entry-point or replacement
+function must leave the stack in the same state it was received. This is
+required since the return addresses on the stack must be available in the
+correct order to return control to the program that originally called the
+<b>MouRegister</b> function.
+ 
+In general, if the replacement function needs to access the mouse, it must
+use the input-and-output control functions for the mouse.
+ 
+The MouRegister function itself cannot be replaced.
+ 
+<b>See Also</b>
+ 
+<b>MouDeRegister</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

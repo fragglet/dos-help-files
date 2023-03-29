@@ -1,0 +1,238 @@
+<html>
+
+<head>
+<title>About File Systems (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About File Systems (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_the_File_System.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file functions 1.2'>Function Group</a><span class='grhilite'>►</span>       </i>              <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Help_Manager.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                             About File Systems
+ 
+This topic describes the file-system functions. These functions let a
+program open, read, write, and modify disk and device files. They also let a
+program access and maintain the file system──that is, the volumes,
+directories, and files on the computer's disk drives.
+ 
+In MS OS/2, the file system specifies how data is organized on the
+computer's mass-storage devices, such as hard (fixed) and floppy (removable)
+disks. Each disk drive represents a unique element of the file system
+through which the data on a disk can be accessed. Each drive is assigned a
+unique letter to distinguish it from other drives. On most personal
+computers, drive A is the first floppy-disk drive, drive B is the second
+floppy-disk drive, drive C is the first hard-disk drive, and drive D is the
+second hard-disk drive. A personal computer running MS OS/2 can have up to
+26 drives. For exceptionally large hard disks, the disk can be divided into
+two or more "logical" drives. A logical drive represents a portion of the
+hard disk (up to 32 megabytes of storage) and, like a physical drive, is
+assigned a unique letter to distinguish it from other physical and logical
+drives.
+ 
+The file system organizes disks into volumes, directories, and files. A
+volume is the largest file-system unit. It represents all the available
+storage on the disk in the drive. An optional volume identifier or name
+identifies the disk. Each volume has a root directory. The root directory
+lists the contents of the disk. Each directory entry identifies the name,
+location, and size of a specific file or subdirectory on the disk. A file is
+one or more bytes of data stored on the disk. Subdirectories provide an
+additional level of organization and, like the root directory, contain
+directory entries.
+ 
+The MS OS/2 file-system functions identify files and directories by their
+names. These functions store or search for the file or directory in the
+current directory on the current drive unless the name explicitly specifies
+a different directory and drive. Valid MS OS/2 filenames have the following
+form:
+ 
+[drive:][directory\]filename[.extension]
+ 
+The drive parameter must name an existing drive and can be any letter from A
+through Z. The drive letter must be followed by a colon (:).
+ 
+The directory parameter specifies the directory that contains the file's
+directory entry. This value must be followed by a backslash (\) to separate
+it from the filename. If the specified directory is not in the current
+directory, directory must include the names of all directories in the path,
+separated by backslashes. The root directory is specified by using a
+backslash at the beginning of the name. For example, if the directory abc is
+in the directory sample and sample is in the root directory, the correct
+<i>directory specification is </i>\sample\abc. A directory name consists of any
+combination of up to eight letters, digits, or the following special
+characters:
+ 
+$ % ' - _ @ { } ~ ` ! # ( )
+ 
+A directory name can also have an extension, which is any combination of up
+to three letters, digits, or special characters, preceded by a period (.).
+ 
+The filename and extension parameters specify the file. Filename can be any
+combination of up to eight letters, digits, or the following special
+characters:
+ 
+$ % ' - _ @ { } ~ ` ! # ( )
+ 
+<i>Extension</i> can be any combination of up to three letters, digits, or special
+characters, preceded by a period.
+ 
+Although these file-naming conventions apply to MS OS/2 versions 1.0 and
+1.1, future releases of MS OS/2 may use other conventions. Therefore,
+programs written for MS OS/2 should not depend on any specific filename
+format.
+ 
+When a program starts, it inherits the current directory and drive from the
+program that starts it. A program can determine which directory and drive
+are current by using the DosQCurDir and DosQCurDisk functions. A program can
+change the current directory and drive of the file system by using the
+<b>DosChDir and DosSelectDi</b>sk functions.
+ 
+When a program creates a new file, the system adds an entry for the file to
+the specified directory. Each directory can have any number of entries, up
+to the physical limit of the disk. A program can create new directories and
+delete existing directories by using the DosMkDir and DosRmDir functions.
+Before a directory can be deleted, it must be empty; if there are files or
+directories in that directory, they must be deleted or moved. A program can
+delete a file by using the DosDelete function or move a file to another
+directory by using the DosMove function.
+ 
+Each directory entry includes a file attribute. The file attribute specifies
+whether the directory entry is for a file, a directory, or a volume
+identifier. It also specifies whether the file is read-only, hidden,
+archived, or system. A read-only file cannot be opened for writing, nor can
+it be deleted. A hidden file (or directory) cannot be displayed using an
+ordinary directory listing. A system file is excluded from normal directory
+searches. The archived attribute is for use by special-purpose programs that
+need some way to mark a file for backing up or removal. A program can
+retrieve and set the file attribute of a file by using the DosQFileMode and
+<b>DosSetFileMode</b> functions.
+ 
+A program can retrieve information about the file system on a given drive by
+using the DosQFSInfo function. The file-system information defines the
+amount of storage space available on the disk. The storage space is given in
+number of allocation units (clusters) on the disk. Each cluster has an
+associated number of sectors; each sector contains a given number of bytes.
+A typical disk has 512 bytes for each sector and 4 sectors for each cluster.
+The DosSetFSInfo function lets a program change the volume identifier for
+the disk in the given drive.
+ 
+A program can retrieve and set information about a specific file by using
+the DosQFileInfo and DosSetFileInfo functions. File information consists of
+the dates and times that the file was created, last accessed, and last
+written to; the size (in bytes) of the file; the number of sectors (or
+clusters) the file occupies; and the file attributes.
+ 
+A program can search for all filenames that match a given pattern by using
+the DosFindFirst, DosFindNext, and DosFindClose functions. These functions
+let a program search the current directory for files whose names match a
+specified pattern. The pattern must be an MS OS/2 filename and can include
+wildcard characters. The wildcard characters are the question mark (?) and
+the asterisk (*). The ? matches any single character; the * matches any
+combination of characters. For example, the pattern a* matches the names
+<i>abc, a23, and abca, but the</i> pattern a?c matches only the name abc.
+ 
+A program can open an existing file or create a new file by using the
+<b>DosOpen</b> function. MS OS/2 identifies each open file by assigning it a file
+handle when the program opens or creates the file. The file handle is a
+unique 16-bit integer. The program can use the handle in functions that read
+from and write to the file, depending on how the file was opened. The
+program can continue to use the handle in this way until the file is closed.
+MS OS/2 sets the default maximum number of file handles for a program to 20.
+A program can change this maximum by using the DosSetMaxFH function.
+ 
+A program can increase or decrease the size of an open file by using the
+<b>DosNewSize</b> function.
+ 
+When a program opens a file, it must specify whether it wants to read from
+the file, write to it, or both read and write. Also, since more than one
+program may attempt to open a file, a program must specify how it wants to
+share the file (if at all) with other programs. A file can be shared for
+reading only, for writing only, for reading and writing, or not shared. A
+file that is not shared cannot be opened by another program (or more than
+once by the first program) until it has been closed by the first program.
+ 
+A program reads from and writes to a file by using the DosRead and DosWrite
+functions. These functions read and write a specified number of bytes of
+data. The data is read and written exactly as given; the functions do not
+format the data──that is, they do not convert binary data to decimal strings
+or vice versa. A program can use the DosReadAsync and DosWriteAsync
+functions to read from and write to a file asynchronously──that is, to read
+and write while the rest of the program continues carrying out other
+operations.
+ 
+Every open file has a file pointer that specifies the next byte to be read
+or the location to receive the next byte that is written. When a file is
+first opened, the system places the file pointer at the beginning of the
+file. As each byte is read or written, the system advances the pointer. A
+program can also move the pointer by using the DosChgFilePtr function. When
+the pointer reaches the end of the file and an attempt is made to read from
+the file, no bytes are read and no error occurs. Thus, reading zero bytes
+without an error means the program has reached the end of the file.
+ 
+When a program writes to a disk file, MS OS/2 usually collects the data
+being written in an internal buffer and writes to the disk only when the
+amount of data equals (or is a multiple of) the sector size of the disk. If
+there is data in the internal buffer when the file is closed, the system
+automatically writes the data to the disk before closing the file. A program
+can also flush the buffer (that is, write the contents of the buffer to the
+disk) by using the DosBufReset function.
+ 
+Although MS OS/2 lets more than one program open a file and write to it, the
+programs that do so must take care not to write over each other's work. A
+program can protect against this problem by temporarily locking a region in
+a file. The DosFileLocks function specifies a range of bytes in the file
+that is locked by the program and can be accessed only by that program. The
+program uses the same function to free the locked region.
+ 
+Some file-system functions can also be used to access other input and output
+devices, such as serial ports, keyboard, and screen. A program can open
+these devices by using the DosOpen function and specifying one of the
+following device names:
+ 
+<i>clock$     con        mou</i>se$
+<i>com1       kbd$     </i>  nul
+<i>com2       lpt1     </i>  pointer$
+<i>com3       lpt2     </i>  prn
+<i>com4       lpt3     </i>  screen$
+ 
+As with a disk file, MS OS/2 supplies a unique handle that the program can
+use in subsequent calls to the DosRead and DosWrite functions to read from
+and write to the device. A program can determine the type of handle──device
+or file-system──by using the DosQHandType function. The program uses the
+<b>DosClose</b> function to close the handle when the device is no longer needed.
+ 
+When a program opens a device, it must specify both how the device is to be
+accessed (read, write, or both) and what kind of sharing is to be allowed. A
+program can check or alter this state by using the DosQFHandState and
+<b>DosSetFHandState</b> functions. (These functions also apply to file-system
+handles.)
+ 
+When a program starts, it inherits all open file handles from the process
+that starts it. If the system's command processor starts a program, file
+handles 0, 1, and 2 represent the standard-input, standard-output, and
+standard-error files. The standard-input file is the keyboard; the
+standard-output and standard-error files are the screen. A program can read
+from the standard-input file and write to the standard-output and
+standard-error files immediately; it does not have to open the files first.
+ 
+A program can create a duplicate file handle for an open file by using the
+<b>DosDupHandle</b> function. A duplicate handle is identical to the original
+handle. Typically, duplicate handles are used to redirect the standard-input
+and standard-output files. For example, a program can close handle 0, open a
+disk file, and duplicate the disk-file handle as handle 0. Thereafter,
+reading from handle 0 takes data from the disk file, not from the keyboard.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

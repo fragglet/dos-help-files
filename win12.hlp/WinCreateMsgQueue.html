@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>WinCreateMsgQueue (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinCreateMsgQueue (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='PM_Message_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Messages and Message Queues 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinCreatePointer.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMESSAGEMGR
+ 
+HMQ WinCreateMsgQueue(hab, cmsg)
+HAB hab;       /* handle of the anchor block */
+SHORT cmsg;    /* size of the message queue  */
+ 
+The WinCreateMsgQueue function creates a message queue for the current
+thread. This function must be called after the WinInitialize function but
+before any other Presentation Manager functions are called. It can be called
+only once per thread.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hab</i>        Identifies the anchor block.
+ 
+<i>cmsg</i>       Specifies the maximum queue size. This parameter can use a value
+           of DEFAULT_QUEUE_SIZE to get the system default queue size.
+ 
+<b>Return Value</b>
+ 
+The return value identifies a message queue, or it is NULL if the queue
+cannot be created.
+ 
+<b>Comments</b>
+ 
+The default queue size is 10 messages which is sufficient for most
+applications. However, if an application processes a high volume of
+messages, and the processing of some of these messages is slow, the
+application should create a larger queue.
+ 
+<b>Example</b>
+ 
+This example shows the typical startup code for a thread that will be making
+Presentation Manager function calls; in this case the startup function of
+the application. It calls WinInitialize to initialize the thread for making
+Presentation Manager function calls, and WinCreateMsgQueue to create a
+message queue for the thread. Before the thread terminates, it calls
+<b>WinDestroyMsgQueue</b> to destroy the message queue.
+ 
+HAB hab;    /* handle to the anchor block  */
+HMQ hmq;    /* handle to the message queue */
+ 
+VOID cdecl main() {
+    hab = WinInitialize(0);
+    hmq = WinCreateMsgQueue(hab, DEFAULT_QUEUE_SIZE);
+        .
+        . /* initialization and message loop */
+        .
+    WinDestroyMsgQueue(hmq);
+    WinTerminate(hab);
+    DosExit(EXIT_PROCESS, 0);
+}
+ 
+<b>See Also</b>
+ 
+<b>WinDestroyMsgQueue, WinInitialize</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

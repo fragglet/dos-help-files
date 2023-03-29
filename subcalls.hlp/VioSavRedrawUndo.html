@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<title>VioSavRedrawUndo (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioSavRedrawUndo (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioSavRedrawWait.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioSavRedrawUndo(fRelinquish, fTerminate, usReserved)
+USHORT fRelinquish;    /* retain/relinquish ownership flag */
+USHORT fTerminate;     /* terminate/continue flag          */
+USHORT usReserved;     /* reserved, must be zero           */
+ 
+The VioSavRedrawUndo function cancels a request by a process to be notified
+when MS OS/2 switches screen groups. A process requests to be notified by
+calling the VioSavRedrawWait function. The request forces the calling thread
+to wait until a screen switch occurs. VioSavRedrawUndo cancels the request
+and allows the thread to continue (or terminates the thread, if requested to
+do so).
+ 
+MS OS/2 permits only one process in a screen group to request screen switch
+notification. The first process to make a request owns it. Thereafter, other
+processes must wait for the owning process to relinquish the request before
+being given ownership. To force the process to relinquish ownership of the
+request, use the VioSavRedrawUndo function.
+ 
+Only the process that owns the change-mode request can call the
+<b>VioSavRedrawUndo</b> function.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>fRelinquish</i>  Specifies whether a process should retain or relinquish
+             ownership of the request. If this parameter is UNDOI_GETOWNER,
+             the process relinquishes ownership and is canceled by this
+             function. If the parameter is UNDOI_RELEASEOWNER, the process
+             retains ownership and can repeat the request without competing
+             with other processes.
+ 
+<i>fTerminate</i>   Specifies whether to terminate the thread waiting for the mode
+             change. If this parameter is UNDOK_ERRORCODE, the thread
+             continues and receives an error value from the
+             VioSavRedrawWait function. If the parameter is UNDOK_TERMINATE,
+             the thread terminates.
+ 
+<i>usReserved</i>   Specifies a reserved value. This parameter must be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_VIO_FUNCTION_OWNED
+     ERROR_VIO_INVALID_PARMS
+     ERROR_VIO_NO_SAVE_RESTORE_THD
+ 
+<b>See Also</b>
+ 
+<b>VioCreatePS, VioModeUndo, VioSavRedrawWait</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

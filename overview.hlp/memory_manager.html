@@ -1,0 +1,103 @@
+<html>
+
+<head>
+<title>About the Memory Manager (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About the Memory Manager (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_the_Memory_Manager.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#memory allocation functions 1.2'>Function Group</a><span class='grhilite'>►</span>                     <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Mouse.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                          About the Memory Manager
+ 
+This topic describes the MS OS/2 memory manager. The memory manager lets
+programs allocate memory for their own use or to be shared with other
+programs. A program can allocate a segment, a huge segment, or memory blocks
+within a segment. You should also be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='Interprocess_Communication.html'>Interprocess communication</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='processes.html'>Multitasking</a><span class='grhilite'>►</span>
+ 
+In MS OS/2, you allocate memory in segments of one or more bytes (up to
+65,536 bytes). Each segment is identified by a unique value called a segment
+selector. A segment selector, combined with a segment offset, yields the
+address of a byte in the segment.
+ 
+MS OS/2 lets you allocate any number of segments and then use these segments
+as additional storage for your program. When MS OS/2 first loads your
+program, it gives the program at least one data segment, called the
+automatic data segment. This segment contains the global and static data
+declared in the program. It may also contain the program stack. MS OS/2 also
+gives your program one or more code segments, which contain the program
+code. The code segments are protected from any changes, intentional or
+otherwise.
+ 
+<b>Memory Limits</b>
+ 
+Although MS OS/2 can access no more than 16 megabytes of physical memory, it
+can manage segment selectors representing up to 1 gigabyte of memory. MS
+OS/2 uses compaction, discarding, and swapping to manage this "virtual"
+memory.
+ 
+When MS OS/2 runs only protected-mode programs (the protectonly command in
+the config.sys file is set to yes), all physical memory is available to
+protected-mode code and data segments except the memory addresses from 640K
+to 1000K, which are reserved for system ROM and for video buffers. When MS
+OS/2 runs both real-mode and protected-mode programs (protectonly is set to
+<b>no), i</b>t reserves lower memory for real-mode programs. The rmsize command in
+the config.sys file specifies the size and the upper address of real-mode
+memory. The system places any protected-mode code and data segments above
+the last upper real-mode address. Real-mode memory is not subject to
+swapping or moving unless the program running in real-mode memory does so
+itself.
+ 
+In protected mode, the system creates one local descriptor table (LDT) for
+each program. All threads in a program use the same LDT, so all segment
+selectors in the program are available to all threads. MS OS/2 reserves the
+global descriptor table (GDT) for the system. Also, MS OS/2 does not permit
+a program to examine or modify its own LDT.
+ 
+The number of selectors available to a program depends on the number of code
+and data segments in the program. Since programs cannot use the GDT, only
+the approximately 8000 selectors in the LDT are available. However, half of
+these selectors are reserved for shared segments, so a program actually
+never has more than about 4000 selectors.
+ 
+<b>Protection Violations</b>
+ 
+In MS OS/2, memory is carefully managed by the virtual-memory and memory-
+protection capabilities of the Intel 80286 microprocessor. MS OS/2 grants
+your program access to a segment only if the segment has been explicitly
+allocated by your program or made available for your program's use.
+ 
+Each segment has a unique selector that identifies the segment and grants a
+program access. If a program attempts to access a segment that is not
+assigned to it, uses an unknown selector, or attempts to access bytes
+outside of a segment, the system interrupts the program and executes the
+exception-handling routine for protection violations. This routine
+determines the cause of the exception and displays an error message to the
+user before terminating the program.
+ 
+Protection violations are not recoverable. This means that you should be
+careful about using address offsets and selectors, ensuring that they are
+valid. Since protection violations commonly occur during program debugging,
+each message displayed for a protection violation shows the contents of the
+system registers when the violation occurred. If the violation occurs as a
+result of passing a system function an invalid pointer, the message also
+shows the parameters used in the call.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

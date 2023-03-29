@@ -1,0 +1,102 @@
+<html>
+
+<head>
+<title>DosFlagProcess (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosFlagProcess (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='signals.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Interprocess Communication 1.2'>Overview</a><span class='grhilite'>►</span>                  </i>        <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosFreeModule.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSSIGNALS
+ 
+USHORT DosFlagProcess(pidProcess, fScope, usFlagNum, usFlagArg)
+PID pidProcess;      /* identifier of process receiving flag */
+USHORT fScope;       /* flag process or process subtree      */
+USHORT usFlagNum;    /* flag number                          */
+USHORT usFlagArg;    /* flag argument                        */
+ 
+The DosFlagProcess function generates a signal that is sent to the calling
+process. By default, the process ignores these signals, but it can respond
+to them by using the DosSetSigHandler function to define a signal handler. A
+process can also refuse event-flag signals, causing the DosFlagProcess
+function to return an error value.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pidProcess</i>  Specifies the process identifier of the process that receives
+            the flag.
+ 
+<i>fScope</i>      Specifies how many external event flags to set. If this
+            parameter is FLGP_SUBTREE, the function sets the external event
+            flags for the specified process and all of its child processes.
+            If it is FLGP_PID, the function sets the event flag for only the
+            specified process.
+ 
+<i>usFlagNum</i>   Specifies the number of the flag to set. This parameter can be
+            one of the following values:
+ 
+            Value   Meaning
+            ────────────────────────────────────────────────────────────────
+            PFLG_A  Process flag A.
+ 
+            PFLG_B  Process flag B.
+ 
+            PFLG_C  Process flag C.
+ 
+<i>usFlagArg</i>   Specifies an argument to pass to the specified process.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_INVALID_FLAG_NUMBER
+     ERROR_INVALID_FUNCTION
+     ERROR_INVALID_PROCID
+     ERROR_SIGNAL_PENDING
+     ERROR_SIGNAL_REFUSED
+     ERROR_ZOMBIE_PROCESS
+ 
+<b>Comments</b>
+ 
+The current signal cannot be accepted if a signal of the same type is
+already waiting to be processed.
+ 
+<b>Example</b>
+ 
+This example executes a process called abc.exe. It then calls the
+<b>DosFlagProcess</b> function to send the PFLG_A (process flag A) signal to that
+process.
+ 
+UCHAR szFailName[CCHMAXPATH];
+RESULTCODES rescResults;
+DosExecPgm(szFailName, sizeof(szFailName),
+    EXEC_ASYNCH, "abc\0", 0, &amp;rescResults, "abc.exe");
+    .
+    .
+    .
+DosFlagProcess(rescResults.codeTerminate, /* process identifier */
+    FLGP_SUBTREE,                /* notifies the entire subtree */
+    PFLG_A,                      /* sends process flag A        */
+    1);                          /* value to send process       */
+ 
+<b>See Also</b>
+ 
+<b>DosExecPgm, DosSetSigHandler</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

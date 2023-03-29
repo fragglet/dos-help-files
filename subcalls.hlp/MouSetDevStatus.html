@@ -1,0 +1,107 @@
+<html>
+
+<head>
+<title>MouSetDevStatus (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MouSetDevStatus (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Mouse 1.2'>Overview</a><span class='grhilite'>►</span>                   </i>                         <span class='grhilite'>◄</span><a href='mou.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MouSetEventMask.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_MOU
+ 
+USHORT MouSetDevStatus(pfsDevStatus, hmou)
+PUSHORT pfsDevStatus;    /* address of buffer with status */
+HMOU hmou;               /* mouse handle                  */
+ 
+The MouSetDevStatus function sets the device status for the specified mouse.
+The device status enables or disables the mouse device driver and defines
+whether the mouse position is reported in mickeys or in screen units
+(character cells or pels).
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pfsDevStatus</i>  Points to the variable that contains the device status to be
+              set. This parameter can be any combination of the following
+              values:
+ 
+              Value           Meaning
+              ──────────────────────────────────────────────────────────────
+              MOUSE_DISABLED  Disable the default mouse device driver. If
+                              this value is not given, the function enables
+                              the mouse device driver.
+ 
+              MOUSE_MICKEYS   Report mouse motion in mickeys; that is, MS
+                              OS/2 reports motion as a number of mickeys
+                              moved from the last-reported position. If the
+                              value is not given, MS OS/2 reports mouse
+                              motion in screen units relative to the
+                              upper-left corner of the screen.
+ 
+<i>hmou</i>          Identifies the mouse. The handle must have been created
+              previously by using the MouOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_MOUSE_INV_PARMS
+     ERROR_MOUSE_NO_DEVICE
+ 
+<b>Comments</b>
+ 
+The MouSetDevStatus function enables or disables the mouse device driver.
+When this device driver is enabled, it draws the pointer by combining the
+AND and XOR masks of the pointer shape with the contents of the screen at
+the current mouse location. It draws the pointer whenever the mouse moves
+(or when an interrupt associated with the mouse occurs). When the mouse
+device driver is disabled, the function does not draw the pointer. In such
+cases, the process must draw the pointer for itself.
+ 
+The MouSetDevStatus function also directs the mouse to report relative or
+absolute positions. If the device is set to report absolute positions, the
+<i>x- </i>and y-coordinates given for a mouse position are in screen units relative
+to the upper-left corner of the screen. The type of unit depends on the
+screen mode. In text mode, the position is given in character cells; in
+graphics mode, the position is given in pels. Screen coordinates increase
+from left to right on the x-axis and from top to bottom on the y-axis. If
+the device is set to report relative positions, the x- and y-coordinates for
+a mouse position are given in mickeys and are relative to the most recently
+reported position. In this case, the coordinates are signed values, defining
+both the direction and distance of the move. The x-coordinate is negative
+when the mouse moves left; the y-coordinate is negative when the mouse moves
+up.
+ 
+<b>Example</b>
+ 
+This example creates a mouse handle and then calls the MouGetDevStatus
+function to set the device status so that mouse-movement information is
+returned in terms of mickeys, not pels. This allows the process to obtain
+mouse information in terms of relative movement rather than in terms of
+absolute pel position:
+ 
+USHORT fsDevStatus = 0x0200;            /* returns mickeys    */
+HMOU hmou;
+MouOpen(0L, &amp;hmou);
+MouSetDevStatus(&amp;fsDevStatus, hmou);    /* sets device status */
+ 
+<b>See Also</b>
+ 
+<b>MouGetDevStatus, MouOpen</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

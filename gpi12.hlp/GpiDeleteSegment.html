@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<title>GpiDeleteSegment (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiDeleteSegment (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='retained_graphics.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiDeleteSegments.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPISEGMENTS
+ 
+BOOL GpiDeleteSegment(hps, idSegment)
+HPS hps;           /* presentation-space handle       */
+LONG idSegment;    /* identifier of segment to delete */
+ 
+The GpiDeleteSegment function deletes the segment specified by idSegment. If
+the segment is open, the function automatically closes the segment before
+deleting it. If the segment is in the picture chain, the function removes it
+from the chain.
+ 
+This function deletes only segments created using the GpiOpenSegment
+function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>idSegment</i>  Specifies the segment to delete; it must be greater than zero.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful or FALSE if an error
+occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_INV_SEG_NAME
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiDeleteSegment function to delete segment 4:
+ 
+POINTL ptlStart = { 0, 0 };
+POINTL ptlTriangle[] = { 100, 100, 200, 0, 0, 0 };
+ 
+GpiOpenSegment(hps, 4L);               /* open the segment           */
+GpiMove(hps, &amp;ptlStart);               /* move to start point (0, 0) */
+GpiPolyLine(hps, 3L, ptlTriangle);     /* draw triangle              */
+GpiCloseSegment(hps);                  /* close the segment          */
+    .
+    .
+    .
+GpiDeleteSegment(hps, 4L);             /* delete segment #4          */
+ 
+<b>See Also</b>
+ 
+<b>GpiCloseSegment, GpiDeleteSegments, GpiOpenSegment, GpiQuerySegmentNames,</b>
+<b>WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

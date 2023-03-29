@@ -1,0 +1,180 @@
+<html>
+
+<head>
+<title>DosSetSigHandler (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosSetSigHandler (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='signals.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Interprocess Communication 1.2'>Overview</a><span class='grhilite'>►</span>                  </i>        <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosSetVec.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSSIGNALS
+ 
+USHORT DosSetSigHandler(pfnSigHandler, ppfnPrev, pfAction, fAction,
+    usSigNumber)
+PFNSIGHANDLER pfnSigHandler;     /* pointer to signal-handler function */
+PFNSIGHANDLER FAR * ppfnPrev;    /* pointer to previous signal handler */
+PUSHORT pfAction;      /* pointer to variable for previous handler action */
+USHORT fAction;                  /* type of request                    */
+USHORT usSigNumber;              /* signal number                      */
+ 
+The DosSetSigHandler function installs or removes a signal handler for a
+specified signal. This function can also be used to ignore a signal or
+install a default action for a signal.
+ 
+The DosSetSigHandler function is a family API function.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pfnSigHandler</i>  Points to the signal-handler function that receives control
+               when a given signal occurs.
+ 
+<i>ppfnPrev</i>       Points to the variable that receives a pointer to the
+               previous signal handler.
+ 
+<i>pfAction</i>       Points to the variable that receives the value of the
+               previous signal handler's fAction parameter. On return, the
+               pfAction parameter will contain one of the following values:
+ 
+                    SIGA_ACCEPT
+                    SIGA_ERROR
+                    SIGA_IGNORE
+                    SIGA_KILL
+ 
+<i>fAction</i>        Specifies the type of request. This parameter can be one of
+               the following values:
+ 
+               Value             Meaning
+               ─────────────────────────────────────────────────────────────
+               SIGA_ACCEPT       The signal handler specified in the
+                                 pfnSigHandler parameter will accept the
+                                 signal specified in the usSigNumber
+                                 parameter.
+ 
+               SIGA_ACKNOWLEDGE  The signal specified in the usSigNumber
+                                 parameter is acknowledged. The signal
+                                 handler specified in the pfnSigHandler
+                                 parameter will accept the signal.
+ 
+               SIGA_ERROR        It is an error for any other process to
+                                 signal this process with the signal
+                                 specified in the usSigNumber parameter.
+ 
+               SIGA_IGNORE       Ignore the signal.
+ 
+               SIGA_KILL         Remove the signal handler.
+ 
+<i>usSigNumber</i>    Specifies the signal number. This parameter can be one of the
+               following values:
+ 
+               Value            Meaning
+               ─────────────────────────────────────────────────────────────
+               SIG_CTRLBREAK    CTRL+BREAK.
+ 
+               SIG_CTRLC        CTRL+C.
+ 
+               SIG_KILLPROCESS  Program terminated.
+ 
+               SIG_PFLG_A       Process flag A.
+ 
+               SIG_PFLG_B       Process flag B.
+ 
+               SIG_PFLG_C       Process flag C.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+    ERROR_INVALID_FUNCTION
+    ERROR_INVALID_SIGNAL_NUMBER
+ 
+<b>Comments</b>
+ 
+The DosSetSigHandler function installs the signal handler the system calls
+whenever the corresponding signal occurs. The signal handler is a function
+that responds to a signal by carrying out tasks (for example, cleaning up
+files). A signal is an action initiated by the user or is another process
+that temporarily suspends execution of the process while the signal is
+processed. Signals occur when the user presses the CTRL+C or CTRL+BREAK key
+sequences, when another process calls the DosFlagProcess function, or when
+another process calls DosKillProcess to terminate the process with the
+signal handler.
+ 
+The signal-handler function can use the address and fAction value of the
+previous signal handler to pass the signal through a chain of previous
+signal handlers. The new signal handler can also use the previous address
+and fAction value to restore the previous handler.
+ 
+The DosSetSigHandler function acknowledges a signal and reenables it for
+subsequent input if the fAction parameter is set to SIGA_ACKNOWLEDGE. A
+process must acknowledge the signal to permit the signal to be used again.
+ 
+The signal handler has the following form:
+ 
+VOID PASCAL FAR FuncName(usSigArg, usSigNum)
+USHORT usSigArg;    /* furnished by DosFlagProcess if appropriate */
+USHORT usSigNum;    /* signal number being processed              */
+{
+    .
+    .
+    .
+    return;
+}
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>usSigArg</i>   Specifies the signal argument passed by the process that sends
+           the process-flag signal.
+ 
+<i>usSigNum</i>   Specifies the signal number. This parameter can be any of the
+           values listed for the usSigNumber parameter of the
+           DosSetSigHandler function.
+ 
+When a signal occurs, MS OS/2 calls the corresponding signal handler, which
+then carries out tasks, such as displaying a message and writing and closing
+files. The signal handler receives control under the first thread of a
+process (thread 1). The thread that was executing when the signal occurred
+waits for signal processing to be completed. The signal handler can use the
+<b>return</b> statement to return control and restore execution of the waiting
+thread or can use the DosExit function to terminate the process.
+ 
+The signal handler is not suspended when the DosEnterCritSec function is
+called. If a signal occurs, the processing done by the signal handler must
+not interfere with the processing done by the thread calling the
+<b>DosEnterCritSec</b> function.
+ 
+All registers other than cs, ip, ss, sp, and flags in assembly-language
+signal handlers contain the same values as when the signal was received. The
+signal handler may exit by executing a far return (retf) instruction;
+execution resumes where it was interrupted, and all registers are restored
+to their values at the time of the interruption.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restriction applies to the DosSetSigHandler
+function:
+ 
+♦  Only the signal-break (SIG_CTRLBREAK) and signal-interrupt (SIG_CTRLC)
+   signals are available. DosSetSigHandler may be used to install signal
+   handlers for only these two signals.
+ 
+<b>See Also</b>
+ 
+<b>DosCreateThread, DosEnterCritSec, DosExit, DosFlagProcess, DosHoldSignal</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

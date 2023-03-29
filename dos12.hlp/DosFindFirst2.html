@@ -1,0 +1,207 @@
+<html>
+
+<head>
+<title>DosFindFirst2 (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosFindFirst2 (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosFindNext.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosFindFirst2(pszFileName, phDir, usAttribute, pBuf, cbBuf,
+    pusSearchCount, usInfoLevel, ulReserved);
+PSZ pszFileName;           /* pointer to filename              */
+PHDIR phDir;               /* pointer to directory handle      */
+USHORT usAttribute;        /* attributes of file to be found   */
+PVOID pBuf;                /* pointer to buffer for results    */
+USHORT cbBuf;              /* size of results buffer           */
+PUSHORT pusSearchCount;    /* number of entries found          */
+USHORT usInfoLevel;        /* level of information to retrieve */
+ULONG ulReserved;          /* must be zero                     */
+ 
+The DosFindFirst2 function searches a directory for the file or files whose
+filename and attributes match the specified filename and attributes.
+ 
+The DosFindFirst2 function is a family API function.
+ 
+<b>Parameter       Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pszFileName</i>     Points to a null-terminated string. This string must be a
+                valid MS OS/2 path and can contain wildcard characters.
+ 
+<i>phDir</i>           Points to the variable that contains the handle of the
+                directory to search.
+ 
+<i>usAttribute</i>     Specifies the file attribute(s) of the file to be located.
+                This parameter can be a combination of the following
+                values:
+ 
+                Value           Meaning
+                ────────────────────────────────────────────────────────────
+                FILE_NORMAL     Search for normal files.
+ 
+                FILE_READONLY   Search for read-only files.
+ 
+                FILE_HIDDEN     Search for hidden files.
+ 
+                FILE_SYSTEM     Search for system files.
+ 
+                FILE_DIRECTORY  Search for subdirectories.
+ 
+                FILE_ARCHIVED   Search for archived files.
+ 
+<i>pBuf</i>            Points to the buffer in which the file information is
+                returned. The format for this buffer is determined by the
+                value specified in the usInfoLevel parameter.
+ 
+<i>cbBuf</i>           Specifies the size (in bytes) of the buffer pointed to by
+                pBuf.
+ 
+<i>pusSearchCount</i>  Points to the variable that specifies the number of matching
+                entries to locate. The DosFindFirst2 function copies the
+                number of entries found to this parameter before returning.
+ 
+<i>usInfoLevel</i>     Specifies the type of file information to retrieve. This
+                parameter can be one of the following values:
+ 
+                Value                 Meaning
+                ────────────────────────────────────────────────────────────
+                FIL_STANDARD          Return a FILEFINDBUF structure with
+                                      the results of the search. The
+                                      information returned is identical to
+                                      that returned by the DosFindFirst
+                                      function.
+ 
+                FIL_QUERYEASIZE       Return a FILEFINDBUF2 structure with
+                                      the results of the search, and that
+                                      contains the size of the buffer needed
+                                      to retrieve the extended attributes.
+ 
+                FIL_QUERYEASFROMLIST  Return a buffer that contains both the
+                                      file information and the extended
+                                      attributes for the file.
+ 
+<i>ulReserved</i>      Specifies a reserved value; must be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+    ERROR_BUFFER_OVERFLOW
+    ERROR_EAS_DIDNT_FIT
+    ERROR_EA_LIST_INCONSISTENT
+    ERROR_FILENAME_EXCED_RANGE
+    ERROR_INVALID_EA_NAME
+    ERROR_INVALID_HANDLE
+    ERROR_INVALID_PARAMETER
+    ERROR_META_EXPANSION_TOO_LONG
+    ERROR_NO_MORE_FILES
+    ERROR_NO_MORE_SEARCH_HANDLES
+    ERROR_PATH_NOT_FOUND
+ 
+<b>Comments</b>
+ 
+The DosFindNext function uses the directory handle pointed to by the phDir
+parameter of the DosFindFirst2 function to repeat the search. If
+<b>DosFindFirst2</b> returns an error value other than ERROR_EAS_DIDNT_FIT, no
+directory handle is allocated.
+ 
+If the phDir parameter is HDIR_SYSTEM, the system-default search-directory
+handle is used; any previous search that used HDIR_SYSTEM terminates if this
+parameter is HDIR_CREATE, the search directory used by the process is
+created, and the function copies the handle of this search directory to the
+variable pointed to by the phDir parameter. If the handle was created by a
+previous call to DosFindFirst, it can be used in subsequent calls to
+<b>DosFindNext</b>.
+ 
+If the value of the usInfoLevel parameter is FILE_QUERYEASIZE, the cbList
+field of the FILEFINDBUF2 structure can be used to calculate the size of the
+buffer necessary for a FILE_QUERYEASFROMLIST information request. For MS
+OS/2 version 1.2, the value of cbList will never exceed 65,535.
+ 
+To use a FILE_QUERYEASFROMLIST information request, you must supply a buffer
+large enough for an EAOP structure and a FILEFINDBUF structure, plus enough
+space for the extended attributes. You must initialize the first portion of
+this buffer as an EAOP structure, and fill in the GEALIST structure with the
+extended-attribute names to retrieve. On return, the EAOP structure will be
+unchanged. It will be followed immediately by a FILEFINDBUF2 structure,
+without the last three fields. This is followed by an FEALIST structure (the
+address is the same as the cbList field of the FILEFINDBUF2 structure). The
+<b>FEALIST</b> structure is in turn followed by a single byte that specifies the
+length of the filename, and that is followed by a null-terminated string
+that specifies the filename. For an example of how to use structure pointers
+to access each of these fields, see the "Example" section.
+ 
+If there is not enough room in the output buffer to hold the
+extended-attribute information, the error ERROR_EAS_DIDNT_FIT is returned.
+The search handle will be allocated, however, and can be used in subsequent
+calls to the DosFindNext function. If no extended attribute is found, the
+<b>FEA</b> structure for that extended attribute will contain the name of the
+attribute, but the cbValue field will be zero.
+ 
+<b>Example</b>
+ 
+This example shows how to set up pointers to access the various fields of
+the buffer returned by a FIL_QUERYEASFROMLIST level request:
+ 
+/* Declare a structure to retrieve the .TYPE attribute name. */
+ 
+typedef struct _TYPEATTR {
+    ULONG cbList;
+    BYTE  cbName;
+    CHAR  szName[6];
+} TYPEATTR;
+ 
+#define BUFSIZE 2 * 1024              /* default buffer size         */
+ 
+SEL sel;                              /* selector for buffer         */
+HDIR hdir = HDIR_CREATE;              /* directory handle            */
+USHORT usSearchCount = 1;             /* number of files to retrieve */
+TYPEATTR typeattr;                    /* TYPE attribute structure    */
+PEAOP peaop;
+PFILEFINDBUF2 pfindbuf2;
+PFEALIST pfeal;
+PSZ pszFileName;
+PUCHAR pcchFileName;
+ 
+DosAllocSeg(BUFSIZE, &amp;sel, SEG_NONSHARED);  /* creates buffer        */
+peaop = MAKEP(sel, 0);                      /* sets up peaop pointer */
+ 
+typeattr.cbList = sizeof(TYPEATTR);         /* structure size        */
+strcpy(typeattr.szName, ".TYPE");           /* EA name               */
+typeattr.cbName = sizeof(typeattr.szName) - 1; /* name length        */
+ 
+peaop-&gt;fpGEAList = (PGEALIST) &amp;typeattr;   /* size of GEALIST struc. */
+ 
+if (!DosFindFirst2("eafile", &amp;hdir, FILE_NORMAL,
+        peaop, BUFSIZE,
+        &amp;usSearchCount, FIL_QUERYEASFROMLIST, 0L)) {
+    pfindbuf2 = MAKEP(sel, sizeof(EAOP));   /* FILEFINDBUF structure */
+    pfeal = (PFEALIST) &amp;pfindbuf2-&gt;cbList;  /* FEALIST structure     */
+    pcchFileName = ((PSZ) pfeal) + pfeal-&gt;cbList; /* filename length */
+    pszFileName = pcchFileName + 1;               /* filename        */
+}
+ 
+<b>See Also</b>
+ 
+<b>DosFindClose, DosFindFirst, DosFindNext, DosQFileMode, DosQFSInfo, EAOP,</b>
+<b>FILEFINDBUF, FILEFINDBUF2</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

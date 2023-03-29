@@ -1,0 +1,111 @@
+<html>
+
+<head>
+<title>GpiPolyFillet (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiPolyFillet (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='arcs.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Line and Arc Primitives 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiPolyFilletSharp.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+LONG GpiPolyFillet(hps, cptl, aptl)
+HPS hps;         /* presentation-space handle                 */
+LONG cptl;       /* number of points in array                 */
+PPOINTL aptl;    /* address of array of structures for points */
+ 
+The GpiPolyFillet function draws one or more fillets. The function draws the
+fillets by using the points specified by the aptl parameter. The function
+needs at least two points to draw a fillet. If exactly two points are
+specified, the function draws the fillet from the current position to the
+second point, using the first point as a control point. If more than two
+points are given, the function uses each point (except the last) as a
+control point, computing the end point of each fillet as needed. The
+function draws each fillet by using the current line-color, line-mix,
+line-width, and line-type attributes.
+ 
+The GpiPolyFillet function moves the current position to the end point of
+the last fillet.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>cptl</i>       Specifies the number of points.
+ 
+<i>aptl       P</i>oints to an array of POINTL structures that contain the points.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK or GPI_HITS if the function is successful (it is
+GPI_HITS if the detectable attribute is set for the presentation space and a
+correlation hit occurs). The return value is GPI_ERROR if an error occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_COORDINATE
+     PMERR_INV_HPS
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+A fillet is a smooth curve whose path is controlled by three points: a start
+point, an end point, and a control point.
+ 
+When given two points, the GpiPolyFillet function draws a fillet by first
+constructing two imaginary straight lines, one from the current position to
+the control point (the first point) and another from the control point to
+the end point (the second point). The function then draws the curve from the
+current position to the end point. The curve is drawn so that the first
+imaginary line is tangent to the curve at the current position and the
+second imaginary line is tangent to the curve at the second point. Only the
+curve is drawn, never the imaginary lines.
+ 
+When given more than two points, the function constructs a series of
+imaginary straight lines, then draws a series of curves. The function draws
+the first curve from the current position to the midpoint of the second
+imaginary line, the second curve from the midpoint of the second line to the
+midpoint of the third, and so on until it draws the last curve from a
+midpoint to the last point specified.
+ 
+The maximum number of fillets allowed in the polyfillet depends on the
+length of coordinates, but is at least 4000.
+ 
+<b>Example</b>
+ 
+This example uses the GpiPolyFillet function to draw a curve with a loop.
+The four points are the four points of a rectangle. The curve is drawn from
+the lower-left corner, through the midpoint of the top edge, and back to the
+lower-right corner.
+ 
+POINTL ptlStart = { 0, 0 };
+POINTL aptl[3] = { 200, 100, 0, 100, 200, 0 };
+ 
+GpiMove(hps, &amp;ptlStart);        /* move to the lower-left corner */
+GpiPolyFillet(hps, 3L, aptl};   /* draw the curve                */
+ 
+<b>See Also</b>
+ 
+<b>GpiMove, GpiPolyFilletSharp, GpiPolyLine, GpiSetAttrs, GpiSetCo</b>lor,
+<b>GpiSetCurrentPosition, GpiSetLineType, POINTL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

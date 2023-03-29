@@ -1,0 +1,203 @@
+<html>
+
+<head>
+<title>Using Fonts and Character Primitives (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Fonts and Character Primitives (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='fonts.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#font and text output functions 1.2'>Function Group</a><span class='grhilite'>►</span>               </i>      <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='lines.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                    Using Fonts and Character Primitives
+ 
+You can use the font and character functions to perform the following
+tasks:
+ 
+♦  Select a font from the public fonts loaded with Control Panel.
+ 
+♦  Select a font from a library of private fonts loaded by the application.
+ 
+♦  Draw a string of text using the selected font.
+ 
+♦  Scale, translate, and rotate a string of text from an outline font.
+ 
+♦  Scale, shear, and alter the direction of a string of text from image and
+   outline fonts.
+ 
+<b>Selecting a Public Font</b>
+ 
+To select a public font, you must perform the following tasks:
+ 
+♦  Call the GpiQueryFonts function, passing the QF_PUBLIC flag, a NULL
+   pointer to the font's face name, and a count of 0 to determine the number
+   of available public fonts.
+ 
+♦  Copy this number (the GpiQueryFonts return value) into an integer
+   variable.
+ 
+♦  Call GpiQueryFonts again, passing the QF_PUBLIC flag, a NULL pointer to
+   the font's face name, and the count returned by the previous call.
+ 
+♦  Examine the metrics, looking for the face name and attributes of the font
+   that your application needs.
+ 
+♦  Copy the appropriate metrics from the font that suits your application
+   into a FATTRS structure.
+ 
+♦  Initialize a local identifier (lcid) for the new font.
+ 
+♦  Call the GpiCreateLogFont function, passing a local identifier for the
+   font, the address of an empty array of eight characters, and the address
+   of the FATTRS structure.
+ 
+♦  Examine the return value from GpiCreateLogFont. If the function was
+   successful, it should be 2.
+ 
+♦  Pass the local identifier to the GpiSetCharSet function, assigning the
+   font to your application's presentation space.
+ 
+The following code fragment shows how to select a Helvetica public font:
+ 
+i = 0;
+while (!strcomp(afm[i++].szFacename, "Helv"));
+lFontCount = GpiQueryFonts(hps,
+    QF_PUBLIC,
+    NULL,
+    &amp;lCount,
+    (LONG) (sizeof(fm)),
+    (PFONTMETRICS) afm);
+lCount = lFontCount;
+lFontCount = GpiQueryFonts(hps,
+    QF_PUBLIC,
+    NULL,
+    &amp;lCount,
+    (LONG) (sizeof(fm)),
+    (PFONTMETRICS) afm);
+fat.usRecordLength = sizeof(fat);
+fat.fsSelection = afm[i].fsSelection;
+fat.lMatch = afm[i].lMatch;
+strcpy(fat.szFacename, afm[i].szFacename);
+fat.idRegistry = afm[i].idRegistry;
+fat.usCodePage = afm[i].usCodePage;
+fat.lMaxBaselineExt = afm[i].lMaxBaselineExt;
+fat.lAveCharWidth = afm[i].lAveCharWidth;
+fat.fsType = afm[i].fsType;
+fat.fsFontUse = 0;
+GpiCreateLogFont(hps,
+    (PSTR8) chName,
+    lcid,
+    (PFATTRS) &amp;fat);
+GpiSetCharSet(hps, lcid);
+ 
+<b>Drawing Text</b>
+ 
+Before drawing text, you must determine which of the four text-output
+functions you should use. The following list describes the specific purpose
+of each text-output function:
+ 
+<b>Function name       Purpose</b>
+────────────────────────────────────────────────────────────────────────────
+<b>GpiCharString</b>       This function draws a string of text starting at the
+                    current position.
+ 
+<b>GpiCharStringAt</b>     This function draws a string of text starting at a point
+                    that you pass as a function argument. It is identical to
+                    a function sequence of GpiMove, GpiCharString.
+ 
+<b>GpiCharStringPos</b>    This function alters the intercharacter spacing in a
+                    string of text in order to shade a special rectangle
+                    that surrounds a string of text, to draw a string of
+                    text in halftones, or to clip a string of text to a
+                    special rectangle. This function starts drawing the text
+                    at the current position.
+ 
+<b>GpiCharStringPosAt</b>  This function alters the intercharacter spacing in a
+                    string of text in order to shade a special rectangle
+                    that surrounds a string of text, to draw a string of
+                    text in halftones, or to clip a string of text to a
+                    special rectangle. This function starts drawing the text
+                    at a point that you pass as one of the function
+                    arguments.
+ 
+The following code fragment shows how to load an array of characters with
+the string "MS OS/2 Presentation Manager", set the current position to the
+point (100,100) by calling the GpiMove function, and then draw the string by
+calling the GpiCharString function:
+ 
+ptl.x = 100; ptl.y = 100;
+GpiMove (hps, &amp;ptl);
+GpiCharString(hps, 28L, "MS OS/2 Presentation Manager");
+ 
+<b>Transforming Text from an Outline Font</b>
+ 
+The following code fragment shows how to rotate a string of text 90 degrees
+counterclockwise by using the model transformation:
+ 
+matlfTransform.fxM11 = MAKEFIXED(1, 0);       /* translates text */
+matlfTransform.fxM12 = MAKEFIXED(0, 0);
+matlfTransform.lM13 = 0L;
+matlfTransform.fxM21 = MAKEFIXED(0, 0);
+matlfTransform.fxM22 = MAKEFIXED(1, 0);
+matlfTransform.lM23 = 0L;
+matlfTransform.lM31 = -300L;
+matlfTransform.lM32 = -100L;
+matlfTransform.lM33 = 1L;
+GpiSetModelTransformMatrix(hps, 9L, &amp;matlfTransform,
+    TRANSFORM_REPLACE);
+ 
+matlfTransform.fxM11 = MAKEFIXED(0, 0);       /* rotates text */
+matlfTransform.fxM12 = MAKEFIXED(1, 0);
+matlfTransform.lM13 = 0L;
+matlfTransform.fxM21 = -MAKEFIXED(1, 0);
+matlfTransform.fxM22 = MAKEFIXED(0, 0);
+matlfTransform.lM23 = 0L;
+matlfTransform.lM31 = 0L;
+matlfTransform.lM32 = 0L;
+matlfTransform.lM33 = 1L;
+GpiSetModelTransformMatrix(hps, 9L, &amp;matlfTransform, TRANSFORM_ADD);
+ 
+matlfTransform.fxM11 = MAKEFIXED(1, 0);       /* translates again */
+matlfTransform.fxM12 = MAKEFIXED(0, 0);
+matlfTransform.lM13 = 0L;
+matlfTransform.fxM21 = MAKEFIXED(0, 0);
+matlfTransform.fxM22 = MAKEFIXED(1, 0);
+matlfTransform.lM23 = 0L;
+matlfTransform.lM31 = 300L;
+matlfTransform.lM32 = 100L;
+matlfTransform.lM33 = 1L;
+GpiSetModelTransformMatrix(hps, 9L, &amp;matlfTransform, TRANSFORM_ADD);
+ 
+ptl.x = 100;
+ptl.y = 100;
+GpiMove(hps, &amp;ptl);
+GpiCharString(hps, 28L, "MS OS/2 Presentation Manager");
+ 
+<b>Transforming Text from an Image Font</b>
+ 
+The following code fragment shows how to double the size of the character
+box, set the character mode to 2, and then print a string of text:
+ 
+GpiQueryCharBox(hps, &amp;sizfxBox);
+sizfxBox.cx = 2 * sizfxBox.cx;
+sizfxBox.cy = 2 * sizfxBox.cy;
+GpiSetCharBox(hps, &amp;sizfxBox);
+ptl.x = 100;
+ptl.y = 100;
+GpiMove(hps, &amp;ptl);
+GpiCharString(hps, 28L, "MS OS/2 Presentation Manager");
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

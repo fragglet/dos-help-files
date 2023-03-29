@@ -1,0 +1,137 @@
+<html>
+
+<head>
+<title>DosFileIO (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosFileIO (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosFileLocks.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosFileIO(hf, pbCmd, cbCmd, pusErr);
+HFILE hf;          /* file handle                    */
+PBYTE pbCmd;       /* pointer to buffer for commands */
+USHORT cbCmd;      /* length of command buffer       */
+PUSHORT pusErr;    /* pointer to error offset        */
+ 
+The DosFileIO function performs multiple lock, unlock, seek, read, and write
+operations on a file.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hf</i>         Identifies the file on which to perform the commands. This handle
+           must have been created previously by using the DosOpen function.
+ 
+<i>pbCmd</i>      Points to the buffer that contains one or more of the following
+           structures: FIOLOCKCMD, FIOLOCKREC, FIOUNLOCKCMD, FIOUNLOCKREC,
+           FIOSEEKCMD, or FIOREADWRITE.
+ 
+<i>cbCmd      Spec</i>ifies the length (in bytes) of the pbCmd parameter.
+ 
+<i>pusErr</i>     Points to a variable that receives the byte offset of the
+           structure that caused an error. The offset is relative to the
+           beginning of the buffer pointed to by the pbCmd parameter.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_ACCESS_DENIED
+     ERROR_DIRECT_ACCESS_HANDLE
+     ERROR_INTERRUPT
+     ERROR_INVALID_HANDLE
+     ERROR_INVALID_PARAMETER
+     ERROR_LOCK_VIOLATION
+     ERROR_NEGATIVE_SEEK
+     ERROR_SEEK_ON_DEVICE
+     ERROR_SHARING_BUFFER_EXCEEDED
+ 
+<b>Comments</b>
+ 
+The DosFileIO function allows you to combine the following operations into a
+single function call:
+ 
+♦  Locking and unlocking multiple file ranges
+ 
+♦  Changing the file-position pointer
+ 
+♦  Reading and/or writing
+ 
+Combining these operations into one call can improve system performance,
+particularly in a networking environment.
+ 
+The DosFileIO function provides a simple mechanism for denying other
+processes read/write or write access to regions of the file. If another
+process attempts to read from or write to a no-access region, or attempts to
+write in a read-only region, an error is returned. If a time-out occurs
+before the locking operation is complete, DosFileIO returns an error to the
+calling process.
+ 
+Since the calling process may return after the time-out period has expired
+without receiving an ERROR_SEM_TIMEOUT message, semaphore time-out values
+should not be used for exact timing or for determining the sequence of I/O
+operations.
+ 
+Before a range is locked, it must be cleared of any locked subranges or
+locked overlapping ranges.
+ 
+Each I/O operation completes before the next one begins. The operations
+continue until all are complete or until one fails.
+ 
+<b>Example</b>
+ 
+This example opens the file abc.txt, allocates memory for the command
+buffer, initializes the commands in that buffer, and calls DosFileIO to move
+the file 10 bytes into the file and then read from the file:
+ 
+HFILE hf;
+USHORT usAction;
+SEL sel;
+BYTE abBuf[512];
+LONG lError;
+ 
+PFIOREADWRITE pfiorw;
+PFIOSEEKCMD pfioseek;
+ 
+DosOpen("abc.txt", &amp;hf, &amp;usAction, 0L, FILE_NORMAL, FILE_OPEN,
+    OPEN_ACCESS_READONLY | OPEN_SHARE_DENYNONE, 0L);
+DosAllocSeg(sizeof(FIOSEEKCMD) + sizeof(FIOREADWRITE), &amp;sel, SEG_NONSHARED);
+ 
+pfioseek = MAKEP(sel, 0);
+pfioseek-&gt;usCmd = FIO_SEEK;
+pfioseek-&gt;fsMethod = FILE_BEGIN;
+pfioseek-&gt;cbDistance = 10L;
+ 
+pfiorw = MAKEP(sel, sizeof(FIOSEEKCMD));
+pfiorw-&gt;usCmd = FIO_READ;
+pfiorw-&gt;pbBuffer = (PVOID) abBuf;
+pfiorw-&gt;cbBufferLen = sizeof(abBuf);
+ 
+DosFileIO(hf,                                    /* file handle    */
+    MAKEP(sel, 0),                               /* buffer address */
+    (sizeof(FIOSEEKCMD) + sizeof(FIOREADWRITE)), /* buffer size    */
+    &amp;lError);                         /* address of error variable */
+ 
+<b>See Also</b>
+ 
+<b>DosChgFilePtr, DosFileLocks, DosOpen, DosRead, DosWrite, FIOLOCKCMD,</b>
+<b>FIOLOCKREC, FIOREADWRITE, FIOSEEKCMD, FIOUNLOCKCMD, FIOUNLOCKREC</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

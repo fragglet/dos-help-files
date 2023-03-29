@@ -1,0 +1,64 @@
+<html>
+
+<head>
+<title>DSK_READTRACK (1.2) - ioctl12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ioctl12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DSK_READTRACK (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='IOCtls.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DSK_REDETERMINEMEDIA.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVIOCTL
+ 
+USHORT DosDevIOCtl(pbBuffer, pbCommand, 0x0064, 0x0008, hDevice)
+PBYTE pbBuffer;     /* pointer to buffer for data        */
+PBYTE pbCommand;    /* pointer to structure with command */
+HFILE hDevice;      /* device handle                     */
+ 
+The DSK_READTRACK function reads from a track on a specified disk drive. The
+track table passed in the call determines the sector number, which is passed
+to the disk controller for the operation. When the sectors are odd-numbered
+or nonconsecutive, the request is broken into an appropriate number of
+single-sector operations, and one sector at a time is read.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pbBuffer</i>   Points to the buffer that receives data read from the track.
+ 
+<i>pbCommand  Points to the TR</i>ACKLAYOUT structure that contains the information
+           about the read operation.
+ 
+<i>hDevice</i>    Identifies the disk drive that receives the device-control
+           function. The handle must have been created previously by using
+           the DosOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful or an error value if
+an error occurs.
+ 
+<b>Comments</b>
+ 
+The device driver will not correctly read sectors of sizes other than 512
+bytes if reading would generate a direct-memory-access (DMA) violation
+error. Programs must ensure that this error does not occur.
+ 
+<b>See Also</b>
+ 
+<b>DosOpen, DSK_WRITETRACK, TRACKLAYOU</b>T
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

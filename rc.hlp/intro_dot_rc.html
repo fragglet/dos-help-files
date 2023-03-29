@@ -1,0 +1,399 @@
+<html>
+
+<head>
+<title>Introduction to the MS OS/2 Resource Compiler (1.2) - rc.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+rc.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Introduction to the MS OS/2 Resource Compiler (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='acceltable_dot_rc.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+               Introduction to the MS OS/2 Resource Compiler
+ 
+Microsoft Operating System/2 Resource Compiler (rc) is an
+application-development tool that lets you add application resources, such
+as message strings, pointers, menus, and dialog boxes, to your application's
+executable file. MS OS/2 Resource Compiler is primarily intended to prepare
+data for MS OS/2 applications that use functions such as WinLoadString,
+<b>WinLoadPointer, WinLoadMenu, and WinLoadDlg. These functions load reso</b>urces
+from the application's executable file or another specified executable file.
+The application can then use the loaded resources as needed.
+ 
+Resource Compiler and the resource functions let you quickly define and/or
+modify application resources without recompiling the application itself.
+That is, rc can modify the resources in an executable file at any time
+without affecting the rest of the file. This means that you can create
+custom applications from a single executable file──you just use rc to add
+the custom resources you need to each application. Resource Compiler is
+especially important for international applications because it lets you
+define all language-dependent data, such as message strings, as resources.
+Preparing the application for a new language is simply a matter of adding
+new resources to the existing executable file.
+ 
+This topic explains how to use MS OS/2 Resource Compiler. It describes the
+resource-definition file used to define your application resources and
+explains how to compile the file and add the resources to your executable
+file.
+ 
+<b>Using Resource Compiler</b>
+ 
+You use Resource Compiler by creating a resource-definition file and then
+compiling the file and adding it to your application's executable file. The
+following sections describe the resource-definition file and the rc
+program.
+ 
+<b>Resource-Definition Files</b>
+ 
+A resource-definition file (sometimes referred to as a resource script file)
+consists of one or more resource statements that define the type,
+identifier, and data for each resource. For example, the following
+multiple-line resource statement defines a menu to be used with an
+application:
+ 
+MENU 1
+BEGIN
+    MENUITEM "Alpha", 101
+    MENUITEM "Beta", 102
+END
+ 
+A resource-definition file is a text file you can create by using an
+ordinary text editor. Since some resources may contain binary data that
+cannot be created using a text editor, many resource statements let you
+specify additional files to include when compiling the resource-definition
+file. For example, the following statement defines an icon and specifies the
+file myicon.ico as containing the icon data:
+ 
+ICON 1 myicon.ico
+ 
+A resource-definition file can also contain directives. A directive is a
+special statement that carries out a task such as including a header file,
+defining constants, or conditionally compiling portions of the
+resource-definition file. For example, the following directive includes the
+header file os2.h when rc processes the resource-definition file:
+ 
+#include &lt;os2.h&gt;
+ 
+Resource-definition files typically have the .rc filename extension. This is
+the default extension used by rc, so you should use it for all your
+resource-definition files.
+ 
+<b>The Rc Program</b>
+ 
+The rc program is Resource Compiler. It compiles the resource-definition
+file, creating a new file called a binary resource file, and then adds the
+binary resource file to the application's executable file, replacing any
+existing resources in that file.
+ 
+You can start rc in three ways. One way compiles and adds a
+resource-definition file to an executable file, another just compiles a
+resource-definition file, and the third just adds a binary resource file to
+an executable file. Thus, the rc command line has the following three basic
+forms:
+ 
+<b>rc resourc</b>e-definition-file [executable-file]
+<b>rc -r resource-definition</b>-file [resource-file]
+<b>rc resourc</b>e-file [executable-file]
+ 
+The resource-definition-file field must be the filename of the
+resource-definition file to be compiled. If the file is not in the current
+directory, you must provide a full path. If you provide a filename without
+specifying a filename extension, rc automatically appends the .rc extension
+to the name.
+ 
+The executable-file field must be the name of the executable file to receive
+the compiled resources. This is usually a file having either a .exe or .dll
+filename extension. If the file is not in the current directory, you must
+provide a full path. If you omit the executable-file field, rc adds the
+compiled resources to the executable file that has the same name as the
+resource-definition file but which has the .exe filename extension. If you
+specify the executable-file field but omit the filename extension, rc will
+append the .exe extension. If this executable file does not exist, rc
+displays an error message.
+ 
+The -r option directs rc to compile the resource-definition file without
+adding it to an executable file. You can use this option to prepare a binary
+resource file that you can add to an executable file at a later time. If you
+do not explicitly name a binary resource file along with the -r option, rc
+uses the same name as the resource-definition file but with the .res
+filename extension.
+ 
+The resource-file field must be the name of the binary resource file to be
+added to the executable file. If the binary resource file does not already
+exist, rc creates it; otherwise, rc replaces the existing file. If the file
+is not in the current directory, you must provide a full path. The binary
+resource file must have the .res filename extension.
+ 
+For example, to compile the resource-definition file example.rc and add the
+result to the executable file example.exe, use the following command:
+ 
+rc example
+ 
+You do not need to specify the .rc extension for example. The rc program
+creates the binary resource file example.res and then adds the compiled
+resource to the executable file example.exe.
+ 
+To compile the resource-definition file example.rc into a binary resource
+file without adding the resources to an executable file, use the following
+command:
+ 
+rc -r example
+ 
+The compiler creates the binary resource file example.res. To create a
+binary resource file that has a name different from the resource-definition
+file, use the following command:
+ 
+rc -r example newfile.res
+ 
+To add the compiled resources in the binary resource file example.res to an
+executable file, use the following command:
+ 
+rc example.res
+ 
+To specify the name of the executable file (if the name is different from
+the resource file), use the following command:
+ 
+rc example.res newfile.exe
+ 
+To add the compiled resources to a dynamic-link-library (.dll) file, use the
+following command:
+ 
+rc example.res dynalink.dll
+ 
+In addition to -r, rc offers two other command-line options: -k and -d. The
+<b>-k</b> option lets you specify a code-page identifier or country code. The
+syntax is as follows:
+ 
+[-k codepage-id | country-code]
+ 
+The codepage-id or country-code field contains one of the following
+code-page identifiers or country codes:
+ 
+<b>Code-page ID    Country code    Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+932             81              Japan
+ 
+934             82              Korea
+ 
+936             86              China
+ 
+938             88              Taiwan
+ 
+The -d option lets you define up to eight symbolic constants on the command
+line. The syntax is as follows:
+ 
+[-d string] [-d string] [...]
+ 
+In this example, string is a name, an integer constant, or an expression.
+The -d option is useful for passing conditional-compilation flags to the rc
+preprocessor.
+ 
+The following example specifies a Japanese code-page identifier and also
+defines two symbolic constants to be passed to the preprocessor as
+conditional-compilation flags:
+ 
+rc -k 932 -d DEBUG -d VERSION=2 example
+ 
+<b>Note:  To proce</b>ss directives in the resource-definition file, rc uses the
+       files rcpp.exe and rcpp.err. Be sure that these files are in the
+       current directory or in a directory specified by your PATH
+       environment variable. The rc program creates many temporary files and
+       writes them to the directory indicated by the TMP or TEMP environment
+       variable. If rc cannot write these temporary files to this directory,
+       it writes them to the current directory.
+ 
+<b>Resource-Statement Syntax</b>
+ 
+Each resource statement consists of one or more keywords, numbers, character
+strings, constants, or filenames. You combine these to define the resource
+type, identifier, and data.
+ 
+Keywords are words that have a special meaning to Resource Compiler. In a
+statement, keywords specify the resource type, the load and memory options,
+and the beginning and end of nested statements. You can use the rc keywords
+only as specified in the statement syntax.
+ 
+Keywords, except for those specifying directives, can be any combination of
+uppercase and lowercase letters. Note that the curly braces, { and }, are
+reserved characters. You can use them in place of the BEGIN and END
+keywords.
+ 
+Numbers are integers that represent coordinates, dimensions, styles, and
+other numeric data. You can specify numbers in decimal, octal, or
+hexadecimal notation. Decimal numbers must contain decimal digits but can
+start with a minus sign (-) when they represent a negative number.
+Hexadecimal numbers must contain hexadecimal digits (uppercase or lowercase)
+and must start with the characters 0x. Octal numbers are similar to
+hexadecimal numbers, except that a lowercase letter o replaces the letter
+<i>x</i>.
+ 
+The following example shows a variety of decimal, octal, and hexadecimal
+numbers:
+ 
+1       0o1        0x1
+10      0o12       0xA
+255     0o377      0xFF
+-1      0o177777   0xFFFF
+65535   0o177777   0xFFFF
+ 
+Statements that create controls in dialog windows and menu items in menus
+require that you specify an identifier for each control or menu item.
+Statements that create controls also require you to specify coordinates and
+dimensions. You specify identifiers, coordinates, and dimensions using
+integers in the range 0 through 65,535. Optionally, you can use simple
+expressions that evaluate to integers from 0 through 65,535; this lets you
+specify identifiers, dimensions, and coordinates that are relative to those
+of the corresponding dialog window or menu.
+ 
+Character strings represent names, labels, titles, and messages. A character
+string consists of one or more characters enclosed in double quotation
+marks. Character values must be in the range 1 through 255. If a double
+quotation mark (") is required in a string, you must include the double
+quotation mark twice. The meaning of each character value (that is, the
+character each value represents) depends on the code page (character set)
+defined for the resource-definition file.
+ 
+Resource Compiler interprets the backslash (\) as an escape character in
+character strings. You can include any ASCII character in a character string
+by specifying either \xdd, where dd is the hexadecimal representation of an
+ASCII character, or \nnn, where nnn is the octal representation of an ASCII
+character. If a backslash is required in a string, you must include the
+backslash twice.
+ 
+Constants are names that have been assigned values by using the #define
+directive. A constant can represent a number, a character string, or other
+data. Most resource statements in a resource-definition file use constants,
+and many use the constants defined in the MS OS/2 header files (for example,
+<i>os2.h). For thi</i>s reason, you should always use the #include directive to
+include os2.h in your resource-definition file.
+ 
+Filenames are MS OS/2 filenames. If the specified file is not in the current
+directory, you must specify the drive, directory, and filename.
+ 
+Resource statements have three basic forms: single-line statements,
+multiple-line statements, and directives.
+ 
+Single-line statements consist of a keyword identifying the resource type, a
+constant or number specifying the resource identifier, and a filename
+specifying the file containing the resource data. For example, this ICON
+statement defines an icon resource:
+ 
+ICON 1 myicon.ico
+ 
+The icon resource has the icon identifier 1. The file myicon.ico contains
+the icon data.
+ 
+Multiple-line statements consist of a keyword identifying the resource type,
+a constant or number specifying the resource identifier, and, between the
+<b>BEGIN and END k</b>eywords, additional resource statements that define the
+resource data. For example, this MENU statement defines a menu resource:
+ 
+MENU 1
+BEGIN
+    MENUITEM "Alpha", 101
+    MENUITEM "Beta",  102
+END
+ 
+The menu identifier is 1. The menu contains two MENUITEM statements that
+define the contents of the menu.
+ 
+In multiple-line statements such as DLGTEMPLATE and WINDOWTEMPLATE, rc
+allows any level of nested statements. For example, the DLGTEMPLATE and
+<b>WINDOWTEMPLATE statements typically contain a single DIALOG or FRAME</b>
+statement. These statements can contain any number of WINDOW and CONTROL
+statements; the WINDOW and CONTROL statements can contain additional WINDOW
+and CONTROL statements; and so on. The nested statements let you define
+controls and other child windows for the dialog boxes and windows. If a
+nested statement creates a child window or control, the parent and owner of
+the new window is the window created by the containing statement. (FRAME
+statements occasionally create frame controls whose parent and owner windows
+are not the same.)
+ 
+Directives consist of the reserved character # in the first column of a
+line, followed by the directive keyword and any additional numbers,
+character strings, or filenames.
+ 
+<b>Binary Resource Files</b>
+ 
+The binary resource file created by Resource Compiler consists of one or
+more resource entries, each in the following form:
+ 
+struct {
+    UCHAR  fResType;
+    USHORT usResType;
+    UCHAR  fResID;
+    USHORT resid;
+    USHORT fsOptions;
+    ULONG  cb;
+    BYTE   bytes[1];
+};
+ 
+The fields in each entry have the following meanings:
+ 
+<b>Field      Description</b>
+────────────────────────────────────────────────────────────────────────────
+<b>fResType</b>   Specifies whether the resource-type identifier is a string or an
+           integer. For MS OS/2, the resource type is always an integer and
+           this field is set to 0xFF.
+ 
+<b>usResType</b>  Specifies the resource-type identifier. This value is an integer
+           in the range 0 through 65,535. The following resource types are
+           predefined:
+ 
+           Value            Meaning
+           ─────────────────────────────────────────────────────────────────
+           RT_ACCELTABLE    Accelerator table
+           RT_BITMAP        Bitmap
+           RT_CHARTBL       Character table
+           RT_DIALOG        Dialog template
+           RT_DISPLAYINFO   Display information
+           RT_DLGINCLUDE    Dialog include-file name
+           RT_FONT          Font
+           RT_FONTDIR       Font directory
+           RT_HELPSUBTABLE  Help subtable
+           RT_HELPTABLE     Help table
+           RT_KEYTBL        Key table
+           RT_MENU          Menu template
+           RT_MESSAGE       Error-message table
+           RT_POINTER       Mouse-pointer shape
+           RT_RCDATA        Binary data
+           RT_STRING        String table
+           RT_VKEYTBL       Virtual-key table
+ 
+<b>fResID</b>     Specifies whether the resource identifier is a string or an
+           integer. For MS OS/2, the resource identifier is always an
+           integer and this field is set to 0xFF.
+ 
+<b>resid</b>      Specifies the resource identifier. This value is an integer in
+           the range 0 through 65,535.
+ 
+<b>fsOptions</b>  Specifies the load and memory settings. This value can be a
+           combination of the following:
+ 
+           Value   Meaning
+           ─────────────────────────────────────────────────────────────────
+           0x0010  MOVEABLE resource. If not given, the resource is FIXED.
+ 
+           0x0040  PRELOAD resource. If not given, the resource is
+                   LOADONCALL.
+ 
+           0x1000  DISCARDABLE resource.
+ 
+<b>cb</b>         Specifies the size of the resource (in bytes).
+ 
+<b>bytes</b>      Contains the resource.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

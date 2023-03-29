@@ -1,0 +1,148 @@
+<html>
+
+<head>
+<title>ASSOCTABLE (1.2) - rc.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+rc.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ASSOCTABLE (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='AUTOCHECKBOX.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+ 
+                 The Resource Compiler ASSOCTABLE Statement
+ 
+<b>ASSOCTABLE assoctable-id [load-option] [mem-option]</b>
+BEGIN
+<i>association-name, file-match-string[, extended-attribute-flag]</i>
+    [, icon-filename]
+    .
+    .
+    .
+END
+ 
+The ASSOCTABLE statement defines a file-association table for an
+application. This table associates the data files that an application
+creates with the application's executable file. When the user selects one of
+these data files from File Manager, the associated application begins
+executing.
+ 
+A file-association table can also associate icons with the data files that
+an application creates. File Manager uses these icons to identify the data
+files graphically. Because a file-association table associates icons by file
+type, all data files having the same file type have the same icon.
+ 
+You can provide any number of ASSOCTABLE statements in a resource-definition
+file, but each statement must specify a unique assoctable-id value. The
+file-association tables are written not only to the resources within your
+executable file, but also to the .ASSOC extended attribute. However, only
+the last file-association table specified in the resource-definition file is
+actually written to the extended attribute.
+ 
+<b>Field                    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>assoctable-id</i>            Specifies the association-table identifier. This
+                         value must be an integer in the range 0 through
+                         65,535, or a simple expression that evaluates to a
+                         value in that range.
+ 
+<i>load-option</i>              Specifies when the system loads the resource from
+                         the executable file into memory. This value must be
+                         one of the following:
+ 
+                         Value       Meaning
+                         ───────────────────────────────────────────────────
+                         PRELOAD     System loads the resource when the
+                                     application starts.
+ 
+                         LOADONCALL  System loads the resource when the
+                                     application calls the DosGetResource or
+                                     DosGetResource2 function. This is the
+                                     default value.
+ 
+<i>mem-option</i>               Specifies how the system manages the resource when
+                         it is in memory. This value must be one of the
+                         following:
+ 
+                         Value        Meaning
+                         ───────────────────────────────────────────────────
+                         FIXED        System keeps the resource at a fixed
+                                      memory location.
+ 
+                         MOVEABLE     System moves the resource as necessary
+                                      to compact memory. This is the default
+                                      value.
+ 
+                         DISCARDABLE  System discards the resource if it is
+                                      no longer needed.
+ 
+<i>association-name</i>         Specifies the name of the file type the application
+                         recognizes. This field must contain zero or more
+                         characters enclosed in double quotation marks.
+                         Character values must be in the range 1 through
+                         255. If a double quotation mark is required in the
+                         name, you must include the double quotation mark
+                         twice.
+ 
+<i>file-match-string</i>        Specifies the file-matching string of a particular
+                         type of data file that the application creates.
+                         This field must contain zero or more characters
+                         enclosed in double quotation marks. You can only
+                         use characters that are valid in MS OS/2 filenames
+                         and extensions and the MS OS/2 wildcard characters
+                         question mark (?) and asterisk (*).
+ 
+<i>extended-attribute-flag</i>  Specifies the extended-attribute options. This
+                         value can be a combination of the following:
+ 
+                         Value             Meaning
+                         ───────────────────────────────────────────────────
+                         EAF_DEFAULTOWNER  Specifies that the application
+                                           containing the file-association
+                                           table starts when the user
+                                           selects any file matching the
+                                           file-match-string field from File
+                                           Manager.
+ 
+                         EAF_REUSEICON     Specifies that the icon defined
+                                           in the previous entry of the
+                                           file-association table is used as
+                                           the icon for the current
+                                           data-file type.
+ 
+                         EAF_UNCHANGEABLE  Specifies that the entry should
+                                           not be edited.
+ 
+<i>icon-filename</i>            Specifies the name of the file containing an icon.
+                         File Manager uses this icon to represent all
+                         application-created data files matching the
+                         file-match-string field. The file must be in the
+                         current directory.
+ 
+<b>Example</b>
+ 
+This example defines a file-association table with an identifier of 5. The
+table associates application-created data files that have the .xls file
+extension with the Microsoft Excel Worksheet file type. File Manager will
+use the icon contained in excelspr.ico to identify all data files that have
+the .xls file extension.
+ 
+ASSOCTABLE 5
+BEGIN
+    "Microsoft Excel Worksheet", "*.xls", EAF_DEFAULTOWNER, excelspr.ico
+END
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

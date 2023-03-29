@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<title>TRACKFORMAT (1.2) - msos2.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msos2.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> TRACKFORMAT (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='Structures.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='PTRACKINFO.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVIOCTL
+ 
+typedef struct _TRACKFORMAT {    /* trckfmt */
+    BYTE bCommand;
+    USHORT usHead;
+    USHORT usCylinder;
+    USHORT usReserved;
+    USHORT cSectors;
+    struct {
+        BYTE bCylinder;
+        BYTE bHead;
+        BYTE idSector;
+        BYTE bBytesSector;
+    } FormatTable[1];
+} TRACKFORMAT;
+ 
+The TRACKFORMAT structure contains information about the disk drive.
+ 
+<b>Field           Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<b>bCommand</b>        Specifies the type of track layout. If this field is 0x0000,
+                the track layout contains nonconsecutive sectors or does not
+                start with sector 1. If it is 0x0001, the track layout
+                starts with sector 1 and contains only consecutive sectors.
+ 
+<b>usHead</b>          Specifies the number of the physical head on which to
+                perform the operation.
+ 
+<b>usCylinder</b>      Specifies the cylinder number for the operation.
+ 
+<b>cSectors</b>        Specifies the number of sectors on the track being
+                formatted.
+ 
+<b>FormatTable[1]</b>  Specifies the format table. It is an array of structures
+                that contain the cylinder number, head number, sector
+                identifier, and bytes per sector for each sector on the
+                track. The bCylinder field specifies the cylinder number.
+                The bHead field specifies the head number. The idSector
+                field specifies the sector identifier, and the bBytesSector
+                field specifies the number of bytes per sector. The first
+                element defines these values for the first sector. The
+                number of elements depends on the number of sectors on the
+                track. The bBytesSector field can be one of the following
+                values:
+ 
+                Value   Meaning
+                ────────────────────────────────────────────────────────────
+                0x0000  128 bytes per sector
+ 
+                0x0001  256 bytes per sector
+ 
+                0x0002  512 bytes per sector
+ 
+                0x0003  1024 bytes per sector
+ 
+                All the cylinder and head numbers must be the same.
+ 
+<b>See Also</b>
+ 
+<b>DSK_FORMATVERIFY</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

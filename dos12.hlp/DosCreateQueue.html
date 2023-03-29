@@ -1,0 +1,108 @@
+<html>
+
+<head>
+<title>DosCreateQueue (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosCreateQueue (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='queues.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Interprocess Communication 1.2'>Overview</a><span class='grhilite'>►</span>                  </i>        <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosCreateSem.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSQUEUES
+ 
+USHORT DosCreateQueue(phqueue, fQueueOrder, pszQueueName)
+PHQUEUE phqueue;       /* pointer to variable for queue handle     */
+USHORT fQueueOrder;    /* order in which elements are read-written */
+PSZ pszQueueName;      /* pointer to queue name                    */
+ 
+The DosCreateQueue function creates and opens a queue. The new queue is
+owned by the process that calls the function, but can be opened for use by
+other processes.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>phqueue</i>       Points to the variable that receives the queue handle.
+ 
+<i>fQueueOrder</i>   Specifies the order in which elements are read from and
+              written to the queue. This parameter can be one of the
+              following values:
+ 
+              Value         Meaning
+              ──────────────────────────────────────────────────────────────
+              QUE_FIFO      First-in/first-out queue. The first element put
+                            in the queue is the first element to be
+                            removed.
+ 
+              QUE_LIFO      Last-in/first-out queue. The last element put in
+                            the queue is the first element to be removed.
+ 
+              QUE_PRIORITY  Priority queue. The process that places the
+                            element in the queue specifies a priority.
+                            Elements with the highest priority are removed
+                            first.
+ 
+<i>pszQueueName</i>  Points to a null-terminated string. The string identifies the
+              queue and must have the following form:
+ 
+              \queues\name
+ 
+              The string name, name, must have the same format as an MS OS/2
+              filename and must be unique.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_QUE_DUPLICATE
+     ERROR_QUE_INVALID_NAME
+     ERROR_QUE_INVALID_PRIORITY
+     ERROR_QUE_NO_MEMORY
+ 
+<b>Comments</b>
+ 
+The process that creates a queue owns that queue. The owning process can
+write elements to and read elements from the queue at any time, since
+<b>DosCreateQueue</b> automatically opens the queue for the owning process. Other
+processes may open the queue by using the DosOpenQueue function and write
+elements to it by using the DosWriteQueue function, but they cannot read
+elements from the queue. Any thread belonging to the process that owns a
+queue can read from or write to the queue.
+ 
+If any process has a queue open when the owner closes it, subsequent
+requests to write to the queue return an error value.
+ 
+<b>Example</b>
+ 
+This example creates and opens a queue, then calls the DosCloseQueue
+function to close the queue:
+ 
+HQUEUE hqueue;
+ 
+DosCreateQueue(&amp;hqueue,               /* receives the handle of the queue */
+               QUE_FIFO,              /* specifies the queue order        */
+               "\\queues\\quename");  /* specifies the queue name         */
+    .
+    . /* read the queue and process the data
+    .
+DosCloseQueue(hqueue);
+ 
+<b>See Also</b>
+ 
+<b>DosCloseQueue, DosOpenQueue, DosWrite</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

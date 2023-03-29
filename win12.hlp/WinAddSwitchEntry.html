@@ -1,0 +1,84 @@
+<html>
+
+<head>
+<title>WinAddSwitchEntry (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinAddSwitchEntry (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#profile manager 1.2'>Overview</a><span class='grhilite'>►</span>                        </i>                    <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinAlarm.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINSWITCHLIST
+ 
+HSWITCH WinAddSwitchEntry(pswctl)
+PSWCNTRL pswctl;    /* address of structure with new entry information */
+ 
+The WinAddSwitchEntry function adds an entry to the switch list (the list of
+running programs that is displayed by the Task Manager).
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pswctl     Points </i>to the SWCNTRL structure that contains information about
+           the new switch-list entry. If the szSwtitle field in the SWCNTRL
+           structure is NULL, the system uses the name under which the
+           application was started. This applies only for the first call to
+           this function for that program (since the program was started).
+           Otherwise, a NULL entry name is invalid.
+ 
+<b>Return Value</b>
+ 
+The return value is a handle to the new switch-list entry, or NULL if an
+error occurs.
+ 
+<b>Comments</b>
+ 
+Leading and trailing blanks are removed from the title. The title is
+truncated to 60 characters.
+ 
+<b>Example</b>
+ 
+This example calls WinQueryWindowProcess to get the current process
+identifier (needed for the SWCNTRL structure). It then sets up the swctl
+structure and calls WinAddSwitchEntry to add the program's name to the task
+list. The returned handle can be used in subsequent calls to
+<b>WinChangeSwitchEntry if the title needs to be changed. The v</b>ariables swctl,
+<i>hswitch, and pid shou</i>ld be global if your application will be calling the
+<b>WinChangeSwitchEntry</b> function to avoid having to set up the structure
+again.
+ 
+SWCNTRL swctl;
+HSWITCH hswitch;
+PID pid;
+ 
+WinQueryWindowProcess(hwndFrame, &amp;pid, (PTID) NULL);
+ 
+swctl.hwnd = hwndFrame;                 /* window handle      */
+swctl.hwndIcon = (HWND) NULL;           /* icon handle        */
+swctl.hprog = (HPROGRAM) NULL;          /* program handle     */
+swctl.idProcess = pid;                  /* process identifier */
+swctl.idSession = 0;                    /* session identifier */
+swctl.uchVisibility = SWL_VISIBLE;      /* visibility         */
+swctl.fbJump = SWL_JUMPABLE;            /* jump indicator     */
+swctl.szSwtitle[0] = '\0';              /* program name       */
+ 
+hswitch = WinAddSwitchEntry(&amp;swctl);
+ 
+<b>See Also</b>
+ 
+<b>WinChangeSwitchEntry, WinQueryWindowProcess, WinRemoveSwitchEntry, SWCNTRL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

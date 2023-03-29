@@ -1,0 +1,96 @@
+<html>
+
+<head>
+<title>GpiLoadBitmap (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiLoadBitmap (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Bitmap_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Bitmaps 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiLoadFonts.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIBITMAPS
+ 
+HBITMAP GpiLoadBitmap(hps, hmod, idBitmap, lWidth, lHeight)
+HPS hps;            /* presentation-space handle    */
+HMODULE hmod;       /* module handle                */
+USHORT idBitmap;    /* bitmap identifier            */
+LONG lWidth;        /* width in pels of the bitmap  */
+LONG lHeight;       /* height in pels of the bitmap */
+ 
+The GpiLoadBitmap function loads a bitmap resource from the specified module
+and uses it to create a bitmap having the specified width and height. The
+function uses the image data in the bitmap resource to initialize the bitmap
+image. If the lWidth or lHeight parameter is zero, the function creates a
+bitmap having the width or height given in the bitmap resource. If lWidth or
+<i>lHeight</i> is not zero, the function stretches or compresses the bitmap image
+to the specified width or height.
+ 
+The bitmap handle can be used in subsequent functions that accept bitmap
+handles. In most cases, the bitmap is set to a memory presentation space by
+using the GpiSetBitmap function then copied to the screen or a printer by
+using the GpiBitBlt function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>hmod</i>       Specifies the module handle of the dynamic-link library
+           containing the bitmap resource. If this parameter is NULL, the
+           function loads the bitmap from the application's executable
+           file.
+ 
+<i>idBitmap</i>   Specifies the identifier of the bitmap within the resource file.
+ 
+<i>lWidth</i>     Specifies the width in pels of the bitmap.
+ 
+<i>lHeight</i>    Specifies the height in pels of the bitmap.
+ 
+<b>Return Value</b>
+ 
+The return value is a handle to the bitmap if the function is successful or
+GPI_ERROR if an error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_BITMAP_NOT_FOUND
+     PMERR_INV_BITMAP_DIMENSION
+     PMERR_INV_HPS
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiLoadBitmap function to create a bitmap by using the
+bitmap resource in the application's executable file. The bitmap must have
+been added to the executable file by using Resource Compiler.
+ 
+HBITMAP hbm;                     /* handle of the bitmap          */
+ 
+hbm = GpiLoadBitmap(hps,         /* presentation-space handle     */
+    (HMODULE) NULL,              /* loads from application's file */
+    1,                           /* bitmap resource #1            */
+    64L,                         /* sets width to 64 pels         */
+    64L);                        /* sets height to 64 pels        */
+ 
+<b>See Also</b>
+ 
+<b>GpiCreateBitmap, GpiDeleteBitmap, GpiSetBitmap, GpiSetBitmapBits,</b>
+<b>GpiSetBitmapDimension, GpiSetBitmapId, WinGetSysBitmap, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

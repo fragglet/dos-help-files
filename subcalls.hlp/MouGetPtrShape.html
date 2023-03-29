@@ -1,0 +1,91 @@
+<html>
+
+<head>
+<title>MouGetPtrShape (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MouGetPtrShape (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Mouse 1.2'>Overview</a><span class='grhilite'>►</span>                   </i>                         <span class='grhilite'>◄</span><a href='mou.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MouGetScaleFact.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_MOU
+ 
+USHORT MouGetPtrShape(pbBuffer, pmoupsInfo, hmou)
+PBYTE pbBuffer;          /* address of buffer for shape masks          */
+PPTRSHAPE pmoupsInfo;    /* address of structure for shape information */
+HMOU hmou;               /* mouse handle                               */
+ 
+The MouGetPtrShape function retrieves the AND and XOR masks that define the
+shape of the pointer for the specified mouse. MouGetPtrShape also retrieves
+information about the pointer, such as the width and height of masks and the
+location of the hot spot.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pbBuffer</i>    Points to the buffer that receives the masks.
+ 
+<i>pmoupsInfo  Points to the PTRS</i>HAPE structure that receives the pointer
+            information.
+ 
+<i>hmou</i>        Identifies the mouse. The handle must have been created
+            previously by using the MouOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_MOUSE_INV_PARMS
+     ERROR_MOUSE_NO_DEVICE
+ 
+<b>Comments</b>
+ 
+The MouGetPtrShape function copies the AND and XOR masks to the buffer
+pointed to by the pbBuffer parameter. The format and size of the masks
+depend on the display device and the video mode. In text mode, each mask is
+typically a character/attribute pair. In graphics mode, each mask is a
+bitmap.
+ 
+The MouGetPtrShape function copies information about the pointer to the
+structure pointed to by the pmoupsInfo parameter. This structure defines the
+length (in bytes) of the AND and XOR masks, the width and height of each
+mask, and the offset from the current mouse position (or hot spot) to the
+upper-left corner of the pointer shape.
+ 
+Before calling MouGetPtrShape, you must set the cb field of the PTRSHAPE
+structure to the appropriate buffer size. If the field does not specify an
+appropriate size, the function copies the current size to the field and
+returns an error without copying the masks to the specified buffer.
+ 
+<b>Example</b>
+ 
+This example creates a mouse handle, draws the mouse pointer, and calls the
+<b>MouGetPtrShape</b> function to retrieve the shape of the mouse pointer:
+ 
+PTRSHAPE moupsInfo;
+BYTE abBuffer[4];
+HMOU hmou;
+MouOpen(0L, &amp;hmou);
+MouDrawPtr(hmou);
+moupsInfo.cb = sizeof(abBuffer);
+MouGetPtrShape(abBuffer, &amp;moupsInfo, hmou);
+ 
+<b>See Also</b>
+ 
+<b>MouOpen, MouSetPtrShape, PTRSHAPE</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,134 @@
+<html>
+
+<head>
+<title>GpiPolyFilletSharp (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiPolyFilletSharp (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='arcs.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Line and Arc Primitives 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiPolyLine.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+LONG GpiPolyFilletSharp(hps, cptl, aptl, afxSharpness)
+HPS hps;                /* presentation-space handle                */
+LONG cptl;              /* number of points                         */
+PPOINTL aptl;           /* array of structures for points           */
+PFIXED afxSharpness;    /* array of structures for sharpness values */
+ 
+The GpiPolyFilletSharp function creates one or more fillets. The function
+draws the fillets by using the control and end points specified by the aptl
+parameter and the fillet sharpness values specified by the afxSharpness
+parameter. The function draws the first fillet from the current position to
+the first end point, by using the first control point and first sharpness
+value to construct the path of the fillet. The second fillet is drawn from
+the first end point to the second end point using the second control point
+and sharpness values. The function continues with each successive point,
+using the last end point as the starting point for the next fillet, until
+the function draws one fillet for each control and end-point pair.
+ 
+For each fillet, the array pointed to by aptl contains a control and
+end-point pair. The first pair of points is the control and end points for
+the first fillet, with the control point given first. The array pointed to
+by afxSharpness contains the sharpness values for each fillet, with the
+sharpness value for the first fillet given first.
+ 
+The GpiPolyFilletSharp function moves the current position to the end point
+of the last fillet.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>           Identifies the presentation space.
+ 
+<i>cptl</i>          Specifies the number of points in the array pointed to by
+              aptl. This must be twice the number of fillets since each
+              fillet requires a control and end-point pair.
+ 
+<i>aptl        </i>  Points to an array of POINTL structures that contain the
+              points.
+ 
+<i>afxSharpness</i>  Points to an array of sharpness values giving the sharpness of
+              successive fillets. Each value must be a fixed-point value.
+              Each value controls the type of curve drawn for the fillet. If
+              this value is greater than 1.0, the curve is a hyperbola. If
+              the value is 1.0, the curve is a parabola. If the value is
+              less than 1.0, the curve is an ellipse.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK or GPI_HITS if the function is successful (it is
+GPI_HITS if the detectable attribute is set for the presentation space and a
+correlation hit occurs). The return value is GPI_ERROR if an error occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_COORDINATE
+     PMERR_INV_HPS
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_INV_SHARPNESS_PARM
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+A fillet is a smooth curve whose path is controlled by three points: a start
+point, an end point, and a control point. The smoothness of the fillet is
+controlled by a sharpness value.
+ 
+The GpiPolyFilletSharp function draws a fillet by first constructing two
+imaginary straight lines, one from the start point to the control point and
+another from the control point to the end point. The function then draws the
+fillet from the start to end point, such that the first imaginary line is
+tangent to the fillet at the current position and the second imaginary line
+is tangent to the fillet at the end point.
+ 
+<b>GpiPolyFilletSharp</b> uses the control point and the sharpness value to
+determine the path of the curve. The function always draws the curve through
+a fourth point. It locates the point by constructing two more imaginary
+straight lines, one from the start to end point, and another from the
+control point to the midpoint of this first line. The fourth point lies on
+the imaginary line drawn from the control point to the midpoint. It is
+placed such that the ratio of the lengths of the bottom and top pieces of
+this line is equal to the sharpness value.
+ 
+The maximum number of fillets allowed depends upon the length of coordinates
+and is not less than 2000.
+ 
+<b>Example</b>
+ 
+This example uses the GpiPolyFilletSharp function to draw a curve with a
+loop. The curve is drawn within a rectangle. The sharpness values are chosen
+to draw the curve close to the control points.
+ 
+POINTL ptlStart = { 0, 0 };
+POINTL aptl[4] = { 100, 100, 200, 100, 0, 100, 200, 0 };
+FIXED afx[2] = { MAKEFIXED(4, 0), MAKEFIXED(4, 0) };
+ 
+GpiMove(hps, &amp;ptlStart);   /* move to first starting point         */
+GpiPolyFilletSharp(hps,    /* presentation-space handle            */
+    4L,                    /* 4 points in the array                */
+    aptl,                  /* address of array of points           */
+    afx);                  /* address of array of sharpness values */
+ 
+<b>See Also</b>
+ 
+<b>GpiMove, GpiPolyFillet, GpiPolyLine, GpiSetAttrs, GpiSetColor,</b>
+<b>GpiSetCurrentPosition, GpiSetLineType, POINTL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

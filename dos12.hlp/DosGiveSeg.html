@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>DosGiveSeg (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosGiveSeg (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='memory.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#memory management 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosHoldSignal.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMEMMGR
+ 
+USHORT DosGiveSeg(sel, pidProcess, pselRecipient)
+SEL sel;               /* selector of shared-memory segment             */
+PID pidProcess;        /* process identifier of recipient               */
+PSEL pselRecipient;    /* pointer to variable for selector of recipient */
+ 
+The DosGiveSeg function creates a new segment selector for a shared-memory
+segment. The new selector can then be used by another process to access the
+shared-memory segment.
+ 
+The process that creates the new segment selector is responsible for passing
+the selector to any process that uses the segment.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>sel</i>            Specifies the segment selector of the shared-memory segment.
+ 
+<i>pidProcess</i>     Identifies the process that receives access to the
+               shared-memory segment.
+ 
+<i>pselRecipient</i>  Points to the variable that receives the new segment
+               selector.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_ACCESS_DENIED
+     ERROR_NOT_ENOUGH_MEMORY
+ 
+<b>Comments</b>
+ 
+The DosGiveSeg function is successful even if the specified process already
+has access to the segment.
+ 
+<b>DosGiveSeg</b> applies only to shared-memory segments created by using the
+<b>DosAllocSeg function with the fsA</b>lloc parameter set to SEG_GIVEABLE.
+ 
+<b>DosGiveSeg</b> can be issued from ring 2, but the shared-memory segment must be
+a ring-3 segment.
+ 
+<b>See Also</b>
+ 
+<b>DosAllocSeg, DosGetSeg</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

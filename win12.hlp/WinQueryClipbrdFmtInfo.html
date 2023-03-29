@@ -1,0 +1,114 @@
+<html>
+
+<head>
+<title>WinQueryClipbrdFmtInfo (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinQueryClipbrdFmtInfo (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Clipboard_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Clipboard 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#clipboard messages 1.2'>Message Group</a><span class='grhilite'>►</span>         </i><span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinQueryClipbrdOwner.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINCLIPBOARD
+ 
+BOOL WinQueryClipbrdFmtInfo(hab, fmt, pfsFmtInfo)
+HAB hab;               /* handle of the anchor block             */
+USHORT fmt;            /* specifies data format                  */
+PUSHORT pfsFmtInfo;    /* receives memory model and usage flags  */
+ 
+The WinQueryClipbrdFmtInfo function determines whether a particular format
+of data is present in the clipboard and, if so, provides information about
+that format.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hab</i>         Identifies an anchor block.
+ 
+<i>fmt</i>         Specifies the format of the data that this function queries. The
+            following list describes the standard clipboard formats:
+ 
+            Value           Meaning
+            ────────────────────────────────────────────────────────────────
+            CF_BITMAP       The data is a bitmap. The CFI_HANDLE
+                            memory-model flag must be set in the pfsFmtInfo
+                            parameter.
+ 
+            CF_DSPBITMAP    The data is a bitmap representation of a private
+                            data format. The clipboard viewer can use this
+                            format to display a private format. The
+                            memory-model flag CFI_HANDLE must be set in the
+                            pfsFmtInfo parameter.
+ 
+            CF_METAFILE     The data is a metafile. The CFI_HANDLE
+                            memory-model flag must be set in the pfsFmtInfo
+                            parameter.
+ 
+            CF_DSPMETAFILE  The data is a metafile representation of a
+                            private data format. The clipboard viewer can
+                            use this format to display a private format. The
+                            memory-model flag CFI_HANDLE must be set in the
+                            pfsFmtInfo parameter.
+ 
+            CF_TEXT         The data is an array of text characters, which
+                            may include newline characters to mark line
+                            breaks. The null character indicates the end of
+                            the text data. The CFI_SELECTOR memory-model
+                            flag must be set in the pfsFmtInfo parameter.
+ 
+            CF_DSPTEXT      The data is a textual representation of a
+                            private data format. The clipboard viewer can
+                            use this format to display a private format. The
+                            memory-model flag CFI_SELECTOR must be set in
+                            the pfsFmtInfo parameter.
+ 
+<i>pfsFmtInfo</i>  Points to a variable that receives the memory-model and usage
+            (CFI) flags. It consists of a memory-model flag and a usage flag
+            from the following lists:
+ 
+            Memory-model flag  Meaning
+            ────────────────────────────────────────────────────────────────
+            CFI_SELECTOR       Handle is a selector plus zero offset to a
+                               segment in storage.
+ 
+            CFI_HANDLE         Handle is the handle to a metafile or
+                               bitmap.
+ 
+            Usage flag        Meaning
+            ────────────────────────────────────────────────────────────────
+            CFI_OWNERFREE     Handle is not freed by the WinEmptyClipbrd
+                              function. The application must free the data
+                              if necessary.
+ 
+            CFI_OWNERDISPLAY  Format will be drawn by the clipboard owner in
+                              the clipboard-viewer window by means of the
+                              WM_PAINTCLIPBOARD message. The ulData
+                              parameter should be NULL.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the format exists. Otherwise, it is FALSE,
+indicating that the format does not exist.
+ 
+<b>Comments</b>
+ 
+For a description of the possible formats and data handles, see the
+<b>WinSetClipbrdData</b> function.
+ 
+<b>See Also</b>
+ 
+<b>WinOpenClipbrd, WinSetClipbrdData</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

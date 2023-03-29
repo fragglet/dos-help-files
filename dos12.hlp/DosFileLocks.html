@@ -1,0 +1,108 @@
+<html>
+
+<head>
+<title>DosFileLocks (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosFileLocks (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosFindClose.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosFileLocks(hf, pfUnlock, pfLock)
+HFILE hf;              /* file handle                     */
+PFILELOCK pfUnLock;    /* pointer to range to be unlocked */
+PFILELOCK pfLock;      /* pointer to range to be locked   */
+ 
+The DosFileLocks function unlocks and/or locks a region in an open file.
+Locking a region prevents other processes from accessing the locked region.
+ 
+The DosFileLocks function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hf</i>         Identifies the file handle. This handle must have been created
+           previously by using the DosOpen function.
+ 
+<i>pfUnLock   Points to the</i> FILELOCK structure that specifies the starting
+           position in the file and the number of bytes of the file to
+           unlock. This parameter is ignored if NULL is specified instead of
+           a structure address.
+ 
+<i>pfLock     Points </i>to the FILELOCK structure that specifies the starting
+           position in the file and the number of bytes of the file to lock.
+           This parameter is ignored if NULL is specified instead of a
+           structure address.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_INVALID_HANDLE
+     ERROR_LOCK_VIOLATION
+ 
+<b>Comments</b>
+ 
+The DosFileLocks function can both lock and unlock regions. The system
+unlocks any specified region before locking any other region. Locked regions
+can overlap, but if one region would entirely encompass another, the smaller
+region should be unlocked first. The DosFileLocks function can lock any part
+of a file. Attempting to lock bytes beyond the end of a file does not result
+in an error.
+ 
+<b>Example</b>
+ 
+This example opens the file abc and calls the DosFileLocks function to lock
+100 bytes of the file, starting with byte number three. No other file may
+read or write to this range in the file until DosFileLocks is called to
+unlock the range or the file is closed. The same structure is used to lock
+the file and to unlock the file.
+ 
+FILELOCK flock;
+HFILE hf;
+USHORT usAction;
+ 
+/* open the file */
+ 
+DosOpen("abc",                            /* filename to open       */
+    &amp;hf,                                  /* address of file handle */
+    &amp;usAction,                            /* action taken           */
+    100L,                                 /* size of new file       */
+    FILE_NORMAL,                          /* file attribute         */
+    FILE_OPEN,                            /* open if file exists    */
+    OPEN_ACCESS_READWRITE | OPEN_SHARE_DENYNONE   /* open mode      */
+    0L);                                          /* reserved       */
+ 
+flock.lOffset = 3L;               /* offset to begin lock           */
+flock.lRange = 100L;              /* range to lock                  */
+DosFileLocks(hf,                  /* handle of file to lock         */
+    (PFILELOCK) NULL,             /* unlock range (NULL to disable) */
+    &amp;flock);                      /* address of lock range          */
+    .
+    . /* other file processing occurs here */
+    .
+DosFileLocks(hf,                  /* handle of file to unlock       */
+    &amp;flock,                       /* address of unlock range        */
+    (PFILELOCK) NULL);            /* lock range (NULL to disable)   */
+ 
+<b>See Also</b>
+ 
+<b>DosDupHandle, DosExecPgm, DosOpen, FILELOCK</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>VioEndPopUp (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioEndPopUp (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioGetAnsi.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioEndPopUp(hvio)
+HVIO hvio;    /* video handle */
+ 
+The VioEndPopUp function closes a pop-up screen and restores the physical
+video buffer to its previous contents. Only the process that opened the
+pop-up screen may close it.
+ 
+<b>VioEndPopUp</b> may not completely restore the screen to its previous state. For
+example, programs that modify the video registers or use graphics modes may
+have to restore the state of the registers as the pop-up screen is being
+closed. By calling the VioModeWait function, a program can request to be
+notified of the change in video mode. Whenever a process has a pending
+request, MS OS/2 notifies the process of a mode change when the pop-up
+screen is closed.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hvio</i>       Identifies an advanced video-input-and-output (AVIO) presentation
+           space. For AVIO programs, this handle must have been created
+           previously using the VioCreatePS function. For other programs,
+           hvio must be NULL.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_VIO_INVALID_HANDLE
+     ERROR_VIO_NO_POPUP
+ 
+<b>Example</b>
+ 
+This example creates a pop-up screen, displays a message, waits three
+seconds, then calls VioEndPopUp to close the pop-up screen:
+ 
+USHORT fWait = VP_WAIT;
+VioPopUp(&amp;fWait, 0);                /* creates pop-up screen */
+VioWrtTTY("This is a VIO pop-up screen\n\r", 29, 0);
+DosSleep(3000L);                    /* waits 3 seconds       */
+VioEndPopUp(0);                     /* ends pop-up screen    */
+ 
+<b>See Also</b>
+ 
+<b>VioModeWait, VioPopUp, VioCreatePS</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

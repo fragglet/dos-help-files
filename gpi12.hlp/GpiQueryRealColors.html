@@ -1,0 +1,113 @@
+<html>
+
+<head>
+<title>GpiQueryRealColors (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiQueryRealColors (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='mix_mode_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Color and Mix Modes 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiQueryRegionBox.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPILOGCOLORTABLE
+ 
+LONG GpiQueryRealColors(hps, flClrType, lStart, cclr, aclr)
+HPS hps;            /* presentation-space handle     */
+ULONG flClrType;    /* color options                 */
+LONG lStart;        /* ordinal number of first color */
+LONG cclr;          /* number of colors              */
+PLONG aclr;         /* address of array of colors    */
+ 
+The GpiQueryRealColors function retrieves the RGB values in the physical
+palette of the device associated with the presentation space. These colors
+represent the only device colors currently available to the application. The
+function copies the RGB color values, up to the number specified by the
+<i>cclr paramet</i>er, to the array pointed to by the aclr parameter. The function
+uses the lStart parameter to determine which physical palette color to start
+copying. If this parameter is zero, the function copies from the start of
+the physical palette. The function returns the number of colors actually
+retrieved.
+ 
+An application can change the contents of the physical palette by realizing
+a color table, for devices that permit realizable color tables. If the
+current logical color table is realizable but has not been realized, the
+LCOLOPT_REALIZED option retrieves the RGB color values as if the logical
+color table has been realized. Since realizing a logical color table affects
+the contents of the physical palette, the RGB color values retrieved with
+this option may be different from the values retrieved without the option.
+ 
+The GpiQueryRealColors function can also map the colors from the physical
+palette to the color-index values in the current logical color table. If the
+LCOLOPT_INDEX option is specified, the function copies a color-index and
+RGB-color pair to the array pointed to by aclr. Each value in the pair fills
+one element in the array, with the color index appearing first.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>flClrType</i>  Specifies whether the RGB color values are realized colors and
+           whether color-index values are retrieved. It can be one of the
+           following:
+ 
+           Value             Meaning
+           ─────────────────────────────────────────────────────────────────
+           0x0000            Retrieves RGB colors based on the colors in the
+                             current physical palette.
+ 
+           LCOLOPT_REALIZED  Retrieves the RGB colors corresponding to the
+                             realized logical color table. This option does
+                             not realize the table, but does return values
+                             as if the table had been realized.
+ 
+           LCOLOPT_INDEX     Retrieves indexes and RGB color values.
+ 
+           The LCOLOPT_REALIZED and LCOLOPT_INDEX options can be combined.
+ 
+<i>lStart</i>     Specifies the ordinal number of the first color to copy.
+ 
+<i>cclr</i>       Specifies the number of RGB color values to retrieve. If the
+           LCOLOPT_INDEX option is specified for flClrType, this parameter
+           must specify the total number of color indexes and RGB colors to
+           retrieve; this value must be a multiple of 2.
+ 
+<i>aclr</i>       Points to the array that receives the RGB color values. It must
+           have the number of elements specified by the cclr parameter. If
+           the LCOLOPT_INDEX option is specified for flClrType, the first
+           element in each pair of elements is the color index.
+ 
+<b>Return Value</b>
+ 
+The return value is the number of elements returned if the function is
+successful or GPI_ALTERROR if an error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+the following:
+ 
+     PMERR_INV_COLOR_OPTIONS
+     PMERR_INV_COLOR_START_INDEX
+     PMERR_INV_HPS
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_PS_BUSY
+ 
+<b>See Also</b>
+ 
+<b>GpiCreateLogColorTable, GpiQueryColorData, GpiQueryNearestColor,</b>
+<b>GpiQueryRGBColor, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

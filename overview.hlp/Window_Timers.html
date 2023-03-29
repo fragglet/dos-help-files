@@ -1,0 +1,109 @@
+<html>
+
+<head>
+<title>About Window Timers (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Window Timers (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Window_Timers.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#timer functions 1.2'>Function Group</a><span class='grhilite'>►</span>                     <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Windows.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                            About Window Timers
+ 
+This topic describes the functions and messages that let an application post
+a timer message at a specified time. You should also be familiar with the
+following topics:
+ 
+    <span class='grhilite'>◄</span><a href='Windows.html'>Windows</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Messages_and_Message_Queues.html'>Messages and message queues</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Timers.html'>Timers</a><span class='grhilite'>►</span>
+ 
+A window-timer message is an input message that the system posts to a
+message queue after a specified period of time elapses. The period of time,
+called the time-out value, is expressed in milliseconds. An application
+starts the timer for a given window and specifies the time-out value. The
+system counts down approximately that number of milliseconds and then posts
+a WM_TIMER message to the message queue for the corresponding window.
+ 
+The time-out value can be any value in the range zero through 65,535.
+However, MS OS/2 cannot guarantee that all values are accurate. The actual
+time-out depends on how often the application retrieves messages from the
+queue and on the system clock rate. In many computers, the MS OS/2 system
+clock ticks about every 50 milliseconds, but this can vary widely from
+computer to computer. In general, a timer message cannot be posted more
+frequently than every system clock tick. To make the system post a timer
+message as often as possible, an application can set the time-out value to
+zero.
+ 
+Timer messages are continuous──that is, after timing out, a system starts
+the countdown again. Once an application starts a timer, the system repeats
+the timing cycles until the application stops the timer.
+ 
+An application starts a timer by using the WinStartTimer function. If a
+window handle is given, the timer is created for that window. In this case,
+the WinDispatchMsg function dispatches the WM_TIMER message to the given
+window when the message is retrieved from the message queue. If a NULL
+window handle is given, it is up to the application to check for WM_TIMER
+messages and dispatch them to the appropriate window.
+ 
+The number of timers an application can start is limited; in fact, the
+number of available timers for the system is limited. An application can
+check the total number of available timers by reading the SV_CTIMERS system
+value. However, this value does not specify how many timers have already
+been started. In general, an application should not use more than three or
+four timers at the same time.
+ 
+Every timer has a unique timer identifier, also called a timer ID. An
+application can request that a timer be created with a particular identifier
+or have the system choose a unique value. When a WM_TIMER message is
+received, the timer identifier is contained in the first message parameter.
+Timer identifiers allow an application to determine the source of the
+<b>WM_TIMER</b> message.
+ 
+Three timer identifiers are reserved and should not be used by applications.
+The system timer identifiers and their symbolic constants are as follows:
+ 
+<b>Value            Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>TID_CURSOR</i>       The cursor-blinking timer. This controls cursor blinking.
+                 Its time-out value is stored in the os2.ini file under the
+                 CursorBlinkRate keyname in the PM_ControlPanel section.
+ 
+<i>TID_FLASHWINDOW</i>  The window-flashing timer.
+ 
+<i>TID_SCROLL</i>       The scroll-bar-repetition timer. This timer controls
+                 scroll-bar response when the mouse button or a key is held
+                 down. Its time-out value is specified by the system value
+                 SV_SCROLLRATE.
+ 
+<b>WM_TIMER messages, like </b>WM_PAINT and the semaphore messages, are not posted
+to a message queue. Instead, when the time-out elapses, the system sets a
+record in the queue indicating which timer message has been posted. The
+system builds the WM_TIMER message when the application retrieves the
+message from the queue.
+ 
+Although a timer message may be in the queue, if there any higher priority
+messages in the queue, the application retrieves the other messages first.
+If the time-out elapses again before the message has been retrieved, the
+system does not create a separate record for this timer. This means the
+application should not depend upon the timer messages being processed at
+precise intervals. To check the accuracy of the message, an application can
+retrieve the actual system time by using the WinGetCurrentTime function.
+Comparing the actual time with the actual time of the previous timer message
+can be useful in determining what action to take for the timer.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

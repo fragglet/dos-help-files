@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>DosCloseSem (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosCloseSem (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='semaphores.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Interprocess Communication 1.2'>Overview</a><span class='grhilite'>►</span>                  </i>        <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosConnectNmPipe.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSSEMAPHORES
+ 
+USHORT DosCloseSem(hsem)
+HSEM hsem;    /* semaphore handle */
+ 
+The DosCloseSem function closes a specified system semaphore. If another
+process has the semaphore open, it remains open and can be used by that
+process, although the semaphore cannot be used by the process that closes
+it. This function deletes the semaphore only when the last process using the
+semaphore closes it.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hsem</i>       Identifies the semaphore to be closed. This handle must have been
+           previously created or opened by using the DosCreateSem or
+           DosOpenSem function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_SEM_IS_SET
+ 
+<b>Comments</b>
+ 
+If a process does not close its semaphores before terminating, the system
+closes them.
+ 
+<b>Example</b>
+ 
+This example opens a previously created system semaphore, then calls the
+<b>DosCloseSem</b> function to close it:
+ 
+HSEM hsem;                                 /* semaphore handle     */
+DosOpenSem(&amp;hsem, "\\sem\\abc");           /* opens the semaphore  */
+    .
+    .
+    .
+DosCloseSem(hsem);                         /* closes the semaphore */
+ 
+<b>See Also</b>
+ 
+<b>DosCreateSem, DosOpenSem</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

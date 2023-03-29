@@ -1,0 +1,150 @@
+<html>
+
+<head>
+<title>Using Coordinate Spaces and Transformations (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Coordinate Spaces and Transformations (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='coordinate_spaces.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#transformations 1.2'>Function Group</a><span class='grhilite'>►</span>                     <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='fonts.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                Using Coordinate Spaces and Transformations
+ 
+You can perform the following tasks by using the coordinate-space and
+transformation functions:
+ 
+♦  Set an application's drawing units to convenient units.
+ 
+♦  Scroll and zoom a picture.
+ 
+♦  Rotate, scale, and shift an object in a picture.
+ 
+<b>Setting Convenient Drawing Units</b>
+ 
+You can use the GpiCreatePS function to set the device transformation so
+that it uses more convenient page units──for example, centimeters. Follow
+these steps:
+ 
+1  If the output device is a screen, open a device context by calling the
+   WinOpenWindowDC function. (If the output device is a printer or plotter,
+   open a printer or plotter device context by calling the DevOpenDC
+   function.)
+ 
+2  Create a presentation space by calling the GpiCreatePS function,
+   specifying low-metric page units and associating the device context with
+   the presentation space.
+ 
+The following code fragment demonstrates these steps:
+ 
+HDC hdc;         /* device-context handle       */
+HWND hwndClient; /* client-window handle        */
+SIZEL sizlPage;  /* presentation-page rectangle */
+HAB hab;         /* anchor-block handle         */
+HPS hps;         /* presentation-space handle   */
+    .
+    .
+    .
+hdc = WinOpenWindowDC(hwndClient);
+sizlPage.cx = 0;
+sizlPage.cy = 0;
+hps = GpiCreatePS(hab,
+    hdc,           /* device-context handle        */
+    &amp;sizlPage,     /* address of SIZEL structure   */
+    PU_LOMETRIC    /* centimeters as page units    */
+    | GPIA_ASSOC); /* associates window DC with PS */
+ 
+<b>Zooming a Picture</b>
+ 
+You can use the GpiSetDefaultViewMatrix function to zoom a picture. The
+following code fragment shows how to zoom out to ¼ or 1/8 scale by using the
+default viewing transformation:
+ 
+/* Zoom 1/8 */
+ 
+matlfTransform.fxM11 = MAKEFIXED(0, 8192);
+matlfTransform.fxM12 = MAKEFIXED(0, 0);
+matlfTransform.lM13 = 0L;
+matlfTransform.fxM21 = MAKEFIXED(0, 0);
+matlfTransform.fxM22 = MAKEFIXED(0, 8192);
+matlfTransform.lM23 = 0L;
+matlfTransform.lM31 = 0L;
+matlfTransform.lM32 = 0L;
+matlfTransform.lM33 = 1L;
+GpiSetDefaultViewMatrix(hps, 9L, &amp;matlfTransform, TRANSFORM_REPLACE);
+ 
+/* Zoom 1/4 */
+ 
+matlfTransform.fxM11 = MAKEFIXED(0, 16384);
+matlfTransform.fxM12 = MAKEFIXED(0, 0);
+matlfTransform.lM13 = 0L;
+matlfTransform.fxM21 = MAKEFIXED(0, 0);
+matlfTransform.fxM22 = MAKEFIXED(0, 16384);
+matlfTransform.lM23 = 0L;
+matlfTransform.lM31 = 0L;
+matlfTransform.lM32 = 0L;
+matlfTransform.lM33 = 1L;
+GpiSetDefaultViewMatrix(hps, 9L, &amp;matlfTransform, TRANSFORM_REPLACE);
+ 
+<b>Rotating an Object in a Picture</b>
+ 
+To rotate an object in a world space by using the model transformation, you
+must perform the following steps:
+ 
+1  Translate the object over the coordinate-space origin.
+2  Rotate the object.
+3  Translate the object back to its original position.
+4  Draw the object.
+ 
+The following code fragment rotates a box 45 degrees:
+ 
+/* translates, rotates 45 degrees, translates */
+ 
+matlfTransform.fxM11 = MAKEFIXED(1, 0);
+matlfTransform.fxM12 = MAKEFIXED(0, 0);
+matlfTransform.lM13 = 0L;
+matlfTransform.fxM21 = MAKEFIXED(0, 0);
+matlfTransform.fxM22 = MAKEFIXED(1, 0);
+matlfTransform.lM23 = 0L;
+matlfTransform.lM31 = -150L;      /* translates box 150 units left */
+matlfTransform.lM32 = -150L;      /* translates box 150 units down */
+matlfTransform.lM33 = 1L;
+GpiSetModelTransformMatrix(hps, 9L, &amp;matlfTransform,
+    TRANSFORM_REPLACE);
+ 
+matlfTransform.fxM11 = MAKEFIXED(0, 46340);  /* cos 45 * 65536  */
+matlfTransform.fxM12 = -MAKEFIXED(0, 46340); /* -sin 45 * 65536 */
+matlfTransform.lM13 = 0L;
+matlfTransform.fxM21 = MAKEFIXED(0, 46340);  /* sin 45 * 65536  */
+matlfTransform.fxM22 = MAKEFIXED(0, 46340);  /* cos 45 * 65536  */
+matlfTransform.lM23 = 0L;
+matlfTransform.lM31 = 0L;
+matlfTransform.lM32 = 0L;
+matlfTransform.lM33 = 1L;
+GpiSetModelTransformMatrix(hps, 9L, &amp;matlfTransform, TRANSFORM_ADD);
+ 
+matlfTransform.fxM11 = MAKEFIXED(1, 0);
+matlfTransform.fxM12 = MAKEFIXED(0, 0);
+matlfTransform.lM13 = 0L;
+matlfTransform.fxM21 = MAKEFIXED(0, 0);
+matlfTransform.fxM22 = MAKEFIXED(1, 0);
+matlfTransform.lM23 = 0L;
+matlfTransform.lM31 = 150L;    /* shifts back to original pos. */
+matlfTransform.lM32 = 150L;    /* shifts back to original pos. */
+matlfTransform.lM33 = 1L;
+GpiSetModelTransformMatrix(hps, 9L, &amp;matlfTransform, TRANSFORM_ADD);
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

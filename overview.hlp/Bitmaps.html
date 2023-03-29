@@ -1,0 +1,295 @@
+<html>
+
+<head>
+<title>About Bitmaps (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Bitmaps (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Bitmaps.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#bitmap functions 1.2'>Function Group</a><span class='grhilite'>►</span>        </i>             <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Clipping.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                               About Bitmaps
+ 
+This topic describes a graphic object called a bitmap. You should also be
+familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='device_contexts.html'>Presentation spaces and device contexts</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='coordinate_spaces.html'>Coordinate spaces and transformations</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='mix_modes.html'>Color and mix modes</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='areas.html'>Area primitives</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Paths.html'>Paths</a><span class='grhilite'>►</span>
+ 
+A bitmap is an array of bits that represents an image. Applications can use
+bitmaps to store and display scanned images, icons, and symbols, and to
+create fill patterns for area primitives and paths. You can display a bitmap
+image on a raster output device (a raster is a rectangular matrix of pels or
+picture elements on a video display or dot matrix printer). A raster output
+device displays an image by setting adjacent pels in its matrix to colors
+specified in a corresponding bitmap. An image created in this way is called
+a "bitmapped image."
+ 
+Bitmapped images are device dependent. The shape of a device's pels, as well
+as its color capabilities, affects the appearance of a bitmapped image. For
+example, if the pels on one display measure 0.05 mm by 0.1 mm and the pels
+on a second display measure 0.1 mm by 0.3 mm, a circular bitmapped pie chart
+that you draw on the first display will appear elliptical on the second. If
+the first display supports 16 colors, the second supports 2 colors, and you
+created the pie chart using 12 colors, you will lose critical color
+information if you draw the chart on the second display.
+ 
+<b>Bitmap Dimensions</b>
+ 
+Each row of pels in a bitmapped image corresponds to a row of bits in a
+bitmap. In MS OS/2, bitmap rows are padded so that they end on ULONG
+(32-bit) boundaries. Pels in a bitmapped image are numbered beginning in the
+lower-left corner, moving to the right across the first row, then proceeding
+up, row-by-row, from left to right to the last row. In a bitmapped image,
+the first pel is in the lower-left corner; the last pel is in the
+upper-right corner. The first byte of the bitmap contains the color
+information for the first pel; the last byte contains the color information
+for the last pel.
+ 
+When you create a bitmap by using the GpiCreateBitmap function, you specify
+the bitmap width and height in terms of pels in the bitmapped image: The
+width is the number of pels within a row; the height is the number of rows.
+You should store these dimensions in the BITMAPINFO and BITMAPINFOHEADER
+structures and pass their addresses to the GpiCreateBitmap function when you
+call it.
+ 
+<b>Storing Color Information in Bitmaps</b>
+ 
+Graphics systems use one of two formats for storing color information in
+bitmaps. The first format uses multiple color planes. The second format uses
+a single plane and a multiple bit count.
+ 
+<b>Color Planes</b>
+ 
+Bitmaps are arranged in color planes. A color plane is an array of bitmap
+bits that contain color information. The bitmaps in each of the previous
+illustrations used the single-plane format, which is the standard format for
+bitmaps in MS OS/2 applications. In this format, adjacent bitmap bits
+contain indices into either a special color table of RGB values or actual
+<b>RGB</b> structures; all of the color information resides in a single plane.
+Although no device drivers for MS OS/2 Presentation Manager currently
+support a multi-plane format, this may change. A common multi-plane bitmap
+format for a bitmapped image is the 3-plane format in which one plane
+corresponds to the red pels, another to the green pels, and a third to the
+blue pels. You can determine which color-plane format a device supports by
+calling the GpiQueryDeviceBitmapFormats function and examining the first
+value in each pair of values that it returns.
+ 
+<b>Bitcounts</b>
+ 
+A bitcount is a value that specifies how many adjacent bitmap bits
+correspond to each pel in a bitmapped image. There are four possible
+bitcounts:
+ 
+♦  1 bit per pel
+♦  4 bits per pel
+♦  8 bits per pel
+♦  24 bits per pel
+ 
+If a device uses a bitcount of 1, 4, or 8 bits per pel, the bitmap bits
+contain index values for a bitmap color table. If the device supports a
+bitcount of 1 bit per pel, the color table contains two entries. If the
+device supports a bitcount of 4 bits per pel, the color table can contain up
+to 16 entries. And if the device supports a bitcount of 8 bits per pel, the
+color table can contain up to 256 entries.
+ 
+If the device supports a bitcount of 24 bits per pel, the bitmap bits
+contain the bRed, bGreen, and bBlue fields of RGB structures. There is no
+color table associated with a bitmap on a device that supports a format of
+24 bits per pel (such a device can support over 16 million colors). You can
+determine the bitcount format a device supports by calling the
+<b>GpiQueryDeviceBitmapFormats</b> function and examining the second value in each
+pair of values that it returns. The first pair contains the preferred color
+plane and bitmap format. You should create this color table when you call
+the GpiCreateBitmap function by loading an array with the appropriate number
+of RGB structures and passing the address of this array as the argbColor
+field in the BITMAPINFO structure.
+ 
+<b>Creating Bitmaps</b>
+ 
+MS OS/2 requires that you associate a presentation space with a memory
+device context before you perform many of the bitmap operations. A memory
+device context is a special device context that lets you treat a bitmap in
+memory like a device. You can copy color information from another bitmap (or
+copy pels on the display) into a bitmap associated with a memory device
+context. You create a memory device context with the DevOpenDC function by
+passing as the second argument OD_MEMORY and as the last argument a handle
+to a compatible device context. For instance, if you are creating a memory
+device context that is compatible with a screen device context, you would
+pass the handle from the WinOpenWindowDC function as the last argument to
+<b>DevOpenDC</b>.
+ 
+When you create a bitmap, you will pass GpiCreateBitmap information about
+the bitmap's color plane and bitcount formats, the dimension of the bitmap
+in pels, and a description of the bitmap's color table. You will pass this
+information in two structures: BITMAPINFO and BITMAPINFOHEADER.
+ 
+<b>Creating and Loading Custom Bitmaps</b>
+ 
+You can create a custom bitmap by setting bits in a hard-coded array and
+passing the array to the GpiCreateBitmap function, or by running Icon Editor
+and loading the bitmap into your application by calling the GpiLoadBitmap
+function. To create a custom hard-coded bitmap, you must perform the
+following steps:
+ 
+1  Define in your application's source code an array of bytes that will set
+   pels in an image to the appropriate colors.
+ 
+2  Set the fields in the BITMAPINFOHEADER structure to their appropriate
+   values.
+ 
+3  Set the fields in the BITMAPINFO structure to their appropriate values.
+ 
+4  Call GpiCreateBitmap, pass it the addresses of the structures and the
+   array of bytes you have defined already, and set the flOptions flag to
+   TRUE.
+ 
+If you want to use this bitmap as a fill pattern, assign it a local
+identifier by calling the GpiSetBitmapId function.
+ 
+To load a custom bitmap that you created by using Icon Editor, you must
+perform the following steps:
+ 
+1  Copy the bitmap file to the directory in which you compile your
+   applications.
+ 
+2  Create a BITMAP entry in your application's resource file, assigning a
+   unique integer identifier to the bitmap.
+ 
+3  In your application's source code, call the GpiLoadBitmap function,
+   passing it the integer identifier that you assigned to the bitmap in the
+   resource file.
+ 
+You can use GpiLoadBitmap to load any bitmap from a file that conforms to
+the MS OS/2 bitmap file format. This means that you could load a bitmap
+created by another application, if that application created the correct
+bitmap header and stored the bitmap bits correctly.
+ 
+<b>Drawing Bitmapped Images</b>
+ 
+You can draw bitmapped images when your application's drawing mode is
+DM_DRAW, DM_RETAIN, or DM_DRAWANDRETAIN. This means that you can draw
+bitmapped images on a raster printer or video display, and you can draw them
+into segments or metafiles associated with a raster device. Most of the
+bitmap drawing operations occur in your application's device space; however,
+one drawing operation lets you draw in your application's world space. The
+following table describes the functions you can use in each drawing mode:
+ 
+<b>Drawing Modes and Bitmapped Output</b>
+────────────────────────────────────────────────────────────────────────────
+<b>Drawing mode        Function         Output</b>
+────────────────────────────────────────────────────────────────────────────
+DM_DRAW             GpiBitBlt        Bitmapped image on a raster display or
+                                     printer.
+ 
+DM_DRAW             WinDrawBitmap    Monochrome bitmapped image on a raster
+                                     display.
+ 
+DM_DRAW             GpiImage         Special monochrome bitmapped image on a
+                                     raster display or printer.
+ 
+DM_DRAW             GpiWCBitBlt      Bitmapped image on a raster display or
+                                     printer; or bitmapped image into a
+                                     metafile.
+ 
+DM_RETAIN           GpiWCBitBlt      Bitmapped image into a metafile or
+                                     segment.
+ 
+DM_DRAWANDRETAIN    GpiWCBitBlt      Bitmapped image on a raster display or
+                                     printer and into an associated metafile
+                                     or segment.
+ 
+The GpiBitBlt and GpiWCBitBlt functions copy a bitmapped image from a
+rectangle in a source presentation space into a rectangle in a target
+presentation space. You can use these functions to scale bitmaps (shrink or
+expand them) by altering the dimensions of the target and source rectangles.
+<b>GpiBitBlt</b> requires that you use device coordinates for the dimensions of
+source and target rectangles. GpiWCBitBlt, however, requires device
+coordinates for the source rectangle and world coordinates for the target
+rectangle. You should use GpiWCBitBlt to draw a bitmap with consistent
+dimensions on devices with different aspect ratios. (The aspect ratio is the
+ratio of a pel's width to its height.)
+ 
+The WinDrawBitmap function draws a bitmapped image by copying it into a
+window linked to a target presentation space. Unlike GpiBitBlt and
+<b>GpiWCBitBlt, WinDrawBitmap does n</b>ot require you to select a bitmap into a
+presentation space before you draw the corresponding image. You can use this
+function to scale bitmaps by specifying DBM_STRETCH as the last argument and
+the address of a RECTL structure as the fourth argument. The coordinates in
+this structure are always device coordinates.
+ 
+The GpiImage function draws a special bitmapped image. The bitmap bits for a
+<b>GpiImage</b> call are not stored like normal bitmap bits──for example, the first
+bit in the bitmap contains color information for the pel in the upper-left
+(rather than the lower-left) corner of the bitmap; the last bit in the
+bitmap contains color information for the pel in the lower-right (rather
+than the upper-right) corner of the bitmap.
+ 
+You cannot scale bitmapped images by calling the GpiImage function.
+ 
+You should use the GpiBitBlt or GpiWCBitBlt function to draw bitmaps that
+use color formats of 1, 4, 8, or 24 bits per pel. The GpiImage and
+<b>WinDrawBitmap</b> functions draw bitmaps using two colors. These two functions
+do not use a color table; instead, they use the foreground and background
+colors from the IMAGEBUNDLE structure. You can set these colors (and their
+corresponding mix modes) by calling the GpiSetAttrs function, or you can
+determine the IMAGEBUNDLE colors and mix modes by calling the GpiQueryAttrs
+function.
+ 
+You can draw inverted bitmaps by calling the GpiBitBlt or GpiWCBitBlt
+function, passing it ROP_NOTSRCCOPY as the raster operation. You can also
+draw inverted bitmaps by calling WinDrawBitmap, passing it DBM_INVERT as the
+last argument. You can draw halftone bitmaps by calling WinDrawBitmap,
+passing it DBM_HALFTONE as the last argument.
+ 
+<b>Copying Images from a Display into a Bitmap</b>
+ 
+You can copy an image from a raster video display into a bitmap by calling
+the GpiBitBlt or GpiWCBitBlt function. Before doing so, however, you must
+create a memory device context by calling the DevOpenDC function. This
+device context lets you treat a bitmap in memory like a device, by copying
+color information from pels on the display into the bitmap.
+ 
+Once you create a memory device context, associate it with a presentation
+space, and select your bitmap into the presentation space, you can use the
+presentation-space handle as the first argument to the GpiBitBlt or
+<b>GpiWCBitBlt</b> function. If you will be drawing the image (saved in the memory
+device context) on devices with different aspect ratios, you should use the
+<b>GpiWCBitBlt</b> function to preserve the original dimensions of the bitmap.
+ 
+<b>Saving Bitmaps in a File</b>
+ 
+You can save a bitmap in a file on a disk by calling the GpiQueryBitmapBits,
+<b>DosOpen, DosWrite, and DosClose functions. The Gp</b>iQueryBitmapBits function
+copies bitmap bits into a buffer. After you create a file by calling
+<b>DosOpen, you can call</b> DosWrite to copy the buffer containing the bitmap bits
+into the file. After copying the bits into the file, you close it by calling
+<b>DosClose</b>.
+ 
+If you have stored a bitmap on disk and need to use it again in your
+application, you can copy the file's contents into a buffer by calling the
+<b>DosRead</b> function and then set the bitmap bits by calling the
+<b>GpiSetBitmapBits</b> function. (You must associate the bitmap with a memory
+device context before trying to set the bits.)
+ 
+If your application creates bitmaps another application might use, it should
+create them by using the standard MS OS/2 bitmap file format.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

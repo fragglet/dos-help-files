@@ -1,0 +1,136 @@
+<html>
+
+<head>
+<title>WinCreateHeap (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinCreateHeap (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Heap_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Heaps 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinCreateHelpInstance.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINHEAP
+ 
+HHEAP WinCreateHeap(selHeapBase, cbHeap, cbGrow, cbMinDed, cbMaxDed,
+    fsOptions)
+USHORT selHeapBase;    /* selector of the heap                   */
+USHORT cbHeap;         /* initial heap size                      */
+USHORT cbGrow;         /* number of bytes heap must grow         */
+USHORT cbMinDed;       /* minimum number of dedicated free lists */
+USHORT cbMaxDed;       /* maximum number of dedicated free lists */
+USHORT fsOptions;      /* heap options                           */
+ 
+The WinCreateHeap function creates a heap that can be used for memory
+management.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>selHeapBase</i>  Specifies the selector of the segment that will contain the
+             local heap.
+ 
+<i>cbHeap</i>       Specifies the initial heap size (in bytes).
+ 
+<i>cbGrow</i>       Specifies the minimum number of bytes by which the heap must be
+             increased if it is too small to satisfy a memory allocation
+             request (see the WinAllocMem and WinReallocMem functions). If
+             this parameter is zero, the default value of 512 bytes is
+             used.
+ 
+<i>cbMinDed</i>     Specifies the minimum number of dedicated free lists.
+ 
+<i>cbMaxDed</i>     Specifies the maximum number of dedicated free lists.
+ 
+<i>fsOptions</i>    Specifies the optional characteristics for the heap. It may be
+             one or more of the following values:
+ 
+             Value         Meaning
+             ───────────────────────────────────────────────────────────────
+             HM_MOVEABLE   Specifies that the created heap supports movable
+                           objects. WinAllocMem then reserves an additional
+                           two words at the beginning of each allocated
+                           object.
+ 
+             HM_VALIDSIZE  Specifies that the heap manager should check the
+                           size arguments to WinReallocMem and WinFreeMem
+                           function calls against the two additional words
+                           stored at the beginning of each allocated object.
+                           This option is only valid if HM_MOVEABLE is also
+                           specified.
+ 
+<b>Return Value</b>
+ 
+The return value is a handle to the heap, or zero if an error occurred.
+ 
+<b>Comments</b>
+ 
+There are three types of segments that can contain a heap:
+ 
+♦  Automatic data segment of an application
+ 
+♦  Automatic data segment of a dynamic-link package
+ 
+♦  Segment allocated by the DosAllocSeg function (public or shared)
+ 
+To accommodate these various targets for heaps, all four possible
+combinations of the parameters are used to discriminate between the various
+options.
+ 
+These combinations are shown in the following list:
+ 
+<b>selHeapBase    cbHeap     Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Zero        </i>   Zero       Caller is an application that places the heap at
+                          the end of its automatic data segment. The size of
+                          the heap was specified with the HEAPSIZE keyword
+                          in the application's .def file to the linker. This
+                          function extracts the heap-size parameter from the
+                          local information segment and uses that many bytes
+                          at the end of the caller's automatic data segment.
+                          No reallocation of the data segment occurs, as the
+                          loader already reserved space at the end of the
+                          data segment, after the static data was loaded
+                          from the .exe file.
+ 
+<i>Selector       Nonzero  </i>  Caller is a dynamic-link package that places a
+                          heap at the end of its automatic data segment. The
+                          cbHeap parameter must be less than or equal to the
+                          HEAPSIZE value from the .def file that was passed
+                          to the dynamic-link package's initialization entry
+                          point in the cx register. Otherwise, this function
+                          may produce incorrect results.
+ 
+<i>Selector       Zero     </i>  Caller is either an application or a dynamic-link
+                          package that has explicitly allocated a segment
+                          using the DosAllocSeg function and places a heap
+                          in that segment. The heap is placed at the
+                          beginning of the segment and the size of the
+                          segment (determined by using DosSizeSeg) is the
+                          size of the heap.
+ 
+<i>Zero        </i>   Nonzero    Caller is either an application or a dynamic-link
+                          package that places a heap of a specific size in a
+                          separate segment but does not call DosAllocSeg.
+                          For information about accessing the segment
+                          implicitly allocated by WinCreateHeap when called
+                          with this combination of parameters, see the
+                          WinLockHeap function.
+ 
+<b>See Also</b>
+ 
+<b>DosAllocSeg, DosSizeSeg, WinAllocMem, WinDestroyHeap, WinFreeMem,</b>
+<b>WinLockHeap, WinReallocMem</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

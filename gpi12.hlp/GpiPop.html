@@ -1,0 +1,89 @@
+<html>
+
+<head>
+<title>GpiPop (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiPop (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='presentation_spaces.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Presentation Spaces and Device Contexts 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiPtInRegion.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+BOOL GpiPop(hps, cAttrs)
+HPS hps;        /* presentation-space handle       */
+LONG cAttrs;    /* number of attributes to restore */
+ 
+The GpiPop function restores one or more primitive attributes by popping the
+previous attribute values from the attribute stack. The system saves the
+previous value of a primitive attribute, such as color, line type, and fill
+pattern, on the attribute stack whenever an application changes an attribute
+while the attribute mode is AM_PRESERVE. The function pops the number of
+attributes specified by cAttrs from the stack in last-in, first-out order.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies a presentation space.
+ 
+<i>cAttrs</i>     Specifies the number of attributes to restore.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_PRIMITIVE_STACK_EMPTY
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+Although GpiPop can be used in an area or path bracket, an application must
+ensure that the attribute to be restored is valid within the bracket. Once
+an attribute is on the stack, there is no way to check it for validity.
+ 
+The attribute stack is especially useful when you are drawing segments. Any
+attributes changed by the segment can be quickly restored by popping the
+stack. Note that a segment automatically pops the stack when it returns, so
+a call to the GpiPop function is not required.
+ 
+<b>Example</b>
+ 
+This example uses the GpiPop function to restore the fill pattern and color
+attribute after painting a path:
+ 
+GpiSetAttrMode(hps, AM_PRESERVE);   /* preserves attributes on stack */
+    .
+    .
+    .
+GpiSetColor(hps, CLR_RED);          /* sets color to red             */
+GpiSetPattern(hps, PATSYM_DIAG1);   /* sets pattern to a diagonal    */
+GpiPaintRegion(hps, 3L);
+GpiPop(hps, 2L);       /* restores values of last two attributes set */
+ 
+<b>See Also</b>
+ 
+<b>GpiRestorePS, GpiSavePS, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,114 @@
+<html>
+
+<head>
+<title>WinSetSysColors (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinSetSysColors (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#System information functions 1.2'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L8146.html'>Changes</a><span class='grhilite'>►</span>                    </i>       <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinSetSysModalWindow.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINSYS
+#define INCL_GPILOGCOLORTABLE
+ 
+BOOL WinSetSysColors(hwndDesktop, flOptions, flFormat, clrFirst, cclr,
+    pclr)
+HWND hwndDesktop;    /* handle of the desktop        */
+ULONG flOptions;     /* color options                */
+ULONG flFormat;      /* format options               */
+COLOR clrFirst;      /* first color to set           */
+ULONG cclr;          /* number of colors to set      */
+PCOLOR pclr;         /* address of color definitions */
+ 
+The WinSetSysColors function sets system color values. This function sends a
+<b>WM_SYSCOLORCHANGE</b> message to all main windows in the system to indicate that
+the colors have changed. When this message is received, applications that
+depend on the system colors can query the new color values by using the
+<b>WinQuerySysColor</b> function.
+ 
+After the WM_SYSCOLORCHANGE messages are sent, all windows in the system are
+invalidated so that they will be redrawn with the new system colors.
+ 
+<b>WinSetSysColors does not write any system col</b>or changes to the os2.ini
+file.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwndDesktop</i>  Identifies the desktop window. This parameter can be
+             HWND_DESKTOP or the desktop window handle.
+ 
+<i>flOptions</i>    Specifies an option which can be one of the constants in the
+             following list. In order to use these constants, you must
+             define the INCL_GPILOGCOLORTABLE include constant before
+             specifying the os2.h header file.
+ 
+             Value           Meaning
+             ───────────────────────────────────────────────────────────────
+             LCOL_PURECOLOR  Indicates that color dithering should not be
+                             used to create colors that are not available in
+                             the physical palette. If this option is set,
+                             only pure colors will be used and no dithering
+                             will be done.
+ 
+             LCOL_RESET      Indicates that the system colors are all to be
+                             reset to the default values before processing
+                             the remainder of the data in this function.
+ 
+<i>flFormat</i>     Specifies the format of entries in the table. This parameter
+             may be one of the constants in the following list. In order to
+             use these constants, you must define the INCL_GPILOGCOLORTABLE
+             include constant before specifying the os2.h header file.
+ 
+             Value            Meaning
+             ───────────────────────────────────────────────────────────────
+             LCOLF_CONSECRGB  Array of RGB values that correspond to color
+                              indices. Each entry is 4 bytes.
+ 
+             LCOLF_INDRGB     Array of (index, RGB) values. Each pair of
+                              entries is 8 bytes (4 bytes index and 4 bytes
+                              color value).
+ 
+<i>clrFirst</i>     Specifies the starting system color index (this parameter is
+             only relevant for the LCOLF_CONSECRGB format). For a list of
+             system color indices, see the <span class='grhilite'>◄</span><a href='unknown#System colors 1.2'>System colors</a><span class='grhilite'>►</span> topic. Note that
+             each successive index is one larger than its predecessor.
+ 
+<i>cclr        </i> Specifies the number of elements supplied in pclr. This
+             parameter may be zero if, for example, the color table is
+             merely to be reset to the default. For LCOLF_INDRGB, this
+             parameter must be an even number. The constant
+             SYSCLR_CSYSCOLORS is set to the total number of system colors.
+ 
+<i>pclr</i>         Specifies the start address of the application data area
+             containing the color-table definition data. The format depends
+             on the value of the flFormat parameter. Each color value is a
+             4-byte integer. The low byte is the blue intensity value
+             (0x000000FF), the second byte is the green intensity value
+             (0x0000FF00), and the third byte is the red intensity value
+             (0x00FF0000). The intensity for each color may range between 0
+             and 255.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful or FALSE if an error
+occurs.
+ 
+<b>See Also</b>
+ 
+<b>WinQuerySysColor</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

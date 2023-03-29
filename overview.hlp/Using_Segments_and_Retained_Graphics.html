@@ -1,0 +1,192 @@
+<html>
+
+<head>
+<title>Using Segments and Retained Graphics (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Segments and Retained Graphics (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='segments.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#retained graphics functions 1.2'>Function Group</a><span class='grhilite'>►</span>                     <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='avio.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                    Using Segments and Retained Graphics
+ 
+You can use segment and retained-graphics functions to perform the following
+tasks:
+ 
+♦  Create a chained, chained-dynamic, or called segment.
+ 
+♦  Draw the subpicture(s) associated with one or more segments.
+ 
+♦  Delete a segment.
+ 
+♦  Perform correlation operations on the subpicture associated with a
+   segment.
+ 
+♦  Edit the contents of a segment.
+ 
+♦  "Drag" the subpicture associated with a dynamic segment.
+ 
+<b>Creating a Chained Segment</b>
+ 
+To create a chained segment, you must perform the following tasks:
+ 
+1  Set the drawing mode to retain.
+ 
+2  Check to see whether the chained attribute is one of the initial segment
+   attributes by calling the GpiQueryInitialSegmentAttrs function.
+ 
+3  If the chained attribute is not set, turn it on by calling the
+   GpiSetInitialSegmentAttrs function.
+ 
+4  Open the segment by calling the GpiOpenSegment function.
+ 
+5  Perform the necessary drawing operations.
+ 
+6  Close the segment by the calling the GpiCloseSegment function.
+ 
+In the following example, the segment contains a box primitive and calls
+another segment with the GpiCallSegmentMatrix function:
+ 
+GpiSetDrawingMode(hps, DM_RETAIN);
+if (ATTR_OFF == GpiQueryInitialSegmentAttrs(hps, ATTR_CHAINED))
+    GpiSetInitialSegmentAttrs(hps, ATTR_CHAINED, ATTR_ON);
+GpiOpenSegment(hps, ++idSegment);
+ptl.x = 150; ptl.y = 150;
+GpiMove(hps, &amp;ptl);
+ptl.x = 225; ptl.y = 225;
+GpiBox(hps, DRO_FILL, &amp;ptl, 0L, 0L);
+GpiCallSegmentMatrix(hps, --idSegment, 9L, &amp;matlfTransform,
+   TRANSFORM_REPLACE);
+GpiCloseSegment(hps);
+ 
+<b>Creating a Called Segment</b>
+ 
+To create a called segment, you must perform the following tasks:
+ 
+1  Set the drawing mode to retain.
+ 
+2  Check to see whether the chained attribute is one of the initial segment
+   attributes by calling the GpiQueryInitialSegmentAttrs function.
+ 
+3  If the chained attribute is set, turn it off by calling the
+   GpiSetInitialSegmentAttrs function.
+ 
+4  Open the segment by calling the GpiOpenSegment function.
+ 
+5  Perform the necessary drawing operations.
+ 
+6  Close the segment by calling the GpiCloseSegment function.
+ 
+The following code fragment shows how to draw a box in a called segment:
+ 
+GpiSetDrawingMode(hps, DM_RETAIN);
+if (ATTR_ON == GpiQueryInitialSegmentAttrs(hps, ATTR_CHAINED))
+    GpiSetInitialSegmentAttrs(hps, ATTR_CHAINED, ATTR_OFF);
+GpiOpenSegment(hps, idSegment);
+ptl.x = 50; ptl.y = 50;
+GpiMove(hps, &amp;ptl);
+ptl.x = 125; ptl.y = 125;
+GpiBox(hps, DRO_FILL, &amp;ptl, 0L, 0L);
+GpiCloseSegment(hps);
+ 
+<b>Drawing a Segment Chain</b>
+ 
+To draw a segment chain, you call the GpiDrawChain function, as shown in the
+following code fragment:
+ 
+if (DM_DRAW != GpiQueryDrawingMode(hps))
+    GpiSetDrawingMode(hps, DM_DRAW);
+GpiDrawChain(hps);
+ 
+<b>Performing a Correlation Operation</b>
+ 
+To use a correlation operation, you must perform the following tasks:
+ 
+1  Size the pick aperture by calling the GpiSetPickApertureSize function.
+ 
+2  Perform the correlation operation by calling the GpiCorrelateChain
+   function, passing it the pick-aperture position as the third argument.
+ 
+The following code fragment shows how to send the segment/chain identifiers
+from the correlation operation to your application's window with a message
+box:
+ 
+HitDetect(hps, hwnd)
+HPS hps;
+HWND hwnd;
+{
+    LONG lMaxHits = 1;
+    LONG lMaxDepth = 1;
+    LONG alSegTag[MaxHits][MaxDepth][2]
+    CHAR szChar[80];
+    USHORT usCount;
+ 
+    GpiCorrelateChain(hps, PICKSEL_VISIBLE, &amp;ptlPick,
+        lMaxHits, lMaxDepth, alSegTag);
+    sprintf(szChar, " Segment %ld Tag %ld ", alSegTag[0], alSegTag[1]);
+    WinMessageBox(HWND_DESKTOP, hwnd, szChar,
+        "Segment/Tag Pairs", 0, MB_OK);
+ 
+    for (usCount = 0; usCount &lt; 2; usCount ++)
+        alSegTag[usCount] = 0;
+}
+ 
+<b>Editing the Contents of a Segment</b>
+ 
+To edit the contents of a segment, you must perform the following steps:
+ 
+1  Set the segment edit mode to insert or replace by calling the
+   GpiSetEditMode function.
+ 
+2  Set the drawing mode to retain.
+ 
+3  Open the segment by calling the GpiOpenSegment function, passing it the
+   segment identifier from a previous correlation operation.
+ 
+4  Set the element pointer so that it points to the position at which you
+   will replace or insert an element by calling the GpiSetElementPointer,
+   GpiSetElementPointerAtLabel, or GpiOffsetElementPointer function.
+ 
+5  Insert the new primitives by calling any of the Gpi primitive functions.
+ 
+6  Delete any unnecessary primitives by calling the GpiDeleteElement or
+   GpiDeleteElementRange function.
+ 
+7  Close the segment by calling the GpiCloseSegment function.
+ 
+The following code fragment shows how to insert three elements in a
+segment.
+ 
+The first element contains the graphics order that sets the color to yellow;
+the second element moves the current position; and the third element draws
+an outlined box with rounded corners. After inserting the three elements,
+the code deletes the elements at positions five and six in the segment
+(these elements were previously at positions two and three).
+ 
+GpiSetEditMode(hps, SEGEM_INSERT);
+GpiSetDrawingMode(hps, DM_RETAIN);
+GpiOpenSegment(hps, 2L);
+GpiSetElementPointer(hps, 1L);
+GpiSetColor(hps, CLR_YELLOW);
+ptl.x = 30; ptl.y = 30;
+GpiMove(hps, &amp;ptl);
+ptl.x = 150; ptl.y = 150;
+GpiBox(hps, DRO_OUTLINE, &amp;ptl, 40L, 40L);
+GpiDeleteElementRange(hps, 5L, 6L);
+GpiCloseSegment(hps);
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

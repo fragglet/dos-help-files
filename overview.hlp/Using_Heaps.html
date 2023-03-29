@@ -1,0 +1,380 @@
+<html>
+
+<head>
+<title>Using Heaps (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Heaps (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Heaps.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Heap functions 1.2'>Function Group</a><span class='grhilite'>►</span>       </i>              <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Hooks.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                                Using Heaps
+ 
+Applications typically create a heap, allocate and deallocate memory blocks
+in the heap as needed, and destroy the heap when terminating. A heap can be
+created using many different memory sources and it can have movable or
+nonmovable memory objects. The following sections discuss how to use heaps
+in applications and dynamic-link libraries.
+ 
+<b>Creating a Heap</b>
+ 
+Applications and dynamic-link libraries create a heap by calling the
+<b>WinCreateHeap</b> function. The heap is created within an automatic data segment
+or in a separate segment, depending on the values of the selHeapBase and
+<i>cbHeap parameters </i>of WinCreateHeap. The possible values of these parameters
+are summarized in the following list:
+ 
+<b>selHeapBase  cbHeap   Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Zero        </i> Zero     The calling process is an application that places the
+                      heap at the end of its automatic data segment.
+ 
+<i>Selector     Nonzero  Th</i>e calling process is either a dynamic-link library
+                      that places a heap at the end of its automatic data
+                      segment, or an application or dynamic-link library
+                      that has explicitly allocated a segment and places the
+                      heap at the end of the segment.
+ 
+<i>Selector     Zero     Th</i>e calling process is either an application or
+                      dynamic-link library that has explicitly allocated a
+                      segment and places a heap in that segment.
+ 
+<i>Zero        </i> Nonzero  The calling process is either an application or
+                      dynamic-link library that places a heap of a specified
+                      size in a separate segment but does not call the
+                      DosAllocSeg function.
+ 
+In addition to the characteristics of the heap described by the preceding
+list, the creator of the heap may specify whether the heap contains movable
+objects and whether the functions should check the validity of certain
+arguments to heap-manager functions. The HM_MOVEABLE attribute specifies
+that the heap can contain movable objects. The HM_VALIDSIZE attribute, which
+can be used only in conjunction with HM_MOVEABLE, specifies that the heap
+manager should check the validity of size arguments in heap-deallocation
+calls. Movable heap objects allow a more flexible memory-management scheme
+for applications with heavy memory requirements.
+ 
+You must specify the minimum amount the heap will grow each time it enlarges
+to satisfy a memory request. The default minimum is 512 bytes.
+ 
+The cbMinDed and cbMaxDed parameters of the WinCreateHeap function define
+how many dedicated free lists the heap manager should maintain for the heap.
+Dedicated free lists can make the allocation of fixed-size blocks
+significantly faster, but they are not essential to the operation of the
+heap. Zeros can be passed as values for these parameters to generate the
+default heap behavior without using dedicated free lists. More information
+about dedicated free lists is given later in this section.
+ 
+The following code fragment shows how to create a heap with the default
+behavior and the movable attribute:
+ 
+hHeap = WinCreateHeap(0,  /* uses automatic data segment         */
+    0,                    /* uses HEAPSIZE from .def file        */
+    1024,                 /* minimum size to grow heap           */
+    0,                    /* minimum size of dedicated free list */
+    0,                    /* maximum size of dedicated free list */
+    HM_MOVEABLE);
+ 
+The ability to share a heap depends upon the sharing attributes of the
+segment containing the heap. Heaps in an application's data segment are
+private to that application. Segments explicitly allocated with the
+<b>DosAllocSeg</b> function are shared or private, depending upon the value of the
+<i>fsAlloc parameter. Se</i>gments allocated by using the WinCreateHeap function
+are shareable. Because shared segments cannot shrink, heaps within a shared
+segment also do not shrink.
+ 
+The heap manager does not prevent multiple threads from calling the heap
+manager with the same heap handle. The calling process must ensure that this
+does not occur.
+ 
+<b>Heaps in a Separate Data Segment</b>
+ 
+One of the options you can specify when creating a heap is that the heap
+will be created in a data segment that is separate from the automatic data
+segment. You might choose this option if there is insufficient space in the
+automatic data segment for the static variables, the stack, and the heap. A
+heap in a separate data segment can occupy up to 64K.
+ 
+The pointer returned by the WinAllocMem function is an offset value that
+locates the allocated memory block relative to the beginning of the segment
+that contains the heap. If the heap is in a separate segment, you must use
+far pointers to access memory blocks that are allocated on the heap. You can
+determine the far pointer to a heap object by using the heap's segment
+selector and the offset. The WinLockHeap function returns a far pointer to
+the beginning of a specified heap. You can combine the selector from this
+far pointer with the offset to a memory block on the heap to produce a far
+pointer to the heap object, as shown in the following code fragment:
+ 
+HHEAP   hHeap;
+SEL     selHeap;
+NPBYTE  npbObject;
+PBYTE   pbObject;
+PVOID   pvHeap;
+ 
+/* Allocate a heap in a separate segment. */
+ 
+hHeap = WinCreateHeap(0,  /* uses a separate segment             */
+    32*1024,              /* allocates 32K for heap              */
+    1024,                 /* minimum size to grow heap           */
+    0,                    /* minimum size of dedicated free list */
+    0,                    /* maximum size of dedicated free list */
+    HM_MOVEABLE);
+ 
+/* Allocate an object and retrieve a near pointer. */
+ 
+npbObject = WinAllocMem(hHeap,...);
+ 
+/* Retrieve a far pointer to the start of the heap. */
+ 
+pvHeap = WinLockHeap(hHeap);
+ 
+/* Make a far pointer to the heap object. */
+ 
+pbObject = MAKEP(SELECTOROF(pvHeap), npbObject);
+ 
+<b>Movable Heap Objects</b>
+ 
+A movable heap allows the memory objects within the heap to move in order to
+reclaim fragmented heap space. All heaps are movable in the sense that a
+segment that contains a heap can move as a result of the mapping of
+selectors to physical addresses that is provided by MS OS/2. Movable heaps
+differ from regular heaps in that individual objects within a movable heap
+can change their positions relative to the beginning of the segment. The
+movable-heap attribute is specified when the heap is created and lasts until
+the heap is destroyed.
+ 
+Allocated memory blocks in a movable heap have a header structure that is
+attached to the beginning of the block. This header structure contains a
+pointer to the variable holding the pointer to the memory block and a field
+containing the size of the block (not including the header structure). The
+near pointer returned by the WinAllocMem function points to the first byte
+after the block-header words. The C definition of the header structure is as
+follows:
+ 
+typedef struct _MOVBLOCKHDR {
+    NPBYTE near *ppmem;
+    USHORT      cb;
+} MOVBLOCKHDR;
+ 
+The size parameter of the WinReallocMem and WinFreeMem functions is ignored
+for objects in a movable heap and the value of the size word is used
+instead. However, if the HM_VALIDSIZE option is specified in the
+<b>WinCreateHeap function when the heap is</b> created, the WinReallocMem and
+<b>WinFreeMem</b> functions verify that the passed size matches the current size
+and return an error if it does not.
+ 
+Objects in a movable heap can move whenever the WinAvailMem function is
+called. Because this function is also called by WinAllocMem and
+<b>WinReallocMem</b>, objects can also move when these functions are called.
+<b>WinReallocMem and WinAvailMem move bloc</b>ks that have a back pointer.
+Allocated objects whose back pointer is zero are considered fixed and do not
+move.
+ 
+When allocating memory blocks within a movable heap, the calling process
+specifies that the block is movable by altering the back pointer (ppmem)
+field of the header structure so that it points to the variable holding the
+pointer returned by the WinAllocMem function. When WinAllocMem creates a
+block on a movable heap, it clears the back pointer to zero. As long as the
+back pointer remains zero, the heap manager cannot move the block. If the
+application alters the value of the back pointer so that it points to a
+valid variable address within the same segment (by using an offset from the
+beginning of the segment), the heap manager will move the block, when
+necessary, to compact the heap. Whenever the heap manager moves the movable
+block it also updates the variable pointed to by the back pointer so that
+the variable points to the new location of the block. The back pointer
+ensures that the application's reference to the movable block is updated
+when the block moves.
+ 
+Note that MS OS/2 alters only the variable pointed to by the back pointer
+when it moves a movable block. If the application has made copies of this
+variable, those copies will be invalid if the memory object moves.
+ 
+The SETMEMBACKPTR macro sets the back pointer of a movable block. (It is
+assumed that the MOVBLOCKHDR data structure described above is also
+defined.) SETMEMBACKPTR uses the variable that holds the pointer returned by
+the WinAllocMem function and sets the back pointer of that block to point to
+the variable. The SETMEMPACKPTR macro is shown below. Note that it should
+not be used on nonmovable heaps.
+ 
+#define SETMEMBACKPTR(npb) (((PMOVBLOCKHDR) npb) -1) -&gt; ppmem = &amp;npb
+ 
+The back pointer of a movable block should point to the variable that holds
+the pointer returned by the WinAllocMem function. Since the back pointer is
+a near pointer, the variable pointed to must be in the same data segment as
+the heap. If the heap is in the automatic data segment (the default case),
+you can use a static or stack-based variable to hold the pointer. If the
+heap is in a separate data segment, you must allocate space for the pointer
+variable as a nonmovable block on the heap.
+ 
+Using movable blocks allows an application to use memory more efficiently
+and to avoid most memory-fragmentation problems. Using movable heap objects,
+however, requires that the pointer references to the objects remain valid
+even when the objects move. The back pointer allows MS OS/2 to handle
+updating an application's pointer variables, but the application must use
+the SETMEMBACKPTR macro to set the original link between the movable block
+and its pointer variable.
+ 
+<b>Movable Heaps in an Automatic Data Segment</b>
+ 
+The following code fragment shows how to allocate a block and then make it
+movable by altering the value of the back pointer. This code works only if
+the heap is in the automatic data segment (the default case for most
+applications).
+ 
+static NPBYTE  pObject;
+ 
+/* Allocate the block for the object. */
+ 
+pObject = WinAllocMem(hHeap, sizeof(YOUR_OBJECT_TYPE));
+ 
+/* Make the block movable. */
+ 
+SETMEMBACKPTR(pObject);
+ 
+You should avoid placing a pointer to a movable heap object on the
+stack──that is, making it a local variable──if the heap object will continue
+to exist after the function has ended and the local variable has been
+cleared from the stack. This is dangerous because the heap manager could
+attempt to update the pointer variable, using the back pointer, and
+inadvertently write into the stack frame of another function.
+ 
+<b>Movable Heaps in a Separate Data Segment</b>
+ 
+The variable pointed to by the back pointer must be in the same segment as
+the movable block. For most applications, in which the heap is in the
+application's automatic data segment, the pointer variable can be in the
+application's static-data area. If the heap is in a separate segment, the
+variable must also be allocated on the same heap, and it must be in a
+nonmovable block.
+ 
+<b>Allocating Memory from Heaps</b>
+ 
+Once an application or dynamic-link library has created a heap, it can
+allocate blocks on the heap by calling the WinAllocMem function. The value
+returned by this function is a near pointer to the memory block, or NULL if
+the function is unsuccessful.
+ 
+All pointers to memory objects within a heap are 16-bit offsets from the
+start of the heap's segment. All memory objects in the heap are aligned on a
+32-bit-word boundary──this means that the contents of the 2 low-order bits
+of a returned pointer are unused. The WinAllocMem function clears these
+bits. (The WinReallocMem and WinFreeMem functions require that they be
+zero.) The application can use these two bits for any purpose. The HEAP_MASK
+constant can be used to clear the bits when passing a parameter for a
+memory-block pointer to WinReallocMem or WinFreeMem.
+ 
+If the heap is created with the HM_MOVEABLE attribute, the size argument for
+the allocation is retained in the size word of the allocated block's header.
+The returned address is the address of the first byte after the header.
+ 
+The heap manager searches the heap for the first free block large enough to
+fulfill the allocation request. If the free block that is found is larger
+than what is needed to satisfy the request, the extra space is added to the
+appropriate dedicated free list. If no free block is found that is large
+enough, the heap manager attempts to combine free blocks by calling the
+<b>WinAvailMem</b> function. If this call does not generate a large enough free
+block, the heap manager attempts to enlarge the heap segment by the combined
+values of the size of the request and the minimum-growth parameter specified
+in the call to the WinCreateHeap function. If this attempt fails, the
+<b>WinAllocMem</b> function returns NULL, indicating that it could not allocate the
+memory block.
+ 
+<b>Deallocating Memory from a Heap</b>
+ 
+Memory blocks on the heap can be deallocated by calling the WinFreeMem
+function. The calling process must specify the heap handle, the pointer to
+the block, and the size of the block. The size argument must be accurate
+because the heap manager does not normally validate this argument. Passing
+an incorrect size argument to WinFreeMem can damage other blocks on the
+heap.
+ 
+The WinFreeMem function returns NULL if it successfully deallocates the
+memory block. This method of returning failure allows for updating the
+memory pointer and freeing the memory at the same time, which can be
+accomplished with a call similar to the following:
+ 
+npMem = WinFreeMem(hHeap, npMem, cbMem);
+ 
+For nonmovable heaps, the heap manager has no way to check the size of
+blocks that it deallocates. For movable blocks on a heap created with the
+HM_MOVEABLE and HM_VALIDSIZE attributes, the heap manager checks the size
+argument against the size specification in the movable block's header and
+returns the pointer (instead of NULL) if the size parameter is invalid.
+ 
+<b>Using Dedicated Free Lists</b>
+ 
+A dedicated free list is a linked list of free blocks of a particular size
+on the heap. For example, the heap manager might maintain a dedicated free
+list of memory blocks that are 1024 bytes in length. It is much faster to
+search for a memory block in a dedicated free list than to do a straight
+linear search of all blocks on the heap. Thus, dedicated free lists are very
+useful if your application allocates many blocks with the same size.
+ 
+The size of memory blocks that should be maintained in dedicated free lists
+is specified when the heap is created. Two arguments to the WinCreateHeap
+function specify the minimum block size and the maximum block size to put
+into dedicated free lists. All memory sizes between the minimum and maximum
+sizes, in four-byte increments, are maintained in separate lists.
+ 
+For example, if you specify 1024 for the minimum size and 2048 for the
+maximum size, the heap manager creates dedicated free lists for memory
+blocks of 1024 bytes, 1028 bytes, 1032 bytes, and so on, through 2048 bytes.
+The cost of each dedicated free list is an additional two bytes in the
+heap-control block for each size of memory block that is maintained in the
+list.
+ 
+Blocks that are not within the size limits of existing dedicated free lists
+are maintained in a single nondedicated free list. The heap manager first
+looks in the dedicated free lists, starting with the list whose memory-block
+size is greater than or equal to the requested size. It continues to look in
+the dedicated free lists until it either finds the smallest block that is
+greater than or equal to the requested size or it exhausts the dedicated
+free lists. If no block is found on the dedicated free lists that is large
+enough, the heap manager does a linear search of the nondedicated free list
+for the first block that satisfies the request. (This may not be the
+smallest free block that would satisfy the request, since the order of the
+nondedicated free list is implementation-dependent.) Dedicated free lists
+are organized in last-in, first-out (LIFO) order.
+ 
+To produce dedicated free lists in a heap, pass nonzero arguments for the
+<i>cbMinDed and cbMaxDed parameters of the </i>WinCreateHeap function.
+ 
+<b>Destroying Heaps</b>
+ 
+The WinDestroyHeap function destroys a heap that was created by using the
+<b>WinCreateHeap function. If WinCreateHeap calls the DosAllocSeg fu</b>nction to
+allocate space for the heap, then WinDestroyHeap calls DosFreeSeg to free
+the allocated segment. Otherwise, WinDestroyHeap frees only the heap handle
+that is passed to it.
+ 
+The return value is zero if the WinDestroyHeap function is successful.
+Otherwise, the return value is the heap handle that is passed to the
+function. (A reason this function could fail is if the heap handle is
+invalid.) This function is not affected by allocated memory objects within
+the heap.
+ 
+The return value is zero for success because of the following idiom for
+destroying a heap and invalidating the variable that contains the handle to
+the heap, all in one line of code:
+ 
+hHeap = WinCreateHeap(...);
+ 
+/* Code that manipulates the heap. */
+ 
+hHeap = WinDestroyHeap(hHeap);
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

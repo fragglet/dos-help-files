@@ -1,0 +1,112 @@
+<html>
+
+<head>
+<title>DosQPathInfo (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosQPathInfo (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosQSysInfo.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosQPathInfo(pszPath, usInfoLevel, pInfoBuf, cbInfoBuf,
+    ulReserved);
+PSZ pszPath;           /* pointer to path                   */
+USHORT usInfoLevel;    /* level of information              */
+PBYTE pInfoBuf;        /* pointer to buffer for information */
+USHORT cbInfoBuf;      /* length of information buffer      */
+ULONG ulReserved;      /* must be zero                      */
+ 
+The DosQPathInfo function returns information about a specified file or
+directory.
+ 
+The DosQPathInfo function is a family API function.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pszPath</i>      Points to the null-terminated string that specifies the path of
+             the file or directory. Wildcard characters are valid in the
+             path only when the value of the usInfoLevel parameter is
+             FIL_QUERYFULLNAME or FIL_NAMEISVALID.
+ 
+<i>usInfoLevel</i>  Specifies the level of information required. This parameter can
+             be one of the following values:
+ 
+             Value                 Meaning
+             ───────────────────────────────────────────────────────────────
+             FIL_STANDARD          Return a FILESTATUS structure.
+ 
+             FIL_QUERYEASIZE       Return a FILESTATUS structure followed by
+                                   a 4-byte value that specifies the buffer
+                                   size needed to retrieve the entire
+                                   extended attribute.
+ 
+             FIL_QUERYEASFROMLIST  Return extended-attribute information,
+                                   using an EAOP structure for the pInfoBuf
+                                   parameter.
+ 
+             FIL_QUERYFULLNAME     Return the fully qualified path of the
+                                   buffer pointed to by the pInfoBuf
+                                   parameter. When this value is specified,
+                                   the path pointed to by the pszPath
+                                   parameter can contain wildcard
+                                   characters.
+ 
+             FIL_NAMEISVALID       Verify the correctness (according to MS
+                                   OS/2 syntax rules) of the path pointed to
+                                   by the pszPath parameter. If the path is
+                                   incorrect (for example, a filename is too
+                                   long for the current file system), an
+                                   error will be returned. The path can
+                                   contain wildcard characters.
+ 
+<i>pInfoBuf     Points to the buffer that c</i>ontains a FILESTATUS or EAOP
+             structure. The structure used is determined by the value
+             specified for the usInfoLevel parameter.
+ 
+<i>cbInfoBuf</i>    Specifies the length (in bytes) of the buffer pointed to by the
+             pInfoBuf parameter.
+ 
+<i>ulReserved</i>   Specifies a reserved value; must be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_BUFFER_OVERFLOW
+     ERROR_EA_LIST_INCONSISTENT
+     ERROR_FILENAME_EXCED_RANGE
+     ERROR_INVALID_EA_NAME
+     ERROR_INVALID_LEVEL
+     ERROR_PATH_NOT_FOUND
+ 
+<b>Comments</b>
+ 
+If the usInfoLevel parameter is FIL_QUERYEASFROMLIST, a subset of the
+extended-attribute information for the file is returned. Prior to the call
+to the DosQPathInfo function, the fpGEAList field of the EAOP structure
+should point to a list that defines the attribute names for which values
+will be returned, and the fpFEAList field should point to a buffer in which
+the relevant extended-attribute list will be returned.
+ 
+<b>See Also</b>
+ 
+<b>DosQFileInfo, DosSetPathInfo, EAOP, FILESTATUS</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

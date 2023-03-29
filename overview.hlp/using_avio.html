@@ -1,0 +1,143 @@
+<html>
+
+<head>
+<title>Using Advanced Video Input and Output (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Advanced Video Input and Output (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='avio.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Advanced Vio functions 1.2'>Function Group</a><span class='grhilite'>►</span>           </i>          <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Device_Monitors.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                   Using Advanced Video Input and Output
+ 
+This section presents the source code for a simple AVIO program. The program
+creates the AVIO presentation space and associates it with the device
+context for the client window. The window procedure for the client window
+then uses the VioWrtTTY function to display a message.
+ 
+#define INCL_WIN
+#define INCL_GPI
+#define INCL_VIO
+#define INCL_AVIO
+#include "os2.h"
+ 
+HAB hab;            /* handle to the anchor block            */
+HMQ hmq;            /* handle to the message queue           */
+HWND hwndClient;    /* handle to the client                  */
+HWND hwndFrame;     /* handle to the frame window            */
+QMSG qmsg;          /* message-queue structure               */
+HDC hdc;            /* handle to the device context          */
+HVPS hvps;          /* handle to the AVIO presentation space */
+ 
+MRESULT EXPENTRY GenericWndProc(hwnd, msg, mp1, mp2)
+HWND   hwnd;
+USHORT msg;
+MPARAM mp1;
+MPARAM mp2;
+{
+    HPS   hps;
+    RECTL rcl;
+    SHORT x, y;
+    SHORT cx, cy;
+ 
+    switch (msg) {
+        case WM_PAINT:
+            hps = WinBeginPaint(hwnd, NULL, NULL);
+            WinQueryWindowRect(hwnd, &amp;rcl);
+            VioGetDeviceCellSize(&amp;cy, &amp;cx, hvps);
+            x = (rcl.xRight - rcl.xLeft) / (2 * cx);
+            y = (rcl.yTop - rcl.yBottom) / (2 * cy);
+            VioWrtCharStr("Hello World!", 12, y, x - 6, hvps);
+            VioShowPS(25, 80, 0, hvps);
+            WinEndPaint(hps);
+            return (0L);
+ 
+        case WM_SIZE:
+            return (WinDefAVioWindowProc(hwnd, msg, mp1, mp2));
+    }
+    return (WinDefWindowProc(hwnd, msg, mp1, mp2));
+}
+ 
+ULONG flStyle = FCF_MINMAX | FCF_SYSMENU | FCF_TITLEBAR |
+                FCF_SIZEBORDER | FCF_SHELLPOSITION | FCF_TASKLIST;
+ 
+VOID cdecl main()
+{
+    hab = WinInitialize(0);
+    hmq = WinCreateMsgQueue(hab, 0);
+ 
+    if (!WinRegisterClass(hab, "MyClass",
+            GenericWndProc, CS_SIZEREDRAW, 0))
+        DosExit(EXIT_PROCESS, 1);
+ 
+    hwndFrame = WinCreateStdWindow(HWND_DESKTOP, WS_VISIBLE, &amp;flStyle,
+        "MyClass", "My Title", 0L, NULL, 1, &amp;hwndClient);
+ 
+    hdc = WinOpenWindowDC(hwndClient);  /* opens device context      */
+    VioCreatePS(&amp;hvps, 25, 80, 0,       /* creates AVIO PS           */
+        FORMAT_CGA, 0);
+    VioAssociate(hdc, hvps);            /* associates DC and AVIO PS */
+ 
+    while (WinGetMsg(hab, &amp;qmsg, NULL, 0, 0))        /* message loop */
+        WinDispatchMsg(hab, &amp;qmsg);
+ 
+    VioAssociate(NULL, hvps);           /* disassociates the AVIO PS */
+    VioDestroyPS(hvps);                 /* destroys the AVIO PS      */
+    WinDestroyWindow(hwndFrame);
+    WinDestroyMsgQueue(hmq);
+    WinTerminate(hab);
+    DosExit(EXIT_PROCESS, 0);
+}
+ 
+The standard Vio functions can be used in AVIO programs. All of the
+following functions must be passed a zero handle when called from a
+full-screen program and a nonzero VIO handle when called from an AVIO
+program:
+ 
+    VioEndPopUp         VioScrollRt
+    VioGetAnsi          VioScrollUp
+    VioGetBuf           VioSetAnsi
+    VioGetConfig        VioSetCp
+    VioGetCp            VioSetCurPos
+    VioGetCurPos        VioSetCurType
+    VioGetCurType       VioSetMode
+    VioGetMode          VioShowBuf
+    VioPopUp            VioWrtCellStr
+    VioPtrSc            VioWrtCharStr
+    VioPtrScToggle      VioWrtCharStrAtt
+    VioReadCellStr      VioWrtNAttr
+    VioReadCharStr      VioWrtNCell
+    VioScrollDn         VioWrtNChar
+    VioScrollLf         VioWrtTTY
+ 
+The advanced Vio functions can be used in AVIO programs only. All of the
+following functions must be passed a nonzero VIO handle:
+ 
+    VioAssociate
+    VioCreateLogFont
+    VioCreatePS
+    VioDeleteSetId
+    VioDestroyPS
+    VioGetDeviceCellSize
+    VioGetOrg
+    VioQueryFonts
+    VioQuerySetIds
+    VioSetDeviceCellSize
+    VioSetOrg
+    VioShowPS
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

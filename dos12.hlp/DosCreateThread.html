@@ -1,0 +1,121 @@
+<html>
+
+<head>
+<title>DosCreateThread (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosCreateThread (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='threads.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#multitasking 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80bd.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosCwait.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSPROCESS
+ 
+USHORT DosCreateThread(pfnFunction, ptidThread, pbThrdStack)
+PFNTHREAD pfnFunction(VOID); /* pointer to function                       */
+PTID ptidThread;             /* pointer to variable for thread identifier */
+PBYTE pbThrdStack;           /* pointer to thread stack                   */
+ 
+The DosCreateThread function creates a new thread.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pfnFunction</i>  Points to the application-supplied function and represents the
+             starting address of the thread. For a full description, see the
+             following "Comments" section.
+ 
+<i>ptidThread</i>   Points to the variable that receives the thread identifier.
+ 
+<i>pbThrdStack</i>  Points to the stack of the new thread.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_NO_PROC_SLOTS
+     ERROR_NOT_ENOUGH_MEMORY
+ 
+<b>Comments</b>
+ 
+When a thread is created, the system makes a far call to the
+application-supplied function whose address is specified by the pfnFunction
+parameter. This function can include local variables and can call other
+functions, as long as the thread's stack has sufficient space. (The stack
+can be allocated by using the DosAllocSeg function or by using a global
+array.) The address specified by the pbThrdStack parameter should be the
+address of the last word in the stack, not the first, because the stack
+grows down in memory. The thread terminates when the function returns or
+calls the DosExit function.
+ 
+The pfnFunction parameter points to a function supplied by the program. This
+function should have the following form:
+ 
+VOID FAR FuncName(VOID)
+{
+}
+ 
+Because the system passes no arguments, no parameters are defined.
+ 
+A new thread inherits all files and resources owned by the parent process.
+Any thread in a process can open a file, device, pipe, queue, or system
+semaphore. Other threads can use the corresponding handles to access the
+given item.
+ 
+Note that high-level languages, run-time libraries, and stack checking may
+severely limit or eliminate the ability to call the DosCreateThread function
+directly from a high-level-language program. For more information, consult
+the documentation that came with your language product.
+ 
+Before calling the DosCreateThread function, set the es register to zero or
+assign to it a selector that will remain valid for the duration of the new
+thread. If you fail to set the es register to one of these values, the
+thread may unexpectedly terminate as a result of a general protection
+fault.
+ 
+<b>Example</b>
+ 
+This example sets aside a 4K buffer to be used as stack space for the
+thread. The thread is created by calling the DosCreateThread function. The
+thread terminates by calling the DosExit function.
+ 
+VOID FAR Thread();
+BYTE abStackArea[4096];        /* global array used as the thread's stack */
+    .
+    .
+    .
+    TID tidThread;
+ 
+    DosCreateThread(Thread,                    /* name of thread function */
+        &amp;tidThread,                            /* address of thread ID    */
+        abStackArea + sizeof(abStackArea));    /* thread's stack          */
+    .
+    .
+    .
+}
+ 
+VOID FAR Thread() {
+    .
+    .
+    .
+    DosExit(EXIT_THREAD, 0);
+}
+ 
+<b>See Also</b>
+ 
+<b>DosAllocSeg, DosExit, DosResumeThread, DosSuspendThread</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

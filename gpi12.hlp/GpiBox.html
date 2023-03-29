@@ -1,0 +1,118 @@
+<html>
+
+<head>
+<title>GpiBox (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiBox (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='arcs.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Area Primitives 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiCallSegmentMatrix.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+LONG GpiBox(hps, cmdControl, pptl, lHRound, lVRound)
+HPS hps;            /* presentation-space handle                  */
+LONG cmdControl;    /* fill and outline indicator                 */
+PPOINTL pptl;       /* address of structure for box corners       */
+LONG lHRound;       /* horizontal length of rounding-ellipse axis */
+LONG lVRound;       /* vertical length of rounding-ellipse axis   */
+ 
+The GpiBox function draws a rectangular box or a box with rounded corners.
+The function draws the box by drawing the outline of a rectangle. The
+current position specifies one corner and the point given by pptl specifies
+the other. The sides of the box are always parallel to the x and y axes. The
+function may fill the interior with the current fill pattern. If a rounded
+box is requested, the function rounds the corners of the rectangle using
+quarter ellipses. The lHRound and lVRound parameters specify the lengths of
+the major and minor axes for the ellipse. If either the lHRound or the
+<i>lVRound</i> parameter is zero, no rounding occurs.
+ 
+The current position is unchanged by this function.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>         Identifies the presentation space.
+ 
+<i>cmdControl</i>  Specifies whether to draw the box's interior and/or outline. It
+            can be one of the following values:
+ 
+            Value            Meaning
+            ────────────────────────────────────────────────────────────────
+            DRO_FILL         Fills the interior.
+ 
+            DRO_OUTLINE      Draws the outline.
+ 
+            DRO_OUTLINEFILL  Draws the outline and fills the interior.
+ 
+<i>pptl        </i>Points to the POINTL structure that contains the coordinates of
+            a corner of the box.
+ 
+<i>lHRound</i>     Specifies the horizontal length (in world coordinates) of the
+            full axis of the ellipse used for rounding at each corner.
+ 
+<i>lVRound</i>     Specifies the vertical length (in world coordinates) of the full
+            axis of the ellipse used for rounding at each corner.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK or GPI_HITS if the function is successful (it is
+GPI_HITS if the detectable attribute is set for the presentation space and a
+correlation hit occurs). The return value is GPI_ERROR if an error occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_BOX_CONTROL
+     PMERR_INV_BOX_ROUNDING_PARM
+     PMERR_INV_COORDINATE
+     PMERR_INV_HPS
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+<b>GpiBox</b> can be used in an area bracket but only if DRO_OUTLINE is used. If
+the current position is (x0,y0), and pptl is set to (x1,y1), the box is
+drawn from (x0,y0) to (x1,y0) to (x1,y1) to (x0,y1) to (x0,y0). This can
+affect the way the box is filled when drawn in an area.
+ 
+When correlating a segment, a box drawn using GpiBox will be "hit" if the
+box boundary intersects in the pick aperture. If the pick aperture lies
+within the box, a hit occurs only if the interior is drawn, that is, only if
+the DRO_FILL or DRO_OUTLINEFILL option is used.
+ 
+<b>Example</b>
+ 
+This example calls GpiBox to draw a series of rounded boxes, one inside
+another.
+ 
+POINTL ptl = { 100, 100 };
+SHORT i;
+ 
+for (i = 0; i &lt; 5; i++)
+    GpiBox(hps,            /* handle to a ps        */
+        DRO_OUTLINE,       /* fill the interior     */
+        (PPOINTL) &amp;ptl,    /* address of the corner */
+        i * 10L,           /* horizontal length     */
+        i * 10L);          /* vertical length       */
+ 
+<b>See Also</b>
+ 
+<b>GpiBeginArea, GpiEndArea, WinGetLastError, POINTL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

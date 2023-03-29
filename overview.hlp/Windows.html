@@ -1,0 +1,846 @@
+<html>
+
+<head>
+<title>About Windows (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Windows (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Using windows'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#window functions 1.2'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#control window messages 1.2'>Message Group</a><span class='grhilite'>►</span>    <span class='grhilite'>◄</span><a href='unknown#@L1'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#@L61'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                               About Windows
+ 
+This topic describes the portions of MS OS/2 that let you create and use
+windows; manage relationships between windows; and size, move, and display
+windows in your Presentation Manager application. You should also be
+familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='unknown#@L18'>Messages and message queues</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='unknown#@L23'>Window classes</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='unknown#@L24'>Window procedures</a><span class='grhilite'>►</span>
+ 
+A window is a rectangular area of the screen where an application displays
+output and receives input from the user. You might think of a window as a
+"graphics terminal" that shares the screen with other terminals. Only one
+"terminal" is active at a time, and when it is, a user can use the mouse and
+keyboard to interact with the application that owns the terminal.
+ 
+Unlike a graphics terminal, however, a window must be created by an
+application before it can be used. MS OS/2 does not create a window by
+default. This means that one of the first tasks of a Presentation Manager
+application is to create a window.
+ 
+<b>Desktop Windows</b>
+ 
+MS OS/2 automatically creates two windows: the desktop window and the
+desktop-object window. The desktop window is the base (bottom-most) window
+in the Presentation Manager session. It is the window that paints the
+background for this session. It serves as the base for all windows created
+and displayed by applications. The desktop-object window is like a desktop
+window that is never displayed. It serves as a base for windows that
+coordinate the activity of other windows that are not displayed.
+ 
+<b>Application Windows</b>
+ 
+Every application creates at least one window, called the main window, to
+serve as the "graphics terminal" for the application. The application also
+creates many other windows either directly or indirectly to carry out tasks
+related to the main window. In fact, most windows used by an application are
+composed of several different windows. Each window plays a part in
+displaying output and receiving input from the user.
+ 
+Typically, an application's main window is made up of several windows acting
+together as one. The main window is usually a frame window that contains a
+client window and one or more control windows, such as a title bar and a
+System menu.
+ 
+An application can use several types of windows: frame windows, client
+windows, control windows, dialog windows, message boxes, and menus.
+ 
+A frame window is a special window that the application uses as the base
+when constructing a main window or other composite window. A frame window
+provides basic features, such as borders and system-command processing, that
+a main window needs to conform to the MS OS/2 user-interface guidelines.
+ 
+A dialog window is a frame window that contains one or more control windows.
+Dialog windows are used almost exclusively for prompting the user for input.
+An application usually creates a dialog window when it needs additional
+information to complete a command. It then destroys the dialog window when
+the requested information has been entered.
+ 
+A message box is a frame window that an application uses to display a note,
+caution, or warning to the user. Message boxes are commonly used to inform
+the user of problems the application encounters while carrying out a task.
+ 
+A client window is the window in which the application displays the current
+document or data. For example, a desktop-publishing application displays the
+current page of a document in a client window. Most applications create at
+least one client window. The application must process input to the window
+and then display output.
+ 
+A control window is any window used in conjunction with another window to
+carry out useful input or output tasks, such as displaying messages or
+reading text. MS OS/2 provides several predefined control-window classes
+that can be used to create control windows. Control windows include buttons,
+entry fields, list boxes, menus, scroll bars, static text, and title bars.
+ 
+A menu is a control window that presents a list of commands and other menus
+to the user. The user chooses commands from the list by using a mouse or
+keyboard. The application then carries out the chosen task.
+ 
+Many simple applications create only a main window. The application manages
+the client window and allows the frame and control windows to operate as
+defined by MS OS/2.
+ 
+<b>Window Creation</b>
+ 
+An application creates windows by using a window-creation function, such as
+<b>WinCreateWindow</b>, and supplying information about the window to be created.
+An application can create one or more windows in any thread for which it has
+created a message queue. An application creates a message queue for a thread
+by using the WinCreateMsgQueue function after initializing the application
+for Presentation Manager by using the WinInitialize function.
+ 
+The following information must be supplied when creating a window:
+ 
+♦  Window class
+♦  Window name
+♦  Parent window
+♦  Window position relative to the parent window
+♦  Window position relative to its sibling windows (Z order)
+♦  Window width and height
+♦  Window styles
+♦  Owner window
+♦  Window identifier
+♦  Class-specific data
+ 
+Every window belongs to a window class. The window class defines how the
+window behaves and appears when operating. The chief component of the window
+class is the window procedure. The window procedure is a function that
+receives and processes all input and requests for action sent to the window
+by the system. The window class also defines the class styles. These tell MS
+OS/2 what initial window styles to give a window created with this class.
+ 
+A window can have a name. A window name is a text string that identifies the
+window for the user. The window name is typically displayed in the window or
+in a title bar within the window. How the name is used depends on the window
+class.
+ 
+Every window created has a parent window. The parent window provides the
+coordinate system used for positioning the window and defines the
+relationship the new window has with other windows in the system. The parent
+window also affects the behavior and appearance of the window. For example,
+when the parent window is hidden, the child window is also hidden.
+ 
+Every window has a position, size, and Z-order position. The position
+specifies the location on the screen of the window's lower-left corner. This
+position is relative to the lower-left corner of the parent window (in
+pels). A window's size is the width and height in the window (in pels). A
+window's Z-order position specifies the position of the window in the stack
+of overlapping windows. The window at the top of the Z order overlaps all
+sibling windows (that is, windows having the same parent window). A window
+at the bottom of the Z order is overlapped by all sibling windows. An
+application sets a window's Z-order position by placing it behind a given
+sibling window.
+ 
+Every window can have a style. The window style specifies how the window
+behaves or appears. For example, a window style can specify whether the
+window is visible or invisible when first created. A few window styles apply
+to all windows, but most apply to windows of specific window classes. The
+window procedure for that class interprets the style.
+ 
+A window can be owned by another window. An owner window is similar to a
+parent window, but it does not affect the behavior or appearance of the
+window in the same way. The owner window usually coordinates the activity of
+a window so that it can operate in conjunction with other windows. The
+window sends messages about its state to its owner window; the owner window
+sends messages about what action to carry out next.
+ 
+A window can have a window identifier. A window identifier is a way to
+uniquely identify a window that operates in conjunction with other windows.
+A window identifier is especially useful if a window sends information to
+the owner window.
+ 
+A window can have class-specific data. This data further defines how the
+window behaves and appears when first created. The system passes
+class-specific data to the window procedure. The window procedure then
+applies the data to the new window.
+ 
+<b>Window-Creation functions 1.2</b>
+ 
+The basic window-creation function is WinCreateWindow. The WinCreateWindow
+function takes window class, style, size, and position information and
+creates a new window. All other window-creation functions, such as
+<b>WinCreateStdWindow and WinCreateDlg, supply some of th</b>is information by
+default and create windows of a specific class or style.
+ 
+Although WinCreateWindow provides the most direct means of creating a
+window, most applications do not use it. Instead, they typically use the
+<b>WinCreateStdWindow function to create a main window an</b>d use the WinDlgBox or
+<b>WinCreateDlg</b> function to create dialog windows.
+ 
+The WinCreateMenu, WinLoadMenu, WinLoadDlg, WinMessageBox, and
+<b>WinCreateFrameControls</b> functions also create windows. Each of these
+functions substitutes for one or more calls to the WinCreateWindow function
+required to create a given window. For example, you can create a frame
+window, one or more control windows, and a client window, all in a single
+call to WinCreateStdWindow.
+ 
+<b>Window-Creation Messages</b>
+ 
+The system sends messages to the window procedure as it creates a window.
+Each window procedure receives a WM_CREATE message, specifying that the
+window is being created.
+ 
+The system also sends a WM_ADJUSTWINDOWPOS message, specifying the size and
+position for the window. This message allows the window procedure to adjust
+the size and position before they are actually applied to the window.
+ 
+The system also sends other messages. The number and order of these messages
+depend on the window class and style and on the function used to create the
+window.
+ 
+<b>Window Handles</b>
+ 
+When a window is created, the creation function returns a window handle. A
+window handle uniquely identifies the window and can be used in functions to
+direct the action of the function to the window. Window handles have the
+data type HWND; applications must use this type when declaring the variables
+that hold window handles.
+ 
+There are several special constants that can be used in place of a window
+handle in certain functions. For example, HWND_DESKTOP can be used in the
+<b>WinCreateWindow</b> function to specify the desktop window as the new window's
+parent window. Similarly, HWND_OBJECT represents the desktop-object window.
+HWND_TOP and HWND_BOTTOM represent the top and bottom positions when setting
+the Z-order position for a window.
+ 
+Although the NULL constant is not a window handle, it can be used in some
+functions to specify that no window is affected. For example, NULL can be
+used in the WinCreateWindow function to specify that there is no owner
+window. Some functions may return NULL, indicating that the given action
+applies to no window.
+ 
+<b>Window Size and Position</b>
+ 
+A window's size and position can be expressed as a bounding rectangle, given
+in coordinates relative to its parent window. The window's size and position
+can be explicitly specified when it is created, or the system can use
+default values. The window's size and position can be changed at any time.
+ 
+The default coordinate system for a window specifies that the point (0,0) is
+at the window's lower-left corner; coordinates increase upward and to the
+right.
+ 
+When two sibling windows overlap, the system must specify which window is
+displayed in front. This ordering of sibling windows is known as the Z
+order.
+ 
+<b>Window Styles</b>
+ 
+A window style is a value that specifies how a window behaves or appears in
+a given situation. Window styles let applications adapt windows of a given
+class for special circumstances. For example, an application can give a
+window the style WS_SYNCPAINT to cause it to paint immediately whenever any
+portion of the window becomes invalid. A window normally paints only if
+there are no messages waiting in the message queue.
+ 
+An application usually sets the window style when it creates the window. It
+can also set the window style after creation by using the WinShowWindow and
+<b>WinSetWindowULong</b> functions. MS OS/2 provides several standard window styles
+that apply to all windows. It also provides many styles for the predefined
+frame and control windows. The frame and control styles are unique to each
+predefined window class and can be used only for windows belonging to the
+corresponding class.
+ 
+Initially, the class styles of the window class used to create the window
+determine the window styles of the new window. If the window class has the
+style CS_SYNCPAINT, all windows created using that class have the style
+WS_SYNCPAINT by default.
+ 
+MS OS/2 has the following standard window styles:
+ 
+<b>Style            Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>WS_VISIBLE</i>       Makes the window visible. MS OS/2 draws the window on the
+                 screen unless overlapping windows completely obscure it.
+                 Windows without this style are hidden. If overlapping
+                 windows completely obscure the window, the window is still
+                 considered to be visible. Visibility simply means that MS
+                 OS/2 draws the window if it can.
+ 
+<i>WS_DISABLED</i>      Disables mouse and keyboard input to the window. This style
+                 is used to temporarily prevent the user from using the
+                 window.
+ 
+<i>WS_CLIPCHILDREN</i>  Prevents a window from painting over its child windows.
+ 
+<i>WS_CLIPSIBLINGS</i>  Prevents a window from painting over its sibling windows.
+ 
+<i>WS_PARENTCLIP</i>    Prevents a window from painting over its parent window.
+ 
+<i>WS_SAVEBITS</i>      Saves the image under the window as a bitmap. When the
+                 window is moved or hidden, the system restores the image by
+                 copying the bits.
+ 
+<i>WS_SYNCPAINT     Causes the window t</i>o immediately receive WM_PAINT messages
+                 after a part of the window becomes invalid. Without this
+                 style, the window receives WM_PAINT messages only if no
+                 other message is waiting to be processed.
+ 
+<i>WS_MINIMIZED</i>     Reduces the window to the minimum size.
+ 
+<i>WS_MAXIMIZED</i>     Enlarges the window to the maximum size.
+ 
+<i>WS_GROUP</i>         Identifies the window as the first dialog item in a group
+                 of dialog items. This style is used with controls in dialog
+                 windows to permit the user to move among the controls by
+                 pressing the ARROW keys.
+ 
+<i>WS_TABSTOP</i>       Identifies the window as a tabstop window. This style is
+                 used with controls in dialog windows to permit the user to
+                 move to the control by pressing the TAB key.
+ 
+<b>Window Destruction</b>
+ 
+An application can destroy the windows it has created. When a window is
+destroyed, the system hides the window if it is visible, and then removes
+any internal data associated with the window. This invalidates the window
+handle; it can no longer be used in functions. An application destroys a
+window by using the WinDestroyWindow function.
+ 
+Most applications destroy the windows they create soon after creating them.
+For example, an application usually destroys any dialog windows as soon as
+the application has sufficient input from the user to continue its task. An
+application eventually destroys the main window of the application (before
+terminating). In general, an application must destroy all the windows it
+creates.
+ 
+Destroying a window does not affect the window class from which the window
+is created. New windows can still be created using that class and any
+existing windows of that class continue to operate.
+ 
+Destroying a window also destroys that window's child and owned windows. The
+<b>WinDestroyWindow function sends a WM_DESTROY mes</b>sage to the window, which in
+turn sends the same message to all its child and owned windows. Each child
+and owned window passes the message on to other child and owned windows. In
+this way, all descendant windows of the window being destroyed are also
+destroyed.
+ 
+Before destroying a window, an application should save or remove any data
+associated with the window and release any resources. For example, a
+presentation space created for the window by the WinGetPS function must be
+released by calling the WinReleasePS function. This must be done before
+calling the WinDestroyWindow function. If a presentation space is associated
+with the device context for the window, the application should disassociate
+or destroy the presentation space by using the GpiAssociate or GpiDestroyPS
+function before calling WinDestroyWindow. Failing to release a resource can
+cause an error.
+ 
+The WinDestroyWindow function may send several messages to a window. The
+following is a list of possible messages sent by WinDestroyWindow:
+ 
+<b>Message                  Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>WM_DESTROY</i>               Always sent to the window being destroyed after it
+                         has been hidden, but before its child windows have
+                         been destroyed.
+ 
+<i>WM_ACTIVATE</i>              Sent with the first message parameter equal to
+                         FALSE if the window being destroyed is the active
+                         window.
+ 
+<i>WM_OTHERWINDOWDESTROYED</i>  Sent to all main windows of the window being
+                         destroyed and to its descendant windows, if the
+                         window being destroyed has been registered with the
+                         WinRegisterWindowDestroy function.
+ 
+<i>WM_RENDERALLFMTS</i>         Sent if the clipboard owner is being destroyed and
+                         there are unrendered formats on the clipboard.
+ 
+If the window being destroyed is the active window, both the active and
+focus states are transferred to another window. The window that becomes the
+active window is the next window (as defined by the ALT+ESC key
+combination). The new active window determines which window has the input
+focus.
+ 
+<b>Locked Windows</b>
+ 
+A window can be locked. An application typically locks a window to prevent
+it from being destroyed. This is useful whenever a window needs to access
+data that may be lost if the associated window is destroyed. An application
+can lock a window by using the WinLockWindow function.
+ 
+Each window has a lock count. When a window is created, its lock count is
+set to zero, meaning that the window is unlocked. An application can use the
+<b>WinLockWindow</b> function to increment or decrement the lock count. If the lock
+count is greater than zero, the window is locked. If the lock count is zero,
+the window is unlocked. The lock count can never be less than zero. An
+application can retrieve the current lock count by using the
+<b>WinQueryWindowLockCount</b> function.
+ 
+The WinQueryWindow, WinQueryActiveWindow, and WinQuerySysModalWindow
+functions also lock a window if specified.
+ 
+<b>Disabled Windows</b>
+ 
+A window can be disabled. A disabled window receives no keyboard or mouse
+input. An application typically disables a window to prevent the user from
+using the window. For example, the application may disable a push button in
+a dialog window to prevent the user from choosing it. An application can
+enable a disabled window at any time. Enabling a window restores normal
+input. An application enables or disables a window by using the
+<b>WinEnableWindow</b> function.
+ 
+By default, a window is enabled when created. The WS_DISABLED style can be
+specified, however, to disable a new window. If an application uses the
+<b>WinEnableWindow</b> function to disable an existing window, that window also
+loses the keyboard focus. The keyboard focus is set to NULL, meaning no
+window has the focus. If a child window or other descendant window has the
+keyboard focus, the descendant window loses it when the window is disabled.
+ 
+An application can determine whether a window is disabled by using the
+<b>WinIsWindowEnabled</b> function.
+ 
+<b>System-Modal Windows</b>
+ 
+System-modal windows require the user to respond immediately to warnings
+about the state of the system. Because the system-modal window receives all
+keyboard and mouse input, all other windows are effectively disabled when
+the system-modal window is set; the user cannot continue working in other
+windows until the system-modal window has been cleared. An application sets
+and clears the system-modal window by using the WinSetSysModalWindow
+function.
+ 
+Due to its absolute control of input, applications must use care when
+setting a system-modal window. Ideally, an application uses a system-modal
+window only when there is danger of losing data if the user does not respond
+to the problem immediately.
+ 
+Although an application can destroy a system-modal window, the new active
+window will also be the new system-modal window. An application can also
+make another window active while the system-modal window exists. Again, the
+new active window is also the new system-modal window. In general, once a
+system-modal window is set, a system-modal window will continue to exist in
+the Presentation Manager session until explicitly cleared.
+ 
+<b>Window Data</b>
+ 
+Every window has an associated data structure. The window data structure
+contains all the information specified for the window when it was created
+and any additional information supplied for the window since creation.
+Although the exact number and meaning of fields in the window data structure
+is private to the system, an application can directly access any of the
+following fields:
+ 
+♦  Pointer to window-class data structure
+♦  Pointer to window procedure
+♦  Parent-window handle
+♦  Owner-window handle
+♦  Handle of first child window
+♦  Handle of next sibling window
+♦  Window size and position (expressed as a rectangle)
+♦  Lock count
+♦  Window style
+♦  Window identifier
+♦  Update-region handle
+♦  Message-queue handle
+ 
+An application can examine and modify these fields by using functions such
+as WinQueryWindowUShort and WinSetWindowUShort. These functions let an
+application access fields, such as the lock count, which are stored as
+16-bit integers. Other functions let an application access fields containing
+32-bits integers and pointers. There are several fields that indirectly
+affect the fields in the window data structure. For example, the
+<b>WinLockWindow function modifies the loc</b>k-count field; the WinSubclassWindow
+function replaces the window-procedure pointer.
+ 
+An application can extend the number of available fields in the window data
+structure by specifying a count of extra bytes when it registers the
+corresponding window class. The window procedure can then use these bytes to
+store information about the window. Functions such as WinQueryWindowUShort
+and WinSetWindowUShort give direct access to the extra bytes.
+ 
+If a window needs more than a few bytes of storage added to the window data
+structure, using extra bytes alone is not the best solution. One common
+alternative is to dynamically allocate some memory and then store a pointer
+to that dynamic memory in the extra bytes of the window data structure.
+ 
+<b>Subclassed Windows</b>
+ 
+A subclassed window is any window whose original window procedure has been
+replaced with another window procedure. The original window procedure is
+specified by the window class used to create the window. An application
+typically subclasses a window (replaces the window procedure) so that it can
+support additional capabilities in a window created with a given class. For
+example, an application may subclass a push-button control so that it can
+add sound when the user chooses the button. An application subclasses a
+window by using the WinSubclassWindow function.
+ 
+Typically, a window procedure used to subclass a window will pass most (if
+not all) messages on to the original window procedure. The usual goal of
+subclassing is to add capability. The WinSubclassWindow function returns the
+address of the original window procedure, making it easy to call the
+original function from the new window procedure. The following code fragment
+shows the general format of a window procedure used for subclassing:
+ 
+PFNWP pfnwp;
+ 
+main() {
+ 
+    /* Subclass in main function or other window procedure. */
+ 
+    pfnwp = WinSubclassWindow(hwnd, MySubClass);
+}
+ 
+MRESULT EXPENTRY MySubClass(hwnd, usMessage, mp1, mp2)
+HWND hwnd;
+USHORT usMessage;
+MPARAM mp1;
+MPARAM mp2;
+{
+    switch (usMessage) {
+      .
+      . /* Process messages. */
+      .
+    }
+    return (pfnwp(hwnd, usMessage, mp1, mp2));
+}
+ 
+Note that the replacement window procedure calls the original window
+procedure instead of the WinDefWindowProc function.
+ 
+An application can subclass only one window at a time. It cannot subclass an
+entire class.
+ 
+<b>Window Relationships</b>
+ 
+Window relationships define how windows interact with each other on the
+screen and through messages. There are parent-child window relationships and
+ownership relationships.
+ 
+The parent-child relationship determines how a window looks when drawn on
+the screen. It also determines what happens to a window when a related
+window is destroyed or hidden. The parent-child rules apply to all windows
+at all times and cannot be modified.
+ 
+Ownership determines how windows communicate using messages. Cooperative
+windows define the rules of ownership and then carry them out. Although some
+windows, such as windows belonging to the preregistered, public window class
+WC_FRAME, have quite complex rules of ownership, the application ordinarily
+defines the ownership rules.
+ 
+<b>Parent-Child Relationship</b>
+ 
+Most windows have a parent window. (The exceptions to this rule are the
+desktop and the desktop-object windows. These windows, created by the system
+when it first starts, have no parent windows.) An application sets the
+parent window when it creates the window; the system uses the parent window
+to determine where and how to draw the new window, as well as when to
+destroy the window.
+ 
+A window is drawn relative to its parent window. The coordinates given to
+specify the position of a window's lower-left corner are relative to the
+lower-left corner of its parent window. For example, a window whose
+coordinates are (10,10) is placed 10 pels right and 10 pels up from the
+lower-left corner of its parent window. A window is a top-level window if
+its parent window is the desktop window. Top-level windows are drawn
+relative to the lower-left corner of the screen (the desktop window's
+lower-left corner).
+ 
+Windows with the same parent window are called sibling windows. All
+top-level windows are sibling windows since they share a common parent
+window, the desktop window. Sibling windows can overlap; an application or a
+user can arrange the windows so that some appear on top of others. Every
+sibling window has a Z-order position that specifies where it lies in the
+stack of overlapping windows. The parent window for the sibling windows is
+always at the bottom of the stack.
+ 
+A window is clipped to its parent window. This means that no part of a child
+window is ever drawn outside of its parent window. If an application creates
+a child window that is larger than the parent window or positions a child
+window so that some or all of the window extends beyond the edges of the
+parent window, the system automatically clips (does not draw) the portion of
+the child window that extends beyond the edges. Depending on the window
+styles for a window, a window may also be clipped to its child and its
+sibling windows. When a window has the style WS_CLIPCHILDREN or
+WS_CLIPSIBLINGS, the system clips the window.
+ 
+A window is destroyed when its parent window is destroyed. When the parent
+window is destroyed, the system sends WM_DESTROY messages to each child
+window. This is convenient for composite windows (for example, the
+application's main window) since an application needs to destroy only the
+parent window; all the related windows, including the client window, are
+destroyed automatically. The parent window is always the last window to be
+destroyed. This allows the parent window to use any data saved or left
+behind by its child windows.
+ 
+While every window has only one parent window, a window can have any number
+of child windows. Any child window can have child windows. Each child window
+in this chain of windows is a called a descendant window of the original
+parent window. Immediate child windows are child windows directly related to
+the parent window, not just descendant windows.
+ 
+An application can change a window's parent window at any time. Changing the
+parent window changes where and how the child window is drawn.
+ 
+<b>Ownership</b>
+ 
+Any window can have an owner window. An owner is a window, not necessarily a
+parent window, that controls some aspect of another window. Applications
+typically use ownership to establish a connection between windows so that
+together they can carry out useful tasks. For example, the title bar in an
+application's main window is owned by the frame window. Together they let
+the user move the entire main window by clicking the mouse in the title bar.
+An application can set the owner window when it creates the window, or it
+can set the owner window at a later time.
+ 
+Ownership establishes a relationship between windows that is independent of
+the parent-child relationship. Unlike parent and child windows, there are no
+predefined rules for how the owner and owned windows interact. The window
+procedures for the owner and owned windows must carry out any special
+interactions specified.
+ 
+The preregistered, public window classes provided by MS OS/2 recognize
+ownership. Control windows, created with classes such as WC_TITLEBAR and
+WC_SCROLLBAR, notify their owners of events; frame windows, created using
+the WC_FRAME class, receive and process notification messages from the
+control windows they own. For example, a title-bar control sends a
+notification message to its owner when it receives a mouse click. If the
+owner is a frame window, the frame window receives the notification message
+and prepares to move the frame window and its child windows.
+ 
+Owner and owned windows must be created by the same thread; that is, they
+must belong to the same message queue. Since ownership is independent of the
+parent-child relationship, the owner and owned windows do not have to be
+descendants of the same parent window. This means one window can be a
+descendant of the desktop window and the other a descendant of the
+desktop-object window. This can affect how windows are destroyed. Destroying
+the owner window does not necessarily destroy the owned window. An
+application must explicitly destroy any owned window that is not a
+descendant window of the owner.
+ 
+Frame windows often have owned windows that are not descendants (they are
+sibling windows instead). A frame window has the following special
+properties:
+ 
+♦  Destroys all owned windows, even if they are not descendants, when the
+   frame window is destroyed.
+ 
+♦  Moves owned windows when the frame window moves. The owned windows that
+   are not descendants maintain their position relative to the upper-left
+   (not the usual lower-left) corner of the owner window. Any owned window
+   with the style FS_NOMOVEWITHOWNER does not move.
+ 
+♦  Changes the Z-order position of all owned windows when the frame window
+   changes.
+ 
+♦  Hides all owned windows when the frame window is minimized or hidden.
+   Owned windows hidden in this way are restored when the frame window is
+   restored.
+ 
+If an application needs the same special processing for its own window
+classes, it must provide that support in the window procedures for those
+classes.
+ 
+<b>Object Windows</b>
+ 
+Any descendant of the desktop-object window is called an object window. An
+object window is like any other window but it is not displayed. Applications
+typically use object windows to provide services for windows. For example,
+an application might use an object window to manage a shared database. The
+advantage of using an object window in this way is that a window can request
+information from the database by sending a message to the object window and
+receive a reply as a message.
+ 
+Because object windows are not displayed, the window procedure for an object
+window does not have to process input and paint messages. This means that an
+application can use object windows just as it would other objects in
+object-oriented environments. The object window processes messages that
+affect the data belonging to the object.
+ 
+The rules for parent-child relationship and ownership also apply to object
+windows. In particular, changing the parent window of an object window to
+the desktop window or to a descendant of the desktop window causes the
+system to display the window if it is visible.
+ 
+<b>Visibility</b>
+ 
+A window can be visible or invisible. The system displays visible windows on
+the screen. It hides invisible windows by not drawing them. If a window is
+visible, the user can supply input to the window and view output. If a
+window is invisible, the window is effectively disabled. An application sets
+a window's visibility state when it creates the window. Later, a user or the
+application can change these initial values.
+ 
+A window is visible if the style WS_VISIBLE is set for the window. An
+application can set this style when it creates the window. By default, the
+<b>WinCreateWindow</b> function creates invisible windows unless the WS_VISIBLE
+style is given. After a window is created, an application typically hides a
+window to hide the details of operation from the user. For example, an
+application may keep a new window invisible while it customizes the window's
+appearance.
+ 
+Even if a window is visible, the user may not be able to see the window on
+the screen. Other windows may completely overlap the window or the window
+may have been moved beyond the edge of the screen. The window is considered
+visible but it cannot be seen.
+ 
+A visible window is subject to the clipping rules established by its
+parent-child relationship. If the window's parent window is not visible, the
+window will not be visible. Since a child window is drawn relative to the
+parent's lower-left corner, if the parent window is moved beyond the edge of
+the screen, the child window will also move.
+ 
+A user may move only part of the parent window containing the child window
+off the edge of the screen, so although the window and its parent window are
+visible, the user may not be able to see them. An application determines
+whether the user can actually see a visible window by checking the window's
+current position.
+ 
+<b>Size</b>
+ 
+Every window has a size (width and height) given in pels, in the range 0
+through 65,535. A window can have zero width and/or height. A window with
+zero width or height is not drawn on the screen even though it may be
+visible.
+ 
+Although an application can create very large windows, it should consider
+the size of the screen when choosing a window size. One way to choose an
+appropriate size is to use the WinGetMaxPosition function to retrieve the
+size of the maximized window. A window that is larger than its maximized
+size will also be larger than the screen.
+ 
+An application can retrieve the current size of the window by using the
+<b>WinQueryWindowRect</b> function.
+ 
+<b>Position</b>
+ 
+Every window has a position. The position is specified as the coordinates of
+the window's lower-left corner. The coordinates, sometimes called window
+coordinates, are always relative to the lower-left corner of the parent
+window.
+ 
+To improve drawing performance, a frame window may adjust its horizontal
+position so that it is a multiple of 8, relative to the screen origin (the
+lower-left corner of the screen). Coordinates that are multiples of 8
+correspond to byte boundaries in the screen-memory bitmap. It is usually
+faster to draw starting at a byte boundary. An application can override this
+action by using the FCF_NOBYTEALIGN style when creating the window.
+ 
+<b>Size and Position Messages</b>
+ 
+A window receives messages when it changes size or position. Before a change
+is actually made, the system may send a WM_ADJUSTWINDOWPOS message to allow
+the window procedure to make final adjustments to the window's size and
+position. This message includes an SWP structure that contains the width,
+height, and position requested. If the window procedure adjusts these values
+in the structure, the system uses the adjusted values to draw the new
+window. The WM_ADJUSTWINDOWPOS message is not sent if the change is a result
+of a call to the WinSetWindowPos function and the SWP_NOADJUST constant is
+specified.
+ 
+After a change has been made to a window, the system sends a WM_SIZE message
+to specify the new size of the window. If the window has the class style
+CS_MOVENOTIFY, the system also sends a WM_MOVE message. The WM_MOVE message
+includes the new position for the window. The system sends a WM_SHOW message
+if the visibility of the window has changed.
+ 
+<b>Z Order</b>
+ 
+Every window has a Z-order position. Imagine an axis extends outward from
+the screen toward the viewer. A window at the top of the Z order is
+displayed in front of its sibling windows when the windows overlap. A window
+at the bottom of the Z order is displayed behind its sibling windows when
+the windows overlap.
+ 
+<b>Maximized and Minimized Windows</b>
+ 
+A maximized window is a window that has been enlarged so it fills the
+screen. Although a window's size can be set so it exactly fills the screen,
+a maximized window is slightly different; the system automatically moves the
+window's title bar to the top of the screen and sets the WS_MAXIMIZED style
+for the window.
+ 
+A minimized window is a window whose size has been reduced so that it is
+exactly the size of an icon. Like a maximized window, a minimized window is
+more than just a window of a given size. The system typically moves the
+minimized window to the lower part of the screen and sets the WS_MINIMIZED
+style for that window. The lower part of the screen is sometimes call the
+icon area. The system moves a minimized window into the first available icon
+position in the icon area if no other position is specified.
+ 
+If a window is created with the styles WS_MAXIMIZED or WS_MINIMIZED, the
+system draws the window as a maximized or minimized window.
+ 
+An application can restore a maximized or minimized window to its previous
+size and position.
+ 
+<b>Redrawing Windows</b>
+ 
+After the system moves or changes the size of a window, it may invalidate
+all or part of the window. If at all possible, the system tries to preserve
+the contents of the window and simply copy them to the new position. But if
+a window's size has increased, the window must fill the area exposed by the
+size change. If a window has moved from behind an overlapping window, any
+area that was formerly obscured by the other window must be drawn. In these
+cases, the system invalidates the exposed areas and the window receives a
+<b>WM_PAINT</b> message.
+ 
+An application can require that the system invalidate the entire window for
+each move or size change by setting the CS_SIZEREDRAW class style in the
+corresponding window class. This class style is typically used for
+applications that use the window's current size and position to determine
+how to draw the window. For example, a clock application may always draw the
+face of the clock so that it exactly fills the window.
+ 
+An application can also explicitly specify which parts of the window to
+preserve during a move or size change. Before any change is made, the system
+sends a WM_CALCVALIDRECTS message to windows that do not have the style
+CS_SIZEREDRAW. This allows the window procedure to specify what part of the
+window to save and where to align it after the move or size change.
+ 
+<b>System Commands</b>
+ 
+An application that has a window with a System menu can change the size and
+position of that window by sending system commands. The system commands are
+usually generated by the user choosing commands from the System menu. An
+application can emulate the user action by sending a WM_SYSCOMMAND message
+to the window.
+ 
+Some of the system commands are listed here:
+ 
+<b>Command      Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>SC_SIZE</i>      Starts a size command. The user can change the size of the
+             window by using the mouse or keyboard.
+ 
+<i>SC_MOVE</i>      Starts a move command. The user can move the window by using
+             the mouse and keyboard.
+ 
+<i>SC_MINIMIZE</i>  Minimizes the window.
+ 
+<i>SC_MAXIMIZE</i>  Maximizes the window.
+ 
+<i>SC_RESTORE</i>   Restores a minimized or maximized window to its previous size
+             and position.
+ 
+<i>SC_CLOSE     Closes the </i>window. This command sends a WM_CLOSE message to the
+             window. The window carries out any steps needed to clean up and
+             destroy itself.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

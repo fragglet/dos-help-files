@@ -1,0 +1,127 @@
+<html>
+
+<head>
+<title>DosQFileInfo (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosQFileInfo (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80cf.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosQFileMode.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosQFileInfo(hf, usInfoLevel, pvInfo, cbInfoBuf)
+HFILE hf;              /* handle of file about which data is sought */
+USHORT usInfoLevel;    /* level of file data required               */
+PVOID pvInfo;          /* pointer to file-data buffer               */
+USHORT cbInfoBuf;      /* length of file-data buffer                */
+ 
+The DosQFileInfo function retrieves information about a specific file. The
+file information consists of the date and time the file was created, the
+date and time it was last accessed, the date and time it was last written
+to, the size of the file, and its attributes. It can also be used to return
+information about the extended attributes used for a file.
+ 
+The file information is based on the most recent call to the DosClose or the
+<b>DosBufReset</b> function.
+ 
+The DosQFileInfo function is a family API function.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hf</i>           Identifies the file about which information is to be retrieved.
+             This handle must have been created by using the DosOpen
+             function.
+ 
+<i>usInfoLevel</i>  Specifies the level of file information required. It may be one
+             of the following values:
+ 
+             Value                 Meaning
+             ───────────────────────────────────────────────────────────────
+             FIL_STANDARD          This will return a FILESTATUS structure.
+                                   Any time and data fields in the structure
+                                   that the file-system device does not
+                                   support are set to zero.
+ 
+             FIL_QUERYEASIZE       This will return a FILESTATUS2 structure,
+                                   which contains the same information as
+                                   FILESTATUS plus the size of the structure
+                                   used by the FIL_QUERYEASFROMLIST value
+                                   (for MS OS/2 version 1.2, this size
+                                   cannot exceed 65,535 bytes).
+ 
+             FIL_QUERYEASFROMLIST  This will return an EAOP structure that
+                                   contains a subset of the file's
+                                   extended-attribute information.
+ 
+<i>pvInfo</i>       Points to the structure that receives the file information.
+             This structure will be FILESTATUS for FIL_STANDARD information,
+             FILESTATUS2 for FIL_QUERYEASIZE information, and EAOP for
+             FIL_QUERYEASFROMLIST information.
+ 
+<i>cbInfoBuf</i>    Specifies the length (in bytes) of the buffer that receives the
+             file information.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_INVALID_EA_NAME
+     ERROR_EA_LIST_INCONSISTENT
+     ERROR_BUFFER_OVERFLOW
+     ERROR_DIRECT_ACCESS_HANDLE
+     ERROR_INVALID_HANDLE
+     ERROR_INVALID_LEVEL
+ 
+<b>Comments</b>
+ 
+Prior to the function being called, the fpFEAlist field in the EAOP
+structure should be initialized so that it points to the FEALIST structure
+that contains the relevant FEA structure. The cbList field in the FEALIST
+structure is valid, giving the size of the FEA structure.
+ 
+If the FEALIST structure is not large enough to hold the returned
+information (indicated by ERROR_BUFFER_OVERFLOW), cbList will still be
+valid, assuming there is at least enough space for it. Its value will be the
+size of the entire set of extended attributes for the file, even if only a
+subset of attributes was requested.
+ 
+<b>Example</b>
+ 
+This example opens the file abc, calls the DosQFileInfo function to retrieve
+the current allocated size, and then calls the DosNewSize function to
+increase the file's size by 1K:
+ 
+HFILE hf;
+USHORT usAction;
+FILESTATUS fstsFile;
+DosOpen("abc", &amp;hf, &amp;usAction, 0L, FILE_NORMAL,
+    FILE_OPEN | FILE_CREATE,
+    OPEN_ACCESS_WRITEONLY | OPEN_SHARE_DENYNONE, 0L);
+DosQFileInfo(hf,                 /* file handle                 */
+    FIL_STANDARD,                /* level of information        */
+    &amp;fstsFile,                   /* address of file-data buffer */
+    sizeof(fstsFile));           /* size of data buffer         */
+DosNewSize(hf, fstsFile.cbFileAlloc + 1024L);
+ 
+<b>See Also</b>
+ 
+<b>DosBufReset, DosClose, DosNewSize, DosOpen, DosQFileMode, DosQPathInfo,</b>
+<b>DosSetFileInfo, EAOP, FILESTATUS, FILESTATUS2</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

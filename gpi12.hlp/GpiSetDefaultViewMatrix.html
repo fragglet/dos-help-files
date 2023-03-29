@@ -1,0 +1,99 @@
+<html>
+
+<head>
+<title>GpiSetDefaultViewMatrix (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiSetDefaultViewMatrix (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='coordinate_spaces.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Coordinate Spaces and Transformations 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiSetDefTag.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPITRANSFORMS
+ 
+BOOL GpiSetDefaultViewMatrix(hps, cElements, pmatlf, flType)
+HPS hps;             /* presentation-space handle                  */
+LONG cElements;      /* number of elements                         */
+PMATRIXLF pmatlf;    /* address of structure with transform matrix */
+LONG flType;         /* transformation type                        */
+ 
+The GpiSetDefaultViewMatrix function sets the default viewing
+transformation. The function sets the transformation by adding or replacing
+the existing transformation matrix with the matrix pointed to by the pmatlf
+parameter. The function adds, preempts, or replaces the existing
+transformation matrix as specified by the flType parameter.
+ 
+The GpiSetDefaultViewMatrix function requires a nine-element matrix to set
+the default viewing transformation. If the specified matrix does not contain
+nine elements, the function uses the corresponding elements of the identity
+matrix for each unspecified element. The cElements parameter specifies the
+number of elements in the matrix. If this parameter equals zero, the
+identity matrix is used.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>cElements</i>  Specifies the number of elements in the matrix to set. It can be
+           any integer in the range 0 to 9.
+ 
+<i>pmatlf     Points </i>to a MATRIXLF structure that contains the transformation
+           matrix.
+ 
+<i>flType</i>     Specifies how a specified transformation matrix should be used to
+           modify the default viewing transformation. It can be one of the
+           following values:
+ 
+           Value              Meaning
+           ─────────────────────────────────────────────────────────────────
+           TRANSFORM_ADD      Additive. The specified transformation matrix
+                              is combined with the existing default viewing
+                              transformation, in the order of the existing
+                              transformation first, the new transformation
+                              second. This option is useful for incremental
+                              updates to transformations.
+ 
+           TRANSFORM_PREEMPT  Preemptive. The specified transformation
+                              matrix is combined with the existing default
+                              viewing transformation, in the order of the
+                              new transformation first, the existing
+                              transformation second.
+ 
+           TRANSFORM_REPLACE  New/replace. The previous default viewing
+                              transformation is discarded and replaced by
+                              the specified transformation matrix.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_INV_MATRIX_ELEMENT
+     PMERR_INV_TRANSFORM_TYPE
+     PMERR_PS_BUSY
+ 
+<b>See Also</b>
+ 
+<b>GpiQueryDefaultViewMatrix, WinGetLastError, MATRIXLF</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

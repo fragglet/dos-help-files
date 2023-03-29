@@ -1,0 +1,89 @@
+<html>
+
+<head>
+<title>KbdGetCp (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> KbdGetCp (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Code page functions'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Keyboard 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='kbd.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='KbdGetFocus.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_KBD
+ 
+USHORT KbdGetCp(ulReserved, pidCodePage, hkbd)
+ULONG ulReserved;       /* must be zero                      */
+PUSHORT pidCodePage;    /* pointer to code-page identifier   */
+HKBD hkbd;              /* keyboard handle                   */
+ 
+The KbdGetCp function retrieves the current code-page identifier for the
+specified logical keyboard. The code-page identifier defines which
+translation table MS OS/2 uses to translate keystrokes into character
+values. The KbdGetCp function copies the identifier to the variable pointed
+to by the pidCodePage parameter.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>ulReserved</i>   Specifies a reserved value; must be zero.
+ 
+<i>pidCodePage</i>  Points to the variable that receives the code-page identifier.
+             The following are the valid code-page numbers:
+ 
+             Number  Code page
+             ───────────────────────────────────────────────────────────────
+             437     United States
+ 
+             850     Multilingual
+ 
+             860     Portuguese
+ 
+             863     French-Canadian
+ 
+             865     Nordic
+ 
+<i>hkbd</i>         Identifies the logical keyboard. The handle must have been
+             created previously by using the KbdOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_KBD_DETACHED
+     ERROR_KBD_INVALID_HANDLE
+     ERROR_KBD_INVALID_CODEPAGE
+ 
+<b>Comments</b>
+ 
+The code-page identifier may be any value specified in a codepage command in
+the config.sys file. The identifier is 0x0000 if MS OS/2 is using the
+default translation table for the logical keyboard.
+ 
+<b>Example</b>
+ 
+This example calls the KbdGetCp function to identify which code page is
+being used to translate scan codes for the specified logical keyboard.
+ 
+USHORT idCodePage;
+KbdGetCp(0L,                /* must be zero                    */
+    &amp;idCodePage,            /* pointer to code-page identifier */
+    0);                     /* keyboard handle                 */
+ 
+<b>See Also</b>
+ 
+<b>KbdOpen, KbdSetCp</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

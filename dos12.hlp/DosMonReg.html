@@ -1,0 +1,94 @@
+<html>
+
+<head>
+<title>DosMonReg (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosMonReg (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='monitors.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Device Monitors 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80cb.html'>Changes</a><span class='grhilite'>►</span>        </i>       <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosMonWrite.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMONITORS
+ 
+USHORT DosMonReg(hmon, pbInBuf, pbOutBuf, fPosition, usIndex)
+HMONITOR hmon;       /* monitor handle to register             */
+PBYTE pbInBuf;       /* pointer to structure for input buffer  */
+PBYTE pbOutBuf;      /* pointer to structure for output buffer */
+USHORT fPosition;    /* position flag                          */
+USHORT usIndex;      /* index                                  */
+ 
+The DosMonReg function registers a monitor by placing it in a chain of other
+monitors for the same device. Each monitor receives input from or sends
+output to the device in the order in which it appears in the chain.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hmon</i>       Identifies the monitor to register. This handle must have been
+           created previously by using the DosMonOpen function.
+ 
+<i>pbInBuf    Points to </i>the MONIN structure that receives data from the device
+           driver or from the previous monitor in the chain.
+ 
+<i>pbOutBuf   Points to the</i> MONOUT structure that receives data for the next
+           monitor in the chain.
+ 
+<i>fPosition</i>  Specifies the position of the monitor in the chain of input and
+           output. This parameter can be one of the following values:
+ 
+           Value            Meaning
+           ─────────────────────────────────────────────────────────────────
+           MONITOR_BEGIN    Place the monitor at the beginning of the chain,
+                            ahead of any other monitors in the chain.
+ 
+           MONITOR_DEFAULT  Place the monitor anywhere in the chain.
+ 
+           MONITOR_END      Place the monitor at the end of the chain.
+ 
+           Any of the fPosition values can be combined with MONITOR_SPECIAL
+           by using the OR operator to allow the monitor to continue to
+           receive data even if the device is disabled or another monitor
+           further down the chain is blocked. If the MONITOR_SPECIAL
+           constant is not set, no monitors will receive input when the
+           device driver is disabled or any monitor is blocked.
+ 
+<i>usIndex</i>    Specifies a device-specific value. If the device is the keyboard,
+           usIndex specifies the ID for the screen group to monitor. If no
+           screen-group number is available (the monitor is detached), the
+           ID of the current foreground screen group can be obtained by
+           calling DosGetInfoSeg. (The current foreground screen group is
+           the group that most recently called KbdCharIn.)
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_MON_BUFFER_TOO_SMALL
+     ERROR_MON_INVALID_HANDLE
+     ERROR_MON_INVALID_PARMS
+     ERROR_NOT_ENOUGH_MEMORY
+ 
+<b>Comments</b>
+ 
+The MONIN and MONOUT structures must be in the same segment.
+ 
+<b>See Also</b>
+ 
+<b>DosGetInfoSeg, DosMonClose, DosMonOpen, DosMonRead, DosMonWrite, KbdCharIn,</b>
+<b>MONIN, MONOUT</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

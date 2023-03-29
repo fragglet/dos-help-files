@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>Using Timers (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Timers (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Timers.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Timer functions 1.2'>Function Group</a><span class='grhilite'>►</span>                     <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Video_Input_and_Output.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                                Using Timers
+ 
+Timers are typically used to let a program pause before processing user
+input or to let a program carry out a task at a given time. Since timers for
+Presentation Manager applications are provided through the message queue,
+only non-Presentation Manager programs use the MS OS/2 timer functions.
+ 
+<b>Counting Synchronously</b>
+ 
+You can cause your program to pause for a given number of seconds by using
+the DosSleep function. The DosSleep timer function waits the specified
+number of milliseconds before returning control. The following code fragment
+causes the program to pause for 60 seconds (60,000 milliseconds):
+ 
+DosSleep(60000L);
+ 
+<b>DosSleep</b> actually yields execution control to the system, so it is also a
+convenient way to let other processes or threads execute while you pause.
+This is useful if two processes (or two threads) need to synchronize their
+execution. DosSleep yields control even if you specify zero milliseconds. As
+long as the processes have equal priority, control does not return from
+<b>DosSleep</b> until the other process has had an opportunity to execute.
+ 
+<b>Counting Asynchronously</b>
+ 
+If a program wants to carry out other tasks while the timer counts out the
+interval, it can use the DosTimerAsync function. This function sets a timer
+without stopping the program. When the interval elapses, the system clears a
+given semaphore. The program must monitor the semaphore to determine when
+the time has elapsed.
+ 
+The following code fragment creates a system semaphore and then calls the
+<b>DosTimerAsync</b> function to count an interval while the program performs other
+activities:
+ 
+DosCreateSem(CSEM_PUBLIC, &amp;hSem, "\\sem\\abc.sem");
+DosSemSet(hSem);
+DosTimerAsync(5000L, hSem, &amp;Timer);      /* start timer         */
+    .
+    .  /* other processing */
+    .
+DosSemWait(hSem, SEM_INDEFINITE_WAIT);  /* wait until timer     */
+                                        /* clears the semaphore */
+ 
+If the program wants the timer to count out the interval repeatedly, it can
+use the DosTimerStart function. Unlike the DosTimerAsync function,
+<b>DosTimerStart</b> does not stop after the first interval is counted. It repeats
+the count and clears the semaphore each time the interval elapses.
+ 
+A process can stop a timer by using the DosTimerStop function.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>WinWaitMsg (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinWaitMsg (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='PM_Message_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Messages and Message Queues 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinWindowFromDC.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMESSAGEMGR
+ 
+BOOL WinWaitMsg(hab, msgFirst, msgLast)
+HAB hab;            /* handle of the anchor block */
+USHORT msgFirst;    /* first message              */
+USHORT msgLast;     /* last message               */
+ 
+The WinWaitMsg function waits for a filtered message. It awaits a message
+that meets both of the following requirements: the message arrived after a
+call to the WinGetMsg or the WinPeekMsg function that returned TRUE; the
+message conforms to the filtering criteria specified by the msgFirst and
+<i>msgLast</i> parameters.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hab</i>        Identifies the anchor block.
+ 
+<i>msgFirst</i>   Specifies the first message.
+ 
+<i>msgLast</i>    Specifies the last message.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful or FALSE if an error
+occurs.
+ 
+<b>Comments</b>
+ 
+Filtering allows an application to process messages in a different order
+than the one in the message queue. Filtering is used so the application can
+receive messages of a particular type only, rather than receiving other
+types of messages at an inconvenient point in the logic of the application.
+For example, when a "mouse button down" message is received, the application
+can use filtering to wait for the "mouse button up" message without having
+to process other messages.
+ 
+Keystrokes are passed to the WinTranslateAccel function. This means that
+accelerator keys are translated into WM_COMMAND or WM_SYSCOMMAND messages
+and are not received as WM_CHAR messages by the application.
+ 
+If both msgFirst and msgLast are zero, then WinWaitMsg will return when any
+message is placed in the queue. This can be used in conjunction with the
+<b>WinPeekMsg function to create </b>a WinGetMsg type loop that does not remove
+messages from the queue.
+ 
+The constants WM_MOUSEFIRST and WM_MOUSELAST can be used for msgFirst and
+<i>msgLast</i> to filter all but mouse messages.
+ 
+The constants WM_BUTTONCLICKFIRST and WM_BUTTONCLICKLAST can be used for
+<i>msgFirst and msgLast to </i>filter all but mouse button messages.
+ 
+The constants WM_DDE_FIRST and WM_DDE_LAST can be used for msgFirst and
+<i>msgLast</i> to filter all but dynamic data exchange messages.
+ 
+<b>See Also</b>
+ 
+<b>WinGetMsg, WinPeekMsg, WinTranslateAccel</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

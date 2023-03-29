@@ -1,0 +1,294 @@
+<html>
+
+<head>
+<title>About Scroll-Bar Controls (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Scroll-Bar Controls (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Scroll_Bars.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#scroll bar messages'>Message Group</a><span class='grhilite'>►</span>                      <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Static_Controls.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                         About Scroll-Bar Controls
+ 
+This topic describes creating and using scroll bars in Presentation Manager
+applications. You should also be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='Windows.html'>Windows</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Messages_and_Message_Queues.html'>Messages and message queues</a><span class='grhilite'>►</span>
+ 
+Scroll bars are control windows that convert mouse and keyboard input into
+integer values. Applications typically use scroll bars to control scrolling
+the contents in a client window.
+ 
+A scroll bar has several parts: the bar, arrows, and the slider. These are
+found on vertical and on horizontal scroll bars. Arrows are located at each
+end of a scroll bar. The left scroll arrow, on the left side of a horizontal
+scroll bar, lets the user scroll toward the left in a document. The right
+scroll arrow lets the user scroll toward the right. The upper scroll arrow
+lets the user scroll upward in the document. The lower scroll arrow lets the
+user scroll downward.
+ 
+The slider, a hollow box, lies between the two scroll arrows. The slider
+position in the scroll bar the reflects current value of the scroll bar.
+When the slider is against the left or top scroll arrow, the scroll-bar
+value is at a minimum; when the slider is against the right or bottom arrow,
+the scroll-bar value is at a maximum. The area between the scroll arrows is
+called the slider background.
+ 
+Scroll bars monitor the slider position and send notification messages to
+the owner window when the slider position changes through mouse or keyboard
+input.
+ 
+Scroll bars are often used in frame windows. A frame window automatically
+places scroll bars at the right and bottom sides of a window, depending on
+the scroll-bar style. The frame window automatically passes scroll-bar
+messages on to its client window. The client window handles these messages
+by adjusting the display. The client window can also send messages directly
+to the scroll bar, directing the scroll bar to adjust its range so that it
+will map to the data scrolling in the client window.
+ 
+An application can use scroll bars as stand-alone controls in any size or
+shape, at any position, in any sort of window. Scroll bars can be used as
+parts of other controls──for example, list-box controls use a scroll bar to
+let the user view items when the list box is too small to display all the
+items.
+ 
+<b>Scroll-Bar Creation</b>
+ 
+An application creates a scroll bar by using the preregistered window class
+WC_SCROLLBAR. The application can create a scroll bar by using the
+<b>WinCreateWindow</b> function. There are two scroll-bar styles: SBS_HORZ and
+SBS_VERT. The style SBS_HORZ creates a horizontal scroll bar; SBS_VERT
+creates a vertical scroll bar. Although most applications specify an owner
+when creating a scroll bar, an owner is not required. If no owner is
+specified, the scroll bar does not send notification messages. An
+application can retrieve the scroll bar's current slider position by sending
+the SBM_QUERYPOS message to the scroll bar.
+ 
+An application can specify the style of the slider by using the
+SBS_AUTOTRACK scroll-bar style. The style SBS_AUTOTRACK causes the entire
+slider to track the mouse when the user scrolls. If this style is not used,
+only an outlined image of the slider will track the mouse, and the slider
+will jump to the new location when the mouse is released.
+ 
+An application can specify class-specific data when creating a scroll bar.
+The SBCDATA structure specifies the initial range and slider position for
+the scroll bar.
+ 
+If a scroll bar is a descendant of a frame window, its position relative to
+the parent window may change when the frame window's position changes. Frame
+windows draw scroll bars relative to the upper-left corner of the frame
+window (rather than the lower-left corner). The frame window may adjust the
+<i>y</i>-coordinate of the scroll-bar position. This is desirable when the scroll
+bar is an immediate child window of the frame window, but may be undesirable
+if the scroll bar is not an immediate child window.
+ 
+<b>Scroll-Bar Range and Position</b>
+ 
+Every scroll bar has a range and a slider position. The range specifies the
+maximum and minimum values for the slider position. As the user moves the
+slider in the scroll bar, its position is reported as an integer value in
+the range. If the slider position is the minimum value, the slider is at the
+top of a vertical scroll bar or at the left end of a horizontal scroll bar.
+If the slider position is the maximum value, the slider is at the bottom or
+right end of the vertical or horizontal scroll bar, respectively.
+ 
+An application can adjust the range to convenient integer values by using
+the SBM_SETSCROLLBAR message (or initially, by using the SBCDATA structure).
+This makes it easy to translate the slider position to a value that
+corresponds to the data being scrolled. For example, an application that has
+260 lines of text to display in a window that can show only 16 lines at a
+time can set the vertical scroll-bar range to 1 through 244. When the slider
+is at position 1, the first line is at the top of the window. When the
+slider is at position 244, the last line is at the bottom of the window.
+ 
+To keep the scroll-bar range in useful relationship with the data, an
+application must adjust the range whenever the data or the size of the
+window changes. This means an application should adjust the range as part of
+processing WM_SIZE messages.
+ 
+An application must move the slider in the scroll bar. Although the user
+makes a request for scrolling in the scroll bar, the scroll bar does not
+update the slider position. Instead, it passes the request to the owner
+window. The owner window must scroll the data and update the slider position
+by using the SBM_SETPOS message. Because the application controls the slider
+movement, it can move the slider in increments that work best for the data
+being scrolled.
+ 
+<b>Scroll-Bar Notification Messages</b>
+ 
+The scroll bar sends notification messages to the scroll-bar owner whenever
+the user clicks the scroll bar. The WM_VSCROLL and WM_HSCROLL messages are
+the notification messages for vertical and horizontal scroll bars,
+respectively. If the scroll bar is a frame-control window, the message is
+passed by the frame window to the client window.
+ 
+Each notification message includes the scroll-bar identifier, the specific
+scroll-bar command code that corresponds to the user's action, and, in some
+cases, the current position of the slider. If a scroll bar is created as
+part of a frame control window, the scroll-bar identifier is one of the
+predefined constants FID_VERTSCROLL or FID_HORZSCROLL. Otherwise, it is the
+identifier given in the WinCreateWindow function.
+ 
+The scroll-bar command codes specify the action the user has taken. The code
+specifies where the user has clicked the mouse. MS OS/2 user-interface
+guidelines recommend certain responses for each action. The following is a
+list of the command codes and the recommended responses. In each case, a
+"unit" is defined by the application and should be appropriate for the given
+data. For example, when scrolling text vertically, the unit is typically a
+line.
+ 
+<b>Command code       Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>SB_LINEUP</i>          User clicked the top scroll arrow. Decrement the slider
+                   position by one and scroll toward the top of the data by
+                   one unit.
+ 
+<i>SB_LINEDOWN</i>        User clicked the bottom scroll arrow. Increment the
+                   slider position by one and scroll toward the bottom of
+                   the data by one unit.
+ 
+<i>SB_LINELEFT</i>        User clicked the left scroll arrow. Decrement the slider
+                   position by one and scroll toward the left end of the
+                   data by one unit.
+ 
+<i>SB_LINERIGHT</i>       User clicked the right scroll arrow. Increment the slider
+                   position by one and scroll toward the right end of the
+                   data one unit.
+ 
+<i>SB_PAGEUP</i>          User clicked the scroll-bar background above the slider.
+                   Decrement the slider position by the number of data units
+                   in the window and scroll toward the top of the data by
+                   the same number of units.
+ 
+<i>SB_PAGEDOWN</i>        User clicked the scroll-bar background below the slider.
+                   Increment the slider position by the number of data units
+                   in the window and scroll toward the bottom of the data by
+                   the same number of units.
+ 
+<i>SB_PAGELEFT</i>        User clicked the scroll-bar background to the left of the
+                   slider. Decrement the slider position by the number of
+                   data units in the window and scroll toward the left end
+                   of the data by the same number of units.
+ 
+<i>SB_PAGERIGHT</i>       User clicked the scroll-bar background to the right of
+                   the slider. Increment the slider position by the number
+                   of data units in the window and scroll toward the right
+                   end of the data by the same number of units.
+ 
+<i>SB_SLIDERTRACK</i>     User is dragging the slider. Applications that draw data
+                   quickly can set the slider to the position given in the
+                   message and scroll the data by the same number of units
+                   the slider has moved. Applications that cannot draw data
+                   quickly should wait for the SB_SLIDERPOSITION code before
+                   moving the slider and scrolling the data.
+ 
+<i>SB_SLIDERPOSITION</i>  User released the slider after dragging it. Set the
+                   slider to the position given in the message and scroll
+                   the data by the same number of units the slider has
+                   moved.
+ 
+<i>SB_ENDSCROLL</i>       User released the mouse after holding it on an arrow or
+                   in the scroll-bar background. No action is necessary.
+ 
+If the scroll-bar command code is SB_SLIDERTRACK or SB_SLIDERPOSITION,
+indicating that the user is moving the scroll-bar slider, the notification
+message also contains the current position of the slider.
+ 
+The owner window can send a message to the scroll bar to read its current
+value and range or to reset its current value. The owner window can adjust
+data controlled by the scroll bar to reflect any changes in the state of the
+scroll bar.
+ 
+An application can disable a scroll bar by using the WinEnableWindow
+function. A disabled scroll-bar window ignores the user's actions, sending
+out no notification messages when the user tries to manipulate it. If an
+application has no data to scroll or all data fits in the client window, it
+should disable the scroll bar.
+ 
+Scroll bars have their own system color, SYSCLR_SCROLLBAR. This color is
+used to paint the scroll-bar background. Other system colors are used in
+other parts of the scroll bar.
+ 
+<b>Scroll Bars and the Keyboard</b>
+ 
+When a scroll bar has the keyboard focus, it generates notification messages
+for the following keys:
+ 
+<b>Key        Command code</b>
+────────────────────────────────────────────────────────────────────────────
+<i>UP</i>         SB_LINEUP or SB_LINELEFT
+ 
+<i>LEFT</i>       SB_LINEUP or SB_LINELEFT
+ 
+<i>DOWN</i>       SB_LINEDOWN or SB_LINERIGHT
+ 
+<i>RIGHT</i>      SB_LINEDOWN or SB_LINERIGHT
+ 
+<i>PAGE UP</i>    SB_PAGEUP or SB_PAGELEFT
+ 
+<i>PAGE DOWN</i>  SB_PAGEDOWN or SB_PAGERIGHT
+ 
+If an application uses scroll bars to scroll data but does not give the
+scroll bar the input focus, the window with the focus should process
+keyboard input itself. The window can generate scroll-bar notification
+messages or carry out the indicated scrolling. The following list gives the
+keys a window should process and what action to take for each:
+ 
+<b>Key             Command</b>
+────────────────────────────────────────────────────────────────────────────
+<i>UP</i>              SB_LINEUP
+ 
+<i>DOWN</i>            SB_LINEDOWN
+ 
+<i>PAGE UP</i>         SB_PAGEUP
+ 
+<i>PAGE DOWN</i>       SB_PAGEDOWN
+ 
+<i>CTRL+HOME</i>       SB_SLIDERTRACK with slider set to minimum position
+ 
+<i>CTRL+END</i>        SB_SLIDERTRACK with slider set to maximum position
+ 
+<i>LEFT</i>            SB_LINELEFT
+ 
+<i>RIGHT</i>           SB_LINERIGHT
+ 
+<i>CTRL+PAGE UP</i>    SB_PAGELEFT
+ 
+<i>CTRL+PAGE DOWN</i>  SB_PAGERIGHT
+ 
+<i>HOME</i>            SB_SLIDERTRACK with slider set to minimum position
+ 
+<i>END</i>             SB_SLIDERTRACK with slider set to maximum position
+ 
+Vertical scroll bars that are part of list boxes have the following keyboard
+interface:
+ 
+<b>Key        Command</b>
+────────────────────────────────────────────────────────────────────────────
+<i>CTRL+UP</i>    SB_SLIDERTRACK with slider set to minimum position
+ 
+<i>CTRL+DOWN</i>  SB_SLIDERTRACK with slider set to maximum position
+ 
+<i>F7</i>         SB_PAGEUP
+ 
+<i>F8</i>         SB_PAGEDOWN
+ 
+The application must implement the suggested scroll-bar/keyboard interface.
+This can be accomplished by appropriate handling of WM_CHAR messages.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

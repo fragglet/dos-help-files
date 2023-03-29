@@ -1,0 +1,408 @@
+<html>
+
+<head>
+<title>About Hooks (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Hooks (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Hooks.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Hook functions 1.2'>Function Group</a><span class='grhilite'>►</span>       </i>              <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Initialization_Files.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                                About Hooks
+ 
+This topic describes how to use hooks in your applications.
+ 
+MS OS/2 is based on a message-passing model. The behavior of most programs
+depends on the messages that the program receives. Messages can be generated
+by input devices, such as the keyboard and mouse, or they can originate
+within the system as a way of managing and communicating between system
+resources.
+ 
+MS OS/2 provides hooks to allow applications to monitor and modify the
+message stream. Hooks can be installed in either the system queue, so that
+they affect all applications, or in an individual thread's message queue, so
+that only messages for that queue are affected.
+ 
+Because many applications may install hooks at the same time, most hooks are
+arranged in chains. The system passes a message to the first hook in the
+chain, and then to the next hook in the chain, and so on until the message
+is delivered to the destination application. Each hook may modify the
+message or stop its progress through the chain, preventing it from reaching
+the application. Hooks in a chain are called in last-installed, first-called
+order.
+ 
+<b>Types of Hooks</b>
+ 
+There are six different types of hooks. You can install the different types
+of hooks in any combination, although some of the hook types can be
+installed only in the system queue.
+ 
+The following sections describe the available types of hooks. Each type of
+hook is expressed as a function with a unique syntax.
+ 
+<b>Input Hook</b>
+ 
+This hook monitors the input queue and is called whenever a message is about
+to be returned by the WinGetMsg or WinPeekMsg function. Typically, the input
+hook is used to monitor mouse and keyboard input and other messages that are
+posted to a queue.
+ 
+The syntax for the input hook is as follows:
+ 
+<b>BOOL EXPENTRY InputHook(HAB hab, PQMSG pQmsg, USHORT fs)</b>
+ 
+The pQmsg parameter is a far pointer to a QMSG structure that contains
+information about the message.
+ 
+The fs parameter of the InputHook function can contain the following flags
+from the WinPeekMsg function, indicating whether or not the message is
+removed from the queue:
+ 
+    PM_NOREMOVE
+    PM_REMOVE
+ 
+If this hook function returns TRUE, the message is not passed to the rest of
+the hook chain or to the application──effectively ending the message. If the
+function returns FALSE, the message is passed to the next hook in the chain,
+or to the application if no other hooks exist.
+ 
+The input hook can modify a message by changing the contents of the QMSG
+structure, then return FALSE to pass the modified message to the rest of the
+chain. The following problems may occur when a hook modifies a message:
+ 
+♦  If the caller uses the WinPeekMsg or WinGetMsg function with a message
+   filter range (msgFilterFirst through msgFilterLast), the message is
+   checked before the hooks are called, not after the hooks are called. This
+   means the caller may receive messages that are not in the range of the
+   caller's message filter.
+ 
+♦  If the hook changes a WM_CHAR message from one character into
+   another──for example, if the hook modifies all TAB messages into F6
+   messages──a program that depends on the key state will be unable to
+   interpret the result. (When the TAB key is translated into the F6 key,
+   the application receives the F6 keystroke and enters a process loop,
+   waiting for the F6 key to be released; the application calls the
+   WinGetKeyState function with the HWND_DESKTOP and VK_F6 arguments).
+ 
+<b>Send-Message Hook</b>
+ 
+This hook is called whenever a message is sent by using the WinSendMsg
+function. The hook chain is called before the message is delivered to the
+recipient window. Typically, the send-message hook is used to monitor
+messages that are not posted to a queue. By installing an input hook and a
+send-message hook, you can effectively monitor all window messages.
+ 
+The syntax for the send-message hook is as follows:
+ 
+<b>VOID EXPENTRY SendMsgHook(HAB hab, PSMHSTRUCT psmh,</b>
+<b>                           BOOL fInterTask)</b>
+ 
+The psmh parameter is a far pointer to an SMHSTRUCT structure that contains
+information about the message.
+ 
+The fInterTask parameter of the SendMsgHook function is TRUE if the message
+is sent between two threads, or FALSE if the message is sent within a
+thread.
+ 
+The send-message hook does not return a value, and the next hook in the
+chain is always called. This hook can modify values in the SMHSTRUCT
+structure before returning.
+ 
+<b>Message-Filter Hook</b>
+ 
+This hook is called during system modal loops, which include tracking the
+window size and window movement, displaying a dialog box or message box,
+scroll-bar tracking, menu-selection tracking, and window-enumeration
+operations. The message-filter hook is typically used to provide
+input-message filtering (such as monitoring hot keys) during modal dialog
+processing.
+ 
+The syntax of the message-filter hook is as follows:
+ 
+<b>BOOL EXPENTRY MsgFilterHook(HAB hab, PQMSG pQmsg, USHORT msgf)</b>
+ 
+The msgf parameter has the following three values:
+ 
+<b>Value            Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>MSGF_DIALOGBOX</i>   Message originated while processing a modal dialog window.
+ 
+<i>MSGF_MESSAGEBOX</i>  Message originated while processing a message box.
+ 
+<i>MSGF_TRACK</i>       Message originated while tracking a control (such as a
+                 scroll bar).
+ 
+The pQmsg parameter of the MsgFilterHook function is a far pointer to a
+<b>QMSG</b> structure containing information about the message.
+ 
+If this hook returns TRUE, the message is not passed to the rest of the hook
+chain or to the application. If it returns FALSE, the message is passed to
+the next hook in the chain, or to the application if no other hooks exist.
+ 
+This hook allows applications to perform message filtering during modal
+loops that is equivalent to the typical filtering for the main message loop.
+For example, applications often examine a new message in the main event loop
+between the time they retrieve the message from the queue and the time they
+dispatch it, performing special processing as appropriate. The following
+code fragment shows a main message loop that tests for the ENTER key and the
+ESC key before dispatching an event:
+ 
+while (WinGetMsg(hab, (PQMSG) &amp;qmsg, (HWND) NULL, 0, 0)) {
+ 
+   if ((qmsg.msg == WM_CHAR) &amp;&amp; !(LOUSHORT(qmsg.mp1) &amp; KC_KEYUP)
+            &amp;&amp; !hwndQueue) {
+        switch (HIUSHORT(qmsg.mp2)) {
+            case VK_ESC:
+ 
+                /* Use the ESC key.       */
+ 
+                continue;
+ 
+            case VK_NEWLINE:
+ 
+                /* Use the newline event. */
+ 
+                continue;
+ 
+            default:
+                break;
+        }
+    }
+    WinDispatchMsg(hab, (PQMSG) &amp;qmsg);
+}
+ 
+You cannot usually do this sort of filtering during a modal loop, since the
+loop created by the WinGetMsg and WinDispatchMsg functions is executed by
+the system. If you install a message-filter hook, the hook is called by the
+system between WinGetMsg and WinDispatchMsg in the modal processing loop.
+ 
+Your application can also call the message-filter loop directly by calling
+the WinCallMsgFilter function. By using this function, you can use the same
+code to filter messages in your main message loop and during modal loops. In
+the example shown previously for processing main message loops, you would
+encapsulate the filtering operations in a message-filter hook and call
+<b>WinCallMsgFilter between the calls to the WinGetMsg and WinDispatchMsg</b>
+functions, as shown in the following code fragment:
+ 
+while (WinGetMsg(hab, (PQMSG) &amp;qmsg, (HWND) NULL, 0, 0)) {
+    if (!WinCallMsgFilter(hab, (PQMSG) &amp;qmsg, 0))
+        WinDispatchMsg(hab, (PQMSG) &amp;qmsg);
+}
+ 
+The last argument of the WinCallMsgFilter function is simply passed to the
+hook; the application can enter any value. This value can be used by the
+hook to determine where the hook was called from, by defining a constant
+such as MSGF_MAINLOOP.
+ 
+<b>Journal-Record Hook</b>
+ 
+This hook monitors the system queue and allows the application to record
+input events. Typically, it is used to record a set of mouse and keyboard
+events that can be played back later by using the journal-playback hook. The
+journal-record hook can be installed only in the system queue.
+ 
+The syntax for the journal-record hook is as follows:
+ 
+<b>VOID EXPENTRY JournalRecordHook(HAB hab, PQMSG pQmsg)</b>
+ 
+The pQmsg parameter is a far pointer to a QMSG structure containing
+information about the message. The hook is called after the raw input has
+been processed enough to create valid WM_CHAR or double-click mouse messages
+and the window-handle field of the QMSG structure has been set.
+ 
+The journal-record hook does not return a value, and the next hook in the
+chain is always called. Typically, this hook saves the input event to the
+disk, to be played back later. The hwnd field of the QMSG structure is not
+important and is ignored when the message is read back.
+ 
+Character messages are passed to the journal-record hook as WM_VIOCHAR
+messages. The format of the WM_VIOCHAR message is as follows:
+ 
+fsKeyFlags = (USHORT) SHORT1FROMMP(mp1);    /* key flags    */
+uchRepeat = (UCHAR) CHAR3FROMMP(mp1);       /* repeat count */
+uchScanCode = (UCHAR) CHAR4FROMMP(mp1);     /* scan code    */
+usChr = (UCHAR) CHAR1FROMMP(mp2));          /* character    */
+uschKbdScan = (UCHAR) CHAR2FROMMP(mp2));    /* virtual key  */
+ 
+The WM_VIOCHAR message was chosen over the WM_CHAR message because it
+preserves that raw information from the keyboard driver that is needed for
+video input and output.
+ 
+The following mouse messages are passed to the journal-record hook:
+ 
+    WM_MOUSEMOVE
+    WM_BUTTON1DOWN
+    WM_BUTTON1UP
+    WM_BUTTON2DOWN
+    WM_BUTTON2UP
+    WM_BUTTON3DOWN
+    WM_BUTTON3UP
+ 
+The positions stored in the mouse messages are in screen coordinates. The
+system does not combine mouse clicks into double clicks before calling the
+hook, since there is no guarantee that both clicks will be in the same
+window when they are read back.
+ 
+A WM_JOURNALNOTIFY message is passed to the journal-record hook whenever a
+program calls the WinGetPhysKeyState or WinQueryQueueStatus function. This
+message is necessary because the system is reduced to a queue that is only
+one message deep while a playback hook is active. For example, the user
+might press the A, B, and C keys while in record mode. While the program is
+processing the "A" character message, the B key might be down;
+<b>WinGetPhysKeyState</b> will return this information. However, during playback
+mode, the system only knows that it is currently processing the A key.
+ 
+The format of the WM_JOURNALNOTIFY message is as follows:
+ 
+For the WinGetPhysKeyState function:
+ 
+ulCmd = LONGFROMMP(mp1);            /* calling function   */
+sc = SHORT1FROMMP(mp2);             /* virtual key        */
+fsPhysKeyState = SHORT2FROMMP(mp2); /* physical-key state */
+ 
+For the WinQueryQueueStatus function:
+ 
+ulCmd = LONGFROMMP(mp1);            /* calling function   */
+ulQueStatus = LONGFROMMP(mp2);      /* queue status       */
+ 
+<b>Journal-Playback Hook</b>
+ 
+The journal-playback hook allows an application to insert messages into the
+system queue. Typically, this hook is used to play back a series of mouse
+and keyboard events that were recorded earlier by using the journal-record
+hook. This hook can be installed only in the system queue.
+ 
+Regular mouse and keyboard input is disabled as long as a journal-playback
+hook is installed. It is important to note that, since mouse and keyboard
+input are disabled, this hook can easily hang the system.
+ 
+The syntax for the journal-playback hook is as follows:
+ 
+<b>ULONG EXPENTRY JournalPlaybackHook(HAB hab, BOOL fSkip,</b>
+<b>    PQMSG pQmsg)</b>
+ 
+The pQmsg parameter is a far pointer to a QMSG structure that the hook fills
+in with the message to be played back. If the fSkip parameter is FALSE, the
+hook should fill in the QMSG structure with the current recorded message.
+The same message should be returned each time the hook is called, until
+<i>fSkip</i> is TRUE. The same message may be returned many times if an application
+is examining the queue but not removing the message. If fSkip is TRUE, the
+hook should advance to the next message without attempting to fill in the
+<b>QMSG structure, sinc</b>e the pQmsg parameter is NULL when fSkip is TRUE.
+ 
+The journal-playback hook returns a ULONG time-out value. This value tells
+the system how many milliseconds to wait before processing the current
+message from the playback hook. This allows the hook to control the timing
+of the events it plays back.
+ 
+The time field of the QMSG structure is filled in with the current time
+before the playback hook is called. The hook should use the time stored in
+this field instead of the system clock to set up the delays.
+ 
+The journal-playback hook, on the other hand, has the option of playing back
+either WM_VIOCHAR or WM_CHAR messages. The preferred method is to play back
+<b>WM_VIOCHAR</b> messages, since they contain the information required to function
+in a video-input-and-output window. If WM_CHAR messages are returned, the
+appropriate KC bits must be set or cleared.
+ 
+<b>Help Hook</b>
+ 
+The help hook is called during the default processing of the WM_HELP
+message. Help processing is done in two stages: creating the WM_HELP message
+and calling the help hook. The WM_HELP message can come from the following
+sources:
+ 
+♦  From a WM_CHAR message, after translation by an ACCEL structure with the
+   AF_HELP style. The default system accelerator table translates the F1 key
+   into a help message. The WM_HELP message is posted to the current focus
+   window, which can be a menu, a button, a frame, or your client window.
+ 
+♦  From a menu-bar selection, when the MIS_HELP style is specified for the
+   menu-bar item. The WM_HELP message is posted to the current focus
+   window.
+ 
+♦  From a dialog-box push button, when the BS_HELP style is specified for
+   the push button. The WM_HELP message is posted to the button's owner
+   window, which is normally the dialog window.
+ 
+♦  From a message box, when the MB_HELP style is specified for the message
+   box. The WM_HELP message is posted to the message-box dialog window.
+ 
+The WM_HELP message is posted to the current focus window. The default
+processing in the WinDefWindowProc function is to pass the message up to the
+parent window. If the message reaches the client window, it can be processed
+there. If the message reaches a frame window, the default frame-window
+procedure calls the help hook. The help hook is also called if a WM_HELP
+message is generated while the application is in menu mode──that is, while a
+selection is being made from a menu.
+ 
+The syntax for the help hook is as follows:
+ 
+<b>BOOL EXPENTRY HelpHook(HAB hab, USHORT usMode, USHORT idTopic,</b>
+<b>    USHORT idSubTopic, PRECTL prcPosition)</b>
+ 
+If this hook function returns TRUE, the message is not passed to the rest of
+the hook chain or to the application. If it returns FALSE, the message is
+passed to the next hook in the chain. The arguments of the help hook provide
+context information, such as the screen coordinates of the focus window and
+whether the message originated in a message box or a menu.
+ 
+The WM_HELP message often goes to a frame window instead of to the client
+window. The frame window (including dialog boxes and message boxes)
+processes a WM_HELP message as follows:
+ 
+♦  If the parent of the window with the focus is the FID_CLIENT
+   frame-control window, the frame window calls the help hook, specifying
+   the following:
+ 
+       Mode = HLPM_FRAME
+       Topic = frame-window identifier
+       Subtopic = focus-window identifier
+       Position = screen coordinates of focus window
+ 
+♦  If the parent of the focus window is not an FID_CLIENT window (it could
+   be the frame window or a second-level dialog window), the frame window
+   calls the help hook, specifying the following:
+ 
+       Mode = HLPM_WINDOW
+       Topic = identifier of parent of focus window
+       Subtopic = focus-window identifier
+       Position = screen coordinates of focus window
+ 
+An application receives the WM_HELP message in its dialog-window procedure.
+The application can ignore the message, in which case the frame-manager
+action occurs as described, or the application can handle the WM_HELP
+message directly.
+ 
+Menu windows receive a WM_HELP message when the user presses the help
+accelerator key (F1 by default) while a menu is displayed. Menu windows
+process WM_HELP messages by calling the help hook, specifying the
+following:
+ 
+    Mode = HLPM_MENU
+    Topic = identifier of pull-down menu
+    Subtopic = identifier of selected item in pull-down menu
+    Position = screen coordinates of selected item
+ 
+The help hook should respond to the help message by displaying information
+about the selected menu item.
+ 
+The WinDefWindowProc function processes WM_HELP messages by passing the
+message to the parent window. The message typically moves up the parent
+chain until it arrives at a frame window.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

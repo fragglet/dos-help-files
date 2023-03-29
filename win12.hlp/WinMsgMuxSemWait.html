@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>WinMsgMuxSemWait (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinMsgMuxSemWait (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Semaphore functions'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Interprocess Communication 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinMsgSemWait.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMESSAGEMGR
+ 
+USHORT WinMsgMuxSemWait(pisemCleared, pmxsl, lTimeOut);
+PUSHORT pisemCleared;   /* address of variable that receives index number */
+PVOID pmxsl;            /* address of structure with semaphore list       */
+LONG lTimeOut;          /* length of time to wait                         */
+ 
+The WinMsgMuxSemWait function waits for one or more of the specified
+semaphores to clear. This function checks the specified list. If any of the
+semaphores are clear, the function returns. Otherwise, the function waits
+until the specified time elapses or until one of the semaphores in the list
+clears.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pisemCleared</i>  Points to the variable that receives the index number of the
+              most recently cleared semaphore.
+ 
+<i>pmxsl         P</i>oints to the MUXSEMLIST structure containing a semaphore list
+              that defines the semaphores to be cleared. The semaphore list
+              consists of one or more semaphore handles.
+ 
+<i>lTimeOut</i>      Specifies how long to wait for the semaphores to become
+              available. If the value is greater then zero, this parameter
+              specifies the number of milliseconds to wait before returning.
+              If the value is SEM_IMMEDIATE_RETURN, the function returns
+              immediately. If the value is SEM_INDEFINITE_WAIT, the function
+              waits indefinitely.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_EXCL_SEM_ALREADY_OWNED
+     ERROR_INTERRUPT
+     ERROR_INVALID_EVENT_COUNT
+     ERROR_INVALID_HANDLE
+     ERROR_INVALID_LIST_FORMAT
+     ERROR_SEM_TIMEOUT
+     ERROR_TOO_MANY_MUXWAITERS
+ 
+<b>Comments</b>
+ 
+This function is identical to the DosMuxSemWait function with the following
+exceptions: Window messages sent via the WinSendMsg function by another
+thread may be received; the function can wait for 15 semaphores
+simultaneously (DosMuxSemWait can wait for 16).
+ 
+This function should be used to wait for a semaphore when the semaphore
+owner may need to issue a WinSendMsg function (or another Win function that
+implicitly issues a WinSendMsg function) before clearing the semaphore.
+ 
+<b>See Also</b>
+ 
+<b>DosMuxSemWait, WinMsgSemWait, WinSendMsg, MUXSEMLIST</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

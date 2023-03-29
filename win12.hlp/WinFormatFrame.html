@@ -1,0 +1,105 @@
+<html>
+
+<head>
+<title>WinFormatFrame (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinFormatFrame (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Frame_window_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Frame Windows 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinFreeErrorInfo.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINFRAMEMGR
+ 
+SHORT WinFormatFrame(hwndFrame, prclFrame, pswp, cswpMax, prclClient)
+HWND hwndFrame;   /* handle of window with frame controls to be formatted */
+PRECTL prclFrame; /* address of structure with rectangle                  */
+PSWP pswp;        /* address of array of structures                       */
+USHORT cswpMax;   /* number of SWP structures                             */
+PRECTL prclClient;/* address of client window rectangle                   */
+ 
+The WinFormatFrame function calculates the size and position of all standard
+frame controls within a frame window. The data is calculated and returned in
+an array with one entry for each control window. This function allows an
+application which has subclassed its frame window, to more easily modify the
+appearance of a frame window and its controls.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwndFrame</i>   Identifies the window whose frame controls are to be formatted.
+ 
+<i>prclFrame   Points to the R</i>ECTL structure that contains the rectangle where
+            the frame controls are formatted. This typically is the window
+            rectangle identified by the hwndFrame parameter, but where the
+            window has a wide border, (for example, as specified by
+            FS_DLGBORDER), the rectangle is inset by the size of the
+            border.
+ 
+<i>pswp        Points t</i>o an array of SWP structures. There must be one SWP
+            structure for each frame control. Typically, the count of frame
+            windows is calculated as follows:
+ 
+                 (FID_CLIENT - FID_SYSMENU + 1)
+ 
+            This can change, however, if the frame window is subclassed.
+ 
+<i>cswpMax     Specifies</i> the number of SWP structures.
+ 
+<i>prclClient</i>  Points to the window rectangle of the FID_CLIENT window after
+            formatting. If this parameter is NULL, no client window
+            rectangle is returned.
+ 
+<b>Return Value</b>
+ 
+The return value is the number of SWP structures returned in the array
+pointed to by pswp.
+ 
+<b>Comments</b>
+ 
+An SWP structure will be filled in for the following frame controls:
+ 
+<b>Value           Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>FID_CLIENT</i>      Identifies the client window.
+ 
+<i>FID_HORZSCROLL</i>  Identifies the horizontal scroll bar.
+ 
+<i>FID_MENU</i>        Identifies the system menu.
+ 
+<i>FID_MINMAX</i>      Identifies the minimum/maximum box.
+ 
+<i>FID_SYSMENU</i>     Identifies the system menu.
+ 
+<i>FID_TITLEBAR</i>    Identifies the title bar.
+ 
+<i>FID_VERTSCROLL</i>  Identifies the vertical scroll bar.
+ 
+The returned array of SWP structures can be used in the WinSetMultWindowPos
+function to set the position and size of the frame windows.
+ 
+The WinFormatFrame function typically is used by applications that require a
+nonstandard frame-window layout. This function is called while the
+<b>WM_UPDATEFRAME</b> message is being processed. The application should alter the
+calculated positions and sizes as required, after returning from this
+function. Any additional windows added to the standard set can be handled by
+adding SWP structures to the array, with positions and sizes set as
+necessary.
+ 
+<b>See Also</b>
+ 
+<b>WinSetMultWindowPos, RECTL, SWP, WM_UPDATEFRAME</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

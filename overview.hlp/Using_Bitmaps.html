@@ -1,0 +1,285 @@
+<html>
+
+<head>
+<title>Using Bitmaps (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Bitmaps (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Bitmaps.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#bitmap functions 1.2'>Function Group</a><span class='grhilite'>►</span>        </i>             <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Clipping.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                               Using Bitmaps
+ 
+You can use bitmap functions to perform the following tasks:
+ 
+♦  Copy an image from a video display into a bitmap.
+ 
+♦  Scale bitmapped images.
+ 
+♦  Create custom fill patterns for area primitives and paths.
+ 
+♦  Load a bitmap created by Icon Editor.
+ 
+♦  Draw bitmapped images.
+ 
+♦  Store bitmaps in a metafile or segment.
+ 
+<b>Copying an Image from a Video Display to a Bitmap</b>
+ 
+To copy an image from a video display to a bitmap, you must perform the
+following steps:
+ 
+1  Associate the memory device context with a presentation space.
+ 
+2  Create a bitmap in a memory device context.
+ 
+3  Select the bitmap into the memory device context by calling the
+   GpiSetBitmap function.
+ 
+4  Determine the location (in device coordinates) of the image.
+ 
+5  Call the GpiBitBlt function and copy the image to the bitmap.
+ 
+The following code fragment demonstrates these steps:
+ 
+PSZ pszData[4] = { "Display", NULL, NULL, NULL };
+HAB hab;
+HPS hpsMem, hps;
+HDC hdcMem, hdc;
+SIZEL sizlPage;
+BITMAPINFOHEADER bmp;
+BYTE abBuffer[80];
+PBITMAPINFO pbmi;
+HBITMAP hbm;
+SHORT sWidth, sHeight;
+POINTL aptl[6];
+LONG alData[2];
+ 
+/*
+ * Create the memory device context and presentation space so that they
+ * are compatible with the screen device context and presentation space.
+ */
+ 
+hdcMem = DevOpenDC(hab, OD_MEMORY, "*", 4L,
+    (PDEVOPENDATA) pszData, hdc);
+hpsMem = GpiCreatePS(hab, hdcMem, &amp;sizlPage,
+    PU_PELS | GPIA_ASSOC | GPIT_MICRO);
+ 
+/* Determine the device's plane/bitcount format. */
+ 
+GpiQueryDeviceBitmapFormats(hpsMem, 2L, alData);
+ 
+/*
+ * Load the BITMAPINFOHEADER and BITMAPINFO structures. The sWidth and
+ * sHeight fields specify the width and height of the destination
+ * rectangle.
+ */
+ 
+bmp.cbFix = (ULONG) sizeof(bmp);
+bmp.cx = sWidth;
+bmp.cy = sHeight;
+bmp.cPlanes = alData[0];
+bmp.cBitCount = alData[1];
+ 
+pbmi = (PBITMAPINFO) abBuffer;
+pbmi-&gt;cbFix = bmp.cbFix;
+pbmi-&gt;cx = bmp.cx;
+pbmi-&gt;cy = bmp.cy;
+pbmi-&gt;cPlanes = bmp.cPlanes;
+pbmi-&gt;cBitCount = bmp.cBitCount;
+ 
+/* Create a bitmap that is compatible with the display. */
+ 
+hbm = GpiCreateBitmap(hpsMem, &amp;bmp, FALSE, NULL, pbmi);
+ 
+/* Associate the bitmap and the memory presentation space. */
+ 
+GpiSetBitmap(hpsMem, hbm);
+ 
+/* Copy the screen to the bitmap. */
+ 
+aptl[0].x = 0;       /* lower-left corner of destination rectangle  */
+aptl[0].y = 0;       /* lower-left corner of destination rectangle  */
+aptl[1].x = sWidth;  /* upper-right corner of destination rectangle */
+aptl[1].y = sHeight; /* upper-right corner of destination rectangle */
+aptl[2].x = 0;       /* lower-left corner of source rectangle       */
+aptl[2].y = 0;       /* lower-left corner of source rectangle       */
+GpiBitBlt(hpsMem,
+    hps,
+    3L,              /* number of points in aptlPoints              */
+    aptl,
+    ROP_SRCCOPY,
+    BBO_IGNORE);
+ 
+<b>Scaling and Drawing a Bitmapped Image</b>
+ 
+You can scale a bitmap by calling the GpiBitBlt and GpiWCBitBlt functions
+and altering the dimensions of the target rectangle. The following code
+fragment shows how to shrink the screen copied in the first example to half
+its original size and redraw it by calling GpiBitBlt:
+ 
+/* target-rectangle dimensions (in device coordinates) */
+ 
+aptl[0].x = 0;
+aptl[0].y = 0;
+aptl[1].x = sWidth/2;
+aptl[1].y = sHeight/2;
+ 
+/* source-rectangle dimensions (in device coordinates) */
+ 
+aptl[2].x = 0;
+aptl[2].y = 0;
+aptl[3].x = sWidth;
+aptl[3].y = sHeight;
+GpiBitBlt(hps, hpsMem, 4L, aptl, ROP_SRCCOPY, BBO_IGNORE);
+ 
+<b>Creating a Custom Fill Pattern</b>
+ 
+You can create a custom fill pattern that MS OS/2 will use to fill area
+primitives and paths. To create this pattern, you perform the following
+steps:
+ 
+1  Set an array of bits for a bitmap that measures 8 bits by 8 bits
+   (remember that MS OS/2 pads the bitmap bits on a ULONG [32-bit]
+   boundary).
+ 
+2  Create a bitmap in a screen presentation space by calling the
+   GpiCreateBitmap function, passing it the address of the array of bits
+   from Step 1.
+ 
+3  Assign a local identifier (lcid) to the bitmap by calling the
+   GpiSetBitmapId function.
+ 
+4  Set the attribute of the pattern set in the AREABUNDLE structure by
+   calling the GpiSetPattern function.
+ 
+The following code fragment shows how to create the pattern:
+ 
+/*
+ * Define an array of bytes--this array creates
+ * a cross-hatch pattern.
+ */
+ 
+BYTE abPattern5[] = {
+    0xFF, 0xFF,
+    0x80, 0x00,
+    0x80, 0x00,
+    0x80, 0x00,
+    0x80, 0x00,
+    0x80, 0x00,
+    0x80, 0x00,
+    0x80, 0x00,
+    0x80, 0x00,
+    0x80, 0x00,
+    0x80, 0x00,
+    0x80, 0x00,
+    0x80, 0x00,
+    0x80, 0x00,
+    0x80, 0x00,
+    0x80, 0x00 };
+LONG lcidCustom;
+HPS hps;
+BITMAPINFOHEADER bmp;
+PBITMAPINFO pbmi;
+HBITMAP hbm;
+ 
+/* Create the bitmap, passing the address of the array of bytes. */
+ 
+hbm = GpiCreateBitmap(hps, &amp;bmp, CBM_INIT, (PBYTE) abPattern5,
+    pbmi);
+ 
+/* Assign a local identifier to the bitmap. */
+ 
+GpiSetBitmapId(hps, hbm, lcidCustom);
+ 
+/* Set the pattern-set attribute in the AREABUNDLE structure. */
+ 
+GpiSetPatternSet(hps, lcidCustom);
+ 
+<b>Loading a Bitmap from a File</b>
+ 
+You can load a bitmap from a file if the format of the file corresponds to
+the standard MS OS/2 bitmap file format. (Any bitmap that you create using
+Icon Editor is automatically stored in this format.) To load a bitmap, you
+perform the following steps:
+ 
+1  Copy the bitmap file into the directory that contains your application's
+   resource file and source code.
+ 
+2  Create an entry in your application's resource file, assigning a unique
+   integer identifier to the bitmap.
+ 
+3  Call the GpiLoadBitmap function in your application's source code,
+   passing it the integer identifier that you assigned to the bitmap in your
+   application's resource file.
+ 
+The following code fragment, from an application's resource file, assigns
+the integer value 200 to a bitmap file called custom.bmp:
+ 
+BITMAP  200 custom.bmp
+ 
+The following code fragment, from the application, shows how to retrieve a
+bitmap handle by calling GpiLoadBitmap:
+ 
+hbm = GpiLoadBitmap(hpsMem, /* presentation-space handle          */
+    NULL,                   /* points to dynamic-link library     */
+    200,                    /* bitmap identifier in resource file */
+    99L,                    /* bitmap width                       */
+    99L);                   /* bitmap height                      */
+ 
+<b>Storing a Bitmap in a Metafile</b>
+ 
+You can draw bitmaps in a metafile or segment by calling the GpiWCBitBlt
+function. MS OS/2 converts this function to a drawing order. The
+target-rectangle dimensions that you pass to GpiWCBitBlt are in world
+coordinates, not device coordinates. The following code fragment shows how
+to draw a bitmap in a metafile and then play the metafile:
+ 
+/*
+ * Scale a custom bitmap created with Icon Editor so that it fits
+ * the entire screen, and draw it into a metafile.
+ */
+ 
+aptl[0].x = 0;
+aptl[0].y = 0;
+aptl[1].x = sWidth;             /* screen width            */
+aptl[1].y = sHeight;            /* screen height           */
+aptl[2].x = 0;
+aptl[2].y = 0;
+aptl[3].x = 99;                 /* width of custom bitmap  */
+aptl[3].y = 99;                 /* height of custom bitmap */
+ 
+GpiWCBitBlt(hpsMeta, hbm, 4L, aptl, ROP_SRCCOPY, BBO_IGNORE);
+GpiAssociate(hpsMeta, NULL);
+hmf = DevCloseDC(hdcMeta);
+ 
+/* Set the options in the GpiPlayMetaFile array. */
+ 
+alOptions[0] = 0L;              /* reserved                */
+alOptions[1] = LT_DEFAULT;      /* uses default transforms */
+alOptions[2] = 0L;              /* reserved                */
+alOptions[3] = LC_DEFAULT;      /* uses default            */
+alOptions[4] = RES_DEFAULT;     /* uses default            */
+alOptions[5] = SUP_DEFAULT;     /* uses default            */
+alOptions[6] = CTAB_DEFAULT;    /* uses default            */
+alOptions[7] = CREA_DEFAULT;    /* uses default            */
+ 
+/* Play the metafile. */
+ 
+GpiPlayMetaFile(hps, hmf, 8L, alOptions, 0L, 0L, NULL);
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

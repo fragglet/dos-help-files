@@ -1,0 +1,753 @@
+<html>
+
+<head>
+<title>MS OS/2 Programming Models (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MS OS/2 Programming Models (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='system_overview.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='naming_conventions.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+ 
+                         MS OS/2 Programming Models
+ 
+This topic describes the types of programs that you can develop for MS OS/2.
+MS OS/2 supports the following program types:
+ 
+♦  Full-screen programs
+♦  Full-screen programs in a window
+♦  Presentation Manager applications
+♦  Advanced-video-input-and-output (AVIO) programs
+♦  Family-application-programming-interface (FAPI) programs
+ 
+<b>Full-Screen Programs</b>
+ 
+A full-screen program is any MS OS/2 program that does not create a
+Presentation Manager message queue. In other words, it is a program that
+does not rely on the Presentation Manager mouse and keyboard processing for
+input. Full-screen programs typically run in a full-screen session.
+ 
+Most full-screen programs use the Dos functions to perform input, output,
+memory management, and other activities. Full-screen programs also commonly
+use the standard-input, standard-output, and standard-error files created
+for them when they start.
+ 
+A full-screen program uses a main function as its starting point and can
+call as many other functions as needed to complete its designated task. The
+following simple full-screen program copies the line "Hello, world" to the
+screen:
+ 
+#include \&lt;os2.h\&gt;
+ 
+main( )
+{
+    USHORT cbWritten;
+ 
+    DosWrite(1, "Hello, world\r\n", 14, &amp;cbWritten);
+}
+ 
+The MS OS/2 system functions use many structures, data types, and constants
+that are not part of the standard C language. For example, the data type
+<b>USHORT</b> is a special MS OS/2 data type that specifies an unsigned short
+integer. In order to use these items, you must include the MS OS/2 header
+file os2.h at the beginning of your program source file.
+ 
+The MS OS/2 system functions are not standard C functions. They use the
+Pascal calling convention. This means, for example, that the MS OS/2
+functions expect parameters to be passed in left-to-right order instead of
+the standard right-to-left order of C functions. To use the MS OS/2
+functions in a C-language program, you must declare them with the pascal
+keyword, which directs the C compiler to generate proper instructions for
+the function call. All MS OS/2 functions are declared this way within the
+<i>os2.h</i> file, so including the file saves you the trouble of declaring each
+function individually.
+ 
+The os2.h file also declares the parameter types for each function. Without
+these declarations, many function parameters would require type casting to
+avoid compiler errors. For example, the DosWrite function shown in the
+preceding example requires the second parameter to be a complete far
+(32-bit) address to the given string. Since the os2.h file declares the
+second parameter with this type, the compiler does the cast for you.
+ 
+Some full-screen programs can also run in a window in the Presentation
+Manager session. Although the program runs in a window, it does not create
+the window. Instead, the system creates the window and provides the input
+and output to the program just as if it were running in a full-screen
+session. A full-screen program can run in a window only if it does not use
+functions that directly access the devices that Presentation Manager
+controls. For example, a program that attempts to retrieve the address of
+the video buffer or to change video modes may fail.
+ 
+<b>Presentation Manager Applications</b>
+ 
+A Presentation Manager application is any MS OS/2 program that creates a
+message queue. A window is the only means a Presentation Manager application
+has to receive input and display output, so Presentation Manager
+applications typically create one or more windows to interact with the
+user.
+ 
+All MS OS/2 Presentation Manager applications have essentially the following
+structure:
+ 
+♦  A main function
+♦  One or more window procedures
+♦  Optional functions to support the main function and/or the window
+   procedures
+ 
+Since nearly all Presentation Manager applications create and use windows,
+the main function carries out the same basic tasks in most applications. The
+typical main function does the following, in the order shown:
+ 
+1  Initializes the application for Presentation Manager.
+2  Creates a message queue.
+3  Creates a window class.
+4  Creates a window.
+5  Starts the message loop and continues to dispatch messages until the
+   WM_QUIT message is retrieved.
+6  Destroys the window when finished using it.
+7  Destroys the message queue.
+8  Terminates the application.
+ 
+Every MS OS/2 Presentation Manager application has at least one thread of
+execution. Each thread that calls Presentation Manager functions must
+register with the system by calling the WinInitialize function. This
+function creates an anchor block and returns an anchor-block handle that the
+thread can use in subsequent functions.
+ 
+An anchor block links a process with the system. The anchor block includes
+an instance data segment in which to store the process's environment and
+storage for error messages. The anchor-block handle is used in the call to
+the WinTerminate function that ends the association with the anchor block
+just before the application terminates.
+ 
+The application creates the message queue by using the WinCreateMsgQueue
+function. This function returns a queue handle that can be used in
+subsequent functions. Once the queue is created, the application can
+register a window class, create a window and start the message loop. After
+the message loop ends, the application can destroy the window and use the
+queue handle in the WinDestroyMsgQueue function to destroy the queue.
+ 
+Once the application is initialized and a message queue and window are
+created, the application can enter the main message loop. The application
+waits there for messages to appear in the queue, retrieves them, and
+dispatches them, as appropriate, to its windows. When the user or system
+chooses to terminate an application, a WM_QUIT message is used to trigger an
+exit from the message loop.
+ 
+After leaving the message loop, an application carries out various
+termination activities, including destroying windows, releasing memory,
+destroying message queues, closing files, and severing connections with the
+shell and other applications.
+ 
+The following code fragment from a simple Presentation Manager application
+copies the line "Hello, world" to its window:
+ 
+#define INCL_WIN
+#define INCL_DOS
+#include &lt;os2.h&gt;
+HAB hab;            /* anchor-block handle     */
+HMQ hmq;            /* message-queue handle    */
+QMSG qmsg;          /* message-queue structure */
+ 
+MRESULT EXPENTRY MyWindowProc(HWND, USHORT, MPARAM, MPARAM);
+ 
+HWND hwndFrame;     /* frame-window handle     */
+HWND hwndClient;    /* client-window handle    */
+ULONG flStyle = FCF_TITLEBAR | FCF_SYSMENU | FCF_SIZEBORDER |
+                FCF_MINMAX | FCF_SHELLPOSITION | FCF_TASKLIST;
+ 
+main()
+{
+    /*
+     * Initialize the thread for making Presentation Manager calls and
+     * create the message queue.
+     */
+ 
+    hab = WinInitialize(0);
+    hmq = WinCreateMsgQueue(hab, DEFAULT_QUEUE_SIZE);
+ 
+    /* Register the class, terminate on failure. */
+ 
+    if (!WinRegisterClass(hab, "MyClass",
+            MyWindowProc, CS_SIZEREDRAW, NULL))
+        DosExit(EXIT_PROCESS, 0);
+ 
+    /* Create the window, terminate on failure. */
+ 
+    if (!(hwndFrame = WinCreateStdWindow(HWND_DESKTOP, WS_VISIBLE,
+            &amp;flStyle, "MyClass", "My Window!", 0L, NULL, 0, &amp;hwndClient)))
+        DosExit(EXIT_PROCESS, 0);
+ 
+    /* Get and dispatch messages. */
+ 
+    while (WinGetMsg(hab, &amp;qmsg, NULL, 0, 0))
+        WinDispatchMsg(hab, &amp;qmsg, NULL, 0, 0);
+ 
+    WinDestroyWindow(hwndFrame);    /* destroy the main window   */
+    WinDestroyMsgQueue(hmq);        /* destroy the message queue */
+    WinTerminate(hab);              /* terminate                 */
+}
+ 
+MRESULT EXPENTRY MyWindowProc(hwnd, usMessage, mp1, mp2)
+HWND hwnd;
+USHORT msg;
+MPARAM mp1;
+MPARAM mp2;
+{
+    HPS hps;        /* presentation-space handle */
+    RECTL rcl;      /* rectangle structure       */
+    POINTL ptl;     /* point structure           */
+ 
+    switch (msg) {
+        case WM_PAINT:
+            hps = WinBeginPaint(hwnd,
+                NULL, NULL);                       /* start painting  */
+            WinQueryWindowRect(hwnd, &amp;rcl);        /* get window size */
+            WinFillRect(hps, &amp;rcl, CLR_WHITE);     /* fill background */
+            ptl.x = (rcl.xRight - rcl.xLeft) / 2;
+            ptl.y = (rcl.yTop - rcl.yBottom) / 2;
+            GpiMove(hps, &amp;ptl);          /* move to center of window  */
+            GpiCharString(hps, 12L,
+                "Hello, world");                     /* draw string   */
+            WinEndPaint(hps);                        /* end painting  */
+            return (0L);
+ 
+        default:
+            return (WinDefWindowProc(hwnd, msg, mp1, mp2));
+    }
+}
+ 
+An advanced-video-input-and-output (AVIO) program is a Presentation Manager
+program that uses the advanced Vio functions for text output. These function
+let a Presentation Manager application write text to a window just as if it
+were writing the text to a full screen. These programs must run in the
+Presentation Manager session and must create at least one window for input
+and output.
+ 
+<b>The Family Application Programming Interface</b>
+ 
+Many MS OS/2 functions can be used in programs intended to be run in real
+mode. These functions, collectively called the family application
+programming interface (family API, or FAPI), let developers create MS OS/2
+programs that can run in both protected and real modes; that is, they can
+run under MS OS/2 and under MS-DOS versions 2.x and 3.x.
+ 
+To use the family API in real-mode programs, you must use only the MS OS/2
+functions that belong to the FAPI, and you must observe the restrictions
+that apply to these functions when running in real mode. Also, you must bind
+your program by using the MS OS/2 Bind utility (bind). The bind utility
+supplies the code needed to link the MS OS/2 functions to the corresponding
+MS-DOS system calls. This code is used only when the program is run in real
+mode; that is, a bound program can still run in protected mode.
+ 
+Not all MS OS/2 functions belong to the FAPI, and some that do belong have
+slightly different behavior when used in real mode than when used in
+protected mode. The following is a complete list of the FAPI functions.
+Those functions marked with an asterisks (*) operate differently in real
+mode than in protected mode; all other FAPI functions operate identically in
+both protected and real modes.
+ 
+<b>DosAllocHuge *        DosHoldSignal *       DosWrite</b>
+<b>DosAllocSeg *         DosInsMessage *       KbdCharIn *</b>
+<b>DosBeep               DosMkDir     </b>         KbdFlushBuffer *
+<b>DosBufReset           DosMove               KbdGetStatu</b>s *
+<b>DosCaseMap *          DosNewSize            KbdPee</b>k *
+<b>DosChDir              DosOpen *         </b>    KbdSetStatus *
+<b>DosChgFilePtr         DosPutMessage *       KbdStringIn *</b>
+<b>DosClose              DosQCurDir        </b>    VioGetBuf
+<b>DosCreateCSAlias *    DosQCurDisk           VioGetCurPos</b>
+<b>DosDelete             DosQFHandState        V</b>ioGetCurType
+<b>DosDevConfig          DosQFileInfo          VioGetMode</b>
+<b>DosDevIOCtl *         DosQFileMode          VioGetPhysB</b>uf
+<b>DosDupHandle          DosQFSInfo            VioReadCellStr</b>
+<b>DosEnumAttribute      DosQPathInfo          VioReadCharStr</b>
+<b>DosErrClass           DosQVerify            VioScrLock </b>*
+<b>DosError *            DosRead *         </b>    VioScrollDn
+<b>DosExecPgm *          DosReallocHuge *      VioScr</b>ollLf
+<b>DosExit *             DosReallocSeg</b> *       VioScrollRt
+<b>DosFileLocks          DosRmDir              VioScrollUp</b>
+<b>DosFindClose          DosSelectDisk         VioScrUnLock</b>
+<b>DosFindFirst *        DosSetDateTime        VioSetCurPos</b>
+<b>DosFindFirst2         DosSetFHandState *    VioSetCurType</b>
+<b>DosFindNext *         DosSetFileInfo        VioSetMode</b>
+<b>DosFreeSeg *          DosSetFileMode        VioSho</b>wBuf
+<b>DosGetCollate *       DosSetFSInfo          VioWrtCellStr</b>
+<b>DosGetCtryInfo *      DosSetPathInfo        VioWrtCharStr</b>
+<b>DosGetDateTime        DosSetSigHandler *    VioWrtCharStrAtt</b>
+<b>DosGetDBCSEv *        DosSetVec *           VioWrtNAttr</b>
+<b>DosGetEnv             DosSetVerify          V</b>ioWrtNCell
+<b>DosGetHugeShift       DosSleep              VioWrtNChar</b>
+<b>DosGetMachineMode     DosSubAlloc           VioWrtTTY</b>
+<b>DosGetMessage *       DosSubFree</b>
+<b>DosGetVersion         DosSubSet</b>
+ 
+<b>Note:  The DosG</b>etMachineMode function is especially useful in FAPI programs,
+       since it specifies which environment the program is running in: MS
+       OS/2 or MS-DOS.
+ 
+Following are the real-mode restrictions and/or differences in operation for
+the FAPI functions marked with asterisks (*) in the preceding list:
+ 
+<b>DosAllocHuge  Rounds the usPartialSe</b>g parameter value up to the next
+paragraph (16-byte) value. This function copies the actual segment address,
+not a selector, to the variable pointed to by the psel parameter.
+ 
+<b>DosAllocSeg  Rounds the usSize pa</b>rameter value up to the next paragraph
+(16-byte) value. This function copies the actual segment address, not a
+selector, to the variable pointed to by the psel parameter.
+ 
+<b>DosCaseMap</b>  Provides no method of identifying the boot drive. The system
+assumes that the country.sys file is in the root directory of the current
+drive.
+ 
+<b>DosCreateCSAlias</b>  Returns as a selector the actual segment address of the
+allocated memory. Freeing either the returned selector or the original
+selector immediately frees the block of memory.
+ 
+<b>DosDevIOCtl</b>  Restricts the input-and-output-control functions that can be
+used. Categories 2, 3, 4, 6, 7, 10, and 11 cannot be used. Also, some
+control functions in categories 1, 5, and 8 can be used with MS-DOS 3.x but
+not with MS-DOS 2.x. The following input-and-output-control functions can be
+used in FAPI programs:
+ 
+    ASYNC_SETBAUDRATE
+    ASYNC_SETLINECTRL
+    DSK_BLOCKREMOVABLE
+    DSK_GETLOGICALMAP
+    DSK_LOCKDRIVE *
+    DSK_REDETERMINEMEDIA *
+    DSK_SETLOGICALMAP
+    DSK_UNLOCKDRIVE *
+    PRT_GETFRAMECTL
+    PRT_GETINFINITERETRY
+    PRT_GETPRINTERSTATUS
+    PRT_INITPRINTER
+    PRT_SETFRAMECTL (for IBM Graphics Printers only)
+    PRT_SETINFINITERETRY (current program only)
+ 
+* These input-and-output-control functions can be used only with MS-DOS
+versions 3.2 and later.
+ 
+<b>DosError  If the fEnable</b> parameter is HARDERROR_DISABLE, causes all
+subsequent int 24h requests to fail, until another call is made to the
+<b>DosError function with f</b>Enable set to HARDERROR_ENABLE.
+ 
+<b>DosExecPgm  Allows only the va</b>lue EXEC_SYNC for the fExecFlags parameter.
+Other values cause errors. The buffer pointed to by the pchFailName
+parameter is filled with blanks, even if the function fails. The codeResult
+field of the RESULTCODES structure receives the exit code for the DosExit
+function or the MS-DOS call that terminates the program.
+ 
+<b>DosExit</b>  Exits from the currently executing program, since there are no
+threads in the real-mode environment. If the fTerminate parameter is
+EXIT_THREAD, the entire process ends, not just a thread.
+ 
+<b>DosFindFirst  Requires the phdir par</b>ameter to be HDIR_SYSTEM.
+ 
+<b>DosFindNext  Requires the hdir pa</b>rameter to be HDIR_SYSTEM.
+ 
+<b>DosFreeSeg</b>  Does not treat a code-segment selector (created by using the
+<b>DosCreateCSAlias</b> function) and the corresponding data-segment selector as
+unique. Freeing one frees both.
+ 
+<b>DosGetCollate</b>  Provides no method of identifying the boot drive. The system
+assumes that the country.sys file is in the root directory of the current
+drive.
+ 
+<b>DosGetCtryInfo</b>  Provides no method of identifying the boot drive. The system
+assumes that the country.sys file is in the root directory of the current
+drive.
+ 
+<b>DosGetDBCSEv</b>  Provides no method of identifying the boot drive. The system
+assumes that the country.sys file is in the root directory of the current
+drive.
+ 
+<b>DosGetMessage</b>  Provides no method of identifying the boot drive. The system
+assumes that the message file is in the root directory of the current
+drive.
+ 
+<b>DosHoldSignal</b>  Recognizes only the signal-interrupt (SIG_CTRLC) and
+signal-break (SIG_CTRLBREAK) signals.
+ 
+<b>DosInsMessage</b>  Provides no method of identifying the boot drive. The system
+assumes that the message file is in the root directory of the current
+drive.
+ 
+<b>DosOpen  Restricts th</b>e values that can be used with the fsOpenMode
+parameter. The parameter can be a combination of the following values:
+ 
+<b>Value                     Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>OPEN_ACCESS_READONLY</i>      Read-only access mode.
+ 
+<i>OPEN_ACCESS_WRITEONLY</i>     Write-only access mode.
+ 
+<i>OPEN_ACCESS_READWRITE</i>     Read/write access mode.
+ 
+<i>OPEN_SHARE_DENYREADWRITE</i>  Deny read/write share mode. Not available in
+                          MS-DOS 2.x. Available in MS-DOS 3.x only when the
+                          share command has been used.
+ 
+<i>OPEN_SHARE_DENYWRITE</i>      Deny-write share mode. Not available in MS-DOS
+                          2.x. Available in MS-DOS 3.x only when the share
+                          command has been used.
+ 
+<i>OPEN_SHARE_DENYREAD       Deny-read share mode. Not avail</i>able in MS-DOS 2.x.
+                          Available in MS-DOS 3.x only when the share
+                          command has been used.
+ 
+<i>OPEN_SHARE_DENYNONE       Deny-none share mode. Not avail</i>able in MS-DOS 2.x.
+                          Available in MS-DOS 3.x only when the share
+                          command has been used.
+ 
+<i>OPEN_FLAGS_NOINHERIT      Inheritance flag. Not available in</i> MS-DOS 2.x.
+ 
+<i>OPEN_FLAGS_WRITE_THROUGH  Write-through flag. Not available in MS-DOS 2.</i>x.
+ 
+<i>OPEN_FLAGS_DASD</i>           Direct-access-storage-device (DASD) flag.
+ 
+The fail-on-error flag (OPEN_FLAGS_FAIL_ON_ERROR) is not available to
+real-mode programs.
+ 
+<b>DosPutMessage</b>  Provides no method of identifying the boot drive. The system
+assumes that the message file is in the root directory of the current
+drive.
+ 
+<b>DosRead  Uses the Kbd</b>StringIn function whenever the specified file handle
+identifies the keyboard device. In real mode, KbdStringIn reads only the
+number of characters specified in the call, then beeps to signal the user
+that no additional characters can be entered. (In protected mode, the user
+can enter characters until the keyboard buffer is full.)
+ 
+<b>DosReallocHuge  Rounds the usPartialSize p</b>arameter value up to the next
+paragraph (16-byte) value.
+ 
+<b>DosReallocSeg  Rounds the usNewSize par</b>ameter value up to the next paragraph
+(16-byte) value.
+ 
+<b>DosSetFHandState</b>  Requires that the (OPEN_FLAGS_FAIL_ON_ERROR flag and the
+OPEN_FLAGS_WRITE_THROUGH) flag not be set. Also, the OPEN_FLAGS_NOINHERIT
+flag must not be set in MS-DOS 2.x.
+ 
+<b>DosSetSigHandler</b>  Can be used to install signal handlers for only the
+signal-interrupt (SIG_CTRLC) and signal-break (SIG_CTRLBREAK) signals.
+Furthermore, the SIG_CTRLC and SIG_CTRLBREAK signals are treated as the same
+signal, so the function accepts only the SIG_CTRLC value when setting a
+signal handler.
+ 
+<b>DosSetVec  Does not accept </b>VECTOR_EXTENSION_ERROR as the usVecNum value,
+since this exception is not raised in machines using the 8088 or 8086
+microprocessor.
+ 
+<b>KbdCharIn  Does not copy th</b>e system time to the KBDKEYINFO structure and
+provides no interim character support. This function retrieves characters
+only from the default keyboard (handle 0). The fbStatus field can be 0x0000
+or SHIFT_KEY_IN. The hkbd parameter is ignored.
+ 
+<b>KbdFlushBuffer  Ignores the hkbd parameter</b>.
+ 
+<b>KbdGetStatus</b>  Does not support the interim character or the turnaround
+character.
+ 
+<b>KbdPeek  Does not cop</b>y the system time to the KBDKEYINFO structure and
+provides no interim character support. This function retrieves characters
+only from the default keyboard (handle 0). The fbStatus field can be 0x0000
+or SHIFT_KEY_IN. The hkbd parameter is ignored.
+ 
+<b>KbdSetStatus</b>  Does not support the interim character or the turnaround
+character. Raw input mode with echo mode on is not supported. The hkbd
+parameter is ignored.
+ 
+<b>KbdStringIn  Ignores the hkbd par</b>ameter.
+ 
+<b>VioScrLock</b>  Always indicates that the lock was successful.
+ 
+<b>Using the Command Line</b>
+ 
+In standard C-language programs, you can use the argc and argv parameters of
+the main function to retrieve individual copies of the command-line
+arguments. You can use these parameters in MS OS/2 programs, but you can
+also retrieve the entire command line, exactly as the user typed it, by
+using the DosGetEnv function.
+ 
+When it starts a program, MS OS/2 prepares an environment segment for the
+program. This segment contains definitions of all environment variables, as
+well as the command line. The DosGetEnv function retrieves the segment
+selector for this environment segment and the address offset within that
+segment for the start of the command line.
+ 
+You can echo the command line on the screen by using the DosGetEnv function
+to get the address of the command line in the environment segment, as shown
+in the following sample program:
+ 
+#define INCL_DOS
+#include &lt;os2.h&gt;
+ 
+main( )
+{
+    SEL selEnvironment;
+    USHORT offCommand;
+    PSZ pszCommandLine;
+    USHORT cbWritten;
+    USHORT i, cch;
+ 
+    DosGetEnv(&amp;selEnvironment, &amp;offCommand);
+    pszCommandLine = MAKEP(selEnvironment, offCommand);
+ 
+    /*
+     * The first string is the program name. The command line is the next
+     * null-terminated string.
+     */
+ 
+    for (i = 0; pszCommandLine[i]; i++);
+ 
+    /* Find the length of the command-line string. */
+ 
+    for (i++, cch = 0; pszCommandLine[cch + i]; cch++);
+ 
+    DosWrite(1, &amp;pszCommandLine[i], cch, &amp;cbWritten);
+}
+ 
+The command line has two parts. The first part is the program name,
+terminated by a zero byte. The second part is the rest of the command line,
+terminated by two zero bytes. The preceding program echoes the command line
+by skipping over the program name and then writing everything up to the next
+zero byte to the screen. The first for statement skips over the command
+name; the second for statement computes the length of the string. The MAKEP
+macro creates the far pointer that is needed to access the command line in
+the environment segment.
+ 
+You can examine your program's environment by using the selector retrieved
+by the DosGetEnv function. The program's environment consists of the
+environment variables that have been declared and passed to the program.
+Each program has a unique environment that is typically inherited from the
+program that started it──for example, from the MS OS/2 command processor,
+<b>cmd</b>.
+ 
+You can use the DosScanEnv function to scan for a specific environment
+variable. This function takes as an argument the name of the environment
+variable that you are interested in and copies the current value of this
+variable to a buffer that you supply. The following sample program uses
+<b>DosScanEnv</b> to display the value of the environment variable specified in the
+command line:
+ 
+#define INCL_DOSQUEUES
+#include &lt;os2.h&gt;
+ 
+main( )
+{
+    SEL selEnvironment;
+    USHORT offCommand;
+    PSZ pszCommandLine;
+    PSZ pszValue;
+    USHORT cbWritten;
+    USHORT i, cch;
+ 
+    DosGetEnv(&amp;selEnvironment, &amp;offCommand);
+    pszCommandLine = MAKEP(selEnvironment, offCommand);
+ 
+    for (i = 0; pszCommandLine[i]; i++);
+    for (i++; pszCommandLine[i] == ' '; i++);
+ 
+    if (!DosScanEnv(&amp;pszCommandLine[i], &amp;pszValue)) {
+        for (cch = 0; pszValue[cch]; cch++);
+        DosWrite(1, pszValue, cch, &amp;cbWritten);
+    }
+}
+ 
+<b>Using Structures</b>
+ 
+Many MS OS/2 functions use structures for input and output. To use a
+structure in an MS OS/2 function, you first define the structure in your
+program and then pass the 32-bit far address of the structure as a parameter
+in the function call.
+ 
+For example, the DosGetDateTime function copies the current date and time to
+a DATETIME structure whose address you supply. The fields of the DATETIME
+structure define the month, day, and year, as well as the time of day (to
+hundredths of a second).
+ 
+To retrieve the date and time, you call the DosGetDateTime function, using
+the address operator (&amp;) to specify the address of the DATETIME structure.
+The following sample program shows how to make the call:
+ 
+#include &lt;os2.h&gt;
+ 
+CHAR szDayName[] = "MonTueWedThuFriSatSun";
+CHAR szMonthName[] = "JanFebMarAprMayJunJulAugSepOctNovDec";
+CHAR szDate[] = "xx:xx:xx xxx xxx xx, xxxx\r\n";
+ 
+main( )
+{
+    DATETIME date;
+    SHORT offset;
+    SHORT i;
+    USHORT usYear;
+    USHORT cbWritten;
+ 
+    DosGetDateTime(&amp;date);  /* address of DATETIME structure */
+ 
+    szDate[0] = (date.hours / 10) + '0';
+    szDate[1] = (date.hours % 10) + '0';
+    szDate[3] = (date.minutes / 10) + '0';
+    szDate[4] = (date.minutes % 10) + '0';
+    szDate[6] = (date.seconds / 10) + '0';
+    szDate[7] = (date.seconds % 10) + '0';
+    offset = date.weekday * 3;
+    for (i = 0; i &lt; 3; i++)
+        szDate[i + 9] = szDayName[i + offset];
+    offset = (date.month - 1) * 3;
+    for (i = 0; i &lt; 3; i++)
+        szDate[i + 13] = szMonthName[i + offset];
+    szDate[17] = (date.day &lt; 10) ? ' ' : (date.day / 10 + '0');
+    szDate[18] = (date.day % 10) + '0';
+    usYear = date.year;
+    szDate[21] = (usYear / 1000) + '0';
+    usYear = usYear % 1000;
+    szDate[22] = (usYear / 100) + '0';
+    usYear = usYear % 100;
+    szDate[23] = (usYear / 10) + '0';
+    szDate[24] = (usYear % 10) + '0';
+ 
+    DosWrite(1, szDate, 27, &amp;cbWritten);
+}
+ 
+One drawback to using MS OS/2 functions exclusively is that there are no
+formatted output functions, such as the C-language printf function.
+Therefore, the preceding program formats the data itself before displaying
+it. The program uses the integer-division operators (/ and %) to convert
+binary numbers to ASCII characters. The program then copies the ASCII
+characters to a string and displays the string by using the DosWrite
+function.
+ 
+Some MS OS/2 functions require that you fill one or more fields of the
+structure before calling the function. For example, there are some
+structures whose length depends on the version of the operating system being
+used; MS OS/2 requires that you supply the expected length so that the
+function does not copy data beyond the end of your structure.
+ 
+<b>Using Bit Masks</b>
+ 
+In MS OS/2, many functions use bit masks. A bit mask (also called an array
+of flags) is a combination of two or more Boolean flags in a single byte,
+word, or double-word value. In C-language programs, you can use the bitwise
+AND, OR, and NOT operators to examine and set the values in a bit mask.
+ 
+If a function retrieves a bit mask, you can check a specific flag in the bit
+mask by using the AND operator, as shown in the following code fragment:
+ 
+USHORT fsEvent;
+ 
+if (fsEvent &amp; 0x0004)
+    /* is the flag set? */
+ 
+You can set a flag in a bit mask by using the OR operator, as shown in the
+following code fragment:
+ 
+ULONG flFunctions;
+ 
+flFunctions = flFunctions | KR_KBDPEEK;
+ 
+Finally, you can clear a flag in a bit mask by using the AND and NOT
+operators, as shown in the following code fragment:
+ 
+USHORT fsEvent;
+ 
+fsEvent = fsEvent &amp; ~0x0004;
+ 
+<b>Sharing Resources</b>
+ 
+Many MS OS/2 functions let you use the resources of the computer, such as
+the keyboard, screen, disk, and even the system speaker. Since MS OS/2 is a
+multitasking operating system and more than one program may be running at a
+time, MS OS/2 considers all resources of the computer to be shared
+resources. As a result, programs must not claim exclusive access to a given
+resource.
+ 
+Consider a simple program that plays a short tune by using the DosBeep
+function. This function, when called by a single program, generates a tone
+at the system speaker, but if two programs call DosBeep at the same time,
+the result is chaotic. For example, try running two or more copies of the
+following program at the same time:
+ 
+#include &lt;os2.h&gt;
+ 
+#define CNOTES 14
+USHORT ausTune[] = {
+    440, 1000,
+    480, 1000,
+    510, 1000,
+    550, 1000,
+    590, 1000,
+    620, 1000,
+    660, 1000
+    };
+ 
+main( )
+{
+    int i;
+ 
+    for (i = 0; i &lt; CNOTES; i += 2)
+        DosBeep(ausTune[i], ausTune[i + 1]);
+}
+ 
+The first parameter of the DosBeep function specifies the frequency of the
+note. The second parameter specifies the duration. The array ausTune defines
+frequency and duration values for each note in the tune.
+ 
+<b>DosBeep</b> is intended to be used for signaling the user when an error occurs,
+such as pressing an incorrect key. Since the system speaker is a shared
+resource, a process should use the DosBeep function sparingly.
+ 
+<b>C-Language Header Files</b>
+ 
+The MS OS/2 C-language header file os2.h contains the definitions you need
+to use the functions, data types, structures, and constants described in the
+<i>Microsoft Operating System/2 Programmer's Reference</i>.
+ 
+When you include the os2.h file, the C preprocessor automatically defines
+many, but not all, of the most commonly used MS OS/2 functions. The os2.h
+header file is the "master" file of a set of files that contain the MS OS/2
+function definitions. Each file contains definitions for the functions, data
+types, structures, and constants associated with a specific group of MS OS/2
+functions. To minimize the time required to process the many header files,
+each function group is conditionally processed on the basis of whether a
+corresponding constant is defined within the program source file.
+ 
+For a list of the possible constants, see the topic
+<i><span class='grhilite'>◄</span><a href='unknown#incls12'>Include control constants</a><span class='grhilite'>►</span></i>
+ 
+To use a function within your program, you simply define the corresponding
+constant by using the #define directive before you include the os2.h file.
+For example, the following code fragment includes definitions for the
+memory-management and file-management functions:
+ 
+#define INCL_DOSMEMMGR
+#define INCL_DOSFILEMGR
+#include &lt;os2.h&gt;
+ 
+main( )
+{
+    .
+    .
+    .
+}
+ 
+Once you have defined a constant, you can use any function, structure, or
+data type in that function group.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

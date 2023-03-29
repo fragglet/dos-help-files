@@ -1,0 +1,108 @@
+<html>
+
+<head>
+<title>DosExit (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosExit (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Multitasking_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#multitasking 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosExitCritSec.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSPROCESS
+ 
+VOID DosExit(fTerminate, usExitCode)
+USHORT fTerminate;    /* terminate current/all threads  */
+USHORT usExitCode;    /* result code for parent process */
+ 
+The DosExit function ends a thread or a process and all its threads.
+ 
+The DosExit function is a family API function.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>fTerminate</i>  Specifies whether to terminate the current thread or the process
+            and all its threads. If this parameter is EXIT_THREAD, only the
+            current thread ends. If it is EXIT_PROCESS, all threads in the
+            process end.
+ 
+<i>usExitCode</i>  Specifies the program's exit code.
+ 
+<b>Return Value</b>
+ 
+This function does not return a value.
+ 
+<b>Comments</b>
+ 
+If the fTerminate parameter is EXIT_THREAD, the function ends the current
+thread. If the current thread is the last one in the process, the process
+also ends. If the fTerminate parameter is EXIT_PROCESS, the DosExit function
+terminates all threads in the process and creates a final temporary thread.
+The temporary thread executes any functions given in the list created by the
+<b>DosExitList</b> function. When this last thread ends, the system frees any
+resources used by the process. The exit code specified by the last call to
+the DosExit function is supplied to the parent process by using the
+<b>DosCwait</b> function.
+ 
+If thread one calls DosExit, the fTerminate parameter is ignored, and the
+process is terminated as if the fTerminate parameter was set to
+EXIT_PROCESS.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restriction applies to the DosExit function:
+ 
+♦  The function always exits from the current program, since there are no
+   threads in the real-mode environment.
+ 
+<b>Example</b>
+ 
+This example creates a thread, referred to as thread 2. This example shows
+two ways of stopping thread 2: by stopping all threads in the process and by
+stopping thread 2 specifically. Thread 1, the main process, exits and ends
+all threads by calling the DosExit function with the first parameter set to
+EXIT_PROCESS. Thread 2, the thread created with the call to DosCreateThread,
+ends only itself, by calling DosExit with the first parameter set to
+EXIT_THREAD.
+ 
+BYTE bStackArea[2048];
+ 
+main() {
+    .
+    .
+    .
+    PVOID pStack2 = bStackArea + 512;
+    TID tidThread2;
+    DosCreateThread(Thread2, &amp;tidThread2, pStack2);
+    .
+    .
+    .
+    DosExit(EXIT_PROCESS,      /* exit process                   */
+        0);                    /* return value                   */
+}
+VOID FAR Thread2() {
+    .
+    .
+    .
+    DosExit(EXIT_THREAD,       /* exit thread, process continues */
+        0);                    /* return value                   */
+}
+ 
+<b>See Also</b>
+ 
+<b>DosCwait, DosExecPgm, DosExitList</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

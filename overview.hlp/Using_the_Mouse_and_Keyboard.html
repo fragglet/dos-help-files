@@ -1,0 +1,462 @@
+<html>
+
+<head>
+<title>Using the Mouse and Keyboard (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using the Mouse and Keyboard (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='mouse_and_keyboard_input.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Mouse and keyboard input functions 1.2'>Function Group</a><span class='grhilite'>►</span>                 </i>    <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='icons.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                        Using the Mouse and Keyboard
+ 
+An application that uses the mouse and keyboard for input must respond to
+activation, mouse, and keyboard events. The following sections describe how
+to handle these three related topics.
+ 
+<b>Responding to Activation Events</b>
+ 
+A client window receives a WM_ACTIVATE message when its parent frame window
+is being activated or deactivated. The activation or deactivation message is
+usually accompanied by messages to set or lose the keyboard focus.
+Therefore, applications should not use the WM_ACTIVATE message to change the
+keyboard focus.
+ 
+The low word of the first message parameter is TRUE if the window is
+activated, and FALSE if the window is deactivated.
+ 
+One use for the WM_ACTIVATE message is to toggle the state of an
+application's private variable that tells whether a window is active or not,
+as shown in the following code fragment:
+ 
+case WM_ACTIVATE:
+     fActivated = (BOOL) mp1;
+     return(0L);
+ 
+It is important to know the activation state of a window in order to
+correctly handle mouse-button clicks.
+ 
+<b>Responding to Mouse Messages</b>
+ 
+Mouse messages occur when a user presses or releases one of the mouse
+buttons (a click) and when the mouse is moved. All mouse messages contain
+the x- and y-coordinates of the mouse-pointer hot spot (relative to the
+window coordinates of the window receiving the message) at the time the
+event occurs.
+ 
+The system sends a WM_HITTEST message to the window that is about to receive
+a mouse message. The window can determine if it should actually receive the
+mouse message or not. The default processing of this message in the
+<b>WinDefWindowProc</b> function is to return HT_NORMAL if the window is enabled
+and HT_ERROR if the window is disabled. If the return value is HT_ERROR, the
+system does not send the mouse message to the window. Most applications pass
+<b>WM_HITTEST messages on to the </b>WinDefWindowProc function by default so
+disabled windows do not receive mouse messages. Windows that specifically
+respond to WM_HITTEST messages can change this default behavior.
+ 
+Because windows process WM_HITTEST and mouse messages, an application can
+ignore hit-test code in a mouse message unless the application returns
+special values for hit-test code. One possible use for hit-test code is to
+react differently to a mouse click in a disabled window.
+ 
+The contents of the mouse-message arguments (mp1 and mp2) are listed below:
+ 
+♦  The x-position is in low word of mp1.
+ 
+♦  The y-position is in high word of mp1.
+ 
+♦  The hit-test code is in low word of mp2.
+ 
+<b>Responding to Button Clicks</b>
+ 
+Applications typically respond to mouse button-down events differently
+depending on whether the window is currently active. The first button-down
+event in an inactive window should activate a window. A subsequent
+button-down event in an active window produces an application-specific
+action.
+ 
+Typically, an application processes mouse clicks in the client window of a
+standard frame window. Because the activated/deactivated status of a window
+is a frame-window characteristic, the system does not provide an easy way to
+determine if the client window is active. That is, the window handle
+returned by the WinQueryActiveWindow function is the active frame-window
+handle rather than the client window owned by the frame.
+ 
+The following are two typical methods for determining if a client is an
+active frame window:
+ 
+♦  Call the WinQueryActiveWindow function and compare the window handle it
+   returns with the frame window that contains the client window, as shown
+   in the following code fragment:
+ 
+      fActivated = (WinQueryWindow(hwndClient, QW_PARENT, FALSE) ==
+          WinQueryActiveWindow(HWND_DESKTOP, FALSE))
+ 
+♦  Maintain a private variable for the client window that is set and cleared
+   when processing WM_ACTIVATE messages. Each time the frame window is
+   activated, the client window receives a WM_ACTIVATE message with the low
+   word of the first parameter equal to TRUE. When the frame window is
+   deactivated, the client window receives a WM_ACTIVATE message with a
+   FALSE activation indicator. The following code fragment shows how to use
+   activation messages to toggle a private-status variable:
+ 
+      case WM_ACTIVATE:
+           fActivated = (BOOL) mp1;
+           return (0L);
+ 
+Depending on the method used to determine if a client window is active, a
+mouse button-down message is passed to the WinDefWindowProc function if the
+window is not active at the time of the message. The default processing
+activates the window and its frame.
+ 
+A common problem for an application processing WM_BUTTON1DOWN or similar
+messages is the failure to activate or set the window focus. If the window
+processes character messages, the window procedure should call the
+<b>WinSetFocus</b> function to make sure the window receives the input focus and is
+activated. If the window does not need the keyboard focus, an application
+should call the WinSetActiveWindow function.
+ 
+<b>Responding to Mouse Movement</b>
+ 
+The system sends mouse-move messages to the window under the mouse pointer
+or the current mouse-capture window, if any, whenever the mouse pointer
+moves. This is useful for tracking the mouse pointer and changing its shape
+based on its location in a window. For example, the mouse pointer changes
+shape when it passes over the size border of a standard frame window.
+ 
+All standard control windows use mouse-move messages to set the
+mouse-pointer shape. If your application handles WM_MOUSEMOVE messages in
+some situations but not others, unused messages should be passed to the
+<b>WinDefWindowProc</b> function to change the shape of the mouse pointer.
+ 
+<b>Changing the Mouse Capture</b>
+ 
+Mouse messages are usually routed to the window under the mouse pointer.
+Applications can call the WinSetCapture function to process all mouse
+messages by a specified window. This is particularly useful when an
+application is tracking the mouse pointer after a button-down message.
+ 
+For example, in a paint application that uses a button-down message to start
+a drawing operation, the application tracks the mouse using mouse-move
+messages until a button-up message is received. If a user drags the mouse
+pointer outside the window and releases the button, the button-up message
+will not go to the original window unless the application has called the
+<b>WinSetCapture</b> function for that window.
+ 
+Some applications must receive a button-up message to match a button-down
+message. When processing a button-down message, these applications call the
+<b>WinSetCapture</b> function to set the capture to their own window, and then they
+call the WinSetCapture function with a NULL window handle to release the
+mouse capture when processing a matching button-up message.
+ 
+<b>Keyboard Messages</b>
+ 
+All keyboard messages come to a window as WM_CHAR messages. The system reads
+the keyboard and collects keyboard events in the system queue. It then
+routes these messages to the appropriate windows depending on the current
+keyboard-focus window at the time the message is sent. WM_CHAR messages are
+sent to the window that has the keyboard focus. If no window has the
+keyboard focus, then WM_CHAR messages are posted to the active frame-window
+queue. The following are two typical situations where applications receive
+<b>WM_CHAR</b> messages:
+ 
+♦  An application has a client window or custom control window, each of
+   which can have the keyboard focus. If a window procedure for the client
+   or control window does not process characters, it should pass them to its
+   owner window, which can be accomplished by passing them through to the
+   WinDefWindowProc function. This is especially true for dialog-control
+   items, as this is how the TAB and direction-key control processing is
+   implemented in the user interface.
+ 
+♦  An application window owns a control window that handles some, but not
+   all WM_CHAR messages. This is common in dialog windows. If a control
+   window that has the focus in a dialog window cannot process a WM_CHAR
+   message, it can call the WinDefWindowProc function to send the message to
+   its owner, which is usually a dialog-frame window. The application dialog
+   procedure then receives the WM_CHAR message. This is also the case when
+   an application client window owns a control window.
+ 
+<b>Responding to Keyboard Messages</b>
+ 
+A WM_CHAR message may represent a key-down or key-up transition. It may
+contain a character code, a virtual-key code, or a scan code. This message
+also contains information about the state of the SHIFT, CONTROL, and ALT
+keys.
+ 
+Each time a user presses a key, at least two WM_CHAR messages are generated:
+one when the key is pressed down, and one when the key is released. If the
+key is held down long enough to trigger the keyboard repeat, multiple
+<b>WM_CHAR</b> key-down messages are generated.
+ 
+If the keyboard repeats faster than the application can retrieve the events
+from the event queue, the system combines repeating character events into
+one WM_CHAR event representing multiple-key events for the same key.
+<b>WM_CHAR</b> messages contain a count byte indicating the number of keystrokes
+represented by the message. Generally, this byte is set to 1, but it should
+be checked every time a WM_CHAR message is processed to avoid missing
+keystrokes.
+ 
+A control may ignore the repeat count; for example, it may ignore the count
+on ARROW keys. If the system is slow, it may be more aesthetic to have a
+cursor move slowly than to see it jump 40 characters.
+ 
+Applications decode WM_CHAR messages by examing individual bits in the flag
+word contained in the low word of the first argument passed with every
+<b>WM_CHAR</b> message. These bits may be set in various combinations. For example,
+a WM_CHAR message can have the KC_KEYDOWN, KC_CHAR, KC_SCANCODE, and
+KC_SHIFT attribute bits all set at the same time.
+ 
+The mp1 and mp2 parameters that are part of the message contain different
+information depending on the nature of the keyboard event, as follows:
+ 
+♦  The flag word is in low word of mp1.
+ 
+♦  The repeat key count is in low byte of high word of mp1.
+ 
+♦  The scan code is in high byte of high word of mp1.
+ 
+♦  The char code is in low word of mp2.
+ 
+♦  The virtual key code is in high word of mp2.
+ 
+An application window procedure should return TRUE if it processes a
+particular WM_CHAR message, or FALSE otherwise. Typically, applications
+respond to key-down events and ignore key-up events.
+ 
+The following sections describe the different types of WM_CHAR messages.
+Generally, decoding these messages consists of layers of conditional
+statements to eliminate and discriminate the different combinations of
+attributes that can occur in a keyboard message.
+ 
+<b>Key-Down or Key-Up Events</b>
+ 
+Generally, the first attribute that an application checks in a WM_CHAR
+message is the key-down or key-up events. The distinction between a key-down
+and a key-up event is found by examining the KC_KEYUP bit of the low word of
+the first message parameter. If this flag bit is set, then the message is
+from a key-up event. If the bit is clear, then the message is from a
+key-down event. The following code fragment shows how to decode a message
+for this information:
+ 
+case WM_CHAR:
+    fs = SHORT1FROMMP(mp1);
+ 
+    if ((fs &amp; KC_KEYUP))
+ 
+        /* this is a key-up event   */
+ 
+    else
+ 
+        /* this is a key-down event */
+ 
+    return TRUE;
+ 
+<b>Repeat-Count Events</b>
+ 
+Applications should always check the key repeat-count part of a WM_CHAR
+message to see if the message represents more than one keystroke. The count
+is greater than one if the keyboard is sending characters to the system
+queue faster than the application can retrieve them. If the system queue
+fills up, the system combines consecutive keyboard events for each key in a
+single WM_CHAR message with the repeat count set to the number of combined
+events. The repeat count is in the low byte of the high word of the first
+message parameter.
+ 
+<b>Character Codes</b>
+ 
+The most typical use of WM_CHAR messages is to extract a character code from
+the message and display the character on the screen. When the KC_CHAR bit is
+set in the WM_CHAR message, the low word of the second message parameter
+contains a character code based on the current code page. Generally, this
+value is a glyph code (typically an ASCII code) for the character for the
+key that was pressed.
+ 
+The following code fragment shows how to respond to a character message:
+ 
+    fs = SHORT1FROMMP(mp1);
+ 
+    if (fs &amp; KC_CHAR) {
+ 
+        /* CHAR is in SHORT1FROMMP(mp2) */
+ 
+        /* handle the key character */
+ 
+        return(TRUE);
+}
+ 
+Note that if the KC_CHAR bit is not set, the SHORT1FROMMP(mp2) parameter may
+still contain useful information. If either the ALT or CTRL key, or both,
+are down, the KC_CHAR bit will not be set when the user presses another key.
+For example, when the A key is pressed while the ALT key is down, the low
+word of mp2 will contain a 0x0041, the KC_ALT bit will be set, and the
+KC_CHAR bit will be clear. If the translation does not generate any valid
+characters, the char field is set to zero.
+ 
+<b>Virtual-Key Codes</b>
+ 
+<b>WM_CHAR</b> messages often contain virtual-key codes that correspond to various
+function keys and ARROW keys on a typical keyboard. These keys do not
+correspond to any particular glyph code but are used to initiate operations.
+When the KC_VIRTUALKEY bit is set in flag word of a WM_CHAR message, the
+high word of the second message parameter contains a virtual-key code for
+the key.
+ 
+Note that some keys, such as the ENTER key, have both a valid character code
+and a virtual-key code. WM_CHAR messages for these keys will contain
+character codes for newline characters (ASCII 11) and virtual-key codes
+(VK_ENTER).
+ 
+The following code fragment shows how to decode a WM_CHAR message containing
+a valid virtual-key code:
+ 
+fs = SHORT1FROMMP(mp1);
+ 
+if (fs &amp; KC_VIRTUALKEY) {
+ 
+    /* virtual key is in SHORT2FROMMP(mp2) */
+ 
+    switch (SHORT2FROMMP(mp2)) {
+        case VK_TAB:
+ 
+            /* handle the TAB key   */
+ 
+            return (TRUE);
+ 
+        case VK_LEFT:
+ 
+            /* handle the LEFT ARROW key  */
+ 
+            return (TRUE);
+ 
+        case VK_UP:
+ 
+            /* handle the UP key    */
+ 
+            return (TRUE);
+ 
+        case VK_RIGHT:
+ 
+            /* handle the RIGHT ARROW key */
+ 
+            return (TRUE);
+ 
+        case VK_DOWN:
+ 
+            /* handle the DOWN ARROW key  */
+ 
+        return (TRUE);
+ 
+            /* etc...               */
+ 
+        default:
+            return (FALSE);
+    }
+}
+ 
+<b>Scan Codes</b>
+ 
+A third possible value in a WM_CHAR message is the scan code for the key
+pressed. The scan code represents the value generated by the keyboard
+hardware when a key is pressed. An application can use the scan code to
+identify the physical key pressed, as opposed to the character code
+represented by the same key. The byte-length value for the scan code is in
+the high byte of the high word of the first message parameter.
+ 
+All WM_CHAR messages that are generated by the keyboard have valid scan
+codes. WM_CHAR messages that are posted by other applications may or may not
+have valid scan codes. The following code fragment shows how to extract a
+scan code from a WM_CHAR message:
+ 
+fs = SHORT1FROMMP(mp1);
+ 
+if (fs &amp; KC_SCANCODE) {
+ 
+    /* scan code is in (UCHAR) CHAR4FROMMP(mp1)) */
+ 
+    return (TRUE);
+}
+ 
+<b>Accelerator-Table Entries</b>
+ 
+The system checks all incoming keyboard messages to see if they match any
+existing accelerator-table entries, either in the system queue or in the
+application-message queue. The translation first checks the accelerator
+table associated with the active frame window, and if no match is found, it
+uses the accelerator table associated with the message queues. If the
+keyboard event corresponds to an accelerator-table entry, the WM_CHAR
+message changes to a WM_COMMAND, WM_SYSCOMMAND, or WM_HELP message,
+depending on the attributes of the accelerator table. The original WM_CHAR
+message is not processed by the application.
+ 
+Accelerator tables should be used to implement keyboard shortcuts in
+applications rather than translating command keystrokes. For example, if an
+application uses the F2 key to save a document, a keyboard accelerator entry
+for the F2 virtual key should be created so that it generates a WM_COMMAND
+message rather than a WM_CHAR message.
+ 
+<b>Changing the Keyboard Focus</b>
+ 
+Applications can change the keyboard focus window by calling the
+<b>WinSetFocus</b> function for the new focus window.
+ 
+The WinSetFocus function causes the following events to occur:
+ 
+♦  If a window currently has the keyboard focus, the window receives a
+   WM_SETFOCUS message indicating that the window has lost the focus.
+ 
+♦  If a window currently has the keyboard focus, the window receives a
+   WM_SETSELECTION message indicating that the window should remove the
+   highlight from the current selection.
+ 
+♦  If changing the keyboard focus causes a change in the active window, and
+   if there is a currently active window, the system sends a WM_ACTIVATE
+   message to the active window, indicating that the window is no longer
+   active.
+ 
+♦  If a new application is being made the active application, the system
+   sends a WM_ACTIVATE message to the current active application, indicating
+   that the window is no longer active.
+ 
+♦  A new active window, a new focus window, and the active application are
+   established.
+ 
+♦  If a new application is being made the active application, the system
+   sends a WM_ACTIVATE message to the new application, indicating that the
+   application has become active.
+ 
+♦  If the active window is changing, the system sends a WM_ACTIVATE message
+   to the new main window, indicating that this main window is now active.
+ 
+♦  The system sends the new focus window a WM_SETSELECTION message,
+   indicating that the focus window should select the current selection.
+ 
+♦  The system sends the new focus window a WM_SETFOCUS message, indicating
+   that the focus window is now active.
+ 
+Using the WinQueryActiveWindow or WinQueryFocus function while processing
+the WinSetFocus function causes the previous active and focus windows to be
+returned until new active and focus windows are established. In other words,
+even though WM_SETFOCUS and WM_ACTIVATE messages with the fFocus parameter
+equal to FALSE may have been sent to the previous windows, those windows are
+considered active and have the focus until the system establishes new active
+and focus windows.
+ 
+If the application calls WinSetFocus while processing a WM_ACTIVATE message,
+the system does not send a WM_SETFOCUS message (with fFocus set to FALSE),
+because no window has the focus.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

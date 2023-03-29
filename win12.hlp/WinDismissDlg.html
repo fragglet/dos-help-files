@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>WinDismissDlg (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinDismissDlg (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='message_box_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Dialog Windows 1.2'>Overview</a><span class='grhilite'>►</span>            </i>              <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinDispatchMsg.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINDIALOGS
+ 
+BOOL WinDismissDlg(hwndDlg, usResult)
+HWND hwndDlg;       /* handle of the dialog */
+USHORT usResult;    /* result code to return */
+ 
+The WinDismissDlg function hides the dialog window and causes the
+<b>WinProcessDlg or WinDlgBox function to </b>return.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwndDlg</i>    Identifies the dialog window to be hidden.
+ 
+<i>usResult</i>   Specifies the value that is returned to the caller of
+           WinProcessDlg or WinDlgBox.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful or FALSE if an error
+occurs.
+ 
+<b>Comments</b>
+ 
+This function is required to complete the processing of a modal dialog
+window and is called from its dialog procedure.
+ 
+The WinDismissDlg function is automatically called by the WinDefDlgProc
+function upon receiving a WM_COMMAND message. The WinDefDlgProc function
+will set usResult to the identifier of the control that generated the
+<b>WM_COMMAND</b> message.
+ 
+Note that this function can be called from a modeless dialog box, although
+this is not necessary since there is no internal message-processing loop. If
+the function is called, the dialog box window is hidden. The application
+must destroy the dialog box window, if required.
+ 
+<b>Example</b>
+ 
+This example shows a typical dialog procedure that has both an OK and a
+Cancel button. If the user selects the OK button, WinDismissDlg is called
+with a result value of TRUE. If the user selects the Cancel button,
+<b>WinDismissDlg</b> is called with a result value of FALSE.
+ 
+case WM_COMMAND:
+    switch (SHORT1FROMMP(mp1)) {
+        case ID_ENTER: /* OK button selected  */
+            WinDismissDlg(hwnd, TRUE);
+            return (0L);
+ 
+        case ID_CANCEL: /* Cancel button selected */
+            WinDismissDlg(hwnd, FALSE);
+            return (0L);
+ 
+<b>See Also</b>
+ 
+<b>WinDlgBox, WinProcessDlg, WM_COMMAND, WM_INITDLG</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

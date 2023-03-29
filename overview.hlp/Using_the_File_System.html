@@ -1,0 +1,494 @@
+<html>
+
+<head>
+<title>Using the File System (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using the File System (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='File_Systems.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file functions 1.2'>Function Group</a><span class='grhilite'>►</span>       </i>              <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Help_Manager.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                           Using the File System
+ 
+Input and output are two of the most important tasks that any program
+carries out. This section explains how to read from and write to files on
+disks and other input and output devices, such as printers, modems, and the
+system console.
+ 
+<b>Opening Files</b>
+ 
+Before carrying out any input or output operation, you need a file handle. A
+file handle is a 16-bit value that identifies the file or device that you
+want to read from or write to. You can create a file handle by using the
+<b>DosOpen</b> function, which opens the specified file and returns a file handle
+for it. For example, in the following code fragment, DosOpen opens the
+existing file simple.txt for reading and copies the file handle to the hf
+variable:
+ 
+HFILE hf;
+USHORT usAction;
+ 
+DosOpen("simple.txt",   /* name of file to open   */
+    &amp;hf,                /* address of file handle */
+    &amp;usAction,          /* action taken           */
+    0L,                 /* size of file           */
+    FILE_NORMAL,        /* file attribute         */
+    FILE_OPEN,          /* open the file          */
+    OPEN_ACCESS_READONLY | OPEN_SHARE_DENYNONE,
+    0L);                /* reserved               */
+ 
+If the DosOpen function successfully opens the file, it copies the file
+handle to the hf variable and copies a value to the usAction variable
+indicating what action was taken (for example, FILE_EXISTED for "existing
+file opened"). A size is not needed to open an existing file, so the fourth
+argument is zero. The fifth argument, FILE_NORMAL, specifies the normal file
+attribute. The sixth argument, FILE_OPEN, directs DosOpen to open the file
+if it exists or to return an error if it does not exist. The seventh
+argument directs DosOpen to open the file for reading only and to let other
+programs open the file even while the current program has it open. The final
+parameter is reserved and should always be set to zero.
+ 
+The DosOpen function returns zero if it successfully opened the file. You
+can then use the file handle in subsequent functions to read data from the
+file or to check the status or other characteristics of the file. If
+<b>DosOpen</b> fails to open the file, it returns an error value.
+ 
+As shown in the preceding example, when you open a file you must specify
+whether you want to read from the file, write to it, or both read and write.
+You must also specify whether you want other processes to have access to the
+file while you have it open. You do this by combining an OPEN_ACCESS value
+and an OPEN_SHARE value from the following list:
+ 
+<b>Value                     Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>OPEN_ACCESS_READONLY</i>      Open a file for reading.
+ 
+<i>OPEN_ACCESS_WRITEONLY</i>     Open a file for writing.
+ 
+<i>OPEN_ACCESS_READWRITE</i>     Open a file for reading and writing.
+ 
+<i>OPEN_SHARE_DENYREADWRITE</i>  Open a file for exclusive use, denying read and
+                          write access by other processes.
+ 
+<i>OPEN_SHARE_DENYWRITE</i>      Deny write access to a file by other processes.
+ 
+<i>OPEN_SHARE_DENYREAD</i>       Deny read access to a file by other processes.
+ 
+<i>OPEN_SHARE_DENYNONE</i>       Open a file with no sharing restrictions, granting
+                          read and write access to all processes.
+ 
+In general, you can combine any access method (read, write, or read and
+write) with any sharing method (deny reading, deny writing, deny reading and
+writing, or grant any access). Some combinations have to be handled
+carefully, however, such as opening a file for writing without denying
+access to it by other processes.
+ 
+<b>Creating Files</b>
+ 
+You can also create new files by using the DosOpen function. Once you have
+created a new file, you can read from or write to it just as you would with
+an existing file.
+ 
+To create a new file, specify FILE_CREATE as the sixth argument. The
+<b>DosOpen</b> function then creates the file if it does not already exist. In the
+following code fragment, the DosOpen function creates the file newfile.txt:
+ 
+HFILE hf;
+USHORT usAction;
+ 
+DosOpen("newfile.txt",   /* name of file to create and open */
+    &amp;hf,                 /* address of file handle          */
+    &amp;usAction,           /* action taken                    */
+    0L,                  /* size of new file                */
+    FILE_NORMAL,         /* file attribute                  */
+    FILE_CREATE,         /* create the file                 */
+    OPEN_ACCESS_WRITEONLY | OPEN_SHARE_DENYNONE,
+    0L);                 /* reserved                        */
+ 
+In this example, DosOpen creates the file and opens it for writing only.
+Note that the sharing method allows other processes to open the file for any
+access. The new file is empty (contains no data).
+ 
+When you use DosOpen to create a new file, you must specify the file
+attribute. In the preceding example, this value is FILE_NORMAL, so the file
+is created as a normal file. Other possible file attributes include
+read-only and hidden, which correspond to FILE_READONLY and FILE_HIDDEN,
+respectively.
+ 
+The file attribute affects how other processes access the file. For example,
+if the file is read-only, no process can open the file for writing. The one
+exception to this rule is that the process that creates the read-only file
+can write to it immediately after creating it. After closing the file,
+however, the process cannot open it for writing again.
+ 
+You must also specify the original size of the new file. For example, if you
+specify 256, the new file is 256 bytes long. However, these 256 bytes are
+undefined. It is up to the program to write valid data to the file. In any
+case, no matter what size you specify, subsequent calls to the DosWrite
+function copy data to the beginning of the file.
+ 
+<b>Reading from and Writing to Files</b>
+ 
+Once you have opened a file or have a file handle, you can read from and
+write to the file by using the DosRead and DosWrite functions. The DosRead
+function copies a specified number of bytes (up to the end of the file) from
+the file to the buffer you specify. The DosWrite function copies bytes from
+a buffer to the file.
+ 
+To read from a file, you must open it for reading or for reading and
+writing. The following code fragment shows how to open the file named
+<i>sample.txt</i> and read the first 512 bytes from it:
+ 
+HFILE hf;
+USHORT usAction, usError;
+BYTE abBuffer[512];
+USHORT cbRead;
+ 
+usError = DosOpen("sample.txt", &amp;hf, &amp;usAction, 0L, FILE_NORMAL,
+    FILE_OPEN, OPEN_ACCESS_READONLY | OPEN_SHARE_DENYNONE, 0L);
+if (!usError) {
+    DosRead(hf, abBuffer, 512, &amp;cbRead);
+    DosClose(hf);
+}
+ 
+If the file does not have 512 bytes, DosRead reads to the end of the file
+and copies the number of bytes read to the cbRead variable. If the file
+pointer is already positioned at the end of the file when DosRead is called,
+the function copies zero to the cbRead variable.
+ 
+To write to a file, you must first open it for writing or for reading and
+writing. The following code fragment shows how to open the file sample.txt
+again and write 512 bytes to it:
+ 
+HFILE hf;
+USHORT usAction;
+BYTE abBuffer[512];
+USHORT cbWritten, usError;
+ 
+usError = DosOpen("sample.txt", &amp;hf, &amp;usAction, 0L, FILE_NORMAL,
+    FILE_CREATE, OPEN_ACCESS_WRITEONLY | OPEN_SHARE_DENYWRITE, 0L);
+if (!usError) {
+    DosWrite(hf, abBuffer, 512, &amp;cbWritten);
+    DosClose(hf);
+}
+ 
+The DosWrite function writes the contents of the buffer to the file. If it
+fails to write 512 bytes (for example, if the disk is full), the function
+copies the number of bytes written to the cbWritten variable.
+ 
+<b>Reading and Writing Asynchronously</b>
+ 
+The DosRead and DosWrite functions are synchronous input and output
+functions, since they carry out their reading and writing operations before
+returning control to the program. By using the asynchronous input and output
+functions, DosReadAsync and DosWriteAsync, your program can continue with
+other tasks while the function reads from or writes to a file in a separate
+operation. Asynchronous input and output functions minimize the effect of
+input and output on the speed of your applications.
+ 
+<b>Closing a File</b>
+ 
+You can a close a file by using the DosClose function. Since each program
+has a limited number of file handles that it can have open at any given
+time, it is a good practice to close a file after using it. To do so, supply
+the file handle in the DosClose function, as shown in the following code
+fragment:
+ 
+HFILE hf;
+USHORT usAction;
+BYTE abBuffer[80];
+USHORT cbRead;
+ 
+usError = DosOpen("sample.txt", &amp;hf, &amp;usAction, 0L, FILE_NORMAL,
+    FILE_OPEN, OPEN_ACCESS_READONLY | OPEN_SHARE_DENYNONE, 0L);
+if (!usError) {
+    DosRead(hf, abBuffer, 80, &amp;cbRead);
+    DosClose(hf);
+}
+ 
+If you have opened a file for writing, the DosClose function directs the
+system to flush the file buffer──that is, to write any existing data in the
+intermediate file buffer to the disk or device. The system keeps these
+intermediate file buffers to make file input and output more efficient. For
+example, it saves data from previous calls to the DosWrite function until a
+certain number of bytes are in the buffer. It then writes the contents of
+the buffer to the disk.
+ 
+<b>Using the Standard Files</b>
+ 
+Every program, when first starting, has three input and output files
+available for its use. These files, called the standard-input,
+standard-output, and standard-error files, let the program read input from
+the keyboard and display output on the screen without opening or preparing
+the keyboard or screen.
+ 
+As the system starts a program, it automatically opens the three standard
+files and makes the handles of the files──numbered 0, 1, and 2──available to
+the program. You can then read from and write to the standard files as soon
+as your program starts.
+ 
+File handle 0 is the standard-input file. This handle lets you read
+characters from the keyboard by using the DosRead function. The function
+reads the specified number of characters unless the user types a turnaround
+character──that is, a character that marks the end of a line. (The default
+turnaround character is a carriage-return/newline character pair.) As
+<b>DosRead</b> reads the characters, it copies them to the buffer you have
+supplied, as shown in the following code fragment:
+ 
+BYTE abBuffer[80];
+USHORT cbRead;
+ 
+DosRead(0, abBuffer, 80, &amp;cbRead);
+ 
+In this example, DosRead copies the number of characters read from standard
+input to the cbRead variable. The function also copies the turnaround
+character, or characters, to the buffer. If the function reads fewer than 80
+characters, the turnaround character is the last one in the buffer.
+ 
+File handle 1 is the standard-output file. This handle lets you write
+characters on the screen by using the DosWrite function. The function writes
+the characters in the given buffer or string to the current line. If you
+want to start a new line, you must insert the current turnaround character
+in the buffer. The following code fragment displays a prompt, reads a
+string, and displays the string:
+ 
+USHORT cbWritten;
+USHORT cbRead;
+BYTE abBuffer[80];
+ 
+DosWrite(1, "Enter a name: ", 14, &amp;cbWritten);
+DosRead(0, abBuffer, 80, &amp;cbRead);
+DosWrite(1, abBuffer, cbRead, &amp;cbWritten);
+ 
+File handle 2 is the standard-error file. This handle also lets you write
+characters on the screen. Most programs use the standard-error file to
+display error messages, since the user can then redirect standard output to
+a file without also redirecting error messages to the file.
+ 
+<b>Redirecting the Standard Files</b>
+ 
+Although the standard-input, standard-output, and standard-error files are
+usually the keyboard and screen, this is not always the case. For example,
+if the user redirects standard output by using the greater-than (&gt;)
+redirection symbol on the program command line, all data written to the
+standard-output file goes to the given file. The following command line
+redirects standard output to the file sample.txt and redirects error
+messages to the file sample.err:
+ 
+type startup.cmd &gt;sample.txt 2&gt;sample.err
+ 
+When a standard file is redirected, its handle is still available but
+corresponds to the given disk file instead of to the keyboard or screen. You
+can still use the DosRead and DosWrite functions to read from and write to
+the files.
+ 
+You can redirect a standard file from within a program by closing the file
+and then immediately reopening another file to be used for input or output.
+Whenever you open a file, MS OS/2 uses the lowest available handle for the
+new file. For example, if you close the standard-input file (handle 0) and
+immediately reopen some other file, that new file receives handle 0. Any
+subsequent calls to the DosRead function that specify handle 0 are read from
+the new file, not from the previous standard-input file.
+ 
+Redirecting in this way is especially useful if you want to start a child
+process and have its standard input be a disk file rather than the keyboard.
+The following code fragment shows how to redirect the standard-input file
+from within a program:
+ 
+DosClose(0);
+DosOpen("sample.c", &amp;hf, &amp;usAction, 0L, FILE_NORMAL, FILE_OPEN,
+    OPEN_ACCESS_READONLY | OPEN_SHARE_DENYNONE, 0L);
+ 
+<b>Using Wildcard Characters to Search for Files</b>
+ 
+You cannot use the wildcard characters (* and ?) in filenames that you
+supply to the DosOpen function, but you can locate files with names that
+match a given pattern by using wildcard characters in the DosFindFirst and
+<b>DosFindNext</b> functions.
+ 
+The DosFindFirst function locates the first filename in the current
+directory that matches the given pattern. The DosFindNext function locates
+the next matching filename and continues to find additional matches on each
+subsequent call until all matching names are found. The functions copy the
+file statistics on each file located, such as name, attributes, and creation
+date, to a structure that you supply.
+ 
+The following code fragment shows how to find all filenames that have the
+extension .c:
+ 
+HDIR hdir;
+USHORT usSearch;
+FILEFINDBUF findbuf;
+ 
+usSearch = 1;
+hdir = HDIR_SYSTEM;
+DosFindFirst("*.c",
+    &amp;hdir,             /* directory handle                     */
+    FILE_NORMAL,       /* file attribute to look for           */
+    &amp;findbuf,          /* result buffer                        */
+    sizeof(findbuf),   /* size of result buffer                */
+    &amp;usSearch,         /* number of matching names to look for */
+    0L);               /* reserved value                       */
+do {
+    .
+    . /* use filename in findbuf.achName */
+    .
+    usSearch = 1;
+    DosFindNext(hdir, &amp;findbuf, sizeof(findbuf), &amp;usSearch);
+} while (usSearch != 0);
+DosFindClose(hdir);
+ 
+This example continues to retrieve matching filenames until the DosFindNext
+function returns zero in the usSearch variable. Before each call, the
+usSearch variable is set to the numeral in order to direct the function to
+look for only one matching name at a time.
+ 
+To keep track of which files have already been found, both functions use the
+directory handle hdir to identify the current position in the directory. The
+directory handle also identifies for DosFindNext the name of the file being
+sought. This handle must be set to HDIR_SYSTEM or HDIR_CREATE before the
+<b>DosFindFirst function is called, and</b> the value returned by DosFindFirst must
+be used in subsequent calls to DosFindNext.
+ 
+After locating the files you need, you should use the DosFindClose function
+to close the directory handle. This ensures that when you search for the
+same files again, you will start at the beginning of the file.
+ 
+<b>Moving the File Pointer</b>
+ 
+Every disk file has a corresponding file pointer that marks the current
+location in the file. The current location is the byte in the file that will
+be read from or written to on the next call to the DosRead or DosWrite
+function. Usually, the file pointer is at the beginning of the file when you
+first open or create the file and advances one byte at a time as you read a
+byte from or write a byte to the file. You can, however, change the position
+of the file pointer at any time by using the DosChgFilePtr function.
+ 
+The DosChgFilePtr function moves the file pointer a specified offset from a
+given position. You can move the pointer from the beginning of the file,
+from the end, or from the current position. The following code fragment
+shows how to move the pointer 256 bytes from the end of the file:
+ 
+HFILE hf;
+USHORT usAction;
+ULONG ulActual;
+ 
+DosOpen("sample.txt", &amp;hf, &amp;usAction, 0L, FILE_NORMAL, FILE_OPEN,
+    OPEN_ACCESS_READONLY | OPEN_SHARE_DENYNONE, 0L);
+DosChgFilePtr(hf, -256L, FILE_END, &amp;ulActual);
+ 
+In this example, DosChgFilePtr moves the file pointer to the 256th byte from
+the end of the file (toward the beginning). If the file is not that long,
+the function moves the pointer to the first byte in the file and returns the
+actual position (relative to the end of the file) in the ulActual variable.
+ 
+You can move the file pointer only for disk files. You cannot use
+<b>DosChgFilePtr</b> to change the file pointer's position on the screen, nor can
+you use it to read ahead from the keyboard.
+ 
+<b>Accessing Devices</b>
+ 
+You can open a number of devices by using the DosOpen function. A device is
+a piece of hardware, other than a disk drive, that is intended to be used
+for input and output. For example, the keyboard and screen are devices, as
+are any serial or parallel ports that your computer may have.
+ 
+MS OS/2 lets you open and access a device just as you would open a disk
+file. However, what you read from or write to a device depends on the
+device. (This is not true for disk files.) For example, if you open a serial
+port that has a printer connected to it, you will need to know the input
+format of the printer. Writing plain text to the printer may or may not give
+you the result that you want.
+ 
+The device may also behave differently depending on what driver you have
+installed to support it. For example, if you write to the system console,
+each byte is interpreted as a character and is subsequently displayed on the
+screen. If, however, you load the ANSI display driver when you start the
+system, some byte sequences may represent actions to take, such as moving
+the cursor.
+ 
+To open a device by using the DosOpen function, you must supply the special
+reserved name for that device. For example, to open the console (both
+keyboard and screen), you must specify the name con. The following is a list
+of the reserved device names commonly used in programs:
+ 
+<b>Device name  Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>con</i>          System console. This device consists of both the keyboard and
+             the screen. You can open con for reading (from the keyboard),
+             writing (to the screen), or both reading and writing.
+ 
+<i>com1</i>         Serial port 1. This device is the first serial port in your
+             computer. You can open it for reading, writing, or both reading
+             and writing.
+ 
+<i>prn</i>          Default printer port. This device corresponds to one of the
+             system parallel ports. You can open it for writing but not for
+             reading.
+ 
+<i>lpt1</i>         Parallel port 1. This device represents a parallel port.
+ 
+<i>nul</i>          Null device. This device provides a method of discarding
+             output. If you open this device for writing, any data written
+             to the file is discarded. If you open the device for reading,
+             any attempt to read from the file returns an end-of-file mark.
+ 
+<i>screen$</i>      System screen. This device is the system screen. It can be
+             written to but not read from. Writing to the screen is similar
+             to writing to the system console. Bytes are displayed as
+             characters unless they represent an escape sequence. Escape
+             sequences direct the screen to carry out actions, such as
+             moving the cursor.
+ 
+<i>kbd$</i>         Keyboard. This device is the keyboard. It can be read from but
+             not written to. Reading from the keyboard is similar to reading
+             from the console.
+ 
+The following code fragment opens serial port 1 for reading and writing:
+ 
+DosOpen("com1", &amp;hf, &amp;usAction, 0L, FILE_NORMAL, FILE_OPEN,
+    OPEN_ACCESS_READWRITE | OPEN_SHARE_DENYNONE, 0L);
+ 
+You can open some devices only if the appropriate driver is already
+available. For example, you cannot open a serial port unless a
+communications driver, such as com01.sys, has been loaded by using a device
+command in the system-configuration file, config.sys.
+ 
+Once you have opened a device, you can use the DosRead and DosWrite
+functions to read from and write to the device.
+ 
+After using the device, you should close it by using the DosClose function.
+ 
+<b>Controlling Input and Output Devices</b>
+ 
+Many devices have more than one mode of operation. For example, a serial
+port typically has a variety of baud rates at which it can operate. Since
+these modes of operation are unique to the device (that is, they differ from
+device to device), MS OS/2 does not include specific functions to set or
+inquire about these modes. Instead, it provides the DosDevIOCtl function,
+which controls device input and output. You can use DosDevIOCtl to set and
+retrieve information about the devices in your system.
+ 
+For example, you can use the ASYNC_SETBAUDRATE control function (0x0001,
+0x0041) to set the baud rate of serial port 1. The following code fragment
+sets the baud rate to 9600:
+ 
+USHORT usBaudRate;
+usBaudRate = 9600
+DosDevIOCtl(&amp;usBaudRate, 0L, 0x0041, 0x0001, hf);
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

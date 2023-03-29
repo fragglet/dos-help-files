@@ -1,0 +1,135 @@
+<html>
+
+<head>
+<title>DosGetMessage (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosGetMessage (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='x_at_L80c4.html'>Changes</a><span class='grhilite'>►</span>                                             <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosGetModHandle.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMISC
+ 
+USHORT DosGetMessage(ppchVTable, usVCount, pchBuf, cbBuf, usMsgNo,
+    pszFileName, pcbMsg)
+PCHAR FAR * ppchVTable;    /* pointer to table of pointers to strings */
+USHORT usVCount;           /* number of pointers in table             */
+PCHAR pchBuf;              /* pointer to buffer receiving message     */
+USHORT cbBuf;              /* number of bytes in buffer               */
+USHORT usMsgNo;            /* message number to retrieve              */
+PSZ pszFileName;           /* name of file containing message         */
+PUSHORT pcbMsg;            /* number of bytes in returned message     */
+ 
+The DosGetMessage function retrieves a message from the specified
+system-message file. DosGetMessage may insert one or more strings into the
+body of the message as it retrieves the message.
+ 
+The DosGetMessage function is a family API function.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>ppchVTable</i>   Points to a table of pointers to substitution strings. Each
+             entry in the table points to a null-terminated string to be
+             inserted into the message. Up to nine pointers can be given.
+ 
+<i>usVCount</i>     Specifies the number of pointers in the table. This parameter
+             can be any value from 0 through 9. If this parameter is zero,
+             the ppchVTable parameter is ignored. If it is greater than 9,
+             the DosGetMessage function returns an error indicating that the
+             usVCount parameter is out of range.
+ 
+<i>pchBuf</i>       Points to the buffer that receives the requested message.
+ 
+<i>cbBuf</i>        Specifies the length (in bytes) of the buffer.
+ 
+<i>usMsgNo</i>      Specifies the message number for the requested message.
+ 
+<i>pszFileName</i>  Points to a null-terminated string that specifies the MS OS/2
+             path and filename of the message file that contains the
+             message.
+ 
+<i>pcbMsg</i>       Points to the variable that receives the number of bytes copied
+             to the buffer.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_FILE_NOT_FOUND
+     ERROR_MR_INV_IVCOUNT
+     ERROR_MR_INV_MSGF_FORMAT
+     ERROR_MR_MID_NOT_FOUND
+     ERROR_MR_MSG_TOO_LONG
+     ERROR_MR_UN_ACC_MSGF
+     ERROR_MR_UN_PERFORM
+ 
+<b>Comments</b>
+ 
+To retrieve the requested message, the DosGetMessage function first searches
+the process's message segment, if there is one. If it cannot find the
+specified message, the function then searches the specified message file. If
+no drive or path is specified in the filename, DosGetMessage searches the
+system root directory for the message file, then searches the current
+directory on the current drive. The DosGetMessage function may also search
+the directories specified by the commands append (in real mode) and dpath
+(in protected mode) for the given message file.
+ 
+When the DosGetMessage function finds a message, it copies the message to
+the buffer pointed to by the pchBuf parameter. As it copies the message,
+<b>DosGetMessage replaces any symbol in the form %x (where x is a di</b>git from 1
+through 9) with one of the strings pointed to in the table pointed to by the
+<i>ppchVTable parameter. For exam</i>ple, DosGetMessage replaces all symbols in the
+form %1 with the string pointed to by the first pointer in the table. If
+there is no corresponding string in the table, DosGetMessage copies the %x
+symbol, unchanged, to the buffer.
+ 
+The %x symbols used in a message are not necessarily enclosed in spaces. If
+you want spaces, you may need to supply them as part of your substitution
+strings.
+ 
+If the message is too long to fit in the buffer, the DosGetMessage function
+truncates the message and returns an error code.
+ 
+If the DosGetMessage function cannot retrieve a message because of a
+direct-access-storage-device (DASD) hard error or because it cannot find the
+message file, it places a default message in the buffer. This can occur when
+an invalid parameter is specified──for example, an invalid usMsgNo parameter
+or an invalid usVCount parameter; when the DosGetMessage function cannot
+read the system-message file──for example, when a DASD error occurs or when
+format of the message file is invalid; or when the DosGetMessage function
+cannot find the system-message file. The DosGetMessage function retrieves
+messages that have been prepared previously by using the mkmsgf utility to
+create a message file. DosGetMessage also retrieves messages that have been
+added to the message segment of the program's executable file by using the
+<b>msgbind</b> utility. It is irrelevant to the process that calls the
+<b>DosGetMessage function whether DosGetMe</b>ssage retrieves messages from the
+message segment or from the message file. In either case, the function uses
+the usMsgNo and pszFileName parameters to locate the message.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restriction applies to the DosGetMessage
+function:
+ 
+♦  There is no method of identifying the boot drive.
+ 
+<b>See Also</b>
+ 
+<b>DosInsMessage, DosPutMessage</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,152 @@
+<html>
+
+<head>
+<title>GpiQueryBitmapBits (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiQueryBitmapBits (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Bitmap_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Bitmaps 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L8104.html'>Changes</a><span class='grhilite'>►</span>    </i>           <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiQueryBitmapDimension.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIBITMAPS
+ 
+LONG GpiQueryBitmapBits(hps, lScanStart, cScan, pbBuffer, pbmi)
+HPS hps;             /* presentation-space handle               */
+LONG lScanStart;     /* number for first scan line to retrieve  */
+LONG cScan;          /* number of scan lines to retrieve        */
+PBYTE pbBuffer;      /* address of buffer for bitmap image data */
+PBITMAPINFO pbmi;    /* address of structure for bitmap info    */
+ 
+The GpiQueryBitmapBits function copies image data from a bitmap to the
+buffer pointed to by the pbBuffer parameter. The function copies the image
+data from the bitmap currently set for the presentation space. The
+presentation space must be associated with a memory device context.
+ 
+To copy the image data, the function needs the count of planes and adjacent
+color bits specified in the fields of the structure pointed to by the pbmi
+parameter. That is, the cPlanes and cBitCount fields must be set before you
+call the function. Also, the cbFix field must be set to 12. The function
+then copies the image data to the buffer. The buffer must have sufficient
+space to hold all the bytes of image data being copied. The number of bytes
+for the buffer is equal to the number of scan lines to copy, multiplied by
+the width of the bitmap in bytes (rounded up to the next multiple of 4),
+multiplied by the number of color planes. The width has to be a multiple of
+4, since the function rounds the length of each scan line to a multiple of 4
+bytes before copying. Also, the width must be multiplied by the number of
+adjacent color bits before rounding.
+ 
+After copying the image data, the GpiQueryBitmapBits function fills the
+remaining fields in the structure pointed to by pbmi. These fields are the
+width and height of the bitmap and the array of RGB color values for the
+bitmap pels. An application must make sure there is sufficient space in the
+structure to receive all elements of the array of RGB color values. The
+number of elements in the array depends on the format of the bitmap.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>         Identifies the presentation space.
+ 
+<i>lScanStart</i>  Specifies the number of the first scan line to copy to the
+            buffer. If this parameter is zero, the function copies the first
+            scan line in the bitmap.
+ 
+<i>cScan</i>       Specifies the number of scan lines to copy.
+ 
+<i>pbBuffer</i>    Points to the buffer that receives the bitmap image data. It
+            must be large enough to hold all the bytes of the image data,
+            from the scan line specified by the lScanStart parameter to the
+            end of the bitmap.
+ 
+<i>pbmi        </i>Points to the BITMAPINFO structure that receives the bitmap
+            information table. Depending on the format of the given bitmap,
+            an application may need to allocate extra bytes for the
+            structure to hold the additional elements for the argbColor
+            field.
+ 
+<b>Return Value</b>
+ 
+The return value is the number of scan lines retrieved if the function is
+successful or BMB_ERROR if an error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INCORRECT_DC_TYPE
+     PMERR_INV_DC_TYPE
+     PMERR_INV_HPS
+     PMERR_INV_INFO_TABLE
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_INV_SCAN_START
+     PMERR_NO_BITMAP_SELECTED
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+If the requested color format is not the same as the bitmap's color format,
+the function converts the bitmap image data to the requested format.
+ 
+For any scan line, the bits for the pixels are tightly packed, with the bits
+for the first pixel stored in the most significant bits of the first byte.
+If necessary, a scan line is padded at the end so that each scan line begins
+on a 32-bit boundary.
+ 
+<b>Example</b>
+ 
+This example uses GpiQueryBitmapBits to copy the image data of a bitmap from
+a presentation space associated with a memory device context.
+ 
+BITMAPINFOHEADER bmp = { 12, 640, 350, 1, 1 };
+LONG cbBuffer, cbBitmapInfo;
+SEL selBuffer, selBitmapInfo;
+PBYTE pbBuffer;
+PBITMAPINFO pbmi;
+ 
+/*
+ * Compute the size of the image-data buffer and the bitmap
+ * information structure.
+ */
+ 
+cbBuffer = (((bmp.cBitCount * bmp.cx) + 31) / 32)
+    * 4 * bmp.cy * bmp.cPlanes;
+cbBitmapInfo = sizeof(BITMAPINFO) +
+    (sizeof(RGB) * (1 &lt;&lt; bmp.cBitCount));
+ 
+/*
+ * Allocate memory for the image data-buffer and the bitmap
+ * information structure.
+ */
+ 
+DosAllocSeg(cbBuffer, &amp;selBuffer, SEG_NONSHARED);
+pbBuffer = MAKEP(selBuffer, 0);
+DosAllocSeg(cbBitmapInfo, &amp;selBitmapInfo, SEG_NONSHARED);
+pbmi = MAKEP(selBitmapInfo, 0);
+ 
+/* Copy the image data. */
+ 
+pbmi-&gt;cbFix = 12;
+pbmi-&gt;cPlanes = 1;
+pbmi-&gt;cBitCount = 1;
+GpiQueryBitmapBits(hps, 0L, (LONG) bmp.cy, pbBuffer, pbmi);
+ 
+<b>See Also</b>
+ 
+<b>GpiLoadBitmap, GpiQueryBitmapParameters, GpiSetBitmapBits, WinGetLastError,</b>
+<b>BITMAPINFO</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

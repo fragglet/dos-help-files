@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<title>DosSetPathInfo (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosSetPathInfo (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosSetProcCp.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosSetPathInfo(pszPathName, usInfoLevel, pInfoBuf, cbInfoBuf,
+    fsOptions, ulReserved);
+PSZ pszPathName;       /* pointer to path                   */
+USHORT usInfoLevel;    /* level of information              */
+PBYTE pInfoBuf;        /* pointer to buffer for information */
+USHORT cbInfoBuf;      /* length of information buffer      */
+USHORT fsOptions;      /* options                           */
+ULONG ulReserved;      /* must be zero                      */
+ 
+The DosSetPathInfo function sets information for a specified file or
+directory.
+ 
+The DosSetPathInfo function is a family API function.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pszPathName</i>  Points to the null-terminated string that specifies the path of
+             the file or directory. The string must be a valid MS OS/2
+             path.
+ 
+<i>usInfoLevel</i>  Specifies the level of information to set. This parameter can
+             be one of the following values:
+ 
+             Value            Meaning
+             ───────────────────────────────────────────────────────────────
+             FIL_STANDARD     Use a FILESTATUS structure.
+ 
+             FIL_QUERYEASIZE  Use an EAOP structure to set extended
+                              attributes.
+ 
+<i>pInfoBuf</i>     Points to the buffer where path information is stored. The
+             buffer contains a FILESTATUS structure for FIL_STANDARD
+             information or an EAOP structure for FIL_QUERYEASIZE
+             information.
+ 
+<i>cbInfoBuf</i>    Specifies the length (in bytes) of the buffer pointed to by the
+             pInfoBuf parameter.
+ 
+<i>fsOptions</i>    Specifies one or more options. For MS OS/2 version 1.2,
+             DSPI_WRTTHRU is the only available option. The DSPI_WRTTHRU
+             option means all data, including extended attributes, must be
+             written to the disk before the function returns.
+ 
+<i>ulReserved</i>   Specifies a reserved value; must be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_BUFFER_OVERFLOW
+     ERROR_EA_LIST_INCONSISTENT
+     ERROR_FILENAME_EXCED_RANGE
+     ERROR_INVALID_EA_NAME
+     ERROR_INVALID_LEVEL
+     ERROR_PATH_NOT_FOUND
+ 
+<b>Comments</b>
+ 
+If the DosSetPathInfo function is used to set extended-attribute
+information, the fpFEAList field of the EAOP structure should point to the
+<b>FEALIST structure tha</b>t contains the extended attributes. The fpGEAList field
+of the EAOP structure will be ignored.
+ 
+<b>DosSetPathInfo</b> fails if another process has the same file or directory.
+ 
+A zero value in both the date and time fields of an attribute cause those
+attributes to remain unchanged. For example, if both the fdateLastWrite and
+<b>ftimeLastWrite fields of the FILESTATUS st</b>ructure are zero, both attributes
+are unchanged. If either field is nonzero, both fields are set to the new
+values. If extended attributes are modified, the file's last modification
+date and time will be changed.
+ 
+<b>See Also</b>
+ 
+<b>DosQPathInfo, DosSetFileInfo, EAOP, FEA, FEALIST, FILESTATUS</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

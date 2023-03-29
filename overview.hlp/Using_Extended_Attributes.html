@@ -1,0 +1,295 @@
+<html>
+
+<head>
+<title>Using Extended Attributes (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Extended Attributes (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Extended_Attributes.html'>About Section</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='File_Systems.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                         Using Extended Attributes
+ 
+Applications can examine, add, and replace extended attributes at any time.
+The DosOpen2 function adds extended attributes to new or existing files; the
+<b>DosMkDir2</b> function adds extended attributes to new directories. Any
+application can read the extended attributes by using the DosQFileInfo or
+<b>DosQPathInfo</b> function. Applications can also search for files that have
+specific extended attributes by using the DosFindFirst and DosFindNext
+functions.
+ 
+A file can have any number of extended attributes. Each extended attribute
+can be up to 64K long. For MS OS/2 version 1.2, the sum of all extended
+attributes for a file must not exceed 64K.
+ 
+<b>Naming Conventions</b>
+ 
+Although an application can choose any name for the extended attributes it
+creates, other applications cannot read the extended attributes unless they
+also recognize the corresponding format. Because many applications use
+extended attributes consisting of text, bitmaps, and other similar data, a
+set of names has been adopted to help identify these formats when used in
+extended attributes. An application need not be limited to this set of
+standard extended attributes but should use it as a way for many
+applications to access a common set of information.
+ 
+The names for all standard extended attributes use a dot (.) as a prefix.
+The leading dot is considered reserved, so no application should define
+extended attributes that start with a dot. Also, extended attributes that
+start with the characters $, @, &amp;, and + are reserved for system use. To
+ensure that its extended attributes are unique, an application should use
+the vendor and application name as a prefix for application-specific
+extended attributes. For example, Microsoft Excel would use MS
+EXCEL.MYSTUFF, MS EXCEL.MORESTUFF, and so forth.
+ 
+<b>Data-Type Conventions</b>
+ 
+Extended attributes can contain any type of data. To identify the type of
+information, the first word of extended-attribute data should specify one of
+the following data types:
+ 
+<b>Value         Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>EAT_BINARY</i>    Binary data; the first word specifies length.
+ 
+<i>EAT_ASCII</i>     ASCII text; the first word specifies length.
+ 
+<i>EAT_BITMAP</i>    Bitmap data; the first word specifies length.
+ 
+<i>EAT_METAFILE</i>  Metafile data; the first word specifies length.
+ 
+<i>EAT_ICON</i>      Icon data; the first word specifies length.
+ 
+<i>EAT_EA</i>        ASCII name of associated data; the first word specifies
+              length.
+ 
+<i>EAT_MVMT</i>      Two or more consecutive extended-attribute values; each value
+              has an explicitly specified type.
+ 
+<i>EAT_MVST</i>      Two or more consecutive extended-attribute values; all values
+              have the same type.
+ 
+<i>EAT_ASN1</i>      ASN.1 field data.
+ 
+In all cases, the length specifies the number of bytes of data. Other values
+for data types, in the range 0x0000 through 0x7FFF, can be used for
+user-defined extended attributes. User-defined data should also specify the
+length.
+ 
+For example, here is how to represent the string "Hello":
+ 
+EAT_ASCII               0005            Hello
+ 
+<b>Standard Extended Attributes</b>
+ 
+The standard extended attributes are listed in the following sections. The
+field format follows the data-type conventions given previously. A field can
+be a multivalue or single-value field.
+ 
+<b>.TYPE</b>
+ 
+The .TYPE extended attribute indicates the type of file. It is similar to
+the earlier use of filename extensions. The following file types are
+predefined:
+ 
+Plain Text
+OS/2 Command File
+DOS Command File
+Executable
+Metafile
+Bitmap
+Icon
+Binary Data
+Dynamic-Link Library
+C Code
+Pascal Code
+BASIC Code
+COBOL Code
+FORTRAN Code
+Assembler Code
+Library
+Resource File
+ 
+Applications can use their own type names, such as Microsoft Excel Chart.
+The first words in the type name should be the name of the vendor and the
+application. For example, Microsoft Excel Chart, Microsoft Excel Worksheet,
+Lotus 1-2-3 Spreadsheet.
+ 
+Entries should be ASCII. Case is important.
+ 
+The performance of extended attributes is dependent on the file system.
+Because some file systems store extended attributes in first-in/first out
+(FIFO) order, it is important to write the .TYPE entry first so that File
+Manager can access that information quickly.
+ 
+<b>.KEYPHRASES</b>
+ 
+The .KEYPHRASES extended attribute specifies text key phrases for the file.
+Such phrases can be used for a database-style search or to help the user
+understand the nature of the file.
+ 
+If there is more than one key phrase, each should be stored in a separate
+entry in a multivalue field. Each entry should be ASCII.
+ 
+<b>.SUBJECT</b>
+ 
+The .SUBJECT extended attribute contains a brief summary of the file's
+content and/or purpose. This attribute should be less than 40 characters
+long.
+ 
+This field should be a single-value ASCII entry.
+ 
+<b>.COMMENTS</b>
+ 
+The .COMMENTS extended attribute contains miscellaneous notes about the
+file. It can be a multivalue field and be of any type. This field is
+intended as a reminder note. For example, it could contain some notes about
+the intent of a file or a picture.
+ 
+<b>.HISTORY</b>
+ 
+The .HISTORY extended attribute lists the history of a file's modification.
+It lists the author of the file and all subsequent changes. Each action
+entry should be a separate field in a multivalue field. Each entry should be
+ASCII.
+ 
+The application can let the user decide when an entry is placed into the
+history field, to avoid unnecessary file growth. For example, there are some
+cases when it is important to note when a document is printed; however, it
+is probably unnecessary to note every time the file was printed.
+ 
+<b>.VERSION</b>
+ 
+The .VERSION extended attribute is a version number of the file format (for
+example, Excel Worksheet 1).
+ 
+This attribute should be ASCII or binary. It should be modified only by the
+application. This attribute can also be used to indicate an application or
+dynamic-link library version.
+ 
+<b>.ICON</b>
+ 
+The .ICON extended attribute specifies the icon to be used for the file
+representation, whether in File Manager or when minimized. File Manager can
+use the .TYPE entry to determine the default application to run and to
+determine the default icon for that type of file. If there is a .ICON entry,
+however, it is used instead of the icon associated with a particular type.
+ 
+If the data type is for an icon, the icon data follows. It is best to
+provide as much icon information as possible. Ideally, an icon should be
+64-by-64 bits in 8-color, device-independent format.
+ 
+Executable files should simply store the binary icon data in this extended
+attribute. They should use the .ASSOCTABLE extended attribute to install
+icons for data files.
+ 
+<b>.ASSOCTABLE</b>
+ 
+The .ASSOCTABLE extended attribute contains association data for a file. It
+is created by the Microsoft Operating System/2 Resource Compiler (rc), from
+a table with the following form:
+ 
+ASSOCTABLE assoctable -id
+BEGIN
+        "type name", "extension", [flags], [icon filename]
+        .
+        .
+END
+ 
+The .ASSOCTABLE extended attribute contains information that associates
+icons with the data files an application creates. The file-association table
+associates icons by data type.
+ 
+The .ASSOCTABLE extended attribute allows an application to indicate the
+type, extension, and icon for the data files it recognizes. It also contains
+an ownership flag. This data can be installed automatically by File
+Manager.
+ 
+For example, the table for Microsoft Excel could be:
+ 
+"MS Excel Worksheet", "XLS", AF_DEFAULTOWNER, excel.sheet.icon
+"MS Excel Chart", "XLC", AF_DEFAULTOWNER, excel.chart.icon
+ 
+The flag entry indicates if the application owns or merely recognizes the
+type. The icon file contains an icon for that data type.
+ 
+<b>.HPFSNAME</b>
+ 
+The .HPFSNAME attribute is used when an application attempts to write a file
+with a long name to a file system that does not support long names. The
+application should generate a unique short name for the file and notify the
+user of the new short name. It should then save the original (long) name in
+the .HPFSNAME extended attribute.
+ 
+When a file is copied from a system that uses short names to a system that
+uses long names, the application should check the .HPFSNAME extended
+attribute. If a value is present, the application should allow the file to
+be renamed to a long name. The .HPFSNAME extended attribute should then be
+removed.
+ 
+<b>Supporting Extended Attributes</b>
+ 
+To support extended attributes, applications should do the following:
+ 
+1  Fill in the .ASSOCTABLE extended attribute for all major file types that
+   the application recognizes or uses.
+ 
+2  Fill in the .ICON extended attribute for executable files.
+ 
+3  Set the .TYPE field for data files it creates.
+ 
+4  Fill in and use the .HPFSNAME extended attribute as appropriate.
+ 
+5  Support .HISTORY and .VERSION.
+ 
+6  Support the other standard extended attributes as appropriate.
+ 
+<b>Multivalue Data-Type Fields</b>
+ 
+In many cases, extended attributes need to store more than a single piece of
+information. For example, an extended attribute can store a list of names of
+people to whom a mail document was sent. The multivalue formats specify how
+individual pieces of data are stored.
+ 
+In a multivalue field, the first entry in the list is assumed to be the
+default. For example, suppose the .TYPE entry contains Text and C Code. Text
+is the default type. If C Code is the first entry in the list (C Code and
+Text), then C Code is the default type.
+ 
+<b>Multivalue, Multitype Attributes</b>
+ 
+The EAT_MVMT type allows a single extended attribute to contain several
+pieces of information; each piece of information can be a different type.
+ 
+<b>Multivalue, Single-Type Attributes</b>
+ 
+The EAT_MVST type sets up a multivalue field in which each piece of
+information is of the same type.
+ 
+<b>ASN.1</b>
+ 
+The EAT_ASN1 type is an ISO standard for describing multivalue data
+streams.
+ 
+<b>Include-Extended-Attribute Type</b>
+ 
+The EAT_EA type indicates that the data is continued in another
+extended-attribute entry associated with the file. Among other things, this
+allows for extended attributes greater than 64K (but not exceeding the limit
+per file).
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

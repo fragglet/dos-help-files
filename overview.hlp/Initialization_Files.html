@@ -1,0 +1,301 @@
+<html>
+
+<head>
+<title>About Initialization Files (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Initialization Files (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Initialization_Files.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Prf'>Function Group</a><span class='grhilite'>►</span>                     <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Keyboard_Accelerators.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                         About Initialization Files
+ 
+This topic describes the portions of MS OS/2 that let you work with the MS
+OS/2 initialization file, os2.ini, that let you add applications to the
+switch list in Task Manager and to the program list in Start Programs; and
+that let you set colors for and retrieve information about the Presentation
+Manager session. You should also be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='Profile_Manager.html'>Profile manager</a><span class='grhilite'>►</span>
+ 
+The following sections describe the methods used to set and retrieve system
+information.
+ 
+<b>The MS OS/2 Initialization File</b>
+ 
+The os2.ini file contains configuration information for both MS OS/2 and
+individual applications. MS OS/2 uses information in the file to initialize
+the Presentation Manager session when it starts. An application can use the
+information to initialize its windows and data when it starts.
+ 
+The os2.ini file is a binary file, so the user cannot view or edit it
+directly. The file consists of one or more sections, each section containing
+one or more settings, or keys. Each key consists of two parts: a name and a
+value. Both key names and section names are null-terminated strings. A key
+value can be a null-terminated string, a null-terminated string representing
+a signed integer, or individual bytes of data.
+ 
+Each section must have a unique name. Within a section, each key must have a
+unique name. The file can contain up to 6120 sections, with 120 sections
+reserved for the system. Each section can contain up to 6120 keys.
+ 
+Section names and key names are each limited to 1024 bytes, including a
+required terminating null character. Although section names and key names
+are typically composed of ASCII characters in the range 0 through 255, they
+can actually be any null-terminated sequence of bytes. Each key value is
+limited to 65,535 bytes. Individual bytes can have any value, including
+zero. Thus, key values can contain any sort of binary data, including but
+not limited to null-terminated character strings.
+ 
+The following is an example of the PM_Colors section. It shows the key names
+and values stored by Control Panel for system colors.
+ 
+PM_Colors
+  Background = 138 117 202
+  AppWorkspace = 244 170 181
+  Window = 128 128 128
+  WindowText = 0 0 0
+  WindowStaticText = 0 0 127
+  Menu = 128 128 128
+  MenuText = 128 0 0
+  ActiveTitle = 255 213 138
+  InactiveTitle = 47 47 47
+  TitleText = 0 128 128
+  ActiveBorder = 0 0 0
+  InactiveBorder = 186 48 170
+  WindowFrame = 0 0 0
+  Scrollbar = 48 48 58
+  HelpBackground = 255 255 255
+  HelpText = 0 0 127
+  HelpHilite = 0 127 127
+ 
+Several sections of os2.ini are maintained by the system. The names of these
+system sections begin with the characters PM, as in the preceding example,
+PM_Colors. Specific applications can add additional sections to os2.ini. The
+application name should be part of the section name.
+ 
+Several of the os2.ini functions can be used to enumerate all of the
+<i>os2.ini</i> section names or all of a particular section's key names. These
+functions copy the section names to a buffer that the application supplies.
+The names are copied as a consecutive series of null-terminated character
+strings, the last string marked with an additional null byte.
+ 
+<b>The Shell</b>
+ 
+The Start Programs and Task Manager applications let users start and control
+applications. The user uses the Start Programs window to start applications
+listed in the program list and uses the Task Manager window to switch
+between and terminate processes listed in the switch list. The program list
+contains the titles of installed applications, organized in groups, and
+provides the information the system needs to start those applications. The
+switch list contains a list of currently running processes and provides the
+information the system needs to switch between and terminate processes.
+ 
+Both the program list and the switch list are accessible from an
+application. Typically, though, an application interacts with the switch
+list and leaves program-list operations to the user.
+ 
+<b>The Program List</b>
+ 
+Start Programs maintains the program list, which is divided into groups. The
+root group, known to the user as the Main Group, is the first group
+displayed when Start Programs starts. It is specified in shell functions
+with the group-handle constant SGH_ROOT.
+ 
+Applications can create new groups for the program list, add applications to
+the list, and retrieve information about applications in the list by using
+the WinCreateGroup, WinAddProgram, WinQueryDefinition, and
+<b>WinQueryProgramTitles</b> functions. Users can also change and delete
+applications from the program list, but applications cannot.
+ 
+When you use these function to create a group or add an application, the
+functions return a unique program-list handle. The handle is used in all
+subsequent shell functions to identify the group or application.
+ 
+To add an application to the program list, the application must fill a
+program-information-block (PIBSTRUCT) structure with information the program
+list needs about an application, including a program title, a path and
+filename for the executable file, a default directory, and startup
+parameters. A pointer to the PIBSTRUCT structure is passed as a
+<b>WinAddProgram</b> parameter.
+ 
+The XYWINSIZE structure, used in PIBSTRUCT, is a window-size structure. It
+specifies the initial size and position of an application's main window. It
+also includes a state variable that can be used to set the window to a
+minimized, maximized, invisible, or normal state, as well as to specify
+whether the window closes automatically when the application terminates.
+ 
+An application can use the WinQueryProgramTitles function to retrieve
+information about an application or group in the program list. This function
+copies the information to an array of PROGRAMENTRY structures.
+ 
+<b>The Switch List</b>
+ 
+Task Manager maintains a list of current processes, or tasks. This list is
+called the switch list. An application should register with the switch list
+before entering its main message loop. Task Manager displays current
+switch-list tasks to the user. After an application registers with the
+switch list, a title string representing the task appears in the Task
+Manager window.
+ 
+To avoid confusion, an application's switch-list title string should match
+the string that appears in its main window's title bar. If an application
+changes its main window's title bar string during operation──for example, to
+append the name of an open file──it should change its switch-list entry as
+well by using the WinChangeSwitchEntry function.
+ 
+<b>System Colors and Values</b>
+ 
+MS OS/2 provides system-wide values that an application can use to help
+determine the color and dimensions of windows and other objects it draws in
+its client area. These values are also used by frame windows to set the
+colors and sizes for title bars, scroll bars, sizing borders, and other
+frame controls and elements associated with a frame window.
+ 
+If an application changes the system colors and values, the change affects
+all applications.
+ 
+<b>System Colors</b>
+ 
+The system colors are a set of colors that MS OS/2 uses to draw windows. The
+system colors are associated with the elements of the Presentation Manager
+session, such as the desktop, title bars, scroll bars, text, and window
+background. Typically, the system sets the colors of these elements to
+default values when it first starts. The user can change the values at any
+time by using the Control Panel application. Any changes the user makes to
+the system colors are written to both the system logical color table and the
+<i>os2.ini</i> file. Applications can use the system color values to draw elements
+in their own client windows.
+ 
+MS OS/2 maintains 17 system colors. A set of symbolic constants, defined in
+the MS OS/2 include files identifies these colors. These symbolic constants
+have the prefix SYSCLR and can be used like other color indexes when an
+application draws in a client window. The following list gives the SYSCLR
+constants, and their meanings:
+ 
+<b>Value                    Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>SYSCLR_BACKGROUND</i>        Desktop background
+ 
+<i>SYSCLR_WINDOWFRAME</i>       Window frame
+ 
+<i>SYSCLR_TITLETEXT</i>         Title-bar text
+ 
+<i>SYSCLR_ACTIVETITLE</i>       Active window title-bar background
+ 
+<i>SYSCLR_INACTIVETITLE</i>     Inactive window title-bar background
+ 
+<i>SYSCLR_MENUTEXT</i>          Menu text
+ 
+<i>SYSCLR_MENU</i>              Menu background
+ 
+<i>SYSCLR_WINDOWTEXT</i>        Window text
+ 
+<i>SYSCLR_WINDOWSTATICTEXT</i>  Window static text
+ 
+<i>SYSCLR_WINDOW</i>            Window background
+ 
+<i>SYSCLR_APPWORKSPACE</i>      Multiple-document-interface window background
+ 
+<i>SYSCLR_SCROLLBAR</i>         Scroll-bar shaft
+ 
+<i>SYSCLR_ACTIVEBORDER</i>      Active border
+ 
+<i>SYSCLR_INACTIVEBORDER</i>    Inactive border
+ 
+<i>SYSCLR_HELPTEXT</i>          Help-window text
+ 
+<i>SYSCLR_HELPHILITE</i>        Help-window highlighted text
+ 
+<i>SYSCLR_HELPBACKGROUND</i>    Help-window background
+ 
+The system stores system-color data in the PM_Colors section of the os2.ini
+file. Each system color has a key in that section. Each key value is an
+ASCII string of three integer values in the range 0 through 255, separated
+by spaces. The integers represent the red, green, and blue components of an
+RGB color value, in that order.
+ 
+An application can query and set system colors by using the
+<b>WinQuerySysColor and WinSetSysColors functions. </b>Changes made with
+<b>WinSetSysColors</b> are not permanent, since they are not written to the
+PM_Colors section of the os2.ini file. To make permanent system-color
+changes, you must explicitly write to the PM_Colors section of the os2.ini
+file by using the WinWriteProfileString and WinWriteProfileData functions.
+Remember that changes in the system colors affect all applications.
+ 
+MS OS/2 specifies colors with 24 bits of red-green-blue intensity
+information, 8 bits for each color. An intensity value can be any value in
+the range 0 through 255. The 3 bytes are packed into a 4-byte long integer;
+the fourth byte is currently unused. Although a device may be capable of
+producing many colors, it typically does not give access to all colors at
+all times. Instead, it gives access to the number of colors that can fit in
+an array called the physical palette. Each system-color index maps to one of
+the entries in the physical palette. When an application changes a system
+color, it specifies a new RGB value. The system then finds the closest
+matching color in the physical palette and maps the corresponding
+system-color index to the new palette entry. How closely the new color
+matches the color the application requested depends on the current contents
+of the physical palette.
+ 
+When an application changes the current system colors by using the
+<b>WinSetSysColors function, that function sends</b> a WM_SYSCOLORCHANGE message to
+all top-level windows. In addition, it invalidates the desktop window,
+triggering redrawing of all windows. If color variables in your application
+are based on the system colors, you can process the WM_SYSCOLORCHANGE
+message and adjust them.
+ 
+<b>System Values</b>
+ 
+The system values, maintained by MS OS/2, determine various system
+attributes that affect the appearance and behavior of elements of the
+system. These system values can be read and changed by an application.
+ 
+The system values are referred to with predefined constants that have the
+prefix SV. For a list of system values, see the <span class='grhilite'>◄</span><a href='unknown#sv_'>System values</a><span class='grhilite'>►</span> topic.
+ 
+The WinQuerySysValue function lets you read a system value, and the
+<b>WinSetSysValue</b> function lets you set a system value. Both functions specify
+the target system value with a system-value constant.
+ 
+Setting a system value with WinSetSysValue does just that, and no more.
+Active processes are not automatically notified of the change. For example,
+if an application changes the dimensions of frame-window sizing borders by
+resetting SV_CXSIZEBORDER and SV_CYSIZEBORDER, currently existing frame
+windows do not automatically reflect the change. To notify other processes
+of a change to a system value, an application must send a
+<b>WM_SYSVALUECHANGED</b> message. An application that relies on one or more system
+values should either read them each time they are used or process
+<b>WM_SYSVALUECHANGED</b> messages.
+ 
+When the system starts, the system values are set to default values embedded
+in the system code. With a few exceptions, the system does not store system
+values in the os2.ini file, so any changes that you make to system values
+are lost when the system shuts down.
+ 
+The system values that are stored in os2.ini by Control Panel are
+SV_CXBORDER, SV_CYBORDER, SV_CURSORRATE, SV_ALARM and SV_DBLCLKTIME. These
+values are kept in the PM_ControlPanel section under the key names
+BorderWidth, CursorBlinkRate, and DoubleClickSpeed.
+ 
+<b>System-Value Data Types</b>
+ 
+For convenience, WinQuerySysValue and WinSetSysValue pass system values as
+long integers. However, many system values are actually short integers, and
+others are Boolean values. Each of these types can be cast to and from a
+long integer without losing data.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

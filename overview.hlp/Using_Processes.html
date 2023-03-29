@@ -1,0 +1,385 @@
+<html>
+
+<head>
+<title>Using Processes (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Processes (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='processes.html'>About Section</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Timers.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                              Using Processes
+ 
+To work successfully with multitasking, you need to understand clearly the
+difference between a process and a thread. A process is simply the code,
+data, and other resources of a program in memory, such as the open files,
+allocated memory, and so on. MS OS/2 considers every program that it loads
+to be a process. A thread, which is everything else required to execute the
+program, consists of a stack, the state of the CPU registers, and an entry
+in the execution list of the system scheduler. Every process has at least
+one thread, and the program executes when the system scheduler gives the
+thread execution control.
+ 
+<b>Starting a Process</b>
+ 
+You can start a process by using the DosExecPgm function. The process you
+start is a child of the starting, or parent, process and inherits many of
+the resources owned by the parent process, such as open files.
+ 
+The following code fragment starts a program named abc:
+ 
+UCHAR szModuleName[CCHMAXPATH];
+RESULTCODES resc;
+ 
+DosExecPgm(szModuleName,    /* object-name buffer */
+    sizeof(szModuleName),   /* length of buffer   */
+    EXEC_SYNC,              /* sync flag          */
+    NULL,                   /* argument string    */
+    NULL,                   /* environment string */
+    &amp;resc,                  /* address of result  */
+    "abc.exe");             /* name of program    */
+ 
+This example starts abc so that it runs synchronously (as specified by the
+EXEC_SYNC constant). This means that the parent process temporarily stops
+while the child process executes and does not continue until the child
+process ends.
+ 
+The MS OS/2 command processor, cmd.exe, is an example of a program that uses
+the EXEC_SYNC constant to start most child processes. That is, the processor
+waits for each child process to end before it prompts the user for the next
+command. The command processor also lets the user start asynchronous
+programs by using the detach command. When the user detaches a program, the
+command processor places the program in the background and continues to
+prompt for input.
+ 
+<b>Setting the Program Command Line and Environment</b>
+ 
+When you start a process, it inherits the resources of the parent. This
+includes open files, such as the standard-input and standard-output files. A
+child process also inherits the resources of the screen group, such as the
+mouse and video modes, and the environment variables of the parent process.
+ 
+The DosExecPgm function determines the command line and environment that the
+child process receives. The fourth and fifth parameters of the function are
+pointers to the command line and the environment, respectively. If these
+pointers are NULL, the child process receives nothing for a command line and
+only an exact duplicate of the parent process's environment. The parent
+process can modify this information by creating a string (ending with two
+null characters) and passing the address of the string to the function. The
+command-line string must include the name of the application, followed by a
+null character, and the command-line arguments, followed by two null
+characters. The following code fragment passes to the child process the
+string "test -option1 -option2" as its command line:
+ 
+RESULTCODES resc;
+UCHAR szFailName[CCHMAXPATH];
+ 
+UCHAR szCommandLine[] = { "test\0-option1 -option2\0" };
+ 
+DosExecPgm(szFailName,      /* object-name buffer  */
+    sizeof(szFailName),     /* length of buffer    */
+    EXEC_SYNC,              /* sync flag           */
+    szCommandLine,          /* argument string     */
+    (PSZ) NULL,             /* environment string  */
+    &amp;resc,                  /* address of result   */
+   "test.exe");             /* name of application */
+ 
+Any number of arguments can be passed to the child process, as long as the
+argument string ends with two null characters.
+ 
+<b>Running an Asynchronous Child Process</b>
+ 
+You can use the EXEC_ASYNC constant in the DosExecPgm function to start a
+child process and let it run asynchronously (that is, without causing the
+parent process to pause until the child process ends). If you start a
+process in this way, the function copies the process identifier of the child
+process to the codeTerminate field of the RESULTCODES structure. You can use
+this process identifier to check the progress of the child process or to
+terminate the process.
+ 
+You can also run a child process asynchronously by using DosExecPgm with the
+EXEC_ASYNCRESULT constant. This constant has the same effect as EXEC_ASYNC,
+except that it also directs MS OS/2 to save a copy of the child process's
+termination status when the child process terminates. This status specifies
+the reason that the child process stopped. The parent process can retrieve
+the termination status by using the DosCwait function.
+ 
+<b>Waiting for a Child Process to End</b>
+ 
+You can synchronize the execution of a process with the execution of one of
+its child processes by using the DosCwait function. When a process calls the
+<b>DosCwait</b> function, the function waits until the specified child process has
+finished before returning. This can be useful, for example, if the parent
+process needs to ensure that the child process has completed its task before
+the parent process continues with its own task.
+ 
+In the following code fragment, the parent process waits for the child
+process that is specified by the process identifier in the variable
+pidChild:
+ 
+RESULTCODES resc;
+PID pidParent;
+PID pidChild;
+ 
+DosCwait(DCWA_PROCESS, DCWW_WAIT, &amp;resc, &amp;pidParent, pidChild);
+ 
+You can cause a process to wait for all child processes to end by using the
+constant DCWA_PROCESSTREE in the DosCwait function.
+ 
+<b>Retrieving the Termination Status of a Child Process</b>
+ 
+MS OS/2 saves the termination status for a process if the process was
+started by using DosExecPgm with the EXEC_ASYNCRESULT constant. You can
+retrieve the termination status of the most recently terminated process by
+using the DCWW_NOWAIT constant with the DosCwait function. This constant
+directs the function to return immediately, without waiting for a process to
+end. Instead, the function retrieves the termination status from the most
+recent process to end.
+ 
+<b>Ending a Process</b>
+ 
+You can exit from a process by using the DosExit function. When you exit
+from a process, the system stops the process and frees any existing
+resources that it owns. If no other invocation of the process is running,
+the system frees the code and data segments of the process.
+ 
+In the following code fragment, the DosExit function is used to exit from
+the process if the given file does not exist:
+ 
+VOID cdecl main( )
+{
+    HFILE hf;
+    USHORT usAction, cbWritten;
+ 
+    usError = DosOpen("sample.txt", &amp;hf, &amp;usAction, 0L, FILE_NORMAL,
+        FILE_OPEN, OPEN_ACCESS_WRITEONLY | OPEN_SHARE_DENYWRITE, 0L);
+ 
+    if (usError) {
+        DosWrite(2, "Cannot open file\r\n", 18, &amp;cbWritten);
+        DosExit(EXIT_PROCESS, usError);
+    }
+}
+ 
+The EXIT_PROCESS constant directs the function to exit not just from the
+process, but from the thread that is calling the function as well. The
+<b>DosExit</b> function includes an error code that is returned to the parent
+process through the RESULTCODES structure specified in the DosExecPgm
+function that started the process. If you started the program from the
+command line, the command processor (cmd.exe) makes this value available
+through the ERRORLEVEL variable. If another process started the program,
+that process can call the DosCwait function to retrieve the error-code
+value.
+ 
+If you want to exit only from a given thread, you can use the DosExit
+function with the EXIT_THREAD constant. This call exits from the thread
+without affecting other threads in the process. If the thread that you exit
+from also happens to be the last thread in the process, the process also
+exits. If the thread consists of a function, the thread exits when the
+function returns.
+ 
+<b>Terminating Another Process</b>
+ 
+One process can terminate the execution of another process by using the
+<b>DosKillProcess</b> function. The following code fragment terminates the
+specified process and all child processes belonging to that process:
+ 
+PID pidProcess;
+ 
+DosKillProcess(DKP_PROCESSTREE, pidProcess);
+ 
+In this example, the pidProcess variable specifies which process to
+terminate. Typically, you would assign the variable the process identifier
+for the child process. This is the process identifier that is returned by
+the DosExecPgm function when you start the child process.
+ 
+<b>Cleaning Up Before Ending a Process</b>
+ 
+Since in MS OS/2 any process can terminate any other process for which it
+has a process identifier, there is a chance that your program may lose
+information if a process terminates the program before the program can save
+its work. To prevent this loss of data, you can create a list of exit
+functions that clean up data and your files before MS OS/2 terminates a
+process. The system calls the functions on the list whenever your program is
+being terminated, whether by another process or by itself.
+ 
+You create an exit list by using the DosExitList function. The function
+requires a function code that specifies an action to take and a pointer to
+the function that is to receive control upon termination. The following code
+fragment adds the locally defined function SaveFiles to the exit list:
+ 
+#define INCL_SUB
+#define INCL_DOSPROCESS
+#include &lt;os2.h&gt;
+ 
+VOID cdecl main() {
+    DosExitList(EXLST_ADD, SaveFiles);
+    .
+    .
+    .
+}
+ 
+VOID PASCAL FAR SaveFiles(usTermCode)
+USHORT usTermCode;
+{
+    switch (usTermCode) {
+        case TC_EXIT:
+        case TC_KILLPROCESS:
+            VioWrtTTY("Good-bye\r\n", 10, 0);
+            break;
+ 
+        case TC_HARDERROR:
+        case TC_TRAP:
+            break;
+ 
+    }
+    DosExitList(EXLST_EXIT, 0);
+}
+ 
+Any function that you add to the exit list must be declared with the far
+attribute and must have one parameter. The function can carry out any task,
+as shown in the preceding example, but as its last action it must call the
+<b>DosExitList</b> function, specifying the EXLST_EXIT constant. An exit-list
+function must not return and must not call the DosExit function to
+terminate.
+ 
+To execute the exit-list functions, MS OS/2 reassigns thread 1 after
+terminating any other threads in the process. If thread 1 has already exited
+(for example, if it called the DosExit function without terminating other
+threads in the process), then the exit-list functions cannot be executed. In
+general, it is poor practice to terminate thread 1 without terminating all
+other threads.
+ 
+You can use DosExitList with the EXLST_REMOVE constant to remove a function
+from the exit list.
+ 
+<b>Using Threads</b>
+ 
+Every process has at least one thread, called the main thread or thread 1.
+To execute different parts of a program simultaneously, you can start
+several threads.
+ 
+A new thread inherits all the resources currently owned by the process. This
+means that if you opened a file before creating the thread, that file is
+available to the thread. Similarly, if the new thread creates or opens a
+resource, such as another file, that resource is available to the other
+threads in the process.
+ 
+<b>Creating a Thread</b>
+ 
+You can use the DosCreateThread function to create a new thread for a
+process. To do so, you need the address of the code to execute, the address
+of the first byte in a stack, and a variable to receive the identifier of
+the thread. The address of the code is typically the address of a function
+that is defined within the program. The address of the stack can be either
+an address within a variable declared by using the data segment of the
+process or an address in a separate segment. To ensure that the new thread's
+stack will not be written over by other threads, you must not declare the
+stack within the stack segment of a process. You must also be sure that
+there is adequate space on the stack. The amount of space needed depends on
+a number of factors, including the number of function calls the thread makes
+and the number of parameters and local variables used by each function. If
+you plan to call MS OS/2 functions, a reasonable stack size is 4096 bytes.
+ 
+The following code fragment creates a thread:
+ 
+BYTE abStack[4096];
+TID tidThread;
+ 
+VOID main() {
+    DosCreateThread(ThreadFunc, &amp;tidThread, abStack + sizeof(abStack));
+    .
+    .
+    .
+}
+ 
+VOID FAR ThreadFunc(VOID)
+{
+    VioWrtTTY("Message from new thread\r\n", 25, 0);
+}
+ 
+In this example, the array absStack is used for the new thread's stack. The
+thread identifier is copied to the tidThread variable. The thread starts
+execution with the first statement in the locally defined function
+ThreadFunc.
+ 
+In MS OS/2, all stacks grow down in memory──that is, the first byte of the
+stack is in high memory and the last byte is in low memory──so you need to
+specify the last word in the stack (in this case, absStack[2048]) when you
+supply the starting address of the stack in the call to DosCreateThread.
+ 
+A thread continues to run until it calls the DosExit function or returns
+control to the operating system. In the preceding example, the thread exits
+when the function implicitly returns control at the end of the function.
+ 
+<b>Controlling the Execution of a Thread</b>
+ 
+The DosSuspendThread and DosResumeThread functions let you temporarily
+suspend the execution of a thread if you do not need it and then resume
+execution when you do need it. These functions are best used when a process
+needs to temporarily suspend execution of a thread that is in the middle of
+a task. For example, consider a thread that opens and reads files from the
+disk. If other threads in the process do not need input from these files,
+the process can suspend execution of the thread so that the system scheduler
+does not needlessly grant execution control to the thread.
+ 
+<b>Suspending a Thread</b>
+ 
+You can temporarily suspend the execution of a thread for a set interval of
+time by using the DosSleep function. This function suspends execution of the
+thread for the specified number of milliseconds. DosSleep is useful if you
+need to delay the execution of a task. For example, you can use DosSleep to
+delay response to the user's pressing a DIRECTION key. This gives the user
+time to observe the results and release the key. The following code fragment
+uses DosSleep to suspend execution of a thread for 1000 milliseconds (1
+second):
+ 
+DosSleep(1000L);
+ 
+<b>Changing the Priority</b>
+ 
+You can use the DosSetPrty function to change the execution priority of
+threads in a process. The execution priority defines when or how often a
+thread receives an execution time slice. Threads with higher priorities
+receive time slices before those with lower priorities. Threads with equal
+priority receive time slices in a round-robin order. If you raise the
+priority of a thread, the thread will execute more frequently.
+ 
+You can set the priority for just one thread in a process, for all threads
+in a process (and thus for the process itself), or for all threads in a
+process and in its child processes. The following code fragment uses
+<b>DosSetPrty</b> to lower the priority of a process that is intended to be used as
+a background process:
+ 
+PIDINFO pidi;
+ 
+DosGetPID(&amp;pidi);
+DosSetPrty(PRTYS_PROCESS, PRTYC_IDLETIME, 0, pidi.pid);
+ 
+The DosGetPID function retrieves the process and thread identifiers and
+copies them to the pid and tid fields in a PIDINFO structure. The
+<b>DosSetPrty</b> function then uses the process identifier to change the priority
+to idle-time (idle-time processes receive the least attention by the
+scheduler).
+ 
+You can also retrieve the priority of a process or thread by using the
+<b>DosGetPrty</b> function. For example, the following code fragment copies the
+priority of the process specified by pidiInfo.pid to the usPriority
+variable:
+ 
+DosGetPrty(PRTYS_PROCESS, &amp;usPriority, pidiInfo.pid);
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

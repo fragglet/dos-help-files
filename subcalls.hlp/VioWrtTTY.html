@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<title>VioWrtTTY (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioWrtTTY (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioAssociate.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioWrtTTY(pchString, cbString, hvio)
+PCH pchString;      /* pointer to string to write */
+USHORT cbString;    /* length of string           */
+HVIO hvio;          /* video handle               */
+ 
+The VioWrtTTY function writes a character string to the screen, starting at
+the current cursor position. This function advances the cursor as it writes
+each character, using a default attribute for each character. If the
+function reaches the end of the line, it continues writing at the beginning
+of the next line. If it reaches the end of the last line on the screen, it
+scrolls the screen and continues writing at the beginning of a new line.
+ 
+The VioWrtTTY function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pchString</i>  Points to the character string to write.
+ 
+<i>cbString</i>   Specifies the length (in bytes) of the character string.
+ 
+<i>hvio</i>       Identifies an advanced video-input-and-output (AVIO) presentation
+           space. For AVIO programs, this handle must have been created
+           previously using the VioCreatePS function. For other programs,
+           hvio must be NULL.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_VIO_INVALID_HANDLE
+ 
+<b>Comments</b>
+ 
+For some ASCII values, VioWrtTTY carries out an action rather than
+displaying a character. The following list describes the action taken when
+the given ASCII byte value is in the string:
+ 
+<b>Value  Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>0x08</i>   Backspace. Move the cursor left by one position, without deleting any
+       character that is under the cursor. If the cursor is at the beginning
+       of the line, take no action.
+ 
+<i>0x09</i>   Tab. Copy spaces from the current cursor position to the next tab
+       stop. Tab stops are placed at every eighth character position on a
+       line.
+ 
+<i>0x0A</i>   Linefeed. Move the cursor down to the next line. The screen will
+       scroll up one line if the current line is at the bottom of the
+       screen.
+ 
+<i>0x0D</i>   Return. Move the cursor to the beginning of the line.
+ 
+<i>0x07</i>   Bell. Generate a beep on the computer's speaker.
+ 
+If the process has enabled ANSI processing by using the VioSetAnsi function,
+<b>VioWrtTTY</b> processes any ANSI escape sequences in the string.
+ 
+<b>Example</b>
+ 
+The following example calls VioWrtTTY to write a message to the screen and
+beep the computer's speaker:
+ 
+VioWrtTTY("File not found\r\n\007", 17, 0);
+ 
+<b>See Also</b>
+ 
+<b>VioCreatePS, VioSetAnsi, VioSetCurPos, VioWrtCellStr, VioWrtCharStr</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

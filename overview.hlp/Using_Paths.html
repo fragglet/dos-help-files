@@ -1,0 +1,146 @@
+<html>
+
+<head>
+<title>Using Paths (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Paths (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Paths.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#path functions 1.2'>Function Group</a><span class='grhilite'>►</span>       </i>              <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='device_contexts.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                                Using Paths
+ 
+You can use path functions to perform the following tasks:
+ 
+♦  Draw a geometric line.
+ 
+♦  Draw a filled polygon.
+ 
+♦  Create a clip path.
+ 
+<b>Drawing a Geometric Line</b>
+ 
+To draw a geometric line, you must perform the following steps:
+ 
+1  Set the geometric-line width by calling the GpiSetLineWidthGeom
+   function.
+ 
+2  Set the geometric-line-end style calling the GpiSetLineEnd function.
+ 
+3  Start a path by calling the GpiBeginPath function.
+ 
+4  Draw the line(s) by calling the GpiMove and GpiLine functions.
+ 
+5  End the path by calling the GpiEndPath function.
+ 
+6  Draw the line by calling the GpiStrokePath function.
+ 
+The following code fragment shows how to draw a straight line that is 10
+units wide and has round ends:
+ 
+GpiSetLineWidthGeom(hps, 10L);      /* sets line width to 10  */
+GpiSetLineEnd(hps, LINEEND_ROUND);  /* sets line end to round */
+GpiBeginPath(hps, 1L);              /* begins path            */
+ptl.x = 7; ptl.y = 15;
+GpiMove(hps, &amp;ptl);                 /* sets current position  */
+ptl.x = 450; ptl.y = 15;
+GpiLine(hps, &amp;ptl);                 /* draws line             */
+GpiEndPath(hps);                    /* ends path              */
+GpiStrokePath(hps, 1L, 0L);         /* draws wide line        */
+ 
+<b>Drawing a Filled Polygon</b>
+ 
+To draw a filled polygon, you must perform the following steps:
+ 
+1  Start a path by calling the GpiBeginPath function.
+ 
+2  Move to the starting point by calling the GpiMove function.
+ 
+3  Draw the boundary lines by calling the appropriate line-drawing
+   function.
+ 
+4  End the path by calling the GpiEndPath function.
+ 
+5  Specify a fill mode and fill the path by calling the GpiFillPath
+   function.
+ 
+The following code fragment shows how to draw an empty triangle within a
+solid rectangle:
+ 
+POINTL aptl1 [4] = {           /* array of points for triangle  */
+    50, 50,
+    100, 100,
+    150, 50,
+    50, 50 };
+ 
+POINTL aptl2[5] = {            /* array of points for rectangle */
+    25, 25,
+    25, 200,
+    200, 200,
+    200, 25,
+    25, 25 };
+ 
+GpiBeginPath(hps, 1L);                 /* begins path     */
+GpiMove(hps, aptl1);      /* sets current position        */
+GpiPolyLine(hps, 4,
+    aptl1);               /* plots points for triangle    */
+GpiMove(hps, aptl2);      /* sets current position        */
+GpiPolyLine(hps, 5,
+    aptl2);               /* plots points for rectangle   */
+GpiEndPath(hps);          /* ends path                    */
+GpiFillPath(hps, 1L,
+    FPATH_ALTERNATE);     /* draws triangle and rectangle */
+ 
+<b>Creating a Clip Path</b>
+ 
+To create a clip path, you must perform the following steps:
+ 
+1  Start a path by calling the GpiBeginPath function.
+ 
+2  Draw the border of the path by calling the appropriate line or arc
+   functions.
+ 
+3  End the path by calling the GpiEndPath function.
+ 
+4  Create the clip path by calling the GpiSetClipPath function.
+ 
+The following code fragment shows how to create a triangular clip path and
+then write text into it:
+ 
+POINTL aptl[4] = {            /* array of points for triangle */
+    35, 45,
+    100, 100,
+    200, 45,
+    35, 45 };
+ 
+GpiBeginPath(hps, 1L);       /* begins path bracket                 */
+GpiMove(hps, aptl);          /* sets current position               */
+GpiPolyLine(hps, 4, aptl);   /* plots points for triangle           */
+GpiEndPath(hps);             /* ends path bracket                   */
+ 
+GpiSetClipPath(hps, 1L, SCP_ALTERNATE | SCP_AND); /* sets clip path */
+ 
+ptlStart.x = 50;
+for (i = 50; i &lt; 110; i = i + 10) {
+    ptlStart.y = i;
+ 
+    /* write the text */
+ 
+    GpiCharStringAt(hps, &amp;ptlStart, 18, "?!String of text!?");
+  }
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

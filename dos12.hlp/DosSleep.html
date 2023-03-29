@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>DosSleep (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosSleep (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Timer_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#timers 1.2'>Overview</a><span class='grhilite'>►</span>        </i>                  <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosStartSession.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSPROCESS
+ 
+USHORT DosSleep(ulTime)
+ULONG ulTime;    /* number of milliseconds to wait */
+ 
+The DosSleep function causes the current thread to wait for a specified
+interval or, if the specified interval is zero, to give up the remainder of
+the current time slice.
+ 
+The DosSleep function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>ulTime</i>     Specifies the number of milliseconds that the thread waits. This
+           value is rounded up to the next clock tick.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_TS_WAKEUP
+ 
+<b>Comments</b>
+ 
+The time the thread waits can be different from the specified time by a
+clock tick or two, depending on the execution status of the other threads
+running in the system. If the specified interval is zero, the process
+forgoes the remainder of its CPU time slice but is scheduled normally for
+its next time slice. When a process continues after suspension, its
+scheduled execution time could be delayed by hardware interrupts or by
+another thread running at a higher priority. If the time interval is not
+zero it is given in milliseconds, which are rounded up to the resolution of
+the scheduler clock. The DosSleep function should not be substituted for a
+real-time clock, because the rounding of the wait interval will cause
+inaccuracies to accumulate.
+ 
+<b>Example</b>
+ 
+This example sets up a loop that waits for one second and then retrieves the
+time and date:
+ 
+DATETIME date;
+for (;;) {
+    DosSleep(1000L);         /* waits for one second        */
+    DosGetDateTime(&amp;date);   /* retrieves the time and date */
+    .
+    .
+    .
+}
+ 
+<b>See Also</b>
+ 
+<b>DosGetInfoSeg, DosTimerAsync, DosTimerStart</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

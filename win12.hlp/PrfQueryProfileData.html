@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<title>PrfQueryProfileData (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> PrfQueryProfileData (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Initialization_file_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Profile Manager 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='prf.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='PrfQueryProfileInt.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINSHELLDATA
+ 
+BOOL PrfQueryProfileData(hini, pszAppName, pszKeyName, pvBuf, pcbBuf)
+HINI hini;         /* initialization-file handle  */
+PSZ pszAppName;    /* pointer to application name */
+PSZ pszKeyName;    /* pointer to keyname          */
+PVOID pvBuf;       /* pointer to buffer           */
+PULONG pcbBuf;     /* buffer length               */
+ 
+The PrfQueryProfileData function retrieves binary data from the profile
+file. The location of the data is determined by the application name and
+keyname that are passed to the function.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hini</i>        Identifies the file to query. This parameter can be a file
+            handle obtained with PrfOpenProfile or one of the following
+            values:
+ 
+            Value               Meaning
+            ────────────────────────────────────────────────────────────────
+            HINI_PROFILE        Search the user profile, and if no matching
+                                entries are found, search the system
+                                profile.
+ 
+            HINI_USERPROFILE    Search only the user profile.
+ 
+            HINI_SYSTEMPROFILE  Search only the system profile.
+ 
+<i>pszAppName</i>  Points to the null-terminated string that contains the
+            application name. The string must be less than 1024 bytes long,
+            including the terminating null character. The application name
+            is case-sensitive. If pszAppName is NULL, a list of all
+            application names in the profile specified by the hini parameter
+            is returned.
+ 
+<i>pszKeyName</i>  Points to the null-terminated string that contains the keyname.
+            The string must be less than 1024 bytes long, including the
+            terminating null character. The keyname is case-sensitive. If
+            pszKeyName is NULL, all keynames in the profile specified by the
+            hini parameter are enumerated.
+ 
+<i>pvBuf</i>       Points to the buffer that receives the data.
+ 
+<i>pcbBuf</i>      Points to a variable. When this function is called, the variable
+            specifies the size (in bytes) of the buffer pointed to by the
+            pvBuf parameter. When the function returns, this variable
+            contains the actual number of bytes placed in the buffer.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful or FALSE if an error
+occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INVALID_PARM
+     PMERR_MEMORY_ALLOC
+     PMERR_MEMORY_ALLOCATION_ERR
+     PMERR_MEMORY_DEALLOCATION_ERR
+ 
+<b>Comments</b>
+ 
+When NULL is used in pszKeyName, if the application name specified by
+<i>pszAppName is not found, PrfQu</i>eryProfileData returns FALSE.
+ 
+The size of the data can be determined by calling the PrfQueryProfileSize
+function. In cases where pvBuf points to a list of values, the value
+returned by PrfQueryProfileSize will include a NULL byte at the end of the
+list, used as a terminator.
+ 
+<b>See Also</b>
+ 
+<b>PrfQueryProfileSize, PrfWriteProfileData, WinQueryProfileData,</b>
+<b>WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

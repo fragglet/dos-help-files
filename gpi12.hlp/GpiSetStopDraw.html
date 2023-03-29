@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<title>GpiSetStopDraw (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiSetStopDraw (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='retained_graphics.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiSetTag.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPICONTROL
+ 
+BOOL GpiSetStopDraw(hps, fStopDraw)
+HPS hps;           /* presentation-space handle */
+LONG fStopDraw;    /* stop-draw condition flag  */
+ 
+The GpiSetStopDraw function sets or clears the stop-draw condition. The
+stop-draw condition terminates specific functions that may be executing in
+another thread of the process. If the stop-draw condition is set, the system
+stops the following functions and forces each to return an error:
+ 
+    GpiDrawChain
+    GpiDrawDynamics
+    GpiDrawFrom
+    GpiDrawSegment
+    GpiPlayMetaFile
+    GpiPutData
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>fStopDraw</i>  Specifies the stop-draw condition. If it is SDW_OFF, the function
+           clears the stop-draw condition. If it is SDW_ON, the function
+           sets the condition.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_INV_STOP_DRAW_VALUE
+ 
+<b>Comments</b>
+ 
+The GpiSetStopDraw function lets an application set up and control an
+asynchronous thread that carries out long drawing operations. If the
+controlling thread needs to stop drawing, it sets the condition. If it wants
+to allow drawing, it clears the condition. The stop-draw condition only
+affects the listed functions.
+ 
+Using the stop-draw condition to stop drawing to a metafile creates an
+unusable metafile.
+ 
+<b>See Also</b>
+ 
+<b>GpiDrawChain, GpiDrawDynamics, GpiDrawFrom, GpiDrawSegment, GpiPlayMetaFile,</b>
+<b>GpiPutData, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

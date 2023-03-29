@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<title>TRACKLAYOUT (1.2) - msos2.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msos2.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> TRACKLAYOUT (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='Structures.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='PUSERBUTTON.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVIOCTL
+ 
+typedef struct _TRACKLAYOUT {    /* trckl */
+    BYTE   bCommand;
+    USHORT usHead;
+    USHORT usCylinder;
+    USHORT usFirstSector;
+    USHORT cSectors;
+    struct {
+        USHORT usSectorNumber;
+        USHORT usSectorSize;
+    } TrackTable[1];
+} TRACKLAYOUT;
+ 
+The TRACKLAYOUT structure contains track-layout information.
+ 
+<b>Field          Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<b>bCommand</b>       Specifies the type of track layout. If this field is 0x0000,
+               the track layout contains nonconsecutive sectors or does not
+               start with sector 1. If it is 0x0001, the track layout starts
+               with sector 1, and contains only consecutive sectors.
+ 
+<b>usHead</b>         Specifies the physical head on the disk drive on which to
+               perform the operation.
+ 
+<b>usCylinder</b>     Specifies the cylinder number on which to perform the
+               operation.
+ 
+<b>usFirstSector</b>  Specifies the logical sector number at which to start the
+               operation. The logical sector number is the index in the
+               track-layout table to the first sector. Index 0 specifies the
+               first sector, index 1 the second, and so on.
+ 
+<b>cSectors</b>       Specifies the number of sectors on which to perform the
+               operation, up to the maximum specified in the track-layout
+               table. The function does not step heads and tracks.
+ 
+<b>TrackTable[1]</b>  Specifies the track-layout table. It is an array of
+               structures that contain the numbers and sizes of the sectors
+               in the track. The first element in this field defines the
+               sector number and size (in bytes) of the first sector on the
+               track, the second element defines the second sector, and so
+               on. For each element of TrackTable, the usSectorNumber field
+               specifies the sector number, and the usSectorSize field
+               specifies the size of the sector. The number of elements
+               depends on the number of sectors on the track.
+ 
+<b>See Also</b>
+ 
+<b>PDSK_READPHYSTRACK, DSK_READTRACK, PDSK_VERIFYPHYSTRACK, DSK_VERIFYTRACK,</b>
+<b>DSK_WRITETRACK, PDSK_WRITEPHYSTRACK</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

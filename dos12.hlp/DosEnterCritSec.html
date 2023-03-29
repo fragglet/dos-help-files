@@ -1,0 +1,58 @@
+<html>
+
+<head>
+<title>DosEnterCritSec (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosEnterCritSec (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='threads.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#multitasking 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80be.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosEnumAttribute.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSPROCESS
+ 
+USHORT DosEnterCritSec(VOID)
+ 
+The DosEnterCritSec function suspends execution of all threads in the
+current process, except for the calling thread. Suspended threads cannot
+execute until the current thread calls the DosExitCritSec function.
+ 
+This function has no parameters.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_CRITSEC_OVERFLOW
+ 
+<b>Comments</b>
+ 
+The signal handler (if installed) is not suspended when the DosEnterCritSec
+function is called. If a signal occurs, the processing done by the signal
+handler must not interfere with the processing done by the thread calling
+the DosEnterCritSec function.
+ 
+MS OS/2 maintains the number of outstanding DosEnterCritSec requests. This
+count is incremented by DosEnterCritSec requests and decremented by
+<b>DosExitCritSec</b> requests. If the count is greater than zero, a
+<b>DosExitCritSec</b> request will not restore normal thread execution. If the
+count exceeds 65535, the error ERROR_CRITSEC_OVERFLOW will be returned.
+ 
+<b>See Also</b>
+ 
+<b>DosCreateThread, DosExitCritSec, DosHoldSignal, DosSetSigHandler</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

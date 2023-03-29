@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<title>KbdSetStatus (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> KbdSetStatus (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Keyboard 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='kbd.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='KbdStringIn.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_KBD
+ 
+USHORT KbdSetStatus(pkbstKbdInfo, hkbd)
+PKBDINFO pkbstKbdInfo;    /* pointer to structure for keyboard status */
+HKBD hkbd;                /* keyboard handle                          */
+ 
+The KbdSetStatus function sets the status for the specified logical
+keyboard. The keyboard status specifies the state of the keyboard echo mode,
+input mode, turnaround character, interim character flags, and shift state.
+ 
+The KbdSetStatus function is a family API function.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pkbstKbdInfo  Points to the KBDINFO </i>structure that contains the keyboard
+              status.
+ 
+<i>hkbd</i>          Identifies the logical keyboard. The handle must have been
+              created previously by using the KbdOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_KBD_INVALID_ECHO_MASK
+     ERROR_KBD_INVALID_HANDLE
+     ERROR_KBD_INVALID_INPUT_MASK
+     ERROR_KBD_INVALID_LENGTH
+ 
+<b>Comments</b>
+ 
+In most cases, a shift key is pressed in combination with other keys to
+create a single keystroke. In binary mode with shift report turned on, a
+shift key by itself creates a keystroke that the KbdCharIn or KbdPeek
+function can retrieve.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restrictions apply to the KbdSetStatus
+function:
+ 
+♦  Interim and turnaround characters are not supported.
+ 
+♦  Binary mode with echo mode on is not supported.
+ 
+♦  ASCII mode with echo mode off is not supported.
+ 
+♦  The hkbd parameter is ignored.
+ 
+<b>Example</b>
+ 
+This example retrieves the current status of the default keyboard, masks the
+ASCII-mode bit, uses the OR operator to set the binary-mode bit, and calls
+the KbdSetStatus function to change the keyboard status to binary mode:
+ 
+KBDINFO kbstInfo;
+kbstInfo.cb = sizeof(kbstInfo);
+KbdGetStatus(&amp;kbstInfo, 0);        /* gets current status  */
+kbstInfo.fsMask =
+    (kbstInfo.fsMask &amp; 0x00F7)     /* masks out ASCII mode */
+    | 0x0004;                      /* OR into binary mode  */
+KbdSetStatus(&amp;kbstInfo, 0);        /* sets new status      */
+ 
+<b>See Also</b>
+ 
+<b>KbdCharIn, KbdGetStatus, KbdOpen, KbdPeek, KBDINFO</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

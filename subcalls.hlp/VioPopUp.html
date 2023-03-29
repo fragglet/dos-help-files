@@ -1,0 +1,152 @@
+<html>
+
+<head>
+<title>VioPopUp (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioPopUp (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioPrtSc.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioPopUp(pfWait, hvio)
+PUSHORT pfWait;    /* pointer to variable for wait/no-wait flag */
+HVIO hvio;         /* video handle                              */
+ 
+The VioPopUp function opens a pop-up screen. A pop-up screen is a temporary
+text-mode screen that a process can use to display error and warning
+messages without altering the content of the foreground screen. Pop-up
+screens are used typically by background processes to display messages when
+the screen is not available.
+ 
+The pop-up screen can be opaque or transparent, as specified by the flag
+pointed to by the pfWait parameter. If the pop-up screen is opaque, the
+function changes the screen mode (if the mode is not already set for 25
+lines by 80 columns of text) and clears the screen, moving the cursor to the
+upper-left corner. If the pop-up screen is transparent, the function uses
+the current screen mode and leaves the screen and the cursor unchanged.
+ 
+Once the pop-up screen is open, the process may call any of the following
+<b>Vio</b> functions:
+ 
+    VioEndPopUp         VioReadCellStr      VioSetFont
+    VioGetAnsi          VioReadCharStr      VioSetState
+    VioGetCp            VioScrollDn         VioWrtCellStr
+    VioGetConfig        VioScrollLf         VioWrtCharStr
+    VioGetCurPos        VioScrollRt         VioWrtCharStrAtt
+    VioGetCurType       VioScrollUp         VioWrtNAttr
+    VioGetFont          VioSetCp            VioWrtNCell
+    VioGetMode          VioSetCurPos        VioWrtNChar
+    VioGetState         VioSetCurType       VioWrtTTY
+ 
+The process opening the pop-up screen receives all subsequent keyboard
+input, and MS OS/2 disables the keys that it normally uses switch from one
+screen group to another. While the pop-up screen is open, the process must
+not access or modify the physical video buffer. Also, it must not call the
+<b>DosExecPgm</b> function.
+ 
+Only one pop-up screen may be open at any given time. If a process attempts
+to open one pop-up screen while another is already open, the VioPopUp
+function waits until the previous screen is closed before opening the new
+one.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pfWait</i>     Points to the variable that specifies whether the pop-up screen
+           is to be opaque or transparent, and whether the function should
+           wait for any open pop-up screen to close. It can be any
+           combination of either VP_NOWAIT or VP_WAIT and either VP_OPAQUE
+           or VP_TRANSPARENT. These flags are defined as follows:
+ 
+           Value           Meaning
+           ─────────────────────────────────────────────────────────────────
+           VP_NOWAIT       Return immediately if a pop-up screen already
+                           exists.
+ 
+           VP_WAIT         Wait if a pop-up screen already exists. The
+                           function opens a new pop-up screen as soon as the
+                           existing one is closed.
+ 
+           VP_OPAQUE       Set the screen mode for 25 lines by 80 columns of
+                           text, clear the screen, and move the cursor to
+                           the upper-left corner.
+ 
+           VP_TRANSPARENT  Create a transparent pop-up screen. The function
+                           does not change the screen mode, clear the
+                           screen, or move the cursor. To create a
+                           transparent pop-up screen, the screen must be in
+                           text mode already.
+ 
+<i>hvio</i>       Identifies a reserved value. This parameter must be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+    ERROR_VIO_EXISTING_POPUP
+    ERROR_VIO_INVALID_HANDLE
+    ERROR_VIO_NO_POPUP
+    ERROR_VIO_SHELL_INIT
+ 
+<b>Comments</b>
+ 
+Before opening a pop-up screen, MS OS/2 saves the physical video buffer of
+the existing screen. While the pop-up screen is open, MS OS/2 blocks any
+<b>Vio</b> functions called by the process that owns the previous screen. If this
+process generates any output, MS OS/2 displays the output after the pop-up
+screen closes.
+ 
+You can close a pop-up screen by using the VioEndPopUp function.
+<b>VioEndPopUp</b> restores the screen mode and the screen buffer; it also restores
+keyboard input to the previous process and enables the key combination MS
+OS/2 uses to switch screen groups. In some cases, the VioEndPopUp function
+may not completely restore the screen. For these cases, use the VioModeWait
+function to restore the screen.
+ 
+You cannot use transparent pop-up screens if the foreground process has
+called the VioSavRedrawWait function.
+ 
+If a process registers a replacement VioPopUp function (by calling the
+<b>VioRegister</b> function), MS OS/2 uses the replacement function only if the
+foreground process requests a pop-up screen. If a background process
+requests a pop-up screen, MS OS/2 uses the default VioPopUp function.
+ 
+The VioPopUp function will return the error ERROR_VIO_SHELL_INIT if it is
+called before the system has completed initialization during the boot
+sequence. This can occur if the application calling VioPopUp is run as a
+detached process from the config.sys file.
+ 
+<b>Example</b>
+ 
+This example calls the VioPopUp function to create a pop-up screen, and
+waits for the pop-up screen if another pop-up screen is already active:
+ 
+USHORT fWait = VP_WAIT | VP_OPAQUE;
+VioPopUp(&amp;fWait, 0);
+    .
+    . /* message and user interaction would go here */
+    .
+VioEndPopUp(0);    /* ends pop-up screen */
+ 
+<b>See Also</b>
+ 
+<b>DosExecPgm, VioEndPopUp, VioGetPhysBuf, VioModeWait, VioRegister,</b>
+<b>VioSavRedrawWait</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

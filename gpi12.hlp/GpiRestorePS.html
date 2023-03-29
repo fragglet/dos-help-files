@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<title>GpiRestorePS (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiRestorePS (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='presentation_spaces.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Presentation Spaces and Device Contexts 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiRotate.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPICONTROL
+ 
+BOOL GpiRestorePS(hps, idPS)
+HPS hps;      /* presentation-space handle             */
+LONG idPS;    /* identifier for the presentation space */
+ 
+The GpiRestorePS function restores the state of the presentation space by
+popping the state from the presentation space (PS) stack. The function sets
+the attributes and resources of the presentation space to the values that
+were saved previously by using the GpiSavePS function.
+ 
+The PS stack, maintained internally by the system, can contain one or more
+saved presentation spaces. Each saved presentation space has a unique
+identifier. The GpiRestorePS function restores a specific presentation space
+if the idPS parameter contains the corresponding identifier. The function
+also accepts negative identifiers. In this case, the function uses the
+absolute value of the identifier to determine how many presentation spaces
+to pop from the PS stack. For example, if it is -2, the function pops two
+presentation spaces from the stack. In either case, identifier or negative
+number, the function discards any presentation spaces that are skipped over
+on the PS stack.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>idPS</i>       Specifies the identifier of the saved presentation space to
+           restore, or a negative number indicating the number of saved
+           presentation spaces to pop. If it is an identifier, it must have
+           been returned previously by the GpiSavePS function. It must not
+           be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_ID
+     PMERR_NOT_IN_DRAW_MODE
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+The function can be used in an open segment only if the drawing mode is
+DM_DRAW. The function can also be used in an element, area, or path bracket.
+If it is in an area or path bracket, the corresponding GpiSavePS function
+must have been called in the same bracket.
+ 
+If an error occurs, the function leaves the PS stack and the current
+presentation space unchanged.
+ 
+<b>See Also</b>
+ 
+<b>GpiPop, GpiSavePS, GpiSetDrawingMode, WinG</b>etLastError
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

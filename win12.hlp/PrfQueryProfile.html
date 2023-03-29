@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>PrfQueryProfile (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> PrfQueryProfile (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='prf.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='PrfQueryProfileData.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINSHELLDATA
+ 
+BOOL PrfQueryProfile(hab, pprfprofile)
+HAB hab;                    /* anchor-block handle                   */
+PPRFPROFILE pprfprofile;    /* address of structure for profile data */
+ 
+The PrfQueryProfile function retrieves the fully qualified filenames of the
+two MS OS/2 profile (initialization) files.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hab</i>          Identifies the anchor block.
+ 
+<i>pprfprofile  Points to the PRFPRO</i>FILE structure that receives information
+             about the profile filenames.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful or FALSE if an error
+occurs.
+ 
+<b>Comments</b>
+ 
+If either length field (cchUserName or cchSysName) of the PRFPROFILE
+structure is set to zero when calling this function, the length field is set
+to the number of bytes required to hold the corresponding filename, and that
+filename field is not filled in.
+ 
+<b>Example</b>
+ 
+This example calls PrfQueryProfile to retrieve the size of the filenames,
+allocates the memory needed for each string, and calls PrfQueryProfile again
+to retrieve the filenames.
+ 
+PRFPROFILE prfpro;
+SEL selUser;
+SEL selSys;
+ 
+prfpro.cchUserName = 0L;
+prfpro.cchSysName =  0L;
+PrfQueryProfile(hab, &amp;prfpro);            /* gets size of filenames */
+DosAllocSeg(prfpro.cchUserName, &amp;selUser, SEG_NONSHARED);
+DosAllocSeg(prfpro.cchSysName, &amp;selSys, SEG_NONSHARED);
+prfpro.pszUserName = MAKEP(selUser, 0);   /* initializes pointers   */
+prfpro.pszSysName = MAKEP(selSys, 0);
+PrfQueryProfile(hab, &amp;prfpro);
+ 
+<b>See Also</b>
+ 
+<b>PrfReset, PRFPROFILE</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

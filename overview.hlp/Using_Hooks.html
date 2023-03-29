@@ -1,0 +1,152 @@
+<html>
+
+<head>
+<title>Using Hooks (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Hooks (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Hooks.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Hook functions 1.2'>Function Group</a><span class='grhilite'>►</span>       </i>              <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Initialization_Files.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                                Using Hooks
+ 
+Applications install hooks by calling the WinSetHook function, specifying
+the type of hook, whether it should go into the system queue or into the
+queue of a particular thread, and a far pointer to a function entry point.
+ 
+Procedures installed as hooks in a thread's queue are called only in the
+context of that thread. This kind of hook is typically a locally defined
+function.
+ 
+Procedures installed as hooks in the system queue can be called in the
+context of any application. System-queue hooks must be defined in separate
+dynamic-link-library (DLL) modules, because it is not possible to call
+application-module procedures from other applications.
+ 
+A hook can be released by calling the WinReleaseHook function with the same
+arguments used when installing the hook. All hooks should be released before
+the application terminates, although the system automatically releases them
+if the application does not.
+ 
+A system hook can be released by using the WinReleaseHook function, but the
+DLL function containing the hook procedure is not freed. This is because
+system hooks are called in the process context of every Presentation Manager
+application in the system, causing an implicit call to the DosLoadModule
+function for all of those processes. Since a call to the DosFreeModule
+function cannot be made for another process, there is no way to free the
+dynamic-link libraries. (However, since the hook procedure is no longer
+called, the DLL segments may be discarded or swapped.)
+ 
+<b>Hook Example</b>
+ 
+This section shows the main elements of installing and using a
+system-input-queue hook, although many of the details of the hook are
+omitted. The example code comes from a larger program that uses a hook to
+monitor the input queue and display all input messages in an application
+window on the screen. This example has two main parts: the installing
+application and the hook DLL. The installing application identifies a hook
+procedure in the DLL and installs it in the system-queue hook chain. The
+application then controls the hook through other function calls to the DLL,
+performing such actions as turning the hook on and off and asking it for the
+most recent messages.
+ 
+The system hook is more than a single hook procedure; it is typically a DLL
+with several support procedures and entry points. This allows the installing
+application to control and communicate with the hook procedure.
+ 
+<b>Installing a System Hook</b>
+ 
+Since this example is a system hook, the hook procedure must be in a
+separate DLL from the application that installs it. The installing
+application needs the module handle of the DLL before it can install the
+hook. The DosLoadModule function, given the name of the DLL, returns the
+handle of the module. Once the module handle is known, the application calls
+the WinSetHook function, passing the module handle, a far pointer to the
+hook-procedure entry point, and NULL for the message-queue argument,
+indicating that the hook should go into the system queue. This sequence is
+shown in the following code fragment:
+ 
+UCHAR     szFailName[CCHMAXPATH];
+HMODULE   hmodSpy;
+BOOL      fRet;
+ 
+/*
+ * This example assumes that there is a hook procedure named
+ * "SpyInputHook" that resides in a DLL file named "spyhook.dll,"
+ * and that "spyhook.dll" is in a directory defined by the LIBPATH
+ * command in the config.sys file.
+ */
+ 
+if (DosLoadModule(szFailName,          /* failure-name buffer     */
+                  sizeof(szFailName),  /* size of failure buffer  */
+                  "spyhook",           /* module name             */
+                  &amp;hmodSpy) == 0) {    /* address of handle       */
+ 
+    fRet = WinSetHook(hab,             /* anchor-block handle     */
+                  (HMQ) NULL,          /* system queue            */
+                  HK_INPUT,            /* hook type               */
+                  (PFN) SpyInputHook,  /* far pointer to function */
+                  hmodSpy);            /* module handle for DLL   */
+}
+ 
+An alternative method for installing a system queue is to provide an
+installation function in the DLL along with the hook procedure. With this
+method, the installing application does not need the module handle for the
+DLL. By linking with the DLL, the application gains access to the
+installation function. The installation function can supply the module
+handle and other details in the call to the WinSetHook function. The DLL can
+also contain a function that removes the system-hook procedure; the
+application can call this function when it terminates.
+ 
+<b>System-Hook Code</b>
+ 
+The hook procedure is part of the DLL module. As such, it has access to the
+resources of the module: its global variables, other support procedures, and
+any memory allocated by the module. The following code template shows the
+structure of a typical input-hook procedure. It uses a static variable to
+control whether or not it should examine the input messages. Although it is
+not required, the DLL would typically provide another procedure to toggle
+the state of the variable, so that an application that installs the hook can
+turn the hook on and off.
+ 
+This example could save each message in a buffer allocated during the
+initialization of the DLL module. The DLL module would also provide a
+calling interface, so that the installing application could periodically
+request the messages from the buffers.
+ 
+BOOL EXPENTRY PASCAL SpyInputHook(hab, lpqmsg)
+HAB hab;
+PQMSG lpqmsg;
+{
+    static BOOL fRecording;
+ 
+    /*
+     * The lpqmsg parameter points to a queue-message structure.
+     * Returns FALSE to let the message through to rest of hook
+     * chain. Returns TRUE to prevent further message processing.
+     */
+ 
+    if (!fRecording)
+        return FALSE; /* pass message to rest of chain  */
+ 
+    /* Else examine message and process as appropriate. */
+ 
+    return FALSE;
+ 
+}
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

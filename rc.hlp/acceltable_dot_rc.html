@@ -1,0 +1,176 @@
+<html>
+
+<head>
+<title>ACCELTABLE (1.2) - rc.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+rc.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ACCELTABLE (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ASSOCTABLE.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+ 
+                 The Resource Compiler ACCELTABLE Statement
+ 
+<b>ACCELTABLE acceltable-id [mem-option]</b>
+BEGIN
+<i>key-value, command[, accelerator-options]</i>
+    .
+    .
+    .
+END
+ 
+The ACCELTABLE statement creates a table of accelerators for an application.
+An accelerator is a keystroke that gives the user a quick way to choose a
+command from a menu or carry out some other task. An accelerator table can
+be loaded when needed from the executable file by using the
+<b>WinLoadAccelTable</b> function.
+ 
+You can provide any number of ACCELTABLE statements in a resource-definition
+file. Each statement must specify a unique table identifier. You can provide
+any number of accelerator definitions in an accelerator table; however, no
+two definitions in a table can specify the same key.
+ 
+Each accelerator definition must specify a key value and command. The
+<b>WinSetAccelTable</b> function used in the application translates the accelerator
+keystroke into a WM_COMMAND, WM_HELP, or WM_SYSCOMMAND message that has the
+corresponding command value. The message type depends on the
+<i>accelerator-option</i> field.
+ 
+<b>Field                Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>acceltable-id</i>        Specifies the accelerator-table identifier. This value
+                     must be an integer in the range 0 through 65,535, or a
+                     simple expression that evaluates to a value in that
+                     range. Each accelerator table in a resource-definition
+                     file must have a unique identifier.
+ 
+<i>mem-option</i>           Specifies how the system manages the resource when it
+                     is in memory. This value must be one of the following:
+ 
+                     Value        Meaning
+                     ───────────────────────────────────────────────────────
+                     FIXED        System keeps the resource at a fixed
+                                  memory location.
+ 
+                     MOVEABLE     System moves the resource as necessary to
+                                  compact memory. This is the default
+                                  value.
+ 
+                     DISCARDABLE  System discards the resource if it is no
+                                  longer needed.
+ 
+<i>key-value</i>            Specifies the character, scan, or virtual-key code of
+                     the accelerator key. The meaning depends on the
+                     accelerator-options field. The key-value field must be
+                     a single character enclosed in double-quotation marks
+                     or an integer in the range 0 through 255. If you
+                     specify an integer, you must specify the CHAR,
+                     SCANCODE, or VIRTUALKEY accelerator value; otherwise,
+                     the default value is CHAR. Integers must be in decimal
+                     or hexadecimal notation.
+ 
+<i>command</i>              Specifies the command value for the corresponding
+                     WM_COMMAND, WM_HELP, or WM_SYSCOMMAND message. This
+                     value must be an integer in the range 0 through 65,535,
+                     or a simple expression that evaluates to an integer in
+                     that range.
+ 
+<i>accelerator-options</i>  Specifies the accelerator type. This value can be a
+                     combination of the following:
+ 
+                     Value       Meaning
+                     ───────────────────────────────────────────────────────
+                     VIRTUALKEY  Specifies that the key-value field is a
+                                 virtual-key code.
+ 
+                     SCANCODE    Specifies that the key-value field is a
+                                 keyboard scan code.
+ 
+                     CHAR        Specifies that the key-value field is a
+                                 character code.
+ 
+                     SHIFT       Specifies that the user must press the
+                                 SHIFT key and the key corresponding to the
+                                 key-value field to generate the
+                                 accelerator.
+ 
+                     CONTROL     Specifies that the user must press the CTRL
+                                 key and the key corresponding to the
+                                 key-value field to generate the
+                                 accelerator.
+ 
+                     ALT         Specifies that the user must press the ALT
+                                 key and the key corresponding to the
+                                 key-value field to generate the
+                                 accelerator.
+ 
+                     LONEKEY     Specifies that the user needs to press only
+                                 the key corresponding to the key-value
+                                 field to generate the accelerator.
+ 
+                     SYSCOMMAND  Specifies that the accelerator translates
+                                 to a WM_SYSCOMMAND message. If you do not
+                                 include this option, the accelerator
+                                 translates to a WM_COMMAND message.
+ 
+                     HELP        Specifies that the accelerator translates
+                                 to a WM_HELP message. If you do not include
+                                 this value, the accelerator translates to a
+                                 WM_COMMAND message.
+ 
+                     VIRTUALKEY, SCANCODE, and CHAR are mutually exclusive.
+                     valueSYSCOMMAND and HELP are also mutually exclusive.
+ 
+<b>Comments</b>
+ 
+If two accelerators use the same key with different SHIFT, CONTROL, or ALT
+values, you should specify the more restrictive accelerator first in the
+table. For example, you should place SHIFT+ENTER before ENTER.
+ 
+If you include the os2.h header file, you can use the following constants to
+specify the accelerator options:
+ 
+    AF_ALT
+    AF_CHAR
+    AF_CONTROL
+    AF_HELP
+    AF_LONEKEY
+    AF_SCANCODE
+    AF_SHIFT
+    AF_SYSCOMMAND
+    AF_VIRTUALKEY
+ 
+To combine these constants, you must use the bitwise OR (|) operator.
+ 
+<b>Example</b>
+ 
+This example creates an accelerator table whose accelerator-table identifier
+is 1. The table contains two accelerators: CTRL+S and CTRL+G. These
+accelerators generate WM_COMMAND messages with values of 101 and 102,
+respectively, when the user presses the corresponding keys.
+ 
+ACCELTABLE 1
+BEGIN
+    "S", 101, CONTROL
+    "G", 102, CONTROL
+END
+ 
+<b>See Also</b>
+ 
+<i><span class='grhilite'>◄</span><a href='unknown#Accelerator item styles'>Accelerator-item styles</a><span class='grhilite'>►</span>, WinLoadAccelTable</i>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

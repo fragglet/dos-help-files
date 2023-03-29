@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<title>DosFSRamSemRequest (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosFSRamSemRequest (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='semaphores.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Interprocess Communication 1.2'>Overview</a><span class='grhilite'>►</span>                  </i>        <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosGetCollate.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSSEMAPHORES
+ 
+USHORT DosFSRamSemRequest(pdosfsrs, lTimeout)
+PDOSFSRSEM pdosfsrs;    /* pointer to structure for semaphore */
+LONG lTimeout;          /* time to wait for semaphore         */
+ 
+The DosFSRamSemRequest function obtains a fast-safe RAM semaphore and
+records the current owner for potential cleanup by a DosExitList function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pdosfsrs   Points to the</i> DOSFSRSEM structure containing information about a
+           fast-safe RAM semaphore.
+ 
+<i>lTimeout</i>   Specifies how long to wait for the semaphore to become available.
+           If the value is greater then zero, this parameter specifies the
+           number of milliseconds to wait before returning. If the value is
+           SEM_IMMEDIATE_RETURN, the function returns immediately. If the
+           value is SEM_INDEFINITE_WAIT, the function waits indefinitely.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value.
+ 
+<b>Comments</b>
+ 
+When the DosFSRamSemRequest function is called, it checks the status of the
+semaphore. If the semaphore is not owned, DosFSRamSemRequest sets it to
+owned, increases the use count, and returns immediately to the calling
+function. If the semaphore is owned, DosFSRamSemRequest may block the thread
+until the semaphore is not owned, then try again. The lTimeout parameter is
+used to place an upper limit on the amount of time to block before
+returning.
+ 
+When the thread is finished with the protected resource, it calls the
+<b>DosFSRamSemClear function. DosFSRamSemClear decr</b>eases the use count and, if
+the count is zero, sets the semaphore to unowned and starts any threads that
+were blocked while waiting for the semaphore.
+ 
+Recursive requests for fast-safe RAM semaphores are supported by a use count
+of the number of times the owning process has issued a DosFSRamSemRequest
+function without issuing a corresponding DosFSRamSemClear function.
+ 
+The DosFSRamSemRequest function does not return unless the specified
+semaphore remains clear long enough for the calling thread to obtain it.
+ 
+Fast-safe RAM semaphores operate by using the DOSFSRSEM structure. Before
+the initial call to the DosFSRamSemRequest function, this structure must be
+initialized to zero and the cb field must be set to 14. The client field is
+provided to allow the calling process a means of identifying which resource
+is currently owned by the owner of the semaphore. This field is initialized
+to zero when a fast-safe RAM semaphore is first acquired. The owning process
+may use this field to describe the resource currently being accessed. The
+values in the client field may be useful to an DosExitList function handler
+in determining the appropriate cleanup action.
+ 
+When a process terminates that owns a fast-safe RAM semaphore, the
+<b>DosExitList</b> functions of that process (if any) will be given control. If
+important resources are protected by fast-safe RAM semaphores, the
+<b>DosExitList function should call </b>the DosFSRamSemRequest function to gain
+ownership of these semaphores. When called during the processing of
+<b>DosExitList termination functions</b>, the DosFSRamSemRequest function will
+examine the indicated fast-safe RAM semaphore and, if it is owned by the
+active process, force the identifier of the owning thread to be equal to the
+identifier of the current thread and set the use count to one. This allows
+the DosExitList function to be used without requiring any handling
+instructions for fast-safe RAM semaphores. When the execution of the
+<b>DosExitList function is finished,</b> it should call the DosFSRamSemClear
+function.
+ 
+Except for the client field, the calling process should not modify any
+fields in the DOSFSRSEM structure after the DosFSRamSemRequest function
+returns.
+ 
+<b>See Also</b>
+ 
+<b>DosExitList, DosFSRamSemClear, DOSFSRSEM</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

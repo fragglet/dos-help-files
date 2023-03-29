@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<title>DosDupHandle (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosDupHandle (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosEditName.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosDupHandle(hfOld, phfNew)
+HFILE hfOld;      /* handle of existing file                        */
+PHFILE phfNew;    /* pointer to variable containing new file handle */
+ 
+The DosDupHandle function duplicates a file handle. The new handle has the
+same handle-specific information as the existing handle, such as its
+file-pointer position and access method. The original handle and the
+duplicate are interchangeable, since most changes to one affect the other.
+For example, moving the file pointer for the original handle moves the
+pointer for the new handle. Closing the original handle by using the
+<b>DosClose</b> function does not close the duplicate handle, however, and closing
+the duplicate does not close the original. A file is not closed until its
+last handle is closed.
+ 
+The DosDupHandle function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hfOld</i>      Identifies the file handle to duplicate. This handle must have
+           been created previously by using the DosOpen function. The
+           DosDupHandle function closes the file before duplicating its
+           handle.
+ 
+<i>phfNew</i>     Points to the variable that contains the new file handle. If this
+           parameter is 0xFFFF, the DosDupHandle function creates a new
+           handle and copies it to the variable pointed to by the phfNew
+           parameter. Any specified value other than 0xFFFF is used as the
+           handle.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_INVALID_HANDLE
+     ERROR_INVALID_TARGET_HANDLE
+     ERROR_TOO_MANY_OPEN_FILES
+ 
+<b>Comments</b>
+ 
+You can change the inheritance, fail-on-error, and write-through flags for
+the duplicate file handle by using the DosSetFHandState function.
+ 
+<b>Example</b>
+ 
+This example calls the DosDupHandle function to duplicate the standard
+output handle, and then writes "Hello World" to the new handle:
+ 
+HFILE hfNew;
+USHORT, cbBytesWritten;
+hfNew = 0xFFFF;                  /* create new handle         */
+DosDupHandle(1, &amp;hfNew);         /* duplicate standard output */
+DosWrite(hfNew, "Hello World\r\n", 13, &amp;cbBytesWritten);
+ 
+<b>See Also</b>
+ 
+<b>DosChgFilePtr, DosClose, DosExecPgm, DosMakePipe, DosOpen, DosRead,</b>
+<b>DosSetFHandState, DosWrite</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

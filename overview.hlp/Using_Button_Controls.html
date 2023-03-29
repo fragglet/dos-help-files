@@ -1,0 +1,298 @@
+<html>
+
+<head>
+<title>Using Button Controls (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Button Controls (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Button_Controls.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Button Messages'>Button Messages</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#button styles'>Styles</a><span class='grhilite'>►</span>          <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Clipboard.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                           Using Button Controls
+ 
+The most common way to use button controls is in a dialog window. An
+application defines one or more button controls in the dialog template in
+the resource file, and processes button messages in the dialog-window
+procedure.
+ 
+Buttons can be associated in groups in dialog windows. A user can move from
+one button in a group to another button in the same group by pressing the
+ARROW keys. The TAB key moves from one group to the next. Groups are
+established by setting the WS_GROUP style bit for the first member of each
+group in the dialog template.
+ 
+You can also use button controls in standard client windows. For these
+windows, create a button-control window by calling the WinCreateWindow
+function with a window class of WC_BUTTON. Specify the client window as the
+owner of the button window. The owner window receives messages from buttons
+and can send messages to the buttons to alter their control state. The
+control state includes highlighting control text, button position, and the
+enabled/disabled state.
+ 
+Applications can create custom buttons that appear to be controlled by the
+application. The BS_USERBUTTON style, used in conjunction with other button
+styles, creates a button that notifies the application whenever the button
+must be drawn, allowing the application to draw the button.
+ 
+<b>Buttons in a Dialog Window</b>
+ 
+Buttons are typically used in dialog windows. An application can define
+buttons as part of a dialog-template resource file, as shown in the
+following sample Resource Compiler source-code fragment:
+ 
+DLGTEMPLATE IDD_BUTTON
+BEGIN
+    DIALOG  "", 2, 64, 9, 235, 130
+    BEGIN
+        AUTORADIOBUTTON "R~adio1", ID_RADIO1, 15, 20, 40, 12, WS_GROUP
+        AUTORADIOBUTTON "Ra~dio2", ID_RADIO2, 15, 40, 40, 12
+        AUTORADIOBUTTON "Rad~io3", ID_RADIO3, 15, 60, 40, 12
+        AUTORADIOBUTTON "R~adio4", ID_RADIO4,15, 80, 40, 12
+ 
+        PUSHBUTTON "Button 1", ID_PUSH1, 100, 50, 14, WS_GROUP
+        PUSHBUTTON "Button 2", ID_PUSH2, 75, 100, 50, 14, WS_GROUP
+        PUSHBUTTON "Button 3", ID_PUSH3, 130, 100, 60, 14, WS_GROUP
+ 
+        CHECKBOX "Check Box 1", ID_CHECK1, 150, 20, 58, 12, WS_GROUP
+        CHECKBOX "no toggle", ID_CHECK2, 150, 40, 58, 12
+ 
+        AUTOCHECKBOX "Check Box 3", ID_CHECK3, 150, 60, 58, 12, WS_GROUP
+        DEFPUSHBUTTON "OK", DID_OK, 75, 26, 46, 20, WS_GROUP
+    END
+END
+ 
+Each button item in a dialog window has an ID (for example, ID_RADIO1) that
+allows an application to identify the source of the WM_COMMAND and
+<b>WM_CONTROL</b> messages. The ID is also used to retrieve the button-window
+handle using the WinWindowFromID function.
+ 
+The dialog template also specifies the text for each button, which is
+displayed in a rectangular box. If the button text is too long to fit in the
+button, it is clipped to the rectangle. For radio buttons and check boxes,
+text is displayed to the right of the button. A user selects the button by
+clicking either the button or the text itself.
+ 
+The WS_GROUP attribute identifies the beginning of each new group of
+buttons. In the example above, the first four auto-radio buttons are in the
+same group, the following push buttons are in their own group, and the
+following two check boxes are in their own group. The auto-radio buttons in
+the first group can only be selected one at a time. An application must see
+that only one check box in a group is selected at a time. The group can wrap
+around from the end of the item list to the beginning.
+ 
+Notice the DEFPUSHBUTTON style with the DID_OK identification number in the
+code fragment above. It is customary to include an OK button with this ID in
+most dialog windows to provide a uniform user interface. The DEFPUSHBUTTON
+style draws a thick border around a button and allows a user to select the
+button by pressing the ENTER key.
+ 
+The dialog-window procedure for a dialog window containing buttons must
+respond to WM_COMMAND and WM_CONTROL messages. A common strategy is to use
+auto-radio buttons and auto-check boxes to allow a user to set a list of
+attributes for a command, and execute it by choosing the OK button. In this
+case, the dialog-window procedure ignores all WM_CONTROL messages that come
+from auto-radio buttons and auto-check boxes. These controls select and
+deselect themselves. When the dialog-window procedure receives a WM_COMMAND
+message for the OK button, it should query the auto-radio buttons and
+auto-check boxes to determine which options have been selected before
+proceeding with the operation.
+ 
+<b>Buttons in a Client Window</b>
+ 
+Applications can also use buttons in non-dialog windows. An application can
+create a button window using an application client window as the owner, as
+shown in the following code fragment:
+ 
+/* Create a button window. */
+ 
+hwndButton = WinCreateWindow(hwndClient,  /* parent       */
+    WC_BUTTON,                            /* class        */
+    "Test Button",                        /* text         */
+    WS_VISIBLE |
+    BS_PUSHBUTTON,                        /* style        */
+    10, 10,                               /* x, y         */
+    60, 70,                               /* cx, cy       */
+    hwndClient,                           /* owner        */
+    HWND_TOP,                             /* behind       */
+    ID_PBWINDOW,                          /* id           */
+    NULL,                                 /* control data */
+    NULL);                                /* parameters   */
+ 
+Once created in the client window, the button posts a WM_COMMAND message, or
+sends a WM_CONTROL message to the client-window procedure. The window
+procedure should examine the message ID to determine the button that sent
+the message.
+ 
+Applications that have client-window buttons may move and size the buttons
+when the window receives a WM_SIZE message. This message indicates that the
+window is changing size. Buttons can be moved and sized using the
+<b>WinSetWindowPos</b> function. You can obtain a window handle for a button by
+calling the WinWindowFromID function using the parent window and the window
+ID for each button.
+ 
+<b>Responding to a Button-Notification Message</b>
+ 
+A button control sends a message to its owner window when a user selects the
+button, either using the mouse or the keyboard. Buttons created with the
+BS_PUSHBUTTON or BS_USERBUTTON styles generate a WM_COMMAND message each
+time they are selected (this can be altered by specifying the BS_HELP or
+BS_SYSCOMMAND style when the button is created). All other button styles
+generate WM_CONTROL messages when selected.
+ 
+A push button is automatically highlighted when a user selects it using the
+mouse. The button tracks the mouse until the user releases the mouse button.
+The highlight is turned off if the mouse moves outside the button
+boundaries. The push button does not generate any messages to its owner
+window until the user releases the mouse button, and then only if the mouse
+button is released inside the push-button boundary. When the owner window
+receives a WM_COMMAND message from a push button, the low word of the first
+parameter in the message contains the button window ID, as specified in the
+dialog template or when the button was created.
+ 
+You should avoid duplicating IDs in menu commands and buttons because they
+both send IDs to owner windows as WM_COMMAND messages. However, it is
+possible to tell whether a WM_COMMAND message came from a menu or a push
+button by looking for the value CMDSRC_PUSHBUTTON or CMDSRC_MENU in the low
+word of the second parameter of the message.
+ 
+Button types other than push buttons generate WM_CONTROL messages when
+selected. Applications can examine the low word of the first parameter in
+the message to find the button ID and the high word of the first parameter
+to determine the notification code for the control message. The notification
+code tells the application whether the control message originated from the
+user clicking or double clicking, or if the button needs to be drawn.
+ 
+When a check box or radio button is selected, it sends a WM_CONTROL message
+with a notification BN_CLICKED code to the owner window. The owner window
+responds by sending a message back to the button to toggle its state.
+ 
+In the case of auto-check boxes and auto-radio buttons, an application need
+not respond because these buttons toggle themselves in response to the
+mouse. The application still receives WM_CONTROL messages each time the
+button is selected. Most applications that use this default for radio
+buttons and check boxes should also use the automatic versions of these
+buttons and ignore any WM_COMMAND messages.
+ 
+<b>Changing the Button State</b>
+ 
+An application can query and set the highlight and checked state of its
+buttons by sending messages to button windows. The window handle for a
+button can be obtained by calling the WinWindowFromID function using the
+parent window and the window ID of the button. In the case of a dialog
+window, the parent would be the dialog window and the ID would be the button
+item ID from the dialog template.
+ 
+Button-window text is stored as window text, and is accessible by using the
+<b>WinSetWindowText and WinQueryWindowText function</b>s. The size, position, and
+visibility of a button are set using standard window functions.
+ 
+<b>Owner-Drawn Buttons</b>
+ 
+An application can create custom buttons by using the BS_USERBUTTON style in
+combination with other styles. For example, an application can create a
+custom auto-radio button that works like an auto-radio button but whose
+appearance is controlled by the application. The owner window receives
+<b>WM_CONTROL</b> messages for these buttons whenever they must be drawn,
+highlighted, or disabled.
+ 
+When a button must be drawn, the owner window receives a WM_CONTROL message
+with the high word of the first parameter equal to BN_PAINT. The second
+parameter is a pointer to a USERBUTTON structure that contains necessary
+information the application needs to draw the button.
+ 
+An application uses the hwnd field in this structure to find the bounding
+rectangle for the button. The hps field is used as a presentation space for
+any drawing. The high byte of the fsState field contains flags that tell an
+application how to draw the button: highlighted, unhighlighted, or disabled.
+The high byte of the fsStateOld field contains flags describing the current
+highlighted, unhighlighted, or disabled state of the button.
+ 
+<b>Default Button Behavior</b>
+ 
+This section describes the messages specifically handled by the predefined
+button-control window class.
+ 
+<b>Message               Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>WM_CREATE</i>             Validates the requested button style and sets the
+                      window text.
+ 
+<i>WM_DESTROY</i>            Frees the memory containing the window text.
+ 
+<i>WM_PAINT</i>              Draws the button according to its style and current
+                      state.
+ 
+<i>WM_SETFOCUS</i>           Creates a cursor if receiving the focus, destroys the
+                      cursor if losing the focus.
+ 
+<i>WM_BUTTON1DOWN</i>        Sets mouse capture for the button window.
+ 
+<i>WM_MOUSEMOVE</i>          Sets the default mouse pointer. If the button has the
+                      mouse capture, the button highlight state changes as
+                      the mouse pointer moves in and out of button area.
+ 
+<i>WM_BUTTON1UP</i>          If the button has mouse capture, releases the mouse
+                      capture and sends notification message to the owner
+                      window if the mouse pointer is inside the button when
+                      the mouse button is released. If the button is a
+                      BS_PUSHBUTTON, a WM_COMMAND message is posted,
+                      otherwise a WM_CONTROL message with the BN_CLICKED
+                      code is sent.
+ 
+<i>WM_BUTTON1DBLCLK      Marks the button, sending </i>a BN_DBLCLICKED notification
+                      code when the button-up message arrives.
+ 
+<i>WM_CHAR</i>               Sets mouse capture when the SPACEBAR is pressed,
+                      releases capture when the SPACEBAR is released. Passes
+                      other key messages to the default window procedure.
+ 
+<i>WM_QUERYDLGCODE</i>       Returns DLGC_BUTTON combined using the OR operator
+                      with the appropriate bits to designate the particular
+                      button type.
+ 
+<i>WM_QUERYWINDOWPARAMS</i>  Returns the requested window parameters.
+ 
+<i>WM_SETWINDOWPARAMS</i>    Sets the requested window parameters and redraws the
+                      button, including the cursor, if the window has the
+                      focus.
+ 
+<i>WM_ENABLE</i>             Draws the button.
+ 
+<i>WM_MATCHMNEMONIC      Returns TRUE if mp1 matche</i>s a button mnemonic.
+ 
+<i>BM_QUERYCHECKINDEX</i>    Returns the zero-based index to the selected item in
+                      the same group as the button. Returns -1 if no button
+                      in the group is selected or if the button receiving
+                      the message is not a radio button or auto-radio
+                      button.
+ 
+<i>BM_CLICK              Sends a WM_BUTTON1</i>DOWN and WM_BUTTON1UP message to
+                      itself to simulate a user-button selection.
+ 
+<i>BM_QUERYCHECK</i>         Returns the checked state of the button.
+ 
+<i>BM_SETCHECK</i>           Sets the checked state of the button, returns the
+                      previous checked state.
+ 
+<i>BM_QUERYHILITE</i>        Returns the highlight state of the button.
+ 
+<i>BM_SETHILITE</i>          Sets the highlight state of the button, returns the
+                      previous highlight state.
+ 
+<i>BM_SETDEFAULT</i>         Sets the default button state, redraws the button.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

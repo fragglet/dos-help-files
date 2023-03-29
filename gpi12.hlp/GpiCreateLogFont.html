@@ -1,0 +1,138 @@
+<html>
+
+<head>
+<title>GpiCreateLogFont (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiCreateLogFont (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='text_output.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Fonts and Character Primitives 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80fe.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiCreatePS.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPILCIDS
+ 
+LONG GpiCreateLogFont(hps, pchName, lcid, pfat)
+HPS hps;          /* presentation-space handle                */
+PSTR8 pchName;    /* address of logical-font name             */
+LONG lcid;        /* local identifier                         */
+PFATTRS pfat;     /* address of structure for font attributes */
+ 
+The GpiCreateLogFont function creates a logical font. A logical font is a
+list of font attributes, such as face name, average width, and maximum
+height, that an application uses to request a physical font. A physical font
+is the bitmap or vector information the system uses to draw characters on a
+device. Applications create logical fonts to specify the fonts they need,
+and the system maps the logical fonts to matching physical fonts.
+ 
+<b>GpiCreateLogFont</b> creates a logical font using the font attributes specified
+in the structure pointed to by the pfat parameter. Each logical font has a
+local identifier and logical font name, specified by the lcid and pchName
+parameters, to uniquely identify it. The local identifier can then be used
+in subsequent graphics functions to identify the font.
+ 
+Since a physical font that exactly matches the logical font may not be
+available, the system usually maps the logical font to the closest matching
+physical font. The system uses rules to map the font──for example, it
+chooses a font with a greater height if a font of the exact height is not
+available. An application can force the system to choose a particular font
+by setting the value of the lMatch field in the FATTRS structure to be that
+returned for the desired font by the GpiQueryFonts function. After
+<b>GpiCreateLogFont</b> chooses the physical font, this choice does not change for
+a particular logical font.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>pchName</i>    Points to an 8-character logical-font name. It can be NULL, if no
+           logical font name is desired.
+ 
+<i>lcid</i>       Specifies the local identifier that the application uses to refer
+           to this font. It must be in the range 1 through 254. It is an
+           error if this parameter is already in use to refer to a font or
+           bitmap.
+ 
+<i>pfat       P</i>oints to a FATTRS structure that will contain the attributes of
+           the logical font that is created.
+ 
+<b>Return Value</b>
+ 
+The return value is FONT_MATCH if a matching font is found, FONT_DEFAULT if
+a matching font could not be found, or zero if an error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_FONT_NOT_LOADED
+     PMERR_INV_FONT_ATTRS
+     PMERR_INV_HPS
+     PMERR_INV_SETID
+     PMERR_KERNING_NOT_SUPPORTED
+     PMERR_PS_BUSY
+     PMERR_SETID_IN_USE
+ 
+<b>Comments</b>
+ 
+To choose the system default font, set the face name to NULL and all other
+attributes in the FATTRS structure, except the code page, to zero.
+ 
+To use a font, the application sets the font for the presentation space by
+specifying the local identifier for the corresponding logical font with the
+<b>GpiSetCharSet</b> function. Once a font is set, the system uses the font for
+subsequent text output.
+ 
+<b>Example</b>
+ 
+This example uses the GpiCreateLogFont function to create a logical font
+with the local identifier 1. The logical font has the face name "Courier"
+and requested width and height of 12 pels. Once the font is created, the
+example sets the font using the local identifier and displays a string in
+the font at the point (100,100).
+ 
+USHORT i;
+POINTL ptl = { 100, 100 };
+FATTRS fat;
+ 
+fat.usRecordLength = sizeof(FATTRS); /* sets size of structure      */
+fat.fsSelection = 0;            /* uses default selection           */
+fat.lMatch = 0L;                /* does not force match             */
+fat.idRegistry = 0;             /* uses default registry            */
+fat.usCodePage = 850;           /* code-page 850                    */
+fat.lMaxBaselineExt = 12L;      /* requested font height is 12 pels */
+fat.lAveCharWidth = 12L;        /* requested font width is 12 pels  */
+fat.fsType = 0;                 /* uses default type                */
+fat.fsFontUse = FATTR_FONTUSE_NOMIX; /* does not mix with graphics  */
+ 
+/* Copy Courier to szFacename field. */
+ 
+for (i=0; fat.szFacename[i] = "Courier"[i]; i++);
+ 
+GpiCreateLogFont(hps,           /* presentation space               */
+                 (PSTR8) NULL,  /* does not use logical font name   */
+                 1L,            /* local identifier                 */
+                 &amp;fat);         /* structure with font attributes   */
+ 
+GpiSetCharSet(hps, 1L);         /* sets font for presentation space */
+GpiCharStringAt(hps, &amp;ptl, 5L, "Hello"); /* displays a string       */
+ 
+<b>See Also</b>
+ 
+<b>GpiCharStringAt, GpiCreateLogFont, GpiQueryFonts, GpiSetCharSet,</b>
+<b>WinGetLastError, FATTRS</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

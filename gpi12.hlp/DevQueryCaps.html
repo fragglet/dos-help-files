@@ -1,0 +1,351 @@
+<html>
+
+<head>
+<title>DevQueryCaps (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DevQueryCaps (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='x_at_L811b.html'>Changes</a><span class='grhilite'>►</span>                                             <span class='grhilite'>◄</span><a href='dev.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DevQueryDeviceNames.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DEV
+ 
+BOOL DevQueryCaps(hdc, lStartitem, cItems, alItems)
+HDC hdc;            /* device-context handle            */
+LONG lStartitem;    /* first item to be returned        */
+LONG cItems;        /* number of items to be returned   */
+PLONG alItems;      /* array for device characteristics */
+ 
+The DevQueryCaps function queries the characteristics of the specified
+device.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hdc</i>         Identifies the device context.
+ 
+<i>lStartitem</i>  Specifies the first item of information to be returned in the
+            array.
+ 
+<i>cItems</i>      Specifies the number of items to be returned in the array.
+ 
+<i>alItems</i>     Points to an array of device characteristics, starting with the
+            item specified by the lStartitem parameter.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful or FALSE if an error
+occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HDC
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_INV_QUERY_ELEMENT_NO
+ 
+<b>Comments</b>
+ 
+The following are possible values for the alItems parameter:
+ 
+<b>Value                        Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>CAPS_FAMILY</i>                  Specifies the device type. These values are the
+                             same as the values for the type parameter in
+                             the DevOpenDC function.
+ 
+<i>CAPS_IO_CAPS</i>                 Specifies the device input/output capability.
+                             The possible values are as follows:
+ 
+                             Value                Meaning
+                             ───────────────────────────────────────────────
+                             CAPS_IO_DUMMY        Dummy device
+ 
+                             CAPS_IO_SUPPORTS_OP  Output
+ 
+                             CAPS_IO_SUPPORTS_IP  Input
+ 
+                             CAPS_IO_SUPPORTS_IO  Output and input
+ 
+<i>CAPS_TECHNOLOGY</i>              Specifies the technology. The possible values
+                             are as follows:
+ 
+                             Value                     Meaning
+                             ───────────────────────────────────────────────
+                             CAPS_TECH_UNKNOWN         Unknown (for example,
+                                                       metafile)
+ 
+                             CAPS_TECH_VECTOR_PLOTTER  Vector plotter
+ 
+                             CAPS_TECH_RASTER_DISPLAY  Raster display
+ 
+                             CAPS_TECH_RASTER_PRINTER  Raster printer
+ 
+                             CAPS_TECH_RASTER_CAMERA   Raster camera
+ 
+                             CAPS_TECH_POSTSCRIPT      PostScript printer
+ 
+<i>CAPS_DRIVER_VERSION</i>          Specifies the device-driver version number.
+ 
+<i>CAPS_HEIGHT</i>                  Specifies the media depth (for a full-screen,
+                             maximized window on a display) in pels. (For a
+                             plotter, a pel is defined as the smallest
+                             possible displacement of the pen and can be
+                             smaller than a pen width.)
+ 
+<i>CAPS_WIDTH</i>                   Specifies the media width (for a full-screen,
+                             maximized window for displays) in pels.
+ 
+<i>CAPS_HEIGHT_IN_CHARS</i>         Specifies the media depth (for a full-screen,
+                             maximized window for displays) in character
+                             rows, for Vio calls only.
+ 
+<i>CAPS_WIDTH_IN_CHARS</i>          Specifies the media width (for a full-screen,
+                             maximized window for displays) in character
+                             columns, for Vio calls only.
+ 
+<i>CAPS_HORIZONTAL_FONT_RES</i>     Specifies the horizontal resolution (in pels
+                             per inch) for printers; for displays, this
+                             value may differ from the actual horizontal
+                             device resolution.
+ 
+<i>CAPS_VERTICAL_FONT_RES</i>       Specifies the vertical resolution (in pels per
+                             inch) for printers; for displays, this value
+                             may differ from the actual vertical device
+                             resolution.
+ 
+<i>CAPS_VERTICAL_RESOLUTION</i>     Specifies the vertical resolution (in pels per
+                             meter) of the device.
+ 
+<i>CAPS_HORIZONTAL_RESOLUTION</i>   Specifies the horizontal resolution (in pels
+                             per meter) of the device.
+ 
+<i>CAPS_CHAR_HEIGHT</i>             Specifies the default height (in pels) of the
+                             character box.
+ 
+<i>CAPS_CHAR_WIDTH</i>              Specifies the default width (in pels) of the
+                             character box.
+ 
+<i>CAPS_SMALL_CHAR_HEIGHT</i>       Specifies the default height (in pels) of the
+                             small character box. This number is zero if
+                             there is only one size of the character box.
+ 
+<i>CAPS_SMALL_CHAR_WIDTH</i>        Specifies the default width (in pels) of the
+                             small character box. This number is zero if
+                             there is only one size of the character box.
+ 
+<i>CAPS_COLORS</i>                  Specifies the number of distinct colors
+                             supported at the same time, including reset
+                             (gray-scales count as distinct colors). If
+                             loadable color tables are supported, this is
+                             the number of entries in the device color
+                             table. For plotters, the value returned is the
+                             number of pens plus one (for the background).
+ 
+<i>CAPS_MOUSE_BUTTONS</i>           Specifies the number of mouse or tablet buttons
+                             that are available. A returned value of zero
+                             indicates that there are no mouse or tablet
+                             buttons available.
+ 
+<i>CAPS_FOREGROUND_MIX_SUPPORT</i>  Specifies the foreground-mix support. The
+                             possible values are as follows:
+ 
+                             Value                    Meaning
+                             ───────────────────────────────────────────────
+                             CAPS_FM_OR               OR
+ 
+                             CAPS_FM_OVERPAINT        Overpaint
+ 
+                             CAPS_FM_XOR              XOR
+ 
+                             CAPS_FM_LEAVEALONE       Leave-alone
+ 
+                             CAPS_FM_AND              AND
+ 
+                             CAPS_FM_GENERAL_BOOLEAN  Mixes 7 through 17
+ 
+                             The value returned is the sum of the values
+                             appropriate to the mixes supported. A device
+                             capable of supporting the OR mix mode must, as
+                             a minimum, return 1 + 2 + 16 = 19, signifying
+                             support for the mandatory mix modes OR,
+                             overpaint, and leave-alone. Note that these
+                             numbers correspond to the decimal
+                             representation of a bit string that is seven
+                             bits long, with each bit set to 1 if the
+                             appropriate mode is supported.
+ 
+<i>CAPS_BACKGROUND_MIX_SUPPORT</i>  Specifies the background-mix support. The
+                             possible values are as follows:
+ 
+                             Value               Meaning
+                             ───────────────────────────────────────────────
+                             CAPS_BM_OR          OR
+ 
+                             CAPS_BM_OVERPAINT   Overpaint
+ 
+                             CAPS_BM_XOR         XOR
+ 
+                             CAPS_BM_LEAVEALONE  Leave-alone
+ 
+                             The value returned is the sum of the values
+                             appropriate to the mixes supported. A device
+                             must, as a minimum, return 2 + 16 = 18,
+                             signifying support for the mandatory background
+                             mixes overpaint and leave-alone. Note that
+                             these numbers correspond to the decimal
+                             representation of a bit string that is five
+                             bits long, with each bit set to 1 if the
+                             appropriate mode is supported.
+ 
+<i>CAPS_LOADABLE_SYMBOL_SETS</i>    Specifies the number of fonts that may be
+                             loaded for Vio.
+ 
+<i>CAPS_WINDOW_BYTE_ALIGNMENT</i>   Specifies whether the client area of VIO
+                             windows should be byte-aligned. The possible
+                             values are as follows:
+ 
+                             Value                         Meaning
+                             ───────────────────────────────────────────────
+                             CAPS_BYTE_ALIGN_REQUIRED      Must be
+                                                           byte-aligned.
+ 
+                             CAPS_BYTE_ALIGN_RECOMMENDED   More efficient if
+                                                           byte-aligned, but
+                                                           not required.
+ 
+                             CAPS_BYTE_ALIGN_NOT_REQUIRED  Does not matter
+                                                           whether
+                                                           byte-aligned.
+ 
+<i>CAPS_BITMAP_FORMATS</i>          Specifies the number of bitmap formats
+                             supported by the device.
+ 
+<i>CAPS_RASTER_CAPS</i>             Specifies the raster-operations capability of
+                             the device. The possible values are as
+                             follows:
+ 
+                             Value                       Meaning
+                             ───────────────────────────────────────────────
+                             CAPS_RASTER_BITBLT          BitBlt supported
+ 
+                             CAPS_RASTER_BANDING         Banding supported
+ 
+                             CAPS_RASTER_BITBLT_SCALING  Scaling supported
+ 
+                             CAPS_RASTER_SET_PEL         Set PEL support
+ 
+<i>CAPS_MARKER_WIDTH</i>            Specifies the default width (in pels) of the
+                             marker box.
+ 
+<i>CAPS_MARKER_HEIGHT</i>           Specifies the default depth (in pels) of the
+                             marker box.
+ 
+<i>CAPS_DEVICE_FONTS</i>            Specifies the number of device-specific fonts.
+ 
+<i>CAPS_GRAPHICS_SUBSET</i>         Specifies the graphics-drawing subset supported
+                             (3 indicates GOCA DR/3).
+ 
+<i>CAPS_GRAPHICS_VERSION</i>        Specifies the graphics-architecture version
+                             supported (1 indicates version 1).
+ 
+<i>CAPS_GRAPHICS_VECTOR_SUBSET</i>  Specifies the graphics-vector-drawing subset
+                             supported (2 indicates GOCA VS/2).
+ 
+<i>CAPS_GRAPHICS_CHAR_WIDTH     Specifies the default Gpi character-box wid</i>th
+                             (in pels).
+ 
+<i>CAPS_GRAPHICS_CHAR_HEIGHT    Specifies the default Gpi character-box height</i>
+                             (in pels).
+ 
+<i>CAPS_DEVICE_WINDOWING</i>        Specifies the support for device windows. This
+                             value may be CAPS_DEV_WINDOWING_SUPPORT if the
+                             device supports windowing.
+ 
+<i>CAPS_ADDITIONAL_GRAPHICS</i>     Specifies additional graphics support. The
+                             possible values are as follows:
+ 
+                             Value                          Meaning
+                             ───────────────────────────────────────────────
+                             CAPS_GRAPHICS_KERNING_SUPPORT  The device
+                                                            supports
+                                                            kerning.
+ 
+                             CAPS_FONT_OUTLINE_DEFAULT      Outline font is
+                                                            the default.
+ 
+                             CAPS_FONT_IMAGE_DEFAULT        Font image is
+                                                            the default.
+ 
+                             CAPS_SCALED_DEFAULT_MARKERS    Scaled default
+                                                            markers.
+ 
+<i>CAPS_RESERVED</i>                Specifies the maximum number of distinct colors
+                             available at one time.
+ 
+<i>CAPS_PHYS_COLORS</i>             Specifies the maximum number of distinct colors
+                             that can be specified on the device.
+ 
+<i>CAPS_COLOR_INDEX</i>             Specifies the maximum logical-color-table index
+                             supported for the device. This value must be at
+                             least 7. For the EGA and VGA device drivers,
+                             the value is 63.
+ 
+<i>CAPS_COLOR_PLANES</i>            Specifies the number of color planes.
+ 
+<i>CAPS_COLOR_BITCOUNT</i>          Specifies the number of adjacent color bits for
+                             each pel (within one plane).
+ 
+<i>CAPS_COLOR_TABLE_SUPPORT</i>     Specifies the support for loadable color
+                             tables. It can be one of the following values:
+ 
+                             Value                     Meaning
+                             ───────────────────────────────────────────────
+                             CAPS_COLTABL_RGB_8        Set if the RGB color
+                                                       table can be loaded,
+                                                       with a minimum
+                                                       support of 8 bits
+                                                       each for red, green,
+                                                       and blue.
+ 
+                             CAPS_COLTABLE_RGB_8_PLUS  Set if a color table
+                                                       with other than 8
+                                                       bits for each primary
+                                                       color can be loaded.
+ 
+                             CAPS_COLTABLE_TRUE_MIX    Set if true mixing
+                                                       occurs when the
+                                                       logical color table
+                                                       has been realized,
+                                                       providing that the
+                                                       size of the logical
+                                                       color table is not
+                                                       greater than the
+                                                       number of distinct
+                                                       colors supported (see
+                                                       CAPS_COLORS).
+ 
+                             CAPS_COLTABL_REALIZE      Set if a loaded color
+                                                       table can be
+                                                       realized.
+ 
+<b>See Also</b>
+ 
+<b>DevOpenDC</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

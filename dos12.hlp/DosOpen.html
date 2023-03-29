@@ -1,0 +1,309 @@
+<html>
+
+<head>
+<title>DosOpen (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosOpen (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80cc.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosOpen2.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosOpen(pszFileName, phf, pusAction, ulFileSize, usAttribute,
+    fsOpenFlags, fsOpenMode, ulReserved)
+PSZ pszFileName;       /* pointer to filename                        */
+PHFILE phf;            /* pointer to variable for file handle        */
+PUSHORT pusAction;     /* pointer to variable for action taken       */
+ULONG ulFileSize;      /* file size if file is created or truncated  */
+USHORT usAttribute;    /* file attribute                             */
+USHORT fsOpenFlags;    /* action taken if file exists/does not exist */
+USHORT fsOpenMode;     /* open mode of file                          */
+ULONG ulReserved;      /* must be zero                               */
+ 
+The DosOpen function opens an existing file or creates a new file. This
+function returns a handle that can be used to read from and write to the
+file, as well as to retrieve information about the file. The DosOpen
+function can also be used to open a device or a named pipe.
+ 
+The DosOpen function is a family API function.
+ 
+This function is included in MS OS/2 version 1.2 for compatibility purposes
+only. All new applications should use the DosOpen2 function.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pszFileName</i>  Points to the null-terminated string that specifies the name of
+             the file to be opened. The string must be a valid MS OS/2
+             filename and must not contain wildcard characters.
+ 
+<i>phf</i>          Points to the variable that receives the handle of the opened
+             file.
+ 
+<i>pusAction</i>    Points to the variable receiving the value that specifies the
+             action taken by the DosOpen function. If DosOpen fails, this
+             value has no meaning. Otherwise, it is one of the following
+             values:
+ 
+             Value           Meaning
+             ───────────────────────────────────────────────────────────────
+             FILE_CREATED    File was created.
+ 
+             FILE_EXISTED    File already existed.
+ 
+             FILE_TRUNCATED  File existed and was truncated.
+ 
+<i>ulFileSize</i>   Specifies the file's new size (in bytes). This parameter
+             applies only if the file is created or truncated. The size
+             specification has no effect on a file that is opened only for
+             reading.
+ 
+<i>usAttribute</i>  Specifies the file attributes. This parameter can be a
+             combination of the following values:
+ 
+             Value          Meaning
+             ───────────────────────────────────────────────────────────────
+             FILE_NORMAL    File can be read from or written to.
+ 
+             FILE_READONLY  File can be read from, but not written to.
+ 
+             FILE_HIDDEN    File is hidden and does not appear in a
+                            directory listing.
+ 
+             FILE_SYSTEM    File is a system file.
+ 
+             FILE_ARCHIVED  File has been archived.
+ 
+             File attributes apply only if the file is created.
+ 
+<i>fsOpenFlags</i>  Specifies the action to take both when the file exists and when
+             it does not exist. This parameter can be one of the following
+             values:
+ 
+             Value                        Meaning
+             ───────────────────────────────────────────────────────────────
+             FILE_CREATE                  Create a new file; fail if the
+                                          file already exists.
+ 
+             FILE_OPEN                    Open an existing file; fail if the
+                                          file does not exist.
+ 
+             FILE_OPEN | FILE_CREATE      Open an existing file, or create
+                                          the file if it does not exist.
+ 
+             FILE_TRUNCATE                Open an existing file and change
+                                          to a given size.
+ 
+             FILE_TRUNCATE | FILE_CREATE  Open an existing file and truncate
+                                          it, or create the file if it does
+                                          not exist.
+ 
+<i>fsOpenMode</i>   Specifies the modes with which to open the file. This parameter
+             consists of one access mode and one share mode. All other
+             values are optional; one locality mode can be specified; and
+             the other values can be given in any combination.
+ 
+             Value                        Meaning
+             ───────────────────────────────────────────────────────────────
+             OPEN_ACCESS_READONLY         Data can be read from the file but
+                                          not written to it.
+ 
+             OPEN_ACCESS_READWRITE        Data can be read from or written
+                                          to the file.
+ 
+             OPEN_ACCESS_WRITEONLY        Data can be written to the file
+                                          but not read from it.
+ 
+             OPEN_SHARE_DENYNONE          Other processes can open the file
+                                          for any access: read-only,
+                                          write-only, or read-write.
+ 
+             OPEN_SHARE_DENYREAD          Other processes can open the file
+                                          for write-only access, but they
+                                          cannot open it for read-only or
+                                          read-write access.
+ 
+             OPEN_SHARE_DENYREADWRITE     The current process has exclusive
+                                          access to the file. The file
+                                          cannot be opened by any process
+                                          (including the current process).
+ 
+             OPEN_SHARE_DENYWRITE         Other processes can open the file
+                                          for read-only access, but they
+                                          cannot open it for write-only or
+                                          read-write access.
+ 
+             OPEN_FLAGS_DASD              The file handle represents a
+                                          physical drive that has been
+                                          opened for direct access. (The
+                                          pszFileName parameter must specify
+                                          a drive name.) The DosDevIOCtl
+                                          function can be used with this
+                                          file handle to bypass the file
+                                          system and to access the sectors
+                                          of the drive directly.
+ 
+             OPEN_FLAGS_FAIL_ON_ERROR     Any function that uses the file
+                                          handle returns immediately with an
+                                          error value if there is an I/O
+                                          error──for example, when the drive
+                                          door is open or a sector is
+                                          missing. If this value is not
+                                          specified, the system passes the
+                                          error to the system critical-error
+                                          handler, which then reports the
+                                          error to the user with a
+                                          hard-error pop-up message. The
+                                          fail-on-error flag is not
+                                          inherited by child processes. The
+                                          fail-on-error flag applies to all
+                                          functions that use the file
+                                          handle, with the exception of the
+                                          DosDevIOCtl function.
+ 
+             OPEN_FLAGS_NOINHERIT         The file handle is not available
+                                          to any child process started by
+                                          the current process. If this value
+                                          is not specified, any child
+                                          process started by the current
+                                          process can use the file handle.
+ 
+             OPEN_FLAGS_WRITE_THROUGH     This flag applies to functions,
+                                          such as DosWrite, that write data
+                                          to the file. If this value is
+                                          specified, the system writes data
+                                          to the device before the given
+                                          function returns. Otherwise, the
+                                          system may store the data in an
+                                          internal file buffer and write the
+                                          data to the device only when the
+                                          buffer is full or the file is
+                                          closed.
+             OPEN_FLAGS_NO_LOCALITY       There is no specific information
+                                          regarding the locality of
+                                          reference (the degree of
+                                          randomness with which the file is
+                                          accessed).
+ 
+             OPEN_FLAGS_SEQUENTIAL        The file is accessed
+                                          sequentially.
+ 
+             OPEN_FLAGS_RANDOM            The file is accessed randomly.
+ 
+             OPEN_FLAGS_RANDOMSEQUENTIAL  The file is accessed randomly, but
+                                          there is a degree of sequential
+                                          I/O within that random access. For
+                                          example, this flag is specified if
+                                          large blocks of data are to be
+                                          read or written at random
+                                          locations in the file.
+ 
+             OPEN_FLAGS_NO_CACHE          The disk drive should not cache
+                                          data in I/O operations on this
+                                          file.
+ 
+<i>ulReserved</i>   Specifies a reserved value; must be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_ACCESS_DENIED
+     ERROR_CANNOT_MAKE
+     ERROR_DISK_FULL
+     ERROR_DRIVE_LOCKED
+     ERROR_FILE_NOT_FOUND
+     ERROR_FILENAME_EXCED_RANGE
+     ERROR_INVALID_ACCESS
+     ERROR_INVALID_PARAMETER
+     ERROR_NOT_DOS_DISK
+     ERROR_OPEN_FAILED
+     ERROR_PATH_NOT_FOUND
+     ERROR_SHARING_BUFFER_EXCEEDED
+     ERROR_SHARING_VIOLATION
+     ERROR_TOO_MANY_OPEN_FILES
+ 
+<b>Comments</b>
+ 
+The ERROR_ACCESS_DENIED value is returned if you try to open a file in a
+mode that is incompatible with the file's current access and sharing
+modes──for example, if you attempt to open a read-only file for writing.
+ 
+The ERROR_SHARING_VIOLATION value is returned if some other process has
+opened the file with a sharing method that denies the type of access you
+have requested.
+ 
+Once the file is opened, the DosSetFHandState function can be used to change
+the OPEN_FLAGS_FAIL_ON_ERROR, OPEN_FLAGS_NOINHERIT, and
+OPEN_FLAGS_WRITE_THROUGH flags specified in fsOpenMode.
+ 
+MS OS/2 does not provide a built-in method to inform a child process that it
+has inherited a given file handle. The parent process must pass this
+information to a child process. If the file is created without the
+OPEN_FLAGS_NOINHERIT flag, and the parent process terminates without closing
+the file, the file will remain open until all child processes have
+terminated.
+ 
+The DosOpen function can be used to open the client end of a named pipe and
+return a handle of the pipe. The pipe must be in "listen" state for the open
+operation to succeed; otherwise the open operation fails and the
+ERROR_PIPE_BUSY error value is returned. Until a given instance of a named
+pipe has been closed by a client, that same instance cannot be opened by
+another client; however, the opening process can duplicate the open handle
+as many times as required. The access and sharing modes specified when a
+pipe is opened must be consistent with the modes specified in the call to
+the DosMakeNmPipe function. Pipes are always opened with the pipe-specific
+states set to lock, read, and write operations and are read as a byte
+stream.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restrictions apply to the DosOpen function:
+ 
+♦  Only the access modes and the OPEN_FLAGS_DASD flag can be specified for
+   the fsOpenMode parameter.
+ 
+♦  The Category 8 functions DSK_READTRACK and DSK_WRITETRACK are not
+   supported in MS-DOS versions 3.x and 4.x. You cannot use the DosOpen
+   function to read or write to a track when you are running MS-DOS.
+ 
+<b>Example</b>
+ 
+This example calls the DosOpen function to create a file abc that is 100
+bytes long and open it for write-only access. The fsOpenFlags parameter is
+set to FILE_CREATE so that DosOpen will return an error if the file already
+exists.
+ 
+HFILE hf;
+USHORT usAction;
+DosOpen("abc",                      /* filename to open       */
+    &amp;hf,                            /* address of file handle */
+    &amp;usAction,                      /* action taken           */
+    100L,                           /* size of new file       */
+    FILE_NORMAL,                    /* file attribute         */
+    FILE_CREATE,                    /* create the file        */
+    OPEN_ACCESS_WRITEONLY | OPEN_SHARE_DENYNONE, /* open mode */
+    0L);                            /* reserved               */
+ 
+<b>See Also</b>
+ 
+<b>DosBufReset, DosClose, DosDevIOCtl, DosOpen2, DosDupHandle, DosQFHandState,</b>
+<b>DosQFileInfo, DosQFileMode, DosQFSInfo, DosSetFHandState, DosSetFileMode,</b>
+<b>DosWrite</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

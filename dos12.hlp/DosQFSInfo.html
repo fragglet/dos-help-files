@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>DosQFSInfo (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosQFSInfo (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosQHandType.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosQFSInfo(usDriveNumber, usInfoLevel, pbInfo, cbInfo)
+USHORT usDriveNumber;    /* drive number                      */
+USHORT usInfoLevel;      /* type of information               */
+PBYTE pbInfo;            /* pointer to buffer for information */
+USHORT cbInfo;           /* length of information buffer      */
+ 
+The DosQFSInfo function retrieves file-system information.
+ 
+The DosQFSInfo function is a family API function.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>usDriveNumber</i>  Specifies the logical drive number for the disk about which
+               information is to be retrieved. This parameter can be any
+               value from 0 through 26. If this parameter is zero,
+               information about the disk in the current drive is retrieved.
+               Otherwise, 1 specifies drive A, 2 specifies drive B, and so
+               on.
+ 
+<i>usInfoLevel</i>    Specifies the level of file information to be retrieved. A
+               value of FSIL_ALLOC returns the number of sectors per
+               allocation unit on the disk, the number of allocation units,
+               the available allocation units, and the number of bytes per
+               sector. A value of FSIL_VOLSER returns the volume label and
+               the date and time at which the label was created.
+ 
+<i>pbInfo</i>         Points to the structure that receives the file-system
+               information. For FSIL_ALLOC information, it points to an
+               FSALLOCATE structure. For FSIL_VOLSER, it points to an
+               FSINFO structure.
+ 
+<i>cbInfo</i>         Specifies the length (in bytes) of the buffer that receives
+               the file-system information.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_BUFFER_OVERFLOW
+     ERROR_INVALID_DRIVE
+     ERROR_INVALID_LEVEL
+     ERROR_NO_VOLUME_LABEL
+ 
+<b>Example</b>
+ 
+This example calls the DosQFSInfo function and displays the volume label of
+drive C:
+ 
+FSINFO fsinf;
+DosQFSInfo(3,                  /* drive number (c:)              */
+    FSIL_VOLSER,               /* level of information requested */
+    (PBYTE) &amp;fsinf,            /* address of buffer              */
+    sizeof(fsinf));            /* size of buffer                 */
+VioWrtTTY(fsinf.vol.szVolLabel, fsinf.vol.cch, 0);
+ 
+<b>See Also</b>
+ 
+<b>DosQFHandState, DosQFileMode, DosSetFSInfo, FSALLOCATE, FSINFO</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

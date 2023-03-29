@@ -1,0 +1,279 @@
+<html>
+
+<head>
+<title>About Paths (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Paths (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Paths.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#path functions 1.2'>Function Group</a><span class='grhilite'>►</span>       </i>              <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='device_contexts.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                                About Paths
+ 
+This topic describes a graphics object called a path. You should also be
+familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='device_contexts.html'>Presentation spaces and device contexts</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='lines.html'>Line and arc primitives</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='mix_modes.html'>Color and mix modes</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='areas.html'>Area primitives</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Clipping.html'>Clipping</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Regions.html'>Regions</a><span class='grhilite'>►</span>
+ 
+A path is a figure that is filled or outlined. You can use paths to draw
+geometric (wide) lines, create nonrectangular clipping regions, and outline
+and/or fill irregular shapes and polygons.
+ 
+Paths provide the only means of drawing lines that are wider than one pel
+(pixel); the only means of clipping to circular, elliptical, or other
+nonrectangular regions; and the only means of generating filled or outlined
+irregular shapes and polygons (including triangles, trapezoids, rhomboids,
+and other nonrectangular regions). To generate filled or outlined
+rectangles, you can use the GpiBox function, and to generate filled or
+outlined circles and ellipses, you can use the GpiFullArc function.
+ 
+A path is similar to another graphics object called an area, but there are
+fundamental differences between the two objects. The interior of an area is
+always filled, while the interior of a path can be empty. Even when the
+interior of a path is empty, the borders are visible. Paths with empty
+interiors are called stroked paths because their visible borders are drawn,
+or "stroked." Another difference is in the use of paths and areas.
+Applications perform clipping operations by using paths but not by using
+areas. For more information about areas, see the topic <span class='grhilite'>◄</span><a href='areas.html'>Area primitives</a><span class='grhilite'>►</span>.
+ 
+There are two operations that an application can perform on a path: stroke
+and fill. You use a stroked path to draw geometric lines and to outline
+polygons. You use a filled path to fill the interior of polygons.
+ 
+When MS OS/2 strokes a path, it generates a geometric line along the
+original line that defined the path. The end result is like the stroke of a
+brush. When MS OS/2 fills a path, it fills the region surrounded by the
+original line that defined the path. If this original line did not close the
+region, MS OS/2 automatically closes the region and fills the path.
+ 
+The functions that generate a path are always enclosed in a path bracket.
+The GpiBeginPath function defines the beginning of a path bracket, and the
+<b>GpiEndPath</b> function defines the end of a path bracket. The functions you can
+use within a path bracket are as follows:
+ 
+♦  GpiBeginElement
+♦  GpiBox
+♦  GpiCallSegmentMatrix
+♦  GpiCharString
+♦  GpiCharStringAt
+♦  GpiCharStringPos
+♦  GpiCharStringPosAt
+♦  GpiCloseFigure
+♦  GpiComment
+♦  GpiCreateLogFont
+♦  GpiDeleteElement (retain mode only)
+♦  GpiDeleteElementRange (retain mode only)
+♦  GpiDeleteElementsBetweenLabels (retain mode only)
+♦  GpiDeleteSetId
+♦  GpiElement
+♦  GpiEndElement
+♦  GpiEndPath
+♦  GpiFullArc
+♦  GpiGetData
+♦  GpiLabel
+♦  GpiLine
+♦  GpiMarker
+♦  GpiMove
+♦  GpiOffsetElementPointer
+♦  GpiPartialArc
+♦  GpiPointArc
+♦  GpiPolyFillet
+♦  GpiPolyFilletSharp
+♦  GpiPolyLine
+♦  GpiPolyMarker
+♦  GpiPolySpline
+♦  GpiPop
+♦  GpiPutData
+♦  GpiQueryArcParams (not valid in retain mode)
+♦  GpiQueryAttrMode
+♦  GpiQueryCurrentPosition (not valid in retain mode)
+♦  GpiSetArcParams
+♦  GpiSetAttrMode
+♦  GpiSetAttrs
+♦  GpiSetCharAngle
+♦  GpiSetCharBox
+♦  GpiSetCharDirection
+♦  GpiSetCharMode
+♦  GpiSetCharSet
+♦  GpiSetCharShear
+♦  GpiSetColor
+♦  GpiSetCp
+♦  GpiSetCurrentPosition
+♦  GpiSetEditMode
+♦  GpiSetElementPointer (not valid in retain mode)
+♦  GpiSetElementPointerAtLabel (not valid in retain mode)
+♦  GpiSetLineEnd
+♦  GpiSetLineJoin
+♦  GpiSetLineType
+♦  GpiSetLineWidth
+♦  GpiSetMarker
+♦  GpiSetMarkerBox
+♦  GpiSetMarkerSet
+♦  GpiSetMix
+♦  GpiSetModelTransformMatrix
+ 
+<b>Geometric Lines</b>
+ 
+A geometric line is a stroked path that your application can scale by using
+one of the scaling transformations. Geometric lines can be wider than one
+pel. When you draw geometric lines, you use the same functions you would use
+to draw normal lines: GpiMove, GpiLine, GpiPolyLine, GpiPartialArc, and so
+on. But you must enclose these functions in a path bracket.
+ 
+After constructing a path bracket for a geometric line, you must specify a
+line-end style, a line-join style, and a line width. To specify the line-end
+style, you call the GpiSetLineEnd function; to specify the line-join style,
+you call the GpiSetLineJoin function; and to specify the line width, you
+call the GpiSetLineWidthGeom function. Once you have completed these steps,
+you can draw the line by calling the GpiStrokePath function.
+ 
+<b>Polygons and Other Shapes</b>
+ 
+As noted earlier, the GpiFullArc function can generate filled or outlined
+circles and ellipses, and the GpiBox function can generate filled or
+outlined rectangles. But to generate filled or outlined regions that are not
+circular, elliptical, or rectangular, you should use the path functions.
+ 
+<b>Fill Modes</b>
+ 
+To fill a path, MS OS/2 uses one of two methods, called fill modes. You can
+select the mode──either alternate or winding──when you call GpiFillPath. If
+the path consists of multiple intersecting regions, the mode will affect the
+final appearance of the path.
+ 
+<b>Alternate Mode</b>
+ 
+When an application specifies the alternate mode, MS OS/2 performs a test on
+pels inside the path's boundary lines. This test involves the following
+steps:
+ 
+1  Select a pel within the path's boundary lines.
+ 
+2  Draw an imaginary ray, in the positive x-direction, from that pel towards
+   infinity.
+ 
+3  Highlight the pel if the ray intersects the boundary lines of the path an
+   odd number of times.
+ 
+<b>Winding Mode</b>
+ 
+When an application specifies winding mode, MS OS/2 again performs a test on
+pels inside the path's boundary lines. The winding-mode test, which differs
+from the alternate-mode test, involves the following steps:
+ 
+1  Determine the direction in which each boundary line was drawn.
+ 
+2  Select a pel within the path's boundary lines.
+ 
+3  Draw an imaginary ray, in the positive x-direction, from that pel towards
+   infinity.
+ 
+4  Each time the ray intersects a boundary line with a positive y-component,
+   increment a count value, and each time the ray intersects a boundary line
+   with a negative y-component, decrement the count value.
+ 
+5  Highlight the pel if the count value is nonzero.
+ 
+<b>Clip Paths</b>
+ 
+Clipping is the process of discarding output that shouldn't appear in a
+window or on a page of printer paper. Normally, a clip region is a rectangle
+or a polygon defined by intersecting rectangles.
+ 
+You can create rectangular clip regions by calling the GpiCreateRegion and
+<b>GpiSetClipRegion</b> functions. But you can also create nonrectangular clip
+regions, called clip paths, by generating a path that matches the
+nonrectangular region and then setting that path to a clip region by calling
+the GpiSetClipPath function.
+ 
+<b>Path Attributes</b>
+ 
+Path attributes describe or identify a path's fill pattern, its color, and
+how it is drawn. If the path is a geometric line, several additional
+attributes describe its width, line-end style, and line-join style.
+ 
+The line-width attribute specifies the width (in world units) of the
+geometric line. A world unit is a unit of measure in the world coordinate
+system. To set the width of a geometric line, you can use the
+<b>GpiSetLineWidthGeom</b> function.
+ 
+The line-end-style attribute specifies the shape of the end of the geometric
+line. You can draw geometric lines with square, flat, or round ends. To set
+the line-end style, you can use the GpiSetLineEnd function. (The round and
+square ends extend past the starting and ending points of a line; a flat end
+does not.)
+ 
+The line-join-style attribute specifies the shape formed by two intersecting
+geometric lines. You can select a beveled, rounded, or mitred line-join
+style. To set the line-join style, you can use the GpiSetLineJoin function.
+ 
+The pattern that fills a path or geometric line can be a bitmap that
+measures 8 bits by 8 bits or a character from one of the character sets. MS
+OS/2 uses the pattern or character to fill the interior of the path that
+defines the geometric line. If the pattern is a bitmap, you can alter its
+appearance by shifting its reference point, a point that the system uses to
+align the bitmap each time it copies the bitmap into the pattern.
+ 
+The color of the fill pattern depends on the foreground and background mix
+modes as well as the foreground and background pattern colors. The mix modes
+tell MS OS/2 how to combine the foreground and background pattern colors
+with the existing color on the drawing surface. For more information about
+foreground and background mix modes, see the topic <span class='grhilite'>◄</span><a href='mix_modes.html'>Color and mix modes</a><span class='grhilite'>►</span>.
+ 
+When you create a presentation space, the geometric-line attributes are set
+to the following default values:
+ 
+<b>Geometric-line attribute  Default value</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Line width</i>                1 world unit
+<i>Line-end style</i>            LINEEND_FLAT
+<i>Line-join style</i>           LINEJOIN_BEVEL
+<i>Pattern symbol</i>            Solid rectangle
+<i>Foreground color</i>          CLR_NEUTRAL (black on most devices)
+<i>Background color</i>          CLR_BACKGROUND (white on most devices)
+<i>Foreground mix mode</i>       FM_OVERPAINT
+<i>Background mix mode</i>       BM_LEAVEALONE
+<i>Reference point</i>           (x = 0, y = 0)
+ 
+You can retrieve the current geometric-line attributes by calling the
+<b>GpiQueryAttrs</b> function. This function copies the current attributes into one
+of the five attribute-bundle structures: AREABUNDLE, CHARBUNDLE,
+<b>IMAGEBUNDLE, LINEBUNDLE, and MARKERBUNDLE. The LINEBUNDLE and AREABUNDLE</b>
+structures contain the geometric-line attributes that affect the appearance
+of paths.
+ 
+                                             .ifdef (PRINT) The AREABUNDLE
+structure has the following form:
+ 
+typedef struct _AREABUNDLE { /* pbnd */
+    LONG   lColor;          /* pattern foreground color    */
+    LONG   lBackColor;      /* pattern background color    */
+    USHORT usMixMode;       /* pattern mix mode            */
+    USHORT usBackMixMode;   /* background pattern mix mode */
+    USHORT usSet;           /* bitmap local identifier     */
+    USHORT usSymbol;        /* character identifier        */
+    POINTL ptlRefPoint ;    /* pattern reference point     */
+} AREABUNDLE;
+ 
+To change the current attributes, use the GpiSetAttrs function.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

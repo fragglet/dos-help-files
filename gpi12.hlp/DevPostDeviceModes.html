@@ -1,0 +1,121 @@
+<html>
+
+<head>
+<title>DevPostDeviceModes (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DevPostDeviceModes (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='x_at_L811a.html'>Changes</a><span class='grhilite'>►</span>                                             <span class='grhilite'>◄</span><a href='dev.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DevQueryCaps.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DEV
+ 
+LONG DevPostDeviceModes(hab, pbDriverData, pszDriverName, achDeviceName,
+    pszName, flOptions)
+HAB hab;                   /* anchor-block handle                      */
+PDRIVDATA pbDriverData;    /* pointer to buffer for data               */
+PSZ pszDriverName;         /* pointer to string for driver name        */
+PSZ achDeviceName;         /* pointer to device name                   */
+PSZ pszName;               /* pointer to string for output device name */
+ULONG flOptions;           /* specifies various options                */
+ 
+The DevPostDeviceModes function causes a device driver to post a dialog box
+so the user can set options for the device (resolution, font cartridges, and
+so on).
+ 
+The application can call this function first with a NULL data pointer to
+determine how much storage is needed for the data buffer. It then calls the
+function a second time to have the buffer filled with data. You can then
+pass the returned data to the DevOpenDC function as the buffer data pointed
+to by the pbDriverData parameter.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hab</i>            Identifies the anchor block.
+ 
+<i>pbDriverData</i>   Points to the data buffer that receives device data defined
+               by the driver. If this parameter is NULL, the function
+               returns the required buffer size. The format of the data is
+               the same as for the pbData parameter of the DevOpenDC
+               function.
+ 
+<i>pszDriverName</i>  Points to the null-terminated string that contains the name
+               of the device driver.
+ 
+<i>achDeviceName</i>  Points to the null-terminated string that identifies the
+               particular device (for example, its model number). This
+               string must not exceed 32 bytes. Valid names are defined by
+               device drivers.
+ 
+<i>pszName</i>        Points to the null-terminated string that contains the
+               printer name.
+ 
+<i>flOptions</i>      Specifies whether the function should display a dialog box
+               that allows the user to change job properties, display two
+               dialog boxes that allow the user to change job and printer
+               properties, or simply return the current job properties. This
+               parameter can be one of the following values:
+ 
+               Value              Meaning
+               ─────────────────────────────────────────────────────────────
+               DPDM_POSTJOBPROP   Display a dialog box that allows the user
+                                  to change job properties. The default
+                                  values for this dialog box are taken from
+                                  the PM_SPOOLER_DD section of the os2.ini
+                                  file if the pszName parameter specifies a
+                                  logical address. If pszName is NULL, the
+                                  default values are taken from the
+                                  pbDriverData parameter.
+ 
+               DPDM_CHANGEPROP    Display two dialog boxes. The first dialog
+                                  box allows the user to change job
+                                  properties; the second allows the user to
+                                  change printer properties. The default
+                                  values for these dialog boxes are taken
+                                  from the PM_SPOOLER_DD section of the
+                                  os2.ini file. The function returns the new
+                                  values in the pbDriverData parameter. The
+                                  pszName parameter cannot be NULL when this
+                                  option is selected.
+ 
+               DPDM_QUERYJOBPROP  Return the current job properties.
+ 
+<b>Return Value</b>
+ 
+The return value, if the pbDriverData parameter is NULL, is the size (in
+bytes) required for the data buffer, DPDM_NONE if there are no settable
+options, or DPDM_ERROR if an error occurs.
+ 
+The return value, if pbDriverData is not NULL, is DEV_OK if the function is
+successful, DPDM_NONE if there is no device mode, or DPDM_ERROR if an error
+occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_DEVICE_NAME
+     PMERR_INV_DRIVER_DATA
+     PMERR_INV_DRIVER_NAME
+     PMERR_INV_LOGICAL_ADDRESS
+ 
+<b>See Also</b>
+ 
+<b>DevOpenDC</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

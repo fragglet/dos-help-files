@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>VioReadCharStr (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioReadCharStr (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioRegister.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioReadCharStr(pchString, pcb, usRow, usColumn, hvio)
+PCH pchString;      /* pointer to buffer for string             */
+PUSHORT pcb;        /* pointer to variable for length of buffer */
+USHORT usRow;       /* starting location (row)                  */
+USHORT usColumn;    /* starting location (column)               */
+HVIO hvio;          /* video handle                             */
+ 
+The VioReadCharStr function reads a character string from the screen,
+starting at a specified location. If the character string is longer than the
+current line, the function continues reading it at the beginning of the next
+line but does not read past the end of the screen.
+ 
+The VioReadCharStr function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pchString</i>  Points to the buffer that receives the character string.
+ 
+<i>pcb</i>        Points to a variable. When this function is called, the variable
+           specifies the length (in bytes) of the buffer pointed to by
+           pchString. When the function returns, this variable contains the
+           length of the string copied to the pchString buffer.
+ 
+<i>usRow</i>      Specifies the starting row of the character to be read.
+ 
+<i>usColumn</i>   Specifies the starting column of the character to be read.
+ 
+<i>hvio</i>       Identifies an advanced video-input-and-output (AVIO) presentation
+           space. For AVIO programs, this handle must have been created
+           previously using the VioCreatePS function. For other programs,
+           hvio must be NULL.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_VIO_COL
+     ERROR_VIO_INVALID_HANDLE
+     ERROR_VIO_ROW
+ 
+<b>Example</b>
+ 
+This example calls VioReadCharStr to read a character string that is 80
+characters long, starting at Row 1, Column 0 of the screen. It then calls
+the VioWrtCharStr function to write the character string to Row 24, Column
+0.
+ 
+CHAR achString[80];
+USHORT cb = sizeof(achString);
+VioReadCharStr(achString,              /* string buffer    */
+    &amp;cb,                               /* length of buffer */
+    1,                                 /* row              */
+    0,                                 /* column           */
+    0);                                /* video handle     */
+VioWrtCharStr(achString, cb, 24, 0, 0);
+ 
+<b>See Also</b>
+ 
+<b>VioCreatePS, VioReadCellStr, VioWrtCharStr</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

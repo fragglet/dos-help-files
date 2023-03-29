@@ -1,0 +1,98 @@
+<html>
+
+<head>
+<title>DosError (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosError (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#error functions 1.2'>Function Group</a><span class='grhilite'>►</span>                  </i>                    <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosExecPgm.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMISC
+ 
+USHORT DosError(fEnable)
+USHORT fEnable;    /* enable/disable error handling */
+ 
+The DosError function enables or disables hard-error and exception
+processing for a process. By default, the system displays a message and
+prompts for user input when a hard error or exception occurs. A hard error
+is typically an error that cannot be resolved by software──for example, when
+the drive door is opened while a removable disk is being read.
+ 
+The DosError function disables the default processing by forgoing the
+displayed message and directing any function that encounters a hard error or
+exception to return an appropriate error value. The process must determine
+the appropriate action by referring to the error value.
+ 
+The DosError function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>fEnable</i>    Specifies whether to disable or enable processing. This parameter
+           can be one of the following values:
+ 
+           Value              Meaning
+           ─────────────────────────────────────────────────────────────────
+           EXCEPTION_DISABLE  Disable exception processing.
+ 
+           EXCEPTION_ENABLE   Enable exception processing.
+ 
+           HARDERROR_DISABLE  Disable hard-error processing.
+ 
+           HARDERROR_ENABLE   Enable hard-error processing.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_INVALID_DATA
+ 
+<b>Comments</b>
+ 
+By default, the system terminates any process in which an exception occurs.
+Although the DosError function can disable the message when an exception
+occurs, it cannot disable the termination of the process. To prevent a
+process from being terminated, use the DosSetVec function to trap the
+exception and carry out process-specific exception processing.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restriction applies to the DosError function:
+ 
+♦  If the fEnable parameter is HARDERROR_DISABLE, all subsequent int 24h
+   requests fail until a call is made to the DosError function with fEnable
+   set to HARDERROR_ENABLE.
+ 
+<b>Example</b>
+ 
+This example calls the DosError function to turn off hard-error processing,
+then calls the DosErrClass function to process any error that is received:
+ 
+USHORT usAttribute, usError, usClass, fsAction, usLocus;
+DosError(HARDERROR_DISABLE);        /* turn off hard-error processing */
+usError = DosQFileMode("a:\\abc.ext", &amp;usAttribute, 0L);
+if (usError) {
+    DosErrClass(usError, &amp;usClass, &amp;fsAction, &amp;usLocus);
+    if (usClass == ERRCLASS_HRDFAIL)
+        DosExit(EXIT_PROCESS, 1);
+ 
+<b>See Also</b>
+ 
+<b>DosErrClass, DosSetFHandState, DosSetVec</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

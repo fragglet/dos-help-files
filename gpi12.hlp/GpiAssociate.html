@@ -1,0 +1,92 @@
+<html>
+
+<head>
+<title>GpiAssociate (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiAssociate (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='presentation_spaces.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Presentation Spaces and Device Contexts 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiBeginArea.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPICONTROL
+ 
+BOOL GpiAssociate(hps, hdc)
+HPS hps;    /* presentation-space handle */
+HDC hdc;    /* device-context handle     */
+ 
+The GpiAssociate function associates a presentation space with a device
+context and resets the presentation space. Once a device context is
+associated with a presentation space, all subsequent drawing in the
+presentation space is copied to the device.
+ 
+Only one device context can be associated with a presentation space at a
+time. GpiAssociate cannot associate a new device context with a presentation
+space until the current device context is released. The function releases
+the current device context from the presentation space if hdc is NULL.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies a normal presentation space. Micro and cached
+           presentation spaces cannot be used.
+ 
+<i>hdc</i>        Identifies the device context. Although any type of device
+           context may be used, the device context must not be already
+           associated with a presentation space.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+      PMERR_DC_IS_ASSOCIATED
+      PMERR_INV_HDC
+      PMERR_INV_HPS
+      PMERR_INV_MICROPS_FUNCTION
+      PMERR_PS_BUSY
+      PMERR_PS_IS_ASSOCIATED
+ 
+<b>Comments</b>
+ 
+When GpiAssociate resets the presentation space, it sets all attributes to
+their default values, sets the model transform to unity, sets the current
+position to (0,0), closes any open path, area, or element brackets, closes
+any open segment, removes any clip path, viewing limits and clip region, and
+enables kerning if the device supports kerning.
+ 
+The GpiCreatePS function can also be used to associate a device context with
+a new presentation space.
+ 
+<b>Example</b>
+ 
+This example releases the current device context and associates a new device
+context with the presentation space.
+ 
+HPS hps;
+HDC hdcPrinter;
+GpiAssociate(hps, (HDC) NULL); /* release the current device context */
+GpiAssociate(hps, hdcPrinter); /* associate a printer device context */
+ 
+<b>See Also</b>
+ 
+<b>GpiCreatePS, GpiResetPS, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

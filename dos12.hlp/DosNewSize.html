@@ -1,0 +1,85 @@
+<html>
+
+<head>
+<title>DosNewSize (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosNewSize (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosOpen.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosNewSize(hf, ulNewSize)
+HFILE hf;           /* file handle      */
+ULONG ulNewSize;    /* new size of file */
+ 
+The DosNewSize function changes the size of the specified file. The function
+can be used to truncate or extend a file. If a file is extended, the value
+of the new bytes is undefined.
+ 
+The DosNewSize function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hf</i>         Identifies the file to be changed. This handle must have been
+           created previously by using the DosOpen function.
+ 
+<i>ulNewSize</i>  Specifies the file's new size (in bytes).
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_ACCESS_DENIED
+     ERROR_DISK_FULL
+     ERROR_INVALID_HANDLE
+     ERROR_INVALID_PARAMETER
+     ERROR_LOCK_VIOLATION
+     ERROR_NOT_DOS_DISK
+ 
+<b>Comments</b>
+ 
+The DosNewSize function applies only to files that have been opened for
+writing. To change the size of a read-only file, first change the file's
+attributes by using the DosSetFileMode function, then open the file for
+writing.
+ 
+If the function extends a file, the system will attempt to allocate sectors
+that are contiguous with the existing file sectors.
+ 
+<b>Example</b>
+ 
+This example opens the file abc and calls the DosNewSize function to set the
+file's size to 100 bytes. If the file already exists and is larger than 100
+bytes, it is truncated to 100 bytes. If the file is smaller than 100 bytes,
+or if it was created by using the DosOpen function, it is expanded to 100
+bytes.
+ 
+HFILE hf;
+USHORT usAction;
+DosOpen("abc", &amp;hf, &amp;usAction, 0L, FILE_NORMAL,
+    FILE_OPEN | FILE_CREATE,
+    OPEN_ACCESS_READWRITE | OPEN_SHARE_DENYREADWRITE, 0L);
+DosNewSize(hf, 100L);
+ 
+<b>See Also</b>
+ 
+<b>DosOpen, DosQFileInfo, DosSetFileMo</b>de
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

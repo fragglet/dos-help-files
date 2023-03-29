@@ -1,0 +1,106 @@
+<html>
+
+<head>
+<title>MouReadEventQue (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MouReadEventQue (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Mouse 1.2'>Overview</a><span class='grhilite'>►</span>                   </i>                         <span class='grhilite'>◄</span><a href='mou.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MouRegister.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_MOU
+ 
+USHORT MouReadEventQue(pmouevEvent, pfWait, hmou)
+PMOUEVENTINFO pmouevEvent;    /* address of structure for mouse event */
+PUSHORT pfWait;               /* wait/no-wait flag                    */
+HMOU hmou;                    /* mouse handle                         */
+ 
+The MouReadEventQue function retrieves a mouse event from the event queue of
+the specified mouse. The event queue is a buffer to which MS OS/2 copies
+each mouse event. A mouse event is a structure that specifies the user
+action that generated the event, the location of the mouse when the event
+occurred, and system time when the event occurred.
+ 
+MS OS/2 copies a mouse event to the event queue whenever the user moves the
+mouse or presses or releases a mouse button. The mouse event can specify a
+single action or a combination of actions, such as the mouse being moved
+with a button down. MS OS/2 copies a mouse event for a given action only if
+the event mask enables reporting for that action. For more information, see
+the MouSetEventMask function.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pmouevEvent  Points to the MOUEVE</i>NTINFO structure that receives the mouse
+             event.
+ 
+<i>pfWait</i>       Points to the variable that specifies whether the function
+             waits for an event. If this parameter is MOU_NOWAIT and the
+             queue is empty, the function fills the MOUEVENTINFO structure
+             with zeros and returns immediately. If the parameter is
+             MOU_WAIT, the function waits for a mouse event if none is
+             available.
+ 
+<i>hmou</i>         Identifies the mouse. The handle must have been created
+             previously by using the MouOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_MOUSE_INV_PARMS
+     ERROR_MOUSE_NO_DEVICE
+     NO_ERROR_MOUSE_NO_DATA
+ 
+<b>Comments</b>
+ 
+Button 1 is the left button on the mouse.
+ 
+The meaning of the row and col fields of the MOUEVENTINFO structure depends
+on the current device status as defined by the most recently used
+<b>MouSetDevStatus</b> function. The values may be absolute or relative, and the
+units may be mickeys, character cells, or pels.
+ 
+Although a specific action may not generate a mouse event, the fs field of
+the MOUEVENTINFO structure may include information about the action when
+some other event occurs. For example, even if button 2 is disabled, fs is
+set to 0x0014 if the user presses button 1 when button 2 is also down. If
+the pfWait parameter is MOU_NOWAIT, fs will be zero if either a
+mouse-button-up event occurs or no event occurs. To see whether an event
+occurred, check the time field; it will be zero if there was no event.
+ 
+<b>Example</b>
+ 
+This example creates a mouse handle, enables the mouse pointer to be drawn,
+and calls the MouReadEventQue function, telling it to wait until a mouse
+event occurs. If the mouse event is the left mouse button down, the message
+"Left Button" is displayed:
+ 
+MOUEVENTINFO mouevEvent;
+HMOU hmou;
+USHORT fWait = TRUE;                /* waits for mouse event     */
+MouOpen(0L, &amp;hmou);
+MouDrawPtr(hmou);
+MouReadEventQue(&amp;mouevEvent, &amp;fWait, hmou);
+if (mouevEvent.fs &amp; 0x04)           /* if left button pressed... */
+    VioWrtTTY("Left Button\n\r", 13, 0);
+ 
+<b>See Also</b>
+ 
+<b>MouGetNumQueEl, MouOpen, MouSetDevStatus, MouSetEventMask, MOUEVENTINFO</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

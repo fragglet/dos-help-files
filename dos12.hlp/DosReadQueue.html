@@ -1,0 +1,135 @@
+<html>
+
+<head>
+<title>DosReadQueue (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosReadQueue (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='queues.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Interprocess Communication 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80d4.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosReallocHuge.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSQUEUES
+#define INCL_DOSPROCESS
+ 
+USHORT DosReadQueue(hqueue, pqresc, pcbElement, ppv, usElement, fWait,
+    pbElemPrty, hsem)
+HQUEUE hqueue;          /* handle of queue to read                       */
+PQUEUERESULT pqresc;    /* pointer to structure for PID and request code */
+PUSHORT pcbElement;     /* pointer to variable for length of element     */
+PVOID FAR * ppv;        /* pointer to buffer for element                 */
+USHORT usElement;       /* element number to read                        */
+UCHAR fWait;            /* wait/no wait indicator                        */
+PBYTE pbElemPrty;       /* pointer to variable for priority of element   */
+HSEM hsem;              /* semaphore handle                              */
+ 
+The DosReadQueue function retrieves an element and then removes it from a
+queue. It copies the address of the element to the supplied pointer and
+fills a structure with information about the element.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hqueue</i>      Identifies the queue to read. This handle must have been created
+            or opened by using the DosCreateQueue or DosOpenQueue function.
+ 
+<i>pqresc      Points</i> to the QUEUERESULT structure that receives information
+            about the request.
+ 
+<i>pcbElement</i>  Points to the variable that receives the length (in bytes) of
+            the element.
+ 
+<i>ppv</i>         Points to the pointer that receives the address of the element
+            in the queue.
+ 
+<i>usElement</i>   Specifies where to look in the queue for the element. If this
+            parameter is 0x0000, the function looks at the beginning of the
+            queue. Otherwise, the function assumes the value is an element
+            identifier retrieved by using the DosPeekQueue function and
+            looks for the specified element.
+ 
+<i>fWait</i>       Specifies whether to wait for an element to be placed in the
+            queue, if the queue is empty. If this parameter is DCWW_WAIT,
+            the function waits until an element is available. If this
+            parameter is DCWW_NOWAIT, the function returns immediately with
+            a code that indicates there are no entries in the queue. Note
+            that in order to use these constants, you must define the
+            INCL_DOSPROCESS include constant before specifying the os2.h
+            header file.
+ 
+<i>pbElemPrty</i>  Points to the variable that receives the priority value
+            specified when the element was added to the queue. This is a
+            value in the range 0 through 15; 15 indicates the highest
+            priority.
+ 
+<i>hsem</i>        Identifies a semaphore. This value can be the handle of a system
+            semaphore that has been created or opened by using the
+            DosCreateSem or DosOpenSem function, or it can be the address of
+            a RAM semaphore. This semaphore would typically be used in a
+            call to the DosMuxSemWait function to wait until the queue has
+            an element. If the fWait parameter is DCWW_WAIT, hsem is
+            ignored.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+      ERROR_QUE_ELEMENT_NOT_EXIST
+      ERROR_QUE_EMPTY
+      ERROR_QUE_INVALID_HANDLE
+      ERROR_QUE_INVALID_WAIT
+      ERROR_QUE_PROC_NOT_OWNED
+ 
+<b>Comments</b>
+ 
+If the queue is empty, the DosReadQueue function either returns immediately
+or waits for an element to be written to the queue, depending on the value
+of the fWait parameter.
+ 
+Only the process that created the queue can call the DosReadQueue function.
+ 
+<b>Example</b>
+ 
+This example reads the queue and waits until an element is received. After
+the element is read and the data processed, the process frees the shared
+memory that was passed to it. This assumes the process writing to the queue
+created a shared-memory segment. For more information, see the
+<b>DosWriteQueue</b> function.
+ 
+QUEUERESULT qresc;
+USHORT cbElement;
+PVOID pv;
+BYTE bElemPrty;
+ 
+DosReadQueue(hqueue,        /* queue handle                        */
+    &amp;qresc,                 /* address of result structure         */
+    &amp;cbElement,             /* receives element number             */
+    &amp;pv,                    /* receives data address               */
+    0,                      /* element number to read              */
+    DCWW_WAIT,              /* waits until something is written    */
+    &amp;bElemPrty,             /* receives priority level             */
+    (HSEM) NULL);           /* semaphore not needed, since waiting */
+    .
+    .   /* Process the data. */
+    .
+DosFreeSeg(SELECTOROF(pv));                 /* frees shared memory */
+ 
+<b>See Also</b>
+ 
+<b>DosCreateQueue, DosMuxSemWait, DosOpenQueue, DosOpenSem, DosPeekQueue,</b>
+<b>DosWriteQueue, QUEUERESULT</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

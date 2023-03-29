@@ -1,0 +1,131 @@
+<html>
+
+<head>
+<title>DosQFHandState (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosQFHandState (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80ce.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosQFileInfo.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosQFHandState(hf, pfsOpenMode)
+HFILE hf;               /* file handle                               */
+PUSHORT pfsOpenMode;    /* pointer to variable for file-handle state */
+ 
+The DosQFHandState function retrieves the state of the specified file
+handle. The file-handle state indicates whether the file may be read from or
+written to and whether it may be opened for reading or writing by other
+processes.
+ 
+The DosQFHandState function is a family API function.
+ 
+<b>Parameter            Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hf</i>                   Identifies the file whose file-handle state is to be
+                     retrieved. This handle must have been previously
+                     created by using the DosOpen function.
+ 
+<i>pfsOpenMode</i>          Points to the variable that receives the file-handle
+                     state. The file-handle state consists of one access
+                     mode, one share mode, and optional flags. It is
+                     identical to the values specified in the fsOpenMode
+                     parameter of the DosOpen function. Which values are set
+                     can be determined by using the AND operator to combine
+                     the value returned in the pfsOpenMode parameter with
+                     one or more of the following values:
+ 
+                     Value                     Meaning
+                     ───────────────────────────────────────────────────────
+                     OPEN_ACCESS_READONLY      Data can be read from the
+                                               file but not written to it.
+ 
+                     OPEN_ACCESS_READWRITE     Data can be read from or
+                                               written to the file.
+ 
+                     OPEN_ACCESS_WRITEONLY     Data can be written to the
+                                               file but not read from it.
+ 
+                     OPEN_SHARE_DENYNONE       Other processes can open the
+                                               file for any access:
+                                               read-only, write-only, or
+                                               read-write.
+ 
+                     OPEN_SHARE_DENYREAD       Other processes can open the
+                                               file for write-only access
+                                               but not for read-only or
+                                               read-write access.
+ 
+                     OPEN_SHARE_DENYREADWRITE  The current process has
+                                               exclusive access to the
+                                               file.
+ 
+                     OPEN_SHARE_DENYWRITE      Other processes can open the
+                                               file for read-only access but
+                                               not for write-only or
+                                               read-write access.
+ 
+                     OPEN_FLAGS_DASD           The file handle represents a
+                                               physical drive that has been
+                                               opened for direct access.
+ 
+                     OPEN_FLAGS_FAIL_ON_ERROR  Any function that uses the
+                                               file handle returns
+                                               immediately with an error
+                                               code if there is an I/O
+                                               error.
+ 
+                     OPEN_FLAGS_NOINHERIT      The file handle is private to
+                                               the current process.
+ 
+                     OPEN_FLAGS_WRITE_THROUGH  The system writes data to the
+                                               device before the given
+                                               function returns.
+ 
+                     OPEN_FLAGS_NO_CACHE       The system does not cache
+                                               file data.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_INVALID_HANDLE
+ 
+<b>Example</b>
+ 
+This example calls the DosQFHandState function by using the handle of a
+previously opened file, and then checks the variable fsOpenMode and reports
+whether the file is open for read/write access:
+ 
+HFILE hf;
+USHORT fsOpenMode;
+    .
+    .
+    .
+DosQFHandState(hf, &amp;fsOpenMode);
+if (fsOpenMode &amp; OPEN_ACCESS_READWRITE)
+    VioWrtTTY("File opened for read/write access\r\n", 35, 0);
+if (fsOpenMode &amp; OPEN_SHARE_DENYREADWRITE)
+    VioWrtTTY("File cannot be shared\r\n", 23, 0);
+ 
+<b>See Also</b>
+ 
+<b>DosDevIOCtl, DosExecPgm, DosOpen, DosSetFHandState</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

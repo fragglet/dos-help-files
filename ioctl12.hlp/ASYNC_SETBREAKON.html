@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>ASYNC_SETBREAKON (1.2) - ioctl12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ioctl12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ASYNC_SETBREAKON (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='IOCtls.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ASYNC_SETDCBINFO.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVIOCTL
+ 
+USHORT DosDevIOCtl(pfCommErr, 0L, 0x004B, 0x0001, hDevice)
+PUSHORT pfCommErr;    /* pointer to variable for error value */
+HFILE hDevice;        /* device handle                       */
+ 
+The ASYNC_SETBREAKON function turns on the break character. The device
+driver generates the break signal immediately. It is not considered an error
+if the device driver is already generating a break signal. The device driver
+does not wait for the transmit hardware to become empty. However, more data
+will not be given to the transmit hardware until the break is turned off.
+The break signal will always be transmitted, regardless of whether the
+device driver is or is not transmitting characters due to other reasons.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pfCommErr</i>  Points to the variable that receives the communication status of
+           the device. This variable can be a combination of the following
+           values:
+ 
+           Value                Meaning
+           ─────────────────────────────────────────────────────────────────
+           RX_QUE_OVERRUN       Receive queue overrun. There is no room in
+                                the device-driver receive queue to put a
+                                character read in from the receive
+                                hardware.
+ 
+           RX_HARDWARE_OVERRUN  Receive hardware overrun. A character
+                                arrived before the previous character was
+                                completely read. The previous character is
+                                lost.
+ 
+           PARITY_ERROR         The hardware detected a parity error.
+ 
+           FRAMING_ERROR        The hardware detected a framing error.
+ 
+           The function sets the variable to zero if it encounters an
+           error.
+ 
+<i>hDevice</i>    Identifies the serial device that receives the device-control
+           function. The handle must have been created previously by using
+           the DosOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful or an error value if
+an error occurs.
+ 
+<b>Comments</b>
+ 
+Closing the device turns off the break character if there are no outstanding
+open device handles.
+ 
+<b>See Also</b>
+ 
+<b>DosOpen, ASYNC_SETBRE</b>AKOFF
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>DosSetSession (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosSetSession (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Multitasking_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#multitasking 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosSetSigHandler.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSSESMGR
+ 
+USHORT DosSetSession(idSession, pstsdata)
+USHORT idSession;        /* session identifier                         */
+PSTATUSDATA pstsdata;    /* prior to structure for session-status data */
+ 
+The DosSetSession function sets the status of a child session.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>idSession</i>  Specifies the identifier of the session for which the status is
+           set. This identifier must have been created previously by using
+           the DosStartSession function.
+ 
+<i>pstsdata   Points to a S</i>TATUSDATA structure that contains the session-status
+           data.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value.
+ 
+<b>Comments</b>
+ 
+The DosSetSession function allows a parent session to use the SelectInd and
+<b>BondInd fields of the</b> STATUSDATA structure to specify whether the child
+session can be selected by the user and whether or not the child session
+will be brought to the foreground when the user selects the parent session.
+These fields affect selections made by the user from the switch list; they
+do not affect selections made by the parent session. Each of these fields
+can be set individually, without affecting the current setting of the
+other.
+ 
+A parent session can call the DosSetSession function only for a child
+session; neither the parent session itself nor any second-level child
+session can be set by using this function. The DosSetSession function can
+change the status of a child session only if that child was started as a
+related session; DosSetSession cannot change the status of sessions that
+were started as independent sessions.
+ 
+A bond between a parent session and a child session can be broken by calling
+the DosSetSession function and specifying either BondInd = 2 to break the
+bond, or BondInd = 1 to break the bond and establish a new bond with a
+different child session.
+ 
+A child session that is bound to a parent session will be brought to the
+foreground when the user selects the parent session, even if the status of
+the child session is nonselectable. If there is a bond between a parent
+session and a child session, and another bond between that child and a
+second-level child session, the second-level child session will be brought
+to the foreground when the user selects the parent session.
+ 
+A parent session may be running in either the foreground or the background
+when DosSetSession is called.
+ 
+The DosSetSession function may be called only by the process that started
+the session identified by the idSession parameter.
+ 
+<b>See Also</b>
+ 
+<b>DosSelectSession, DosStartSession, DosStopSession, STATUSDATA</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

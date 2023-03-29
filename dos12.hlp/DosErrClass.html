@@ -1,0 +1,146 @@
+<html>
+
+<head>
+<title>DosErrClass (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosErrClass (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#error functions 1.2'>Function Group</a><span class='grhilite'>►</span>                  </i>                    <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosError.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMISC
+ 
+USHORT DosErrClass(usErrorCode, pusClass, pfsAction, pusLocus)
+USHORT usErrorCode;    /* error value for analysis                     */
+PUSHORT pusClass;      /* pointer to variable for error classification */
+PUSHORT pfsAction;     /* pointer to variable for action               */
+PUSHORT pusLocus;      /* pointer to variable for error origin         */
+ 
+The DosErrClass function retrieves a classification of an error value and a
+recommended action.
+ 
+The DosErrClass function is a family API function.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>usErrorCode</i>  Specifies the error value returned by an MS OS/2 function.
+ 
+<i>pusClass</i>     Points to the variable that receives the classification of the
+             error value. This parameter can be one of the following
+             values:
+ 
+             Value             Meaning
+             ───────────────────────────────────────────────────────────────
+             ERRCLASS_ALREADY  Action already taken.
+ 
+             ERRCLASS_APPERR   An application error has probably occurred.
+ 
+             ERRCLASS_AUTH     Authorization has failed.
+ 
+             ERRCLASS_BADFMT   Bad format for call data.
+ 
+             ERRCLASS_CANT     Cannot perform requested action.
+ 
+             ERRCLASS_HRDFAIL  A device-hardware failure has occurred.
+ 
+             ERRCLASS_INTRN    An internal error has occurred.
+ 
+             ERRCLASS_LOCKED   Resource or data is locked.
+ 
+             ERRCLASS_MEDIA    Incorrect media; a CRC error has occurred.
+ 
+             ERRCLASS_NOTFND   The item was not located.
+ 
+             ERRCLASS_OUTRES   Out of resources.
+ 
+             ERRCLASS_SYSFAIL  A system failure has occurred.
+ 
+             ERRCLASS_TEMPSIT  This is a temporary situation.
+ 
+             ERRCLASS_TIME     A time-out has occurred.
+ 
+             ERRCLASS_UNK      The error is unclassified.
+ 
+<i>pfsAction</i>    Points to the variable that receives the recommended action for
+             the specific error. This parameter can be one of the following
+             values:
+ 
+             Value          Meaning
+             ───────────────────────────────────────────────────────────────
+             ERRACT_ABORT   Terminate in an orderly manner.
+ 
+             ERRACT_DLYRET  Delay and retry.
+ 
+             ERRACT_IGNORE  Ignore the error.
+ 
+             ERRACT_INTRET  Retry after user intervention.
+ 
+             ERRACT_PANIC   Terminate immediately.
+ 
+             ERRACT_RETRY   Retry immediately.
+ 
+             ERRACT_USER    Bad user input; get new values.
+ 
+<i>pusLocus</i>     Points to the variable that receives the error's origin in the
+             system. This parameter can be one of the following values:
+ 
+             Value          Meaning
+             ───────────────────────────────────────────────────────────────
+             ERRLOC_DISK    The error occurred in a random-access device,
+                            such as a disk drive.
+ 
+             ERRLOC_MEM     This is a memory-parameter error.
+ 
+             ERRLOC_NET     This is a network error.
+ 
+             ERRLOC_SERDEV  This is a serial-device error.
+ 
+             ERRLOC_UNK     The origin of the error is unknown.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value.
+ 
+<b>Comments</b>
+ 
+The ERRACT_, ERRCLASS_, and ERRLOC_ constants are defined in the bseerr.h
+file.
+ 
+<b>Example</b>
+ 
+This example calls the DosQFileMode function to determine the status of the
+file a:\abc.exe. If DosQFileMode returns an error, the DosErrClass function
+is called to determine the class of the error. The process terminates if the
+error is a device-hardware failure──for example, if a drive door is open or
+a specified disk drive is nonexistent.
+ 
+USHORT usAttribute, usError, usClass, fsAction, usLocus;
+usError = DosQFileMode("a:\\abc.ext", &amp;usAttribute, 0L);
+if (usError) {
+    DosErrClass(usError,             /* error number            */
+        &amp;usClass,                    /* error classification    */
+        &amp;fsAction,                   /* recommended action      */
+        &amp;usLocus);                   /* error origin            */
+    if (usClass == ERRCLASS_HRDFAIL) /* device-hardware failure */
+        DosExit(1, EXIT_PROCESS);    /* exits application       */
+ 
+<b>See Also</b>
+ 
+<b>DosError, DosExit, DosQFileMode</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

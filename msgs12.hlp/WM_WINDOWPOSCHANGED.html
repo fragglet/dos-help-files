@@ -1,0 +1,67 @@
+<html>
+
+<head>
+<title>WM_WINDOWPOSCHANGED (1.2) - msgs12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msgs12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WM_WINDOWPOSCHANGED (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Moving_and_changing_messages.html'>Message Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Windows 1.2'>Overview</a><span class='grhilite'>►</span>                           <span class='grhilite'>◄</span><a href='messages.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Clipboard_messages.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINFRAMEMGR
+ 
+<b>WM_WINDOWPOSCHANGED</b>
+paswp = (PSWP) PVOIDFROMMP(mp1); /* pointer to array of SWP structures */
+flReturn = MPFROMLONG(mp2);      /* return-value flag                  */
+ 
+The WM_WINDOWPOSCHANGED message is sent whenever the size of a window
+changes.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>paswp      Low and high w</i>ord of mp1. Points to an array of two SWP
+           structures: the first SWP structure contains the new state of the
+           window; the second SWP structure contains the previous state of
+           the window.
+ 
+<i>flReturn   Specifies the</i> return value of the WM_ADJUSTWINDOWPOS message; it
+           is FALSE if SWP_NOADJUST was specified.
+ 
+<b>Comments</b>
+ 
+The entire window state is filled in both SWP structures; however, the fs
+field of the first SWP structure contains only those bits that correspond to
+the actual changes that occurred. For example, if a window is resized,
+fields x and y contain the position of the window even though it did not
+move, but the fs field does not contain the SWP_MOVE flag.
+ 
+<b>Example</b>
+ 
+This example processes the WM_WINDOWPOSCHANGED message and assigns the two
+structures to pointers:
+ 
+PSWP pswpNew, pswpOld;
+ 
+case WM_WINDOWPOSCHANGED:
+    pswpNew = PVOIDFROMMP(mp1);
+    pswpOld = pswpNew + 1;
+ 
+<b>See Also</b>
+ 
+<b>WinCreateWindow, WM_ADJUSTWINDOWPOS, WM_CALCVALIDRECTS</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

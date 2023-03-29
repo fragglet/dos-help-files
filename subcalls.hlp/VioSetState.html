@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>VioSetState (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioSetState (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L807a.html'>Changes</a><span class='grhilite'>►</span>                       </i>          <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioShowBuf.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioSetState(pvoidState, hvio)
+PVOID pvoidState;    /* pointer to buffer with new state */
+HVIO hvio;           /* video handle                     */
+ 
+The VioSetState function sets the palette-register values, the overscan
+(border) color, the blink/background intensity, the screen color, the
+underline position, or the display adapter.
+ 
+The VioSetState function is a family API function.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pvoidState</i>  Points to the structure that contains the request type and the
+            values to set. The structure type, which depends on the request
+            type specified in the type field of each structure, is one of
+            the following: VIOPALSTATE, VIOOVERSCAN, VIOINTENSITY,
+            VIOCOLORREG, VIOSETULINELOC, or VIOSETTARGET.
+ 
+<i>hvio</i>        Identifies an advanced video-input-and-output (AVIO)
+            presentation space. For AVIO programs, this handle must have
+            been created by using the VioCreatePS function. For other
+            programs, hvio must be NULL.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_VIO_INVALID_HANDLE
+     ERROR_VIO_INVALID_LENGTH
+ 
+<b>Example</b>
+ 
+This example retrieves the current settings of the palette registers,
+switches palette registers #0 and #7, and calls VioSetState to enable the
+new settings.
+ 
+BYTE abState[38];
+PVIOPALSTATE pviopal;
+USHORT usTmp;
+pviopal = (PVIOPALSTATE) abState;
+pviopal-&gt;cb = sizeof(abState);
+pviopal-&gt;type = 0;             /* retrieves palette registers */
+pviopal-&gt;iFirst = 0;           /* first register to retrieve  */
+VioGetState(pviopal, 0);       /* retrieves current settings  */
+usTmp = pviopal-&gt;acolor[0];    /* swaps #0 and #7             */
+pviopal-&gt;acolor[0] = pviopal-&gt;acolor[7];
+pviopal-&gt;acolor[7] = usTmp;
+VioSetState(pviopal, 0);       /* enables new settings        */
+ 
+<b>See Also</b>
+ 
+<b>VioCreatePS, VioGetState, VioSetMode, VIOCOLORREG, VIOINTENSITY,</b>
+<b>VIOOVERSCAN, VIOPALSTATE, VIOSETTARGET, VIOSETULINELOC</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

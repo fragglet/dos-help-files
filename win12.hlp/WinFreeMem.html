@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>WinFreeMem (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinFreeMem (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Heap_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Heaps 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinGetClipPS.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINHEAP
+ 
+NPBYTE WinFreeMem(hHeap, npMem, cbMem)
+HHEAP hHeap;     /* handle of the heap              */
+NPBYTE npMem;    /* address of memory block to free */
+USHORT cbMem;    /* size of the memory to free      */
+ 
+The WinFreeMem function frees memory allocated by the WinAllocMem function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hHeap</i>      Identifies the heap. This handle must have been created by a
+           previous call to the WinCreateHeap function.
+ 
+<i>npMem</i>      Points to the memory block to free. This parameter must have been
+           returned by a previous call to the WinAllocMem or WinReallocMem
+           function.
+ 
+<i>cbMem</i>      Specifies the size of the memory to free; it must match the
+           allocated size of the block.
+ 
+<b>Return Value</b>
+ 
+The return value is NULL if the function is successful. Otherwise, it
+returns the npMem parameter. This method of returning failure allows for
+updating the memory pointer and freeing the memory at the same time, which
+can be accomplished with a call similar to the following:
+ 
+npMem = WinFreeMem(hHeap, npMem, cbMem);
+ 
+<b>Comments</b>
+ 
+This function does not attempt to coalesce the block being freed with other
+free blocks. Use the WinAvailMem function to coalesce free blocks.
+ 
+If the heap was created with the HM_MOVEABLE option, the value of the cbMem
+parameter is ignored and the value of the size word in the allocated memory
+block is used instead.
+ 
+If the heap was created with the HM_MOVEABLE and HM_VALIDSIZE options, the
+value of the cbMem parameter is checked against the value of the size word
+and an error is generated if the two values are not the same.
+ 
+<b>See Also</b>
+ 
+<b>WinAllocMem, WinAvailMem, WinCreateHeap, WinReallocMem</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

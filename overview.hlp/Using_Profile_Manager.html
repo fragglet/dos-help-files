@@ -1,0 +1,158 @@
+<html>
+
+<head>
+<title>Using Profile Manager (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Profile Manager (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Profile_Manager.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Prf'>Function Group</a><span class='grhilite'>►</span>                     <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='print_queues.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                           Using Profile Manager
+ 
+You can use Profile Manager functions in character-based MS OS/2 programs as
+well as in Presentation Manager applications. A thread that calls Profile
+Manager functions must have initialized an anchor block by using the
+<b>WinInitialize</b> function. You create an initialization file or open an
+existing one by using the PrfOpenProfile function. You then store and
+retrieve information from the file by using functions such as
+<b>PrfQueryProfileString and PrfWriteProfileString. You can also c</b>reate and
+manage groups and program lists by using functions such as PrfAddProgram and
+<b>PrfCreateGroup</b>.
+ 
+<b>Creating or Opening an Initialization File</b>
+ 
+You can create an initialization file or open an existing initialization
+file by using the PrfOpenProfile function. This function takes a handle to
+an anchor block and a pointer to the name of an initialization file. If the
+file doesn't exist in the given path, the function automatically creates an
+initialization file.
+ 
+The following example creates an initialization file named pmtools.ini in
+the current directory:
+ 
+HAB hab;
+HINI hini;
+ 
+hab = WinInitialize(0);
+if ((hini = PrfOpenProfile(hab, "pmtools.ini")) == NULL)
+    /* initialization file not opened or created */
+ 
+If it is successful, the PrfOpenProfile function returns a handle to the
+initialization file. Otherwise, it returns NULL. Once you have an
+initialization-file handle, you can create new sections in the file and make
+new settings.
+ 
+To close an initialization file, you use the PrfCloseProfile function.
+ 
+<b>Reading and Writing Settings</b>
+ 
+You can read and write strings, integers, and binary data to and from an
+initialization file. To read from or write to an initialization file, you
+must provide a section and a key name that specifies which setting to read
+or to change. When you write to an initialization file, if there is no
+corresponding section and/or key name, the section and/or key name is added
+to the file and assigned the given value.
+ 
+The following example creates the section "MyApp" and the key name
+"MainWindowColor" in a previously opened initialization file and assigns the
+value of the RGB structure to the new setting:
+ 
+HINI hini;
+RGB rgb = { 0xFF, 0x00, 0x00 };
+ 
+PrfWriteProfileData(hini, "MyApp", "MainWindowColor", &amp;rgb, sizeof(RGB));
+ 
+To read a setting, you can retrieve the size of the setting and then read
+the setting into an appropriate buffer by using the PrfQueryProfileSize and
+<b>PrfQueryProfileData</b> functions, as shown in the following example. This
+example reads the setting "MainWindowColor" from the "MyApp" section only if
+the size of the data is equal to the size of the RGB structure.
+ 
+HINI hini;
+ULONG cb;
+RGB rgb;
+ 
+PrfQueryProfileSize(hini, "MyApp", "MainWindowColor", &amp;cb);
+if (cb==sizeof(RGB))
+    PrfQueryProfileData(hini, "MyApp", "MainWindowColor", &amp;rgb, &amp;cb);
+ 
+You can also read strings by using the PrfQueryProfileString function and
+write strings by using the PrfWriteProfileString function. You can read
+integers (stored as strings) by using the PrfQueryProfileInt function.
+ 
+<b>Identifying the Initialization Files</b>
+ 
+You can retrieve the names of the MS OS/2 initialization files by using the
+<b>PrfQueryProfile</b> function. Although the MS OS/2 initialization files are
+usually named os2.ini and os2sys.ini, a user can use other files when
+starting the system.
+ 
+The following example retrieves the names of the MS OS/2 initialization
+files and copies the names of the initialization files to the arrays
+szUserName and szSysName. Once you know the names of the MS OS/2
+initialization files, you can use that name to open the files and read
+settings.
+ 
+char szUserName[80];
+char szSysName[80];
+PRFPROFILE prfpro = { 80, (PSZ) szUserName, 80, (PSZ) szSysName };
+ 
+PrfQueryProfile(hini, &amp;prfpro);
+ 
+You can change the MS OS/2 initialization files to files of your choice by
+using the PrfReset function. This function takes the names of two
+initialization files and uses them as replacements for the os2.ini and
+<i>os2sys.ini</i> files. The system is then reset using the settings in the new
+files.
+ 
+<b>Creating Groups and Program Lists</b>
+ 
+You can create a group and a list of programs by using the PrfCreateGroup
+and PrfAddProgram functions. A group is a window, managed by Desktop
+Manager, that contains a list of programs. The user can start a program in
+the list by selecting the program title or double-clicking the title using
+the mouse.
+ 
+The following example creates a new group, named "My Application," and adds
+one program to it:
+ 
+HPROGRAM hGroup;
+HPROGRAM hProg;
+PROGDETAILS progde;
+ 
+progde.Length =          sizeof(PROGDETAILS);
+progde.progt.progc =     PROG_PM;                /* Prof. Mngr. prog. */
+progde.progt.fbVisible = SHE_VISIBLE;            /* visible           */
+progde.pszTitle =        "My Application";       /* program title     */
+progde.pszExecutable =   "c:\\os2\\myapp.exe";   /* path to exe file  */
+progde.pszStartupDir =   "c:\\os2";              /* work directory    */
+progde.pszIcon =          "";                    /* empty if not used */
+progde.pszEnvironment =   "";
+progde.pszParameters =    "";
+progde.swpInitial.fs =    0;
+progde.swpInitial.cx =    0;
+progde.swpInitial.cy =    0;
+progde.swpInitial.x =     0;
+progde.swpInitial.y =     0;
+progde.swpInitial.hwndInsertBehind = NULL;
+progde.swpInitial.hwnd =  NULL;
+ 
+hGroup = PrfCreateGroup(HINI_USER, "My Application", SHE_VISIBLE);
+hProg = PrfAddProgram(HINI_USER, &amp;progde, hGroup);
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

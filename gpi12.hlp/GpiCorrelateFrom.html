@@ -1,0 +1,142 @@
+<html>
+
+<head>
+<title>GpiCorrelateFrom (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiCorrelateFrom (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='retained_graphics.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiCorrelateSegment.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPICORRELATION
+ 
+LONG GpiCorrelateFrom(hps, idFirstSegment, idLastSegment, lType, pptl,
+    lMaxHits, lMaxDepth, alSegTag)
+HPS hps;                /* presentation-space handle                     */
+LONG idFirstSegment;    /* first segment to correlate                    */
+LONG idLastSegment;     /* last segment to correlate                     */
+LONG lType;             /* segment type                                  */
+PPOINTL pptl;           /* address of structure for aperture center      */
+LONG lMaxHits;          /* maximum number of hits                        */
+LONG lMaxDepth;         /* maximum number of segment/tag pairs to return */
+PLONG alSegTag;         /* address of array of segment/tag identifiers   */
+ 
+The GpiCorrelateFrom function correlates a portion of the segment chain,
+identifying each tagged primitive that intersects the current aperture, as
+set by the GpiSetPickApertureSize function.
+ 
+The GpiCorrelateFrom function correlates a portion of the segment chain by
+searching for each tagged primitive that lies completely or partially within
+the aperture. Each instance of a tagged primitive in the aperture is called
+a "hit." The function records a hit by copying the identifier of the segment
+containing the primitive (along with the identifier for its tag) to the
+array pointed to by alSegTag. The function starts the search with the
+segment identified by idFirstSegment and includes chained and called
+segments up to, and including, the segment identified by idLastSegment.
+After searching these segments, GpiCorrelateFrom returns the number of hits
+it located.
+ 
+<b>Parameter       Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>             Identifies the presentation space.
+ 
+<i>idFirstSegment</i>  Specifies the first segment to correlate. This value must be
+                greater than zero.
+ 
+<i>idLastSegment</i>   Specifies the last segment to correlate. This value must be
+                greater than zero.
+ 
+<i>lType</i>           Specifies the type of segment to correlate. It can be one of
+                the following values:
+ 
+                Value            Meaning
+                ────────────────────────────────────────────────────────────
+                PICKSEL_ALL      Correlate all segments with nonzero
+                                 identifiers regardless of the detectability
+                                 and visibility attributes of the segments.
+ 
+                PICKSEL_VISIBLE  Correlate visible and detectable segments
+                                 with nonzero identifiers.
+ 
+<i>pptl        </i>    Points to the POINTL structure that contains the position
+                (in presentation page units) of the center of the aperture.
+ 
+<i>lMaxHits</i>        Specifies the maximum number of hits to record.
+ 
+<i>lMaxDepth</i>       Specifies the maximum number of segment/tag pairs to
+                record.
+ 
+<i>alSegTag</i>        Points to the array to receive the segment/tag pairs. The
+                array must be large enough to receive 8 * lMaxHits *
+                lMaxDepth bytes.
+ 
+<b>Return Value</b>
+ 
+The return value is the number of hits that occurred if the function is
+successful or GPI_ERROR if an error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_AREA_INCOMPLETE
+     PMERR_IMAGE_INCOMPLETE
+     PMERR_INV_COORDINATE
+     PMERR_INV_CORRELATE_DEPTH
+     PMERR_INV_CORRELATE_TYPE
+     PMERR_INV_CTYPE
+     PMERR_INV_HPS
+     PMERR_INV_MAX_HITS
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_INV_PICK_APERTURE_POSN
+     PMERR_INV_SEG_NAME
+     PMERR_PATH_INCOMPLETE
+     PMERR_PS_BUSY
+     PMERR_SEG_NOT_CHAINED
+     PMERR_SEG_NOT_FOUND
+ 
+<b>Comments</b>
+ 
+<b>GpiCorrelateFrom</b> may record more than one segment for each hit. It first
+records the segment containing the hit, then the segment that called the
+first segment, and so on until the function either records the original
+segment in this chain or has recorded lMaxDepth segments. If the function
+finds less than lMaxDepth segments for the hit, the function records zeros
+so that exactly lMaxDepth records are copied for each hit. The function
+records all hits up to lMaxHits, then continues to count the hits even
+though it no longer records them. The return value specifies the complete
+number of hits, not just those recorded.
+ 
+The function searches only segments that have nonzero identifiers. If the
+function encounters a segment with a zero identifier, it stops the search
+even if subsequently called segments have nonzero identifiers. During the
+search, the function ignores primitives that do not have nonzero
+identifiers. The function never records more than one hit for a tag in a
+segment even if that tag is used with many primitives.
+ 
+If the idFirstSegment parameter does not exist, or is not in the segment
+chain, the function returns an error. If the segment specified by
+<i>idLastSegment</i> does not exist, is not in the chain, or is chained before
+<i>idFirstSegment</i>, no error results and the function continues to the end of
+the chain.
+ 
+<b>See Also</b>
+ 
+<b>GpiCorrelateChain, GpiCorrelateSegment, WinGetLastError, POINTL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,123 @@
+<html>
+
+<head>
+<title>GpiSetMix (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiSetMix (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='mix_mode_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Color and Mix Modes 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiSetModelTransformMatrix.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+BOOL GpiSetMix(hps, flMixMode)
+HPS hps;           /* presentation-space handle */
+LONG flMixMode;    /* color-mixing mode         */
+ 
+The GpiSetMix function sets the current foreground-mix mode. The
+foreground-mix mode specifies how the foreground color is combined with the
+colors in underlying primitives. The available mixing modes depend on the
+device that is associated with the presentation space, but all devices
+support the FM_LEAVEALONE, FM_XOR, and FM_OVERPAINT mixing modes. If the
+mixing mode specified by flMixMode is not supported, the function uses
+FM_OVERPAINT instead. The DevQueryCaps function can be used to determine
+which mixing modes are supported.
+ 
+If the attribute mode is AM_PRESERVE, the function saves the previous
+foreground-mix mode on the attribute stack when it sets the new mode. The
+previous foreground-mix mode can be retrieved using the GpiPop function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>flMixMode</i>  Specifies the color-mixing mode. It can be one of the following
+           values:
+ 
+           Value           Meaning
+           ─────────────────────────────────────────────────────────────────
+           FM_AND          The individual pel colors are combined using the
+                           AND operator.
+ 
+           FM_DEFAULT      Default. This is the same as FM_OVERPAINT.
+ 
+           FM_INVERT       All existing pel colors are inverted. The
+                           foreground color is ignored.
+ 
+           FM_LEAVEALONE   The foreground color is ignored. The existing
+                           color remains unchanged.
+ 
+           FM_MASKSRCNOT   The individual pel colors are combined using the
+                           AND operator after inverting the existing pel
+                           colors.
+ 
+           FM_MERGENOTSRC  The individual pel colors are combined using the
+                           OR operator after inverting the foreground
+                           color.
+ 
+           FM_MERGESRCNOT  The individual pel colors are combined using the
+                           OR operator after inverting the existing pel
+                           colors.
+ 
+           FM_NOTCOPYSRC   The inverse of the foreground color replaces the
+                           existing color.
+ 
+           FM_NOTMASKSRC   The individual pel colors are inverted after
+                           being combined using the AND operator.
+ 
+           FM_NOTMERGESRC  The individual pel colors are inverted after
+                           being combined using the OR operator.
+ 
+           FM_NOTXORSRC    The individual pel colors are inverted after
+                           being combined using the XOR operator.
+ 
+           FM_ONE          All pels are set to one.
+ 
+           FM_OR           The individual pel colors are combined using the
+                           OR operator.
+ 
+           FM_OVERPAINT    The foreground color replaces the existing
+                           color.
+ 
+           FM_SUBTRACT     The individual pel colors are combined using the
+                           AND operator after inverting the foreground
+                           color.
+ 
+           FM_XOR          The individual pel colors are combined using the
+                           XOR operator.
+ 
+           FM_ZERO         All pels are set to zero.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_MIX_ATTR
+     PMERR_PS_BUSY
+ 
+<b>See Also</b>
+ 
+<b>DevQueryCaps, GpiQueryMix, GpiSetBackMix</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

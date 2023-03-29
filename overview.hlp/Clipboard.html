@@ -1,0 +1,132 @@
+<html>
+
+<head>
+<title>About the Clipboard (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About the Clipboard (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_the_Clipboard.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#clipboard functions 1.2'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#clipboard messages'>Message Group</a><span class='grhilite'>►</span>    <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a></i><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Combination_Box_controls.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                            About the Clipboard
+ 
+This topic describes how to use the clipboard to transfer data between
+applications. You should also be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='Bitmaps.html'>Bitmaps</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Metafiles.html'>Metafiles</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Atom_Tables.html'>Atom tables</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Messages_and_Message_Queues.html'>Messages and message queues</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='memory_manager.html'>Memory manager</a><span class='grhilite'>►</span>
+ 
+The clipboard is a set of functions that can be used by Presentation Manager
+applications for exchanging data. In particular, the clipboard provides
+support for the generalized cut, copy, and paste user-interface common to
+Presentation Manager applications. The clipboard supports data formats
+common to most applications, as well as allowing individual applications to
+define new formats for special purposes.
+ 
+The data on the clipboard is maintained in memory only. Clipboard data is
+lost when the computer is turned off.
+ 
+Data exchange on the clipboard is controlled by the user. An application
+should not perform any clipboard operations unless the user explicitly
+initiates them. Other MS OS/2 features, such as pipes, queues, and shared
+memory should be used when data exchange is needed without the knowledge of
+the user. For example, an application that continuously passes remotely
+collected data to a data-analysis application should not use the clipboard.
+Such an application should use the other interprocess data communication
+capabilities of MS OS/2 instead.
+ 
+<b>Cutting, Copying, and Pasting Data</b>
+ 
+All Presentation Manager programs should support the cut, copy, and paste
+data exchange in a single application and between applications. These are
+all user-initiated operations. Typically, a user selects data in an
+application, called the "current selection." The application should provide
+visual feedback, such as inverting the data display, to indicate the current
+selection. The user can then initiate a cut, copy, or paste operation on the
+current selection.
+ 
+The standard cut, copy, and paste operations are summarized in the following
+list:
+ 
+<b>Operation  Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Cut</i>        Copies the current selection to the clipboard and deletes the
+           current selection from the application document. The previous
+           contents of the clipboard are destroyed.
+ 
+<i>Copy</i>       Copies the current selection to the clipboard. The current
+           selection remains unchanged. The previous contents of the
+           clipboard are destroyed.
+ 
+<i>Paste</i>      Deletes the current selection and replaces it with the contents
+           of the clipboard. The contents of the clipboard are not changed.
+ 
+<i>Clear</i>      Deletes the current selection without putting the data on the
+           clipboard. The contents of the clipboard are not changed.
+ 
+<b>Clipboard-Data Formats</b>
+ 
+The clipboard accepts data in several formats. MS OS/2 supports three
+standard formats: text, bitmap, and metafile. Applications can use these
+predefined formats or create their own formats.
+ 
+Typically, all formats on the clipboard are simply different representations
+of the most recent selection on the clipboard. For example, a word processor
+that supports multiple fonts might write a selection to the clipboard in
+three formats: straight text, rich text, and metafile. Another application
+(pasting from the clipboard) could then choose the format most applicable to
+its own capabilities. All of these formats refer to the same data.
+ 
+<b>Shared Memory and the Clipboard</b>
+ 
+Because data on the clipboard can be accessed by different applications, it
+is important that it be stored in shared memory. The clipboard uses two
+types of memory: selectors for shareable segments (allocated by the
+<b>DosAllocSeg</b> function), and Presentation Manager objects such as bitmaps and
+metafiles. Clipboard functions use two flag values, CFI_SELECTOR and
+CFI_HANDLE, to distinguish each memory type.
+ 
+When an application writes either a bitmap or a metafile to the clipboard,
+it passes a bitmap or metafile handle to the clipboard. The clipboard
+functions make the object "shareable." The application cannot access the
+object once it closes the clipboard. Once an object is passed to the
+clipboard, it can no longer be used in the application. Likewise, when an
+application requests a bitmap or metafile from the clipboard, it receives a
+handle to a bitmap or metafile object that is good only until the
+application closes the clipboard. Typically, the application either uses the
+object immediately before closing the clipboard, or it copies the object to
+local memory for future use, then closes the clipboard.
+ 
+To give a selector to the clipboard, an application must put data into a
+segment allocated by using the DosAllocSeg function with the SEG_GIVEABLE
+attribute. Once an application passes the selector for that segment to the
+clipboard and closes the clipboard, the clipboard owns the segment. The
+application cannot access the shared segment. When an application requests a
+selector from the clipboard, the clipboard gives the segment to the
+application. An application must use the selector before closing the
+clipboard or it must copy the data from the shared segment to a local
+segment before closing the clipboard.
+ 
+An application must use a shared segment when writing text to the clipboard.
+An application must also use shared segments for any application-defined
+clipboard formats. In this case, it is important to specify the CFI_SELECTOR
+flag when sending data to the clipboard.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,102 @@
+<html>
+
+<head>
+<title>DosReallocHuge (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosReallocHuge (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='memory.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#memory management 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80d5.html'>Changes</a><span class='grhilite'>►</span>         </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosReallocSeg.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMEMMGR
+ 
+USHORT DosReallocHuge(usNumSeg, usPartialSeg, sel)
+USHORT usNumSeg;        /* number of 65,536-byte segments  */
+USHORT usPartialSeg;    /* number of bytes in last segment */
+SEL sel;                /* segment selector                */
+ 
+The DosReallocHuge function reallocates a huge-memory block. This function
+changes the size of the huge memory to the specified number of 65,536-byte
+segments plus an additional segment of a specified size.
+ 
+The DosReallocHuge function is a family API function.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>usNumSeg</i>      Specifies the number of 65,536-byte segments to allocate.
+ 
+<i>usPartialSeg</i>  Specifies the number of bytes in the last segment. This number
+              can be any value in the range 0 through 65,535. If this number
+              is zero, no additional segment is allocated.
+ 
+<i>sel</i>           Specifies the selector for the huge-memory block to be
+              reallocated. The selector must have been created by using the
+              DosAllocHuge function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_INVALID_PARAMETER
+     ERROR_NOT_ENOUGH_MEMORY
+ 
+<b>Comments</b>
+ 
+The DosReallocHuge function does not change the shareable and discardable
+attributes of the segments in the huge-memory block. If it was originally a
+shareable or discardable block, it remains a shareable or discardable block.
+However, if DosReallocHuge reallocates a discardable block, it also locks
+the segments. The DosUnlockSeg function must be used to unlock the segments
+and permit discarding.
+ 
+The huge-memory block cannot be reallocated for a size larger than the
+maximum specified by the usMaxNumSeg parameter in the original call to the
+<b>DosAllocHuge</b> function.
+ 
+Each segment in the huge-memory block has a unique selector. The selectors
+are consecutive. The sel parameter specifies the value of the first
+selector; the remaining selectors can be computed by adding the selector
+offset to the first selector one or more times──that is, once for the second
+selector, twice for the third, and so on. The selector offset is a multiple
+of 2, as specified by the shift count retrieved by using the
+<b>DosGetHugeShift</b> function. For example, if the shift count is 2, the selector
+offset is 4 (1 &lt;&lt; 2). If the selector offset is 4 and the first selector is
+6, the second selector is 10, the third is 14, and so on.
+ 
+Typically, DosReallocHuge can increase, not decrease, the size of shared
+huge segments. If the shared segment is allocated by the DosAllocHuge
+function, the segment can be decreased in size by setting the fsAttr
+parameter to SEG_SIZEABLE.
+ 
+<b>DosReallocHuge</b> can be issued from ring 2, but only ring-3 segments are
+affected by this function.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restriction applies to the DosReallocHuge
+function:
+ 
+♦  The usPartialSeg parameter is rounded up to the next paragraph (16-byte)
+   value.
+ 
+<b>See Also</b>
+ 
+<b>DosAllocHuge, DosFreeSeg, DosGetHugeShift, DosLockSeg, DosReallocSeg,</b>
+<b>DosUnlockSeg</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

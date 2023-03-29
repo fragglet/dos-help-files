@@ -1,0 +1,105 @@
+<html>
+
+<head>
+<title>VioScrollLf (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioScrollLf (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L8075.html'>Changes</a><span class='grhilite'>►</span>                       </i>          <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioScrollRt.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioScrollLf(usTopRow, usLeftCol, usBotRow, usRightCol, cbColumns,
+    pbCell, hvio)
+USHORT usTopRow;      /* top row                                */
+USHORT usLeftCol;     /* left column                            */
+USHORT usBotRow;      /* bottom row                             */
+USHORT usRightCol;    /* right column                           */
+USHORT cbColumns;     /* number of blank columns                */
+PBYTE pbCell;         /* pointer to the cell to write           */
+HVIO hvio;            /* video handle                           */
+ 
+The VioScrollLf function scrolls the current screen toward the left.
+ 
+The VioScrollLf function is a family API function.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>usTopRow</i>    Specifies the top row of the screen area to scroll.
+ 
+<i>usLeftCol</i>   Specifies the leftmost column of the screen area to scroll.
+ 
+<i>usBotRow</i>    Specifies the bottom row of the screen area to scroll.
+ 
+<i>usRightCol</i>  Specifies the rightmost column of the screen area to scroll.
+ 
+<i>cbColumns</i>   Specifies the number of columns of spaces to be inserted at the
+            right. If this parameter is zero, no columns are inserted.
+ 
+<i>pbCell</i>      Points to a character/attribute combination, called a cell, that
+            fills the screen area left blank by the scrolling.
+ 
+<i>hvio</i>        Identifies an advanced video-input-and-output (AVIO)
+            presentation space. For AVIO programs, this handle must have
+            been created previously using the VioCreatePS function. For
+            other programs, hvio must be NULL.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_VIO_COL
+     ERROR_VIO_INVALID_HANDLE
+     ERROR_VIO_ROW
+ 
+<b>Comments</b>
+ 
+If the usTopRow and usLeftCol parameters are zero, they identify the
+upper-left corner of the screen. If you specify a value greater than the
+maximum for usTopRow, usLeftCol, usBotRow, usRightCol, or cbColumns, the
+maximum value for that parameter is used. Maximum values depend upon the
+dimensions of the screen being used.
+ 
+You can use the VioScrollLf function to clear the screen by setting
+<i>usTopRow and usLeftCol to zero and usBotRow, usRightCol, and cbColumns t</i>o
+their maximum values. The function clears the screen by using the
+character/attribute combination pointed to by the pbCell parameter.
+ 
+<b>Example</b>
+ 
+This example calls VioScrollLf to fill the last ten columns at the right of
+the screen with red hearts on a black background (a value of 0xFFFF is used
+for usBotRow and usRightCol).
+ 
+BYTE bCell[2];
+bCell[0] = 0x03;     /* heart character     */
+bCell[1] = 0x04;     /* red attribute (EGA) */
+VioScrollLf(0,       /* top row             */
+    0,               /* left column         */
+    0xFFFF,          /* bottom row          */
+    0xFFFF,          /* right column        */
+    10,              /* columns             */
+    bCell,           /* cell to write       */
+    0);              /* video handle        */
+ 
+<b>See Also</b>
+ 
+<b>VioCreatePS, VioScrollDn, VioScrollRt, VioScrollUp</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<title>KBD_GETSESMGRHOTKEY (1.2) - ioctl12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ioctl12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> KBD_GETSESMGRHOTKEY (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='IOCtls.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='KBD_GETSHIFTSTATE.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVIOCTL
+ 
+USHORT DosDevIOCtl(pbHotKeyBuf, pcHotKeys, 0x0076, 0x0004, hDevice)
+PBYTE pbHotKeyBuf;    /* pointer to structure for hot-key information */
+PUSHORT pcHotKeys;    /* pointer to variable for hot-key count        */
+HFILE hDevice;        /* device handle                                */
+ 
+The KBD_GETSESMGRHOTKEY function retrieves the hot-key information
+structures for the currently defined hot keys.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pbHotKeyBuf  Points to the HOTKEY</i> structure that receives hot-key
+             information structures. The buffer must be at least as large as
+             the number of structures requested.
+ 
+<i>pcHotKeys</i>    Points to the variable that specifies the number of hot-key
+             information structures to retrieve. If this variable is
+             HOTKEY_MAX_COUNT, the function copies a value to the variable
+             that specifies the maximum number of hot keys the keyboard
+             device driver can support. If this variable is
+             HOTKEY_CURRENT_COUNT, the function copies a value to this
+             variable that specifies the actual number of hot keys currently
+             supported. The function also copies the hot-key information to
+             the buffer pointed to by the pbHotKeyBuf parameter.
+ 
+<i>hDevice</i>      Identifies the keyboard that receives the device-control
+             function. The handle must have been created previously by using
+             the DosOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful or an error value if
+an error occurs.
+ 
+<b>Comments</b>
+ 
+If the variable pointed to by pcHotKeys is HOTKEY_MAX_COUNT, the function
+returns the number of currently defined hot keys. The program uses this
+number to allocate sufficient space to retrieve the actual hot-key
+information (retrieved by setting the variable to HOTKEY_CURRENT_COUNT).
+ 
+Programs should retrieve the number of hot keys first, allocate sufficient
+space for the buffer pointed to by the pbHotKeyBuf parameter, then retrieve
+the hot keys.
+ 
+<b>See Also</b>
+ 
+<b>DosOpen, KBD_SETSESMGRHOTKEY, HOTKE</b>Y
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,99 @@
+<html>
+
+<head>
+<title>PrfQueryProfileSize (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> PrfQueryProfileSize (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Initialization_file_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Profile Manager 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='prf.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='PrfQueryProfileString.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINSHELLDATA
+ 
+BOOL PrfQueryProfileSize(hini, pszAppName, pszKeyName, pcb)
+HINI hini;         /* initialization-file handle           */
+PSZ pszAppName;    /* pointer to application name          */
+PSZ pszKeyName;    /* pointer to keyname                   */
+PULONG pcb;        /* pointer to variable with data length */
+ 
+The PrfQueryProfileSize function retrieves the size of the data stored at a
+specified location in the profile file.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hini</i>        Identifies the file to query. This parameter can be a file
+            handle or one of the following values:
+ 
+            Value               Meaning
+            ────────────────────────────────────────────────────────────────
+            HINI_PROFILE        Search the user profile, and if no matching
+                                entries are found, search the system
+                                profile.
+ 
+            HINI_USERPROFILE    Search the user profile only.
+ 
+            HINI_SYSTEMPROFILE  Search the system profile only.
+ 
+<i>pszAppName</i>  Points to the null-terminated string that contains the
+            application name. The string must be less than 1024 bytes long,
+            including the terminating null character. The application name
+            is case-sensitive. If pszAppName is NULL, the length returned in
+            the variable pointed to by the pcb parameter is the length
+            required to contain a list of all application names for the
+            pszKeyName parameter.
+ 
+<i>pszKeyName</i>  Points to the null-terminated string that contains the keyname.
+            The string must be less than 1024 bytes long, including the
+            terminating null character. The keyname is case-sensitive. If
+            pszKeyName is NULL, the length returned in the variable pointed
+            to by the pcb parameter is the length required to contain a list
+            of all keynames.
+ 
+<i>pcb</i>         Points to the variable that receives the length of the data. If
+            an error occurs, the length is not returned.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INVALID_PARM
+     PMERR_MEMORY_ALLOC
+     PMERR_MEMORY_ALLOCATION_ERR
+     PMERR_MEMORY_DEALLOCATION_ERR
+ 
+<b>Comments</b>
+ 
+The location of the data stored in the profile file is determined by the
+application name and keyname passed to this function. This function is
+typically called to determine how much memory to allocate before calling
+<b>PrfQueryProfileData</b>.
+ 
+The count returned by this function will be 1 greater than that returned by
+<b>PrfQueryProfileData or PrfQueryProfileString in cases whe</b>re these functions
+will return a list. This is due to an additional null character used as a
+terminator for the entire list.
+ 
+<b>See Also</b>
+ 
+<b>PrfQueryProfileData, PrfQueryProfileString, WinQueryProfileSize</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

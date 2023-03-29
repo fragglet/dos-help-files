@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>GpiQueryDevice (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiQueryDevice (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='presentation_spaces.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Presentation Spaces and Device Contexts 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiQueryDeviceBitmapFormats.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPICONTROL
+ 
+HDC GpiQueryDevice(hps);
+HPS hps;    /* presentation-space handle */
+ 
+The GpiQueryDevice function retrieves a device-context handle for the
+currently associated presentation space.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<b>Return Value</b>
+ 
+The return value is a handle to a device context if the function is
+successful or NULL if no device context is currently associated with the
+presentation space. The return value is HDC_ERROR if an error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiQueryDevice function to retrieve a device-context
+handle for the presentation space of the desktop window. The handle is used
+in the DevQueryCaps function to determine the width and height of the
+Presentation Manager screen.
+ 
+HPS hps;
+HDC hdc;
+LONG lWidth, lHeight;
+ 
+hps = WinGetScreenPS(HWND_DESKTOP);
+hdc = GpiQueryDevice(hps);
+DevQueryCaps(hdc, CAPS_WIDTH, 1L, &amp;lWidth);
+DevQueryCaps(hdc, CAPS_HEIGHT, 1L, &amp;lHeight);
+ 
+<b>See Also</b>
+ 
+<b>DevOpenDC, GpiAssociate, WinQueryWindowDC</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

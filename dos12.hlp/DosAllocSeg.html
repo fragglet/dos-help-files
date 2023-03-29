@@ -1,0 +1,136 @@
+<html>
+
+<head>
+<title>DosAllocSeg (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosAllocSeg (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='memory.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#memory management 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80ba.html'>Changes</a><span class='grhilite'>►</span>         </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosAllocShrSeg.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMEMMGR
+ 
+USHORT DosAllocSeg(usSize, psel, fsAttr)
+USHORT usSize;    /* number of bytes requested                  */
+PSEL psel;        /* pointer to variable for selector allocated */
+USHORT fsAttr;    /* shareable/discardable flags                 */
+ 
+The DosAllocSeg function allocates a memory segment and copies the segment
+selector to a specified variable.
+ 
+The DosAllocSeg function can specify that segments can be shared by other
+processes. If the SEG_GETTABLE flag is used, other processes can gain access
+to the shared memory by calling the DosGetSeg function. If the SEG_GIVEABLE
+flag is used, the memory can be shared by other processes after the process
+allocating the memory has called the DosGiveSeg function. In both cases, the
+process allocating the memory must pass the selector to the process that
+will share the memory.
+ 
+The DosAllocSeg function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>usSize</i>     Specifies the number of bytes to allocate. This number can be any
+           value in the range 0 through 65,535. If this value is zero, the
+           function allocates 65,536 bytes.
+ 
+<i>psel</i>       Points to the variable that receives the segment selector.
+ 
+<i>fsAttr</i>     Specifies the segment attributes. This parameter can be one or
+           more of the following values:
+ 
+           Value            Meaning
+           ─────────────────────────────────────────────────────────────────
+           SEG_DISCARDABLE  Creates a discardable, nonshareable segment.
+                            Once the segment is unlocked, it may be
+                            discarded to satisfy another memory-allocation
+                            request.
+ 
+           SEG_GETTABLE     Creates a shareable segment that other processes
+                            can retrieve by using the DosGetSeg function.
+ 
+           SEG_GIVEABLE     Creates a shareable segment that the owning
+                            process can give to other processes by using the
+                            DosGiveSeg function.
+ 
+           SEG_NONSHARED    Creates a nonshareable, nondiscardable segment.
+                            This value cannot be combined with any other
+                            value.
+ 
+           SEG_SIZEABLE     Specifies that a shared segment can be reduced
+                            in size by DosReallocSeg.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_NOT_ENOUGH_MEMORY
+ 
+<b>Comments</b>
+ 
+If the SEG_DISCARDABLE attribute is set, the DosAllocSeg function
+automatically locks the segment. The segment cannot be discarded until the
+<b>DosUnlockSeg</b> function is called. Before a process accesses an unlocked
+discardable segment, it must call the DosLockSeg function to determine
+whether the segment has been discarded, and to prevent the segment from
+being discarded while the process is accessing it.
+ 
+If necessary, the system will discard an unlocked discardable segment in
+order to satisfy another allocation request. The new allocation request can
+come from any process, including the process that allocated the segment
+being discarded.
+ 
+The DosFreeSeg function frees the segment. If the segment was declared as
+shareable, it will not be discarded from memory until the last process using
+it calls DosFreeSeg.
+ 
+The DosAllocSeg function can allocate only up to 64K of contiguous memory.
+To allocate more than 64K, use the DosAllocHuge function.
+ 
+<b>DosAllocSeg</b> can be issued from ring 2, but the segment will be allocated as
+a ring-3 segment.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restrictions apply to the DosAllocSeg function:
+ 
+♦  The usSize parameter is rounded up to the next paragraph (16-byte)
+   value.
+ 
+♦  The actual segment address is copied to the psel parameter.
+ 
+<b>Example</b>
+ 
+This example calls the DosAllocSeg function to allocate 26,953 bytes. It
+then converts the selector to a far pointer that can access the allocated
+bytes.
+ 
+PCH pchBuffer;
+SEL sel;
+ 
+DosAllocSeg(26953,            /* bytes to allocate            */
+    &amp;sel,                     /* address of selector          */
+    SEG_NONSHARED);           /* sharing flag                 */
+pchBuffer = MAKEP(sel, 0);    /* converts selector to pointer */
+ 
+<b>See Also</b>
+ 
+<b>DosAllocHuge, DosAllocShrSeg, DosFreeSeg, DosGetSeg, DosGiveSeg, DosLockSeg,</b>
+<b>DosReallocSeg, DosUnlockSeg</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

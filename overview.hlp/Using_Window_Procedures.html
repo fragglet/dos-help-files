@@ -1,0 +1,140 @@
+<html>
+
+<head>
+<title>Using Window Procedures (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Window Procedures (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Window_Procedures.html'>About Section</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Window_Timers.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                          Using Window Procedures
+ 
+The following code fragment shows a sample window procedure. It shows how to
+use the message argument in a switch statement with individual messages
+handled by each case statement. Notice that each case returns a value
+specifically for that message. Consult the description of each message to
+determine the appropriate return value.
+ 
+The window procedure calls the WinDefWindowProc function for any messages
+that it does not handle itself. WinDefWindowProc performs default processing
+for essential messages sent to windows.
+ 
+MRESULT EXPENTRY MyWindowProc(hwnd, msg, mp1, mp2)
+HWND   hwnd;
+USHORT msg;
+MPARAM mp1;
+MPARAM mp2;
+{
+    /* local variables */
+ 
+    switch (msg) {
+ 
+        case WM_CREATE:
+        /* Initialize private window data. */
+ 
+            return 0L;
+ 
+        case WM_PAINT:
+        /* Paint the window. */
+ 
+            return 0L;
+ 
+        case WM_DESTROY:
+        /* Clean up private window data. */
+ 
+            return 0L;
+ 
+        default:
+            break;
+    }
+    return (WinDefWindowProc(hwnd, msg, mp1, mp2));
+}
+ 
+A dialog procedure is exactly like a window procedure except that it
+receives a WM_INITDLG message instead of the WM_CREATE message. A dialog
+procedure should pass all unprocessed messages to the WinDefDlgProc function
+instead of passing them to the WinDefWindowProc function.
+ 
+It is possible to write a window procedure that passes all messages to
+<b>WinDefWindowProc</b>, but the window will have no personality of its own. At the
+very least, a window procedure should handle the WM_PAINT message to draw
+itself. Typically, it should handle mouse and keyboard messages as well.
+Consult the descriptions of individual messages to determine if your window
+procedure should handle them.
+ 
+There are times when you may want to create a window that does not change
+the default window behavior. That window's sole purpose is to keep track of
+its child windows. Object windows are often used this way. An easy way to
+create a window that does not change the default window behavior is to
+specify the WinDefWindowProc function as your window procedure when
+registering the window class. The application then does not write a separate
+window procedure for windows of this class.
+ 
+<b>Associating a Window Procedure and Classes</b>
+ 
+A window procedure is associated with a window class by passing a far
+pointer to the window procedure to the WinRegisterClass function. Once
+registered this way, the window procedure will be associated with each new
+window created with that class.
+ 
+The following code fragment shows how to associate a window procedure with a
+window class:
+ 
+WinRegisterClass(hab,    /* anchor-block handle      */
+    szClassName,         /* class name               */
+    MyWindowProc,        /* far pointer to procedure */
+    CS_SIZEREDRAW,       /* class style              */
+    0);                  /* window data              */
+ 
+Another useful option is to subclass a window of an existing class. This is
+most often used to add functionality or to alter the behavior of frame
+windows.
+ 
+To subclass a window, call the WinSubclassWindow function. This function
+returns a pointer to the window procedure for the window. Subclassing allows
+you to process messages using your own window procedure before passing
+unprocessed messages to the original window procedure. In this way, you can
+use the original window procedure instead of WinDefWindowProc for default
+window processing.
+ 
+<b>Processing a Default Window Procedure</b>
+ 
+Typically, you call the WinDefWindowProc function for any messages that are
+not handled in your window procedure. For each message handled you should
+return an explicit value that depends on the particular message. For all
+other messages you should return the WinDefWindowProc function. The
+following code fragment shows how to structure a window procedure to call
+the default window procedure for any unused messages:
+ 
+switch (usMessage) {
+    case WM_PAINT:
+        hps = WinBeginPaint(hwnd, NULL, &amp;rect);
+        WinFillRect(hps, &amp;rect, CLR_WHITE);
+        WinEndPaint(hps);
+        return 0L;
+    default:
+        break;
+}
+return (WinDefWindowProc(hwnd, usMessage, mp1, mp2));
+ 
+You can also call WinDefWindowProc as part of your own processing of a
+window message. In these cases, you may want to modify the parameters to the
+message before passing it to WinDefWindowProc, or you may want to continue
+with the default processing after performing your own operations.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

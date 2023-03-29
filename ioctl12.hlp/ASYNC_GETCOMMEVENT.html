@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>ASYNC_GETCOMMEVENT (1.2) - ioctl12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ioctl12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ASYNC_GETCOMMEVENT (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='IOCtls.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ASYNC_GETCOMMSTATUS.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVIOCTL
+ 
+USHORT DosDevIOCtl(pfEvent, 0L, 0x0072, 0x0001, hDevice)
+PUSHORT pfEvent;    /* pointer to variable for events */
+HFILE hDevice;      /* device handle                  */
+ 
+The ASYNC_GETCOMMEVENT function retrieves the communications event flags
+from the internally maintained event word. After the function copies the
+event flags to the specified variable, it clears the event word.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pfEvent</i>    Points to the variable that receives the event flags. This
+           variable can be a combination of the following values:
+ 
+           Value           Meaning
+           ─────────────────────────────────────────────────────────────────
+           CHAR_RECEIVED   A character has been read from the serial-device
+                           receive hardware and placed in the receive
+                           queue.
+ 
+           LAST_CHAR_SENT  The last character in the device-driver transmit
+                           queue has been sent to the serial-device transmit
+                           hardware. This does not mean there is no data to
+                           send in any outstanding write requests.
+ 
+           CTS_CHANGED     The clear-to-send (CTS) signal has changed
+                           state.
+ 
+           DSR_CHANGED     The data-set-ready (DSR) signal has changed
+                           state.
+ 
+           DCD_CHANGED     The data-carrier-detect (DCD) signal has changed
+                           state.
+ 
+           BREAK_DETECTED  A break has been detected.
+ 
+           ERROR_OCCURRED  A parity, framing, or overrun error has occurred.
+                           An overrun can be a receive hardware overrun or a
+                           receive queue overrun.
+ 
+           RI_DETECTED     The trailing edge of the ring indicator (RI) has
+                           been detected.
+ 
+<i>hDevice</i>    Identifies the serial device that receives the device-control
+           function. The handle must have been created previously by using
+           the DosOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful or an error value if
+an error occurs.
+ 
+<b>Comments</b>
+ 
+This function clears the event word only when it is successful. The event
+word remains unchanged until the device is fully closed (there are no
+outstanding open handles) and then reopened.
+ 
+<b>See Also</b>
+ 
+<b>DosOpen, ASYNC_GETCOMMSTATUS, ASYNC</b>_GETCOMMERROR
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

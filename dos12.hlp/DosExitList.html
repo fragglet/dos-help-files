@@ -1,0 +1,175 @@
+<html>
+
+<head>
+<title>DosExitList (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosExitList (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Multitasking_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#multitasking 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80c0.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosFileIO.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSPROCESS
+ 
+USHORT DosExitList(fFnCode, pfnFunction)
+USHORT fFnCode;                     /* function code                  */
+PFNEXITLIST pfnFunction(USHORT);    /* pointer to address of function */
+ 
+The DosExitList function specifies a function that is executed when the
+current process ends. This "termination function" can define additional
+termination functions. The DosExitList function can be called one or more
+times: each call adds or subtracts a function from an internal list
+maintained by the system. When the current process terminates, MS OS/2
+transfers control to each function in the list.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>fFnCode</i>      Specifies whether a function's address is added to or removed
+             from the list. If the function is added, the high byte of this
+             parameter specifies the order in which the function should be
+             called. The exit-list routines with a low-order high byte will
+             be called before those with a high-order high byte. The low
+             byte of this parameter can be one of the following values:
+ 
+             Value         Meaning
+             ───────────────────────────────────────────────────────────────
+             EXLST_ADD     Adds the function to the termination list. If
+                           this flag is specified, the high byte of the
+                           parameter specifies the order in which the
+                           function is called. It can be a value from 0
+                           through 255. A value of 0 specifies that this
+                           function is to be called first. In the event of
+                           duplicate order numbers, the last function added
+                           with the duplicate order number is called before
+                           the first function added with the duplicate order
+                           number.
+ 
+             EXLST_EXIT    Termination processing is complete. Calls the
+                           next function on the termination list.
+ 
+             EXLST_REMOVE  Removes the function from the termination list.
+ 
+<i>pfnFunction</i>  Points to the termination function to be added to the list. For
+             a full description, see the following "Comments" section.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_INVALID_DATA
+     ERROR_NOT_ENOUGH_MEMORY
+ 
+<b>Comments</b>
+ 
+When adding an exit-list function, it is important that the exit-list
+function not call any system functions with a lower exit-list order. The
+order is determined by the high-byte of the fFnCode parameter. The following
+list defines the orders of the various system components:
+ 
+<b>Order      Component</b>
+────────────────────────────────────────────────────────────────────────────
+<i>0x80-0x88</i>  Extended Edition Database Manager
+ 
+<i>0x90-0x98</i>  Extended Edition Communication Manager
+ 
+<i>0xA0-0xA8</i>  Presentation Manager
+ 
+<i>0xB0</i>       KBD component
+ 
+<i>0xC0</i>       VIO component
+ 
+<i>0xD0</i>       IPC Queues component
+ 
+Dynamic-link-library modules often use the DosExitList function. It allows
+dynamic-link-library modules to free resources or clear flags and semaphores
+if the client process terminates without notifying them.
+ 
+The termination function has one parameter and no return value. The function
+should have the following form:
+ 
+VOID PASCAL FAR FuncName(usTermCode)
+USHORT usTermCode;
+{
+    .
+    .
+    .
+    DosExitList(EXLST_EXIT, (PFNEXITLIST) NULL);
+}
+ 
+The usTermCode parameter of the termination function specifies the reason
+the process ended. This parameter can be one of the following values:
+ 
+<b>Value           Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>TC_EXIT</i>         Normal exit
+ 
+<i>TC_HARDERROR</i>    Hard-error abort
+ 
+<i>TC_KILLPROCESS  Unintercepted DosKillProce</i>ss
+ 
+<i>TC_TRAP</i>         Trap operation
+ 
+Before transferring control to the termination function, MS OS/2 resets the
+stack to its initial value. MS OS/2 then passes control to the function by
+using a jmp instruction. The termination function should carry out its tasks
+and then call the DosExitList function with the fFnCode parameter set to
+EXLST_EXIT. This parameter setting directs the system to call the next
+function on the termination list. When all functions on the list have been
+called, the process ends.
+ 
+Termination functions should be as short and fail-safe as possible. Before
+the termination functions are executed, all threads except for the one
+executing the DosExitList function are destroyed. Note that a termination
+function must call the DosExitList function to end; otherwise, the process
+"hangs" because MS OS/2 cannot terminate it.
+ 
+A termination function can call most MS OS/2 system functions; however, it
+must not call the DosCreateThread or DosExecPgm function.
+ 
+<b>Example</b>
+ 
+This example calls DosExitList, which then adds the locally defined function
+CleanUp to the list of routines to be called when the process terminates.
+The CleanUp function displays a message that it is cleaning up, and then
+calls DosExitList, reporting that it has finished and that the next function
+on the termination list can be called.
+ 
+    /* Add the function, and have it be called last. */
+ 
+    DosExitList(EXLST_ADD | 0xFF00, CleanUp);
+    .
+    .
+    .
+    DosExit(EXIT_PROCESS, 0);
+}
+ 
+VOID PASCAL FAR CleanUp(usTermCode)
+USHORT usTermCode;
+{
+    VioWrtTTY("Cleaning up...\r\n", 16, 0);
+    .
+    .
+    .
+    DosExitList(EXLST_EXIT,     /* termination complete */
+        (PFNEXITLIST) NULL);
+}
+ 
+<b>See Also</b>
+ 
+<b>DosCreateThread, DosExecPgm, DosExit, DosKillProcess</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

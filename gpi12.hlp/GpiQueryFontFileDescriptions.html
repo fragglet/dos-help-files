@@ -1,0 +1,92 @@
+<html>
+
+<head>
+<title>GpiQueryFontFileDescriptions (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiQueryFontFileDescriptions (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='text_output.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Fonts and Character Primitives 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L8108.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiQueryFontMetrics.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPILCIDS
+ 
+LONG GpiQueryFontFileDescriptions(hab, pszFileName, pcFonts, pffdescs)
+HAB hab;              /* anchor-block handle                      */
+PSZ pszFileName;      /* address of the font-resource filename    */
+PLONG pcFonts;        /* address of variable with number of fonts */
+PFFDESCS pffdescs;    /* array of names                           */
+ 
+The GpiQueryFontFileDescriptions function retrieves the typeface family and
+names contained in the specified file if the file is a font-resource file.
+The function copies the names to the array pointed to by the pffdescs
+parameter. Each name is a null-terminated string up to 32 characters long.
+The function copies all names in the file up to the number of names
+specified by the pcFonts parameter.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hab</i>          Identifies the anchor block.
+ 
+<i>pszFileName</i>  Points to a null-terminated string. This string must be a valid
+             MS OS/2 filename. If it does not specify a path and the .fon
+             filename extension, the function appends the default extension
+             (.dll) and looks for the font-resource file in the directories
+             specified by the libpath command in the config.sys file.
+ 
+<i>pcFonts</i>      Points to a variable specifying the maximum number of typeface
+             family and name pairs to retrieve. The function copies the
+             actual number of descriptions it retrieved to this variable.
+ 
+<i>pffdescs</i>     Points to the array to receive the typeface family and names
+             for each font. Each array element is itself a two-element array
+             of type FFDESCS.
+ 
+<b>Return Value</b>
+ 
+The return value is the number of fonts for which details were not returned
+if the function is successful or GPI_ALTERROR if an error occurred.
+ 
+<b>Example</b>
+ 
+This example uses the GpiQueryFontFileDescriptions to retrieve the typeface
+family and names for the fonts in the helv.dll file. The function is called
+twice, once to determine the actual number of fonts in the file, and again
+to retrieve the descriptions.
+ 
+PFFDESCS pffdescs;
+SEL sel;
+LONG cFonts = 0;
+ 
+/* Retrieve a count of all fonts in the file. */
+ 
+cFonts = GpiQueryFontFileDescriptions(hab, "helv", &amp;cFonts,
+    (PFFDESCS) NULL);
+ 
+/* Allocate space for the descriptions. */
+ 
+DosAllocSeg((USHORT) (cFonts * sizeof(FFDESCS)), &amp;sel, SEG_NONSHARED);
+pffdescs = MAKEP(sel, 0);
+ 
+/* Retrieve the descriptions. */
+ 
+GpiQueryFontFileDescriptions(hab, "helv", &amp;cFonts, pffdescs);
+ 
+<b>See Also</b>
+ 
+<b>GpiQueryFonts</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

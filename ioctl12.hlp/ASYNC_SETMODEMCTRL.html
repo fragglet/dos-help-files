@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<title>ASYNC_SETMODEMCTRL (1.2) - ioctl12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ioctl12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ASYNC_SETMODEMCTRL (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='IOCtls.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ASYNC_STARTTRANSMIT.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVIOCTL
+ 
+USHORT DosDevIOCtl(pfCommErr, pbCtrlSignals, 0x0046, 0x0001, hDevice)
+PUSHORT pfCommErr;      /* pointer to variable for error value       */
+PBYTE pbCtrlSignals;    /* pointer to structure with control signals */
+HFILE hDevice;          /* device handle                             */
+ 
+The ASYNC_SETMODEMCTRL function sets the modem-control signals. This
+function turns on or off the data-terminal-ready (DTR) and ready-to-transmit
+(RTS) signals (initially, the DTR and RTS signals are turned off).
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pfCommErr</i>      Points to the variable that receives the communication status
+               of the device. This variable can be a combination of the
+               following values:
+ 
+               Value                Meaning
+               ─────────────────────────────────────────────────────────────
+               RX_QUE_OVERRUN       Receive queue overrun. There is no room
+                                    in the device driver receive queue to
+                                    put a character read in from the receive
+                                    hardware.
+ 
+               RX_HARDWARE_OVERRUN  Receive hardware overrun. A character
+                                    arrived before the previous character
+                                    was completely read. The previous
+                                    character is lost.
+ 
+               PARITY_ERROR         The hardware detected a parity error.
+ 
+               FRAMING_ERROR        The hardware detected a framing error.
+ 
+               The function sets the variable to zero if it encounters an
+               error.
+ 
+<i>pbCtrlSignals  Points to the MODEMSTATU</i>S structure that contains the
+               settings for the modem-control signals.
+ 
+<i>hDevice</i>        Identifies the serial device that receives the device-control
+               function. The handle must have been created previously by
+               using the DosOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful or an error value if
+the specified signal settings are invalid. When an error occurs, the signal
+settings remain unchanged.
+ 
+<b>Comments</b>
+ 
+This function must not be used to enable or disable the DTR or RTS signal if
+the signal is being used for input handshaking or toggling on transmit. Any
+attempt to do so will cause a "general failure" error.
+ 
+Although the function copies the communication error status to the variable
+pointed to by the pfCommErr parameter, it does not clear the error.
+ 
+If the serial device is opened after having been closed, the DTR and RTS
+signals are set to the values specified by the DTR control mode and the RTS
+control mode, respectively. For a full description, see the
+<b>ASYNC_SETDCBINFO</b> function (0x0001,0x0053).
+ 
+After a serial device has been closed, the device driver turns off the DTR
+and RTS signals, but only after the device has transmitted all data and has
+waited for at least as long as it would take to transmit 10 additional
+characters.
+ 
+<b>See Also</b>
+ 
+<b>DosOpen, ASYNC_GETMODEMINPUT, ASYNC_GETMODEMOUTPU</b>T, MODEMSTATUS
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

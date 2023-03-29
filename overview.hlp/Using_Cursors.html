@@ -1,0 +1,103 @@
+<html>
+
+<head>
+<title>Using Cursors (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Cursors (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Cursors.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#cursor functions 1.2'>Function Group</a><span class='grhilite'>►</span>        </i>             <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Dialog_Windows.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                               Using Cursors
+ 
+Typically, applications use cursors to mark the text-insertion point in a
+text window or to indicate that a window has the keyboard focus.
+ 
+There can be only one cursor in use by the system at one time, so windows
+must create and destroy cursors as they gain and lose the keyboard focus.
+The following code fragment shows how an application should respond to a
+<b>WM_SETFOCUS</b> message when using a cursor in a particular window:
+ 
+case WM_SETFOCUS:
+    if (SHORT1FROMMP(mp2)) {
+ 
+        /* gain focus */
+ 
+        WinCreateCursor(...);
+        WinShowCursor(hwnd, TRUE);
+    }
+    else {
+ 
+        /* lose focus */
+ 
+        WinDestroyCursor(hwnd);
+    }
+    return 0L;
+ 
+<b>Creating a Cursor</b>
+ 
+An application creates a cursor by calling the WinCreateCursor function.
+Generally, this is done when a window gains the keyboard focus. An
+application specifies the window in which the cursor will be displayed. This
+window may be HWND_DESKTOP, an application window, or a control window.
+ 
+An application specifies the cursor position, in window coordinates, and the
+cursor height and width. It also specifies whether the cursor rectangle
+should be filled, framed, flashing, or halftone.
+ 
+The cursor width is usually zero (nominal border width is used) for
+text-insertion cursors. This is preferable to a value of 1, since such a
+fine width is almost invisible on a high-resolution monitor. The cursor
+width may also be related to the window size; for example, when a button
+control uses a dotted-line cursor around the button text to indicate focus.
+ 
+Finally, an application can specify a clipping rectangle, in window
+coordinates, that controls the cursor clipping region. Typically, the most
+efficient strategy is to specify NULL, causing the rectangle to clip the
+cursor to the window rectangle.
+ 
+<b>Destroying a Cursor</b>
+ 
+Applications should destroy cursors by calling the WinDestroyCursor function
+when they lose the keyboard focus. It is important that they be destroyed
+when they lose the focus. Manipulating two cursors in MS OS/2 simultaneously
+can have unpredictable results and affect other applications.
+ 
+<b>Showing the Cursor</b>
+ 
+MS OS/2 maintains a "show level" for the cursor. The cursor is visible when
+the show level is zero. Each time the cursor is hidden, its show level is
+incremented. Each time the cursor is shown, its show level is decremented.
+Because the show/hide relationship is one for one, the show level can never
+go below zero.
+ 
+An application should show the cursor when it is first created since the
+cursor is created with a show level of 1.
+ 
+MS OS/2 automatically hides the cursor when the WinBeginPaint function is
+called, and shows the cursor when the WinEndPaint function is called.
+Therefore, there is no conflict with the cursor during WM_PAINT processing.
+ 
+<b>Positioning the Cursor</b>
+ 
+An application can set the position of an existing cursor by calling the
+<b>WinCreateCursor</b> function with the CURSOR_SETPOS flag set. This function can
+also be used to move a cursor around a window. Position arguments are given
+in window coordinates. To change the cursor size, destroy the current cursor
+and then create a new one with the desired size.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

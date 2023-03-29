@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>DosConnectNmPipe (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosConnectNmPipe (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='named_pipes.html'>Function Group</a><span class='grhilite'>►</span>                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosCopy.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSNMPIPES
+ 
+USHORT DosConnectNmPipe(hp)
+HPIPE hp;    /* pipe handle */
+ 
+The DosConnectNmPipe function waits for a client to open a named pipe.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hp</i>         Identifies the named pipe. This handle must have been created
+           previously by using DosMakeNmPipe.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_BAD_PIPE
+     ERROR_BROKEN_PIPE
+     ERROR_INTERRUPT
+     ERROR_INVALID_FUNCTION
+     ERROR_PIPE_NOT_CONNECTED
+ 
+<b>Comments</b>
+ 
+If the client end of a named pipe is open, the DosConnectNmPipe function
+returns immediately. If the client end of a named pipe is not open and the
+pipe was created with blocking, the DosConnectNmPipe function waits until a
+client opens the pipe. If the client end of a named pipe is not open and the
+pipe was created with no blocking, the DosConnectNmPipe function returns an
+error value immediately.
+ 
+In nonblocking mode, multiple DosConnectNmPipe calls can be issued to poll
+the state of a named pipe. If a client has not opened the pipe, the first
+call to the DosConnectNmPipe function puts the named pipe into a listening
+state and returns immediately with an ERROR_PIPE_NOT_CONNECTED return value.
+Subsequent calls to the DosConnectNmPipe function also return this error
+value, until a client opens the named pipe.
+ 
+If a named pipe was opened and closed by a client but has not been
+disconnected by the controlling process, the DosConnectNmPipe function
+returns ERROR_BROKEN_PIPE.
+ 
+<b>See Also</b>
+ 
+<b>DosDisConnectNmPipe, DosMakeNmPipe</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

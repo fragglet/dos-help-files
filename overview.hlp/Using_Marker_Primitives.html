@@ -1,0 +1,103 @@
+<html>
+
+<head>
+<title>Using Marker Primitives (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Marker Primitives (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='markers.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#marker functions 1.2'>Function Group</a><span class='grhilite'>►</span>        </i>             <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Metafiles.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                          Using Marker Primitives
+ 
+You can use marker functions to perform the following tasks:
+ 
+♦  Draw a single marker or a series of markers.
+ 
+♦  Determine the local identifier (lcid) for the current marker set.
+ 
+♦  Select a character set as the new marker set.
+ 
+♦  Determine the value that identifies the current marker.
+ 
+♦  Select a character as the new marker.
+ 
+♦  Set or change the size of the marker box.
+ 
+♦  Set or change the color of a marker.
+ 
+<b>Drawing a Series of Markers</b>
+ 
+The following code fragment shows how to draw a graph by calling the
+<b>GpiPolyLine and GpiPolyMarker fun</b>ctions:
+ 
+HPS hps;         /* presentation-space handle */
+POINTL aptl[6];  /* array of points           */
+    .
+    .
+    .
+aptl[0].x = 10; aptl[0].y = 15;         /* assigns points       */
+aptl[1].x = 150; aptl[1].y = 30;
+aptl[2].x = 200; aptl[2].y = 32;
+aptl[3].x = 250; aptl[3].y = 70;
+aptl[4].x = 360; aptl[4].y = 120;
+aptl[5].x = 380; aptl[5].y = 98;
+GpiMove(hps, aptl);                    /* sets current position */
+GpiPolyMarker(hps, 6L, aptl);          /* plots points          */
+GpiPolyLine(hps, 6L, aptl);            /* draws lines           */
+ 
+<b>Selecting a New Marker</b>
+ 
+The following code fragment shows how to check whether the default marker
+set and marker are currently being used. If they are, it replaces the
+default marker with a six-pointed star:
+ 
+if ((GpiQueryMarker(hps) == MARKSYM_DEFAULT) &amp;&amp;
+        (GpiQueryMarkerSet(hps) == LCID_DEFAULT))
+   GpiSetMarker(hps, MARKSYM_SIXPOINTSTAR);
+ 
+<b>Selecting a New Marker Set</b>
+ 
+The following code fragment shows how to load a Helvetica vector font, use
+it as the new marker set, and select the smile-face character as the new
+marker primitive:
+ 
+GpiLoadFonts(hps, "helv");                   /* loads helv.dll     */
+lFontCount = GpiQueryFonts(hps,              /* loads array of fm  */
+   0x00000002, "Helvetica", &amp;lCount,
+   (LONG) (sizeof(fm)), (PFONTMETRICS) afm);
+fat.usRecordLength = sizeof(fat);            /* sets record length */
+fat.usCodePage = 850;                        /* sets code page     */
+fat.lMatch = afm[0].lMatch;                  /* uses first metrics */
+fat.fsFontUse = FATTR_FONTUSE_TRANSFORMABLE; /* uses vector font   */
+GpiCreateLogFont(hps, (PSTR8) buffer, ++lcid,
+   (PFATTRS) &amp;fat);
+mbnd.usSet = lcid;                      /* uses font as marker set */
+mbnd.usSymbol = 2;                      /* uses smile character    */
+GpiSetAttrs(hps, PRIM_MARKER,
+   MBB_SYMBOL | MBB_SET,
+   0L, &amp;mbnd);
+ 
+<b>Changing the Marker Color</b>
+ 
+The following code fragment shows how to set the marker foreground color to
+green:
+ 
+mbnd.lColor = CLR_GREEN;
+GpiSetAttrs(hps, PRIM_MARKER, MBB_COLOR, 0L, &amp;mbnd);
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

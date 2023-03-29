@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<title>GpiSetCharShear (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiSetCharShear (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='text_output.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Fonts and Character Primitives 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiSetClipPath.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+BOOL GpiSetCharShear(hps, pptlShear)
+HPS hps;              /* presentation-space handle             */
+PPOINTL pptlShear;    /* address of structure with shear angle */
+ 
+The GpiSetCharShear function sets the character-shear attribute. The
+character shear specifies how much to shear (tilt) characters from their
+normal vertical orientation. The function uses the coordinates of the point
+specified by pptlShear as the end point of a line originating at (0,0). The
+vertical strokes in subsequent character strings are drawn parallel to the
+line. The top of the character box remains parallel to the character
+baseline.
+ 
+The system draws upright characters if pptlShear specifies the point (0,1).
+This is the default character-shear attribute. If coordinates in the point
+are both positive or both negative, the characters slope from bottom-left to
+top-right. If the coordinates have opposite signs (one is positive and one
+is negative), the characters slope from top-left to bottom-right. Zero
+should not be used for the y-coordinate since it implies an infinite shear.
+However, if both coordinates are zero, the attribute is set to the default
+value.
+ 
+If the attribute mode is AM_PRESERVE, the function saves the previous
+character-shear attribute on the attribute stack when it sets the new
+character shear. The previous character-shear attribute can be retrieved by
+using the GpiPop function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>pptlShear  Points to a POIN</i>TL structure that contains a point that defines
+           the character shear.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_CHAR_SHEAR_ATTR
+     PMERR_INV_COORDINATE
+     PMERR_INV_HPS
+     PMERR_PS_BUSY
+ 
+<b>See Also</b>
+ 
+<b>GpiQueryCharShear, GpiSetAttrMode, GpiSetAttrs, POINTL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

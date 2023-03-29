@@ -1,0 +1,123 @@
+<html>
+
+<head>
+<title>WinScrollWindow (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinScrollWindow (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Window_drawing_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Drawing in Windows 1.2'>Overview</a><span class='grhilite'>►</span>                         </i> <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinSendDlgItemMsg.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINWINDOWMGR
+ 
+SHORT WinScrollWindow(hwnd, dx, dy, prclScroll, prclClip, hrgnUpdate,
+    prclUpdate, fs)
+HWND hwnd;           /* handle of the window to scroll                    */
+SHORT dx;            /* amount of horizontal scrolling                    */
+SHORT dy;            /* amount of vertical scrolling                      */
+PRECTL prclScroll;   /* address of structure with scroll rectangle        */
+PRECTL prclClip;     /* address of structure with clip rectangle          */
+HRGN hrgnUpdate;     /* handle of the update region                       */
+PRECTL prclUpdate;   /* address of the structure for the update rectangle */
+USHORT fs;           /* scrolling flags                                   */
+ 
+The WinScrollWindow function scrolls the contents of a window rectangle.
+ 
+No application should move bits in its own window by any other method than
+by using WinScrollWindow.
+ 
+The cursor and the track rectangle are also scrolled when they intersect
+with the scrolled region.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwnd</i>        Identifies the window to scroll.
+ 
+<i>dx</i>          Specifies the amount of horizontal scrolling (in device units).
+ 
+<i>dy</i>          Specifies the amount of vertical scrolling (in device units).
+ 
+<i>prclScroll  Points to a RECTL </i>structure that specifies the scroll rectangle.
+            If prclScroll is NULL, the entire window will be scrolled.
+ 
+<i>prclClip    Points to a </i>RECTL structure that specifies the clip rectangle.
+            This structure takes precedence over the prclScroll rectangle.
+            Bits outside of the prclClip rectangle are not affected even if
+            they are in prclScroll.
+ 
+<i>hrgnUpdate</i>  Identifies the region that is modified to hold the region
+            invalidated by scrolling. This parameter may be NULL.
+ 
+<i>prclUpdate  Points to a RECTL </i>structure that receives the boundaries of the
+            rectangle invalidated by scrolling. This parameter may be NULL.
+ 
+<i>fs</i>          Specifies flags controlling the scrolling. It can be a
+            combination of the following values:
+ 
+            Value              Meaning
+            ────────────────────────────────────────────────────────────────
+            SW_SCROLLCHILDREN  All child windows are scrolled.
+ 
+            SW_INVALIDATERGN   The invalid region created as a result of
+                               scrolling will be added to update regions of
+                               those windows affected. This may result in
+                               the sending of WM_PAINT messages to
+                               WS_SYNCPAINT windows before the
+                               WinScrollWindow function returns.
+ 
+<b>Return Value</b>
+ 
+The return value is a code indicating the type of invalid region created by
+scrolling:
+ 
+<b>Value          Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>ERROR</i>          Error in the passed region.
+ 
+<i>NULLREGION</i>     Scrolling produced no invalidation.
+ 
+<i>SIMPLEREGION</i>   Scrolling produced rectangular invalidation.
+ 
+<i>COMPLEXREGION</i>  Scrolling produced a nonrectangular invalidation.
+ 
+<b>Comments</b>
+ 
+To quickly repeat scrolling, omit the SW_INVALIDATERGN flag from the fs
+parameter and accumulate the update area by specifying a region for the
+<i>hrgnUpdate parameter or a rect</i>angle for the prclUpdate parameter. When
+scrolling is completed, you can repaint the window by calling
+<b>WinInvalidateRegion or WinInvalidateRect, depending on wh</b>ether you specified
+the hrgnUpdate or prclUpdate parameter.
+ 
+Typically, an application will set the SW_INVALIDATERGN flag in fs and let
+the system handle the update regions of the affected windows. In this case,
+the hrgnUpdate and prclUpdate parameters can both be set to NULL.
+ 
+If the hwnd parameter does not have the WS_CLIPCHILDREN style, the bits of
+any child window falling inside the scrolled area will also be scrolled. If
+this is the case, WinScrollWindow should be called with SW_SCROLLCHILDREN.
+ 
+The cursor and tracking rectangle are always hidden if they are in the
+window being scrolled or a child of that window, and the cursor is always
+offset by the distance scrolled. The tracking rectangle's position is left
+alone. Both are then shown once scrolling is done.
+ 
+<b>See Also</b>
+ 
+<b>GpiCombineRegion, RECTL, WM_PAINT</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

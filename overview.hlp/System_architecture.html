@@ -1,0 +1,674 @@
+<html>
+
+<head>
+<title>MS OS/2 System Architecture (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MS OS/2 System Architecture (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='unknown#@L2'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='unknown#@L6'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+ 
+                        MS OS/2 System Architecture
+ 
+<b>Introduction</b>
+ 
+This topic is an overview of the features of Microsoft Operating System/2.
+The most important of these features are the graphical user interface and
+device-independent graphics provided by the MS OS/2 Presentation Manager and
+the multitasking and other system services provided by the MS OS/2 base. In
+particular, this overview describes the following:
+ 
+♦  MS OS/2 and Presentation Manager
+♦  The window manager
+♦  The graphics programming interface (GPI)
+♦  The system services
+♦  The MS OS/2 system functions
+ 
+<b>MS OS/2 and Presentation Manager</b>
+ 
+In a multitasking environment, it is important to give all applications some
+portion of the screen through which they can interact with the user. One of
+the principal goals of MS OS/2 is to provide visual access to most, if not
+all, applications at the same time. This access can be granted either by
+giving selected applications full use of the screen while other applications
+wait in the background or by letting applications share the screen. In MS
+OS/2, each application decides which method to use by choosing a "session"
+to run in. The session dictates whether the application receives complete
+control of the screen or must share it with other applications.
+ 
+When MS OS/2 first starts, it creates the Presentation Manager session. All
+applications in this session share the screen. Applications that run in this
+session are called Presentation Manager applications, since Presentation
+Manager is the portion of MS OS/2 that creates and manages the Presentation
+Manager session. When a new application starts, it can direct the system to
+create a new session for it. The new session gives complete control of the
+screen to the application. Applications that use the full screen are called
+full-screen applications.
+ 
+A Presentation Manager application shares the display with other
+applications by using a "window" for interaction with the user. Basically, a
+window is a rectangular portion of the system display that the system grants
+to an application. However, a window is also a combination of useful visual
+devices, such as menus, controls, and scroll bars, with which the user
+directs the actions of the application.
+ 
+A Presentation Manager application must create its own window before
+producing any output or receiving any input. Once the application creates
+its window, MS OS/2 provides the application with detailed information about
+what the user is doing with the window and automatically carries out many of
+the tasks the user requests, such as moving and sizing the window.
+ 
+A Presentation Manager application can create and use any number of windows
+to display information in a variety of ways. The system manages the screen,
+controlling the placement and display of windows and ensuring that no two
+applications attempt to access the same part of the system display at the
+same time. (In the latter case, the system overlaps the window of one
+application with the window of the other.)
+ 
+<b>Queued Input</b>
+ 
+In traditional programming environments, a program reads from the keyboard
+by making an explicit call to a function (getchar, for example). The
+function typically waits until the user presses a key before returning the
+character code to the program. A Presentation Manager application does not
+make explicit calls to read from the keyboard. Instead, MS OS/2 receives all
+input from the keyboard, mouse, and timer into its system queue and
+automatically redirects the input to the application by copying it from the
+system queue to the application queue. When the application is ready to
+retrieve input, it reads from its queue and dispatches the message to the
+appropriate window.
+ 
+In Presentation Manager, input from the keyboard and mouse is provided
+automatically to every window that is created. MS OS/2 provides input in a
+uniform format called an input message. This message contains information
+about the input that far exceeds the information available in other
+environments. An input message specifies the system time, the position of
+the mouse, the state of the keyboard, the scan code of the key (if a key is
+pressed), the number of the mouse button (if a button is pressed), and the
+device that generated the message. For example, the keyboard message
+<b>WM_CHAR</b> corresponds to a press or release of a specific key. In each
+message, MS OS/2 provides a device-independent virtual-key code that
+identifies the key, as well as the device-dependent scan code generated by
+the keyboard. The message also specifies the status of other keys on the
+keyboard, such as SHIFT, CTRL, and NUMLOCK. Keyboard, mouse, and timer
+messages all have the same format and are processed in the same manner.
+ 
+<b>Device-Independent Graphics</b>
+ 
+In Presentation Manager, you have access to a rich set of device-independent
+graphics operations. This means that your applications can easily draw
+lines, rectangles, circles, and complex regions, and can use the same calls
+and data to draw on a high-resolution graphics display as they use to draw
+on a dot-matrix printer.
+ 
+MS OS/2 requires device drivers to convert graphics-output requests to
+output for a printer, plotter, display, or other output device. A device
+driver is a special executable library that an application can load and use
+to carry out graphics operations in the "context" of the specific
+device──that is, the device driver, the output device, and the
+communications port.
+ 
+<b>Shared Resources</b>
+ 
+MS OS/2 is a multitasking system. This means that more than one application
+can run at a time. Presentation Manager applications must share the display,
+the keyboard, the mouse, and even the CPU with all other applications that
+are currently running in the same session. For this reason, MS OS/2
+carefully controls these resources and requires applications to use a
+specific program interface that guarantees this control.
+ 
+<b>The Window Manager</b>
+ 
+The MS OS/2 window manager consists of the MS OS/2 system functions that let
+applications create and manage windows and related elements. These related
+elements are primarily menus, dialog windows, and the message loop. The
+window manager provides the elements that your applications need to
+construct a graphical user interface.
+ 
+<b>Windows</b>
+ 
+A window is the primary input and output device of any Presentation Manager
+application. It is the application's only access to the system display, so,
+since nearly all Presentation Manager applications interact with the user in
+some way through the system display, these applications must use windows.
+ 
+A window is a rectangle on the system display. A typical window is composed
+of a title bar, a menu bar, scroll bars, borders, and other features. You
+list the features you want for a window when you create the window. MS OS/2
+then draws and manages the window.
+ 
+Interestingly, most Presentation Manager user-interface elements are also
+windows, including menus, title bars, buttons, entry fields, icons, and
+scroll bars.
+ 
+Although an application creates a window and technically "owns" it, the
+management of the window is actually a collaborative effort between the
+application and the system. The system maintains the position and appearance
+of the window, manages the standard window features such as the border,
+scroll bars, and title, and carries out many tasks initiated by the user
+that directly affect the window. The application maintains everything else
+about the window──in particular, the client window, in which the application
+is free to display anything it wants.
+ 
+To manage this collaborative effort, MS OS/2 advises each window of changes
+that might affect it. Every window must have a corresponding window
+procedure to receive these window-management messages and respond
+appropriately. Window-management messages either specify actions for the
+function to take or request information from the function.
+ 
+<b>Menus</b>
+ 
+Menus are the principal means of user input for a Presentation Manager
+application. A menu is a list of commands that the user can view and choose
+from. When you create an application, you supply the menu name and the
+command names. MS OS/2 displays and manages the menus for you, sending a
+message to the window procedure when the user makes a choice. This message
+is the signal to carry out the command.
+ 
+<b>Dialog Windows</b>
+ 
+A dialog window is a temporary window that you can create to let the user
+supply more information for a command. A dialog window contains one or more
+controls. A control is a small window that has a very simple input or output
+function. The controls in a dialog window give the user a means of supplying
+filenames, choosing options, and otherwise directing the action of the
+command. For example, an entry-field control lets the user enter and edit
+text.
+ 
+<b>The Message Loop</b>
+ 
+Since your application receives input through a message queue, the chief
+feature of any Presentation Manager application is the message loop. The
+message loop retrieves input messages from the message queue and dispatches
+them to the appropriate windows.
+ 
+For example, MS OS/2 collects hardware input, in the form of messages, in
+its system queue. It then copies this input to the appropriate message
+queue. The message loop in the application retrieves a message from the
+message queue and dispatches it, through the system, to the appropriate
+window procedure. The window procedure can respond to an input message by
+calling MS OS/2 functions to carry out work in the window.
+ 
+For a more specific example, consider how the system and an application
+collaborate to process keyboard-input messages. The system receives keyboard
+input when the user presses and releases a key. The system copies the
+keyboard messages from the system queue to the application's message queue.
+The message loop retrieves the keyboard messages, translates them into
+ANSI-character WM_CHAR messages, and dispatches the WM_CHAR messages to the
+appropriate window procedure. The window procedure then uses the
+<b>GpiCharString</b> function to display the character in the client window.
+ 
+MS OS/2 sends window-management messages directly to a window (Win)
+function. For example, after MS OS/2 carries out a request to destroy a
+window, it sends a WM_DESTROY message directly to the window procedure,
+bypassing the message queue. The window procedure must then use the
+<b>WinPostMsg function to copy a </b>WM_QUIT message into the message queue,
+signaling the main function that the window is destroyed and that the
+application should terminate. When the message loop retrieves the WM_QUIT
+message, the loop terminates and the main function exits.
+ 
+<b>The Graphics Programming Interface</b>
+ 
+The graphics programming interface (GPI) consists of the MS OS/2 system
+functions that let you create device-independent graphics for your
+applications. The Gpi functions are used in conjunction with the window
+manager to draw lines, shapes, and text in a window. Applications can also
+use the Gpi functions to draw graphics output on such devices as raster
+printers and vector plotters.
+ 
+<b>Presentation Spaces and Device Contexts</b>
+ 
+A presentation space is the key to an application's access to the system
+display, to printers, and to other graphics-output devices. Conceptually, a
+presentation space is a device-independent space in which you can create and
+manipulate graphics for display. The presentation space defines your drawing
+environment by specifying the tools you have available to create graphics.
+These tools include the graphics primitives granted to every presentation
+space, as well as the bitmaps and fonts that your application loads for its
+exclusive use.
+ 
+Actually, a presentation space is little more than a data structure whose
+fields contain values defining the drawing environment. The values represent
+the colors, widths, styles, and other attributes of the graphics you draw.
+The system creates the data structure when you create the presentation space
+and initializes the structure to default values.
+ 
+You must create a presentation space to create graphics. You must also
+create a device context to display those graphics on a device. A device
+context is a bridge from a presentation space to a specific device. You
+create a device context by specifying the device you want to access and the
+type of access you want, such as direct or queued (for printing). You begin
+displaying graphics on the device by associating the device context with the
+presentation space. Once you have associated the device context, any lines,
+text, and images you draw in the presentation space are also displayed on
+the given device.
+ 
+Like a presentation space, a device context is a data structure. It contains
+information about the device driver that supports the specified device. The
+device driver interprets graphics commands sent to it from the presentation
+space and creates the corresponding commands for its device. It then sends
+the commands either directly to the device or to the spooler, depending on
+the type of access you gave the device context when you created it.
+ 
+<b>Graphics Primitives</b>
+ 
+In MS OS/2, graphics primitives are lines, arcs, markers, text, areas, and
+images. They are called primitives because you use them as the basic tools
+to create the documents, pictures, and other composite graphics that your
+applications display to the user.
+ 
+You draw a primitive by using a Gpi function. For example, to draw a line,
+you use the GpiLine function and specify the ending point of the line. The
+function uses the current point as the starting point for the line and draws
+from the starting point to the ending point. The current point is simply the
+ending point of the last primitive, unless you explicitly set the current
+point by using a function such as GpiMove.
+ 
+A line primitive is a straight line. An arc primitive is a curve. Curves can
+be arcs of a circle or of an ellipse, or they can be more complex curves
+such as splines and fillets. A marker primitive is a mark or character that
+you draw at a specific point. Markers are typically used to plot points in a
+graph. An area primitive is a closed figure that has been filled with a
+pattern. A common use for an area primitive is to represent a cross-section
+in a mechanical drawing. An image is a bitmapped image, with each bit
+representing the color of a pel (picture element) on the device. Images are
+often used for complex pictures that cannot easily be drawn.
+ 
+Every primitive has a corresponding set of primitive attributes. The
+attributes specify the color, style, size, and orientation of the primitive
+when your application draws it. The primitive attributes are given default
+values when you create the presentation space, so you can use the primitives
+immediately. However, you can reset the attributes at any time. You have the
+choice of changing the attributes for individual primitives or changing a
+specific attribute for all primitives. For example, you can set the color
+for all primitives by using the GpiSetColor function, or you can set it for
+just the line primitive by using the GpiSetAttrs function.
+ 
+<b>Other Graphics Tools</b>
+ 
+In addition to the graphics primitives, MS OS/2 provides graphics tools that
+you can use to draw graphics and to affect how the graphics are drawn. These
+tools are paths, bitmaps, clipping areas, transformations, and color
+tables.
+ 
+A path is a sequence of lines that you can use to create a filled area, a
+geometric line, or a clip path. A path is very much like an area primitive,
+in that you can use the path as a closed figure and fill it with a pattern.
+Unlike an area primitive, however, a path can be used to create geometric
+lines, sometimes called wide lines. Geometric lines are drawn, using a given
+width and pattern, so that they follow the outline specified by the path.
+Geometric lines give you a selection of line styles and patterns that are
+not available with the line primitive.
+ 
+A bitmap is an array of bits that represents an image that you can display
+on a raster output device. Bitmaps typically represent scanned images and
+icons and are very much like image primitives. Unlike an image primitive,
+however, a bitmap can have several different formats, each format specifying
+color information that an image primitive cannot contain. Also, bitmaps can
+be used to create fill patterns that you can use to fill figures created
+using paths and area primitives. Finally, bitmaps can be copied from one
+presentation space to another or even from one location to another within
+the same presentation space.
+ 
+A font is a collection of characters and symbols that you can use to draw
+text. Characters in a font belong to the same typeface and share
+stroke-width and serif characteristics. Some common fonts are 12-point
+Helvetica, 10-point Times Roman Bold, and 12-point Courier Italic. To use
+fonts in an application, you first create a logical font that describes the
+typeface and other characteristics that you want. Then you use the local
+identifier for the logical font to set that font as the current font for the
+presentation space. Subsequent text functions use the current font to draw
+text.
+ 
+Clipping is a process that limits graphics output to a specific region on
+the display or on a page of printer paper. You can use clipping with a
+presentation space by creating a clipping area. The clipping area is the
+region where output can appear. If an application attempts to draw output
+outside a clipping area, the system will "clip" the output, preventing it
+from appearing on the device. You can create a clipping area for a
+presentation space by setting the dimensions of the graphics field and
+viewing limits or by creating a clip path or clip region. The final clipping
+area is the intersection of these four possible clip regions.
+ 
+A transformation defines how the system should map the points in one
+coordinate space onto another coordinate space. Since all graphics
+primitives and other drawing tools use coordinate spaces, a transformation
+affects the way all graphics are drawn by your application. For example, you
+can use a transformation to move a figure from one place to another on the
+display or to rotate or adjust the size of the figure. Transformations are
+typically used to give the user different perspectives on a single drawing
+or to create rotated or sheared figures that would be time-consuming for the
+application to plot and draw.
+ 
+A logical color table is an array of colors that an application uses when
+drawing graphics. Any primitive or other graphic you draw has one of the
+colors given in the table. You specify a color by giving a color index. The
+index identifies the table entry defining the color you want. Every
+presentation space has a default color table when it is created, but you can
+create a new logical color table to replace the default table if you need
+other colors. Creating a new table associates the color indexes with
+whatever color you have specified in the corresponding table entry.
+ 
+<b>Drawing</b>
+ 
+You draw graphics by using the MS OS/2 drawing functions. A drawing function
+draws a primitive or other graphic, applying the primitive attributes and
+whatever information you supply to the function when you call it. For
+example, when drawing line primitives, the system applies the current line
+color and style. The style determines whether the line is solid or a series
+of dashes, dots, or both.
+ 
+Some attributes apply to all graphics primitives. For example, the
+foreground and background colors and mix modes affect all primitives. The
+foreground color defines the color of the primitive and the background color
+defines the color "behind" the primitive. For a line drawn using a dashed
+style, the dashes have the foreground color and the gaps between the dashes
+have the background color. The mix modes define how the foreground and
+background colors are combined with colors already on the display. The mix
+mode can cause the color to overpaint the existing color, leave it alone, or
+mix with it by using a binary operator such as the exclusive-OR operator.
+ 
+Some attributes are specific to a particular graphics primitive. For
+example, the arc parameters apply only to arcs. The arc parameters specify a
+transformation that maps a circle to another circle, ellipse, or similar
+shape. When you draw an arc, the system uses the shape defined by the
+transformed circle as the shape for your arc. You supply a multiplier to set
+the final size of the arc.
+ 
+A number of drawing functions use loadable resources to draw graphics. For
+example, the text-drawing functions, such as GpiCharString and
+<b>GpiCharStringPos</b>, can use a loaded font to draw text. To make a loadable
+resource available for these functions, you typically load the resource into
+memory and create a local identifier for the resource. For example, to use a
+font resource, you load it using the GpiLoadFonts function and then set the
+local identifier by using the GpiCreateLogFont function. Once you have a
+local identifier, you can set the resource to be the current resource by
+using a function such as GpiSetCharSet. Along with the text-drawing
+functions, the marker and area functions can use resources when they draw.
+ 
+<b>Retained Graphics and Segments</b>
+ 
+MS OS/2 lets you retain the graphics you draw in your application by storing
+them in retained segments. You create a retained segment by setting the
+drawing mode of the presentation space to DM_RETAIN or DM_DRAWANDRETAIN and
+opening the segment. All subsequent graphics are stored in the segment (and
+are also drawn on the device, if you specified DM_DRAWANDRETAIN). You can
+close the segment at any time and draw the contents by using a function such
+as GpiDrawSegment.
+ 
+Retained segments are useful for storing graphics that result from user
+input. Once stored, the graphics can be redrawn or edited at any time. An
+element pointer lets the application move to a specific graphics element in
+a segment. The element can then be drawn or replaced, or new elements can be
+inserted.
+ 
+<b>Metafiles</b>
+ 
+A metafile, created by using a special device context, is another method of
+storing graphics. In this case, you associate the metafile device context
+with the presentation space, draw the graphics you want in the metafile, and
+then disassociate the device context and close it. Closing the metafile
+returns a handle that you can use to save the metafile in a disk file.
+ 
+Metafiles are a useful way of transferring graphics images from one computer
+to another. An application can load a metafile from disk and play it into a
+presentation space. The presentation space can be associated with any
+device──display or printer. The graphics in the metafile are stored as
+graphics commands, not as a bitmap, so an application can examine and
+extract portions of the metafile if necessary.
+ 
+<b>System Services</b>
+ 
+The system services consist of all the MS OS/2 system functions that let you
+create processes and threads, access disk files and devices, allocate
+memory, and retrieve or set information about the system. In Presentation
+Manager applications, the system-service functions are typically used to
+carry out tasks for which no corresponding window-manager or Gpi function
+exists. In full-screen programs, system-service functions are used almost
+exclusively, even to interact with the user and access the devices of the
+computer.
+ 
+<b>Multitasking</b>
+ 
+Multitasking, one of the principal features of MS OS/2, is the ability of
+the system to manage the execution of more than one program at a time. This
+ability helps to optimize use of the computer, since time normally spent by
+a program waiting for user input is distributed to other programs that may
+be printing a document or recalculating a spreadsheet.
+ 
+MS OS/2 provides multitasking in the traditional sense of having more than
+one program run at a time, and it also extends this concept to permit a
+single program to run more than one copy of itself at the same time.
+ 
+Every program that has been loaded into memory and is running is called a
+process. Each copy of a process is called a thread. A process always has at
+least one thread, called the main thread or thread 1, and can create more
+threads. These additional threads are useful for carrying out tasks
+unrelated to the processing of the main thread. For example, a process may
+create a thread to write data to a disk file. This frees the main thread so
+that it can continue to process user input.
+ 
+<b>Dynamic Linking</b>
+ 
+Dynamic linking lets a program gain access at run time to functions that are
+not part of its executable code. These functions are contained in
+dynamic-link libraries──special program modules that contain executable code
+but cannot be run as programs. Instead, programs load the appropriate
+dynamic-link libraries and execute the code in the libraries by linking to
+them dynamically.
+ 
+Dynamic-link libraries are very common in MS OS/2. In fact, most of the
+system is contained in dynamic-link libraries. The chief advantage of
+dynamic-link libraries is that they reduce the amount of memory needed by a
+program. A program loads a library only if it needs to execute a function in
+the library. Once the library is loaded, the system also shares it with any
+other program that needs it. This means that only one copy of the library is
+ever loaded at any one time.
+ 
+<b>Memory Management</b>
+ 
+Programs can, at any time, allocate additional memory for their own use. MS
+OS/2 controls access to system memory through the use of selectors. A
+selector is a unique number identifying a specific segment in memory. When a
+program allocates a segment, it specifies the size of the segment (in bytes)
+and receives a selector for that segment. This selector can then be used to
+access the memory.
+ 
+MS OS/2 protects memory from unauthorized use. The process that allocates
+memory owns that memory, and no other process can access it. Attempting to
+access memory owned by another process causes a protection violation and
+usually terminates the process.
+ 
+If two processes need to share memory, a process can create shared memory
+and either pass the selector to the process that is to share the memory or
+pass the name of the shared segment to that process. When two processes
+share a segment, no protection violation occurs for them, but the memory
+remains protected from all other processes. The sharing processes must
+manage the shared memory.
+ 
+<b>The File System</b>
+ 
+MS OS/2 programs have complete access to the disk files and devices of the
+computer. MS OS/2 manages its disk files and its devices in essentially the
+same way. For example, a program can use the same functions to open and read
+from a disk file as it uses to open and read from a serial port. Each open
+file or device is identified by a unique file handle. The program uses the
+handle in system functions to access the file or device.
+ 
+MS OS/2 lets programs create, open, move, and delete files and directories
+in the file system. When a process opens a file, it specifies whether the
+file can be shared──that is, whether it can be accessed and possibly
+modified by other processes. This sharing also applies to devices that a
+process may open. Processes can open any device directly, including the
+parallel port, the serial ports, and the disk drive. MS OS/2 provides a wide
+range of input-and-output-control functions that a process can use to access
+and set the modes of the devices it has opened.
+ 
+Ordinarily, the system automatically opens three files when a program
+starts: the standard-input, standard-output, and standard-error files. These
+files correspond to the keyboard and the full-screen display. The program
+can use these files to read from the keyboard and write to a full-screen
+display.
+ 
+<b>Full-Screen Keyboard, Mouse, and Video Operations</b>
+ 
+For full-screen programs, MS OS/2 provides access to the keyboard, the
+mouse, and the video display. A program can open these devices in much the
+same way as it opens a file. The MS OS/2 keyboard (Kbd) functions return
+much more information about a keystroke than do the standard file-system
+functions. Also, the keyboard functions let a program create logical
+keyboards and manage these keyboards for the processes in the same screen
+group.
+ 
+Similarly, a program can open the mouse and read events from the mouse-event
+queue. An event is a mouse motion or button click. The program can also
+manage the mouse pointer, moving it, hiding it, and showing it as
+necessary.
+ 
+Any full-screen program can write individual characters and strings directly
+to a character-based display. Unlike Presentation Manager applications,
+which must write characters to windows, a full-screen program has complete
+control of the system display while its session is in the foreground. The
+program can write both characters and attributes to the display, read
+characters from the display, and change modes for the display. A program
+that uses the video functions in a full-screen session must manage the
+display for that session.
+ 
+The keyboard and mouse functions should not be used in Presentation Manager
+applications, since the system provides its own mouse and keyboard
+management. Many of the video functions can be used in a special type of
+Presentation Manager application called an advanced-video-input-and-output
+(AVIO) program. An AVIO program creates a window but uses the video
+functions to write text to the window.
+ 
+<b>Interprocess Communication</b>
+ 
+MS OS/2 provides several methods of interprocess communication: semaphores,
+pipes, signals, and queues.
+ 
+A semaphore is a special variable that a process can use to signal the
+beginning and ending of a given operation and to prevent more than one
+thread within the process from accessing a specific resource at the same
+time. A process can create and use three types of semaphores: system, RAM,
+and fast-safe RAM. System semaphores are used between processes to control
+access to a shared resource. RAM semaphores are used between threads in the
+same process to control a resource or to signal the end of an operation.
+Fast-safe RAM semaphores are used between threads or processes to control a
+resource. The RAM semaphores are typically used when semaphore processing
+must be fast.
+ 
+A pipe is a special file that two processes can use to transfer data.
+Although a pipe is like a file, it does not correspond to a device or a file
+on disk. Instead, the pipe is maintained by the system. Two processes use a
+pipe by opening the pipe and retrieving two handles: a read handle and a
+write handle. One process uses the write handle to write data to the pipe.
+The other process uses the read handle to read the data from the pipe.
+ 
+A signal is a special interrupt that is sent to a process by the system or
+by another process. The signal temporarily stops normal execution of the
+process and causes the process to execute a signal handler. Signals are
+typically used to stop a process and exit. For example, pressing the CTRL+C
+key combination in a full-screen session generates a signal that usually
+stops the current process. The signal handler defines what a process does
+when it receives a signal. If a process does not want default signal
+handling, it can disable a signal or replace the signal handler with one of
+its own.
+ 
+A queue is a special buffer that a process creates and shares with other
+processes. A queue is a convenient way for one process to channel data from
+two or more related processes into a single buffer. Note that this kind of
+queue is different from the message queue used by Presentation Manager. The
+queues are not related.
+ 
+<b>The MS OS/2 System Functions 1.2</b>
+ 
+The MS OS/2 system functions give applications access to all the features of
+MS OS/2. The MS OS/2 features, such as windows, device-independent graphics,
+and multitasking, let you create programs that make optimal use of the
+computer's memory, display, and CPU while still meeting the needs of a wide
+range of users through either the traditional character-based interface or
+the graphical user interface of Presentation Manager.
+ 
+The MS OS/2 system functions are organized into several distinct groups, as
+described in the following list:
+ 
+<b>Function group  Usage</b>
+────────────────────────────────────────────────────────────────────────────
+<b>Dev      </b>       Use the Presentation Manager device (Dev) functions to open
+                and control Presentation Manager device drivers. These
+                functions let you create device contexts that you can
+                associate with a presentation space and use with the Gpi
+                functions to carry out device-independent graphics
+                operations for displays, printers, and plotters.
+ 
+<b>Dos      </b>       Use the disk-operating-system (Dos) functions in full-screen
+                and Presentation Manager sessions to read from and write to
+                disk files, to allocate memory, to start threads and
+                processes, to communicate with other processes, and to
+                access the computer's devices directly. Most functions in
+                this group can be used in Presentation Manager
+                applications.
+ 
+<b>Gpi      </b>       Use the graphics-programming-interface (Gpi) functions to
+                create graphics output for a display, a printer, or other
+                output devices. The Gpi functions give you a full range of
+                graphics primitives, from lines to complex curves to
+                bitmaps. You choose the attributes for the primitives (such
+                as color, line width, and pattern) and then draw lines,
+                text, and shapes. The retained-graphics capability lets you
+                save the drawings in segments and build complex pictures by
+                drawing a chain of segments.
+ 
+<b>Kbd      </b>       Use the keyboard (Kbd) functions in full-screen sessions to
+                read keystrokes from the keyboard, to manage multiple
+                logical keyboards, and to change code pages and translation
+                tables. Since the Presentation Manager session provides its
+                own keyboard support, Kbd functions are not needed in
+                Presentation Manager applications.
+ 
+<b>Mou      </b>       Use the mouse (Mou) functions in full-screen sessions to
+                read mouse input from the mouse-event queue, to set the
+                mouse-pointer shape, and to manage the mouse for all
+                processes in a session. As with the keyboard, the
+                Presentation Manager session provides its own mouse support,
+                so Mou functions are not needed in Presentation Manager
+                applications.
+ 
+<b>Vio      </b>       Use the video-input-and-output (Vio) functions in
+                full-screen sessions to write characters and character
+                attributes to the screen, to create pop-up windows for
+                messages, to change the video modes, and to access physical
+                video memory. Vio functions can also be used in
+                advanced-video-input-and-output (AVIO) applications for the
+                Presentation Manager session, to write characters and
+                character attributes in a window. Most Presentation Manager
+                applications, however, use the
+                graphics-programming-interface (Gpi) functions to write text
+                in a window.
+ 
+<b>Win      </b>       Use the window-manager (Win) functions to create and manage
+                windows. Presentation Manager applications use windows as
+                the main interface with the user. The Win functions let you
+                create menus, scroll bars, and dialog windows that let the
+                user choose commands and supply input. Your application
+                receives all mouse and keyboard input as messages from the
+                message queue. The Win functions let you retrieve messages
+                from the queue and dispatch them to the window the input is
+                intended for.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

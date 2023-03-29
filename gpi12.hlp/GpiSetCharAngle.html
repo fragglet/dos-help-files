@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>GpiSetCharAngle (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiSetCharAngle (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='text_output.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Fonts and Character Primitives 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiSetCharBox.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+BOOL GpiSetCharAngle(hps, pgradlAngle)
+HPS hps;                   /* presentation-space handle                */
+PGRADIENTL pgradlAngle;    /* address of structure with baseline angle */
+ 
+The GpiSetCharAngle function sets the character angle. The character angle
+specifies the angle at which characters are drawn, relative to the x-axis.
+The function uses the point specified by the pgradlAngle parameter to
+compute the character angle. Any characters drawn are set on a baseline that
+is parallel to a line drawn through the specified point and the origin.
+ 
+If the attribute mode is AM_PRESERVE, the function saves the previous
+character angle on the attribute stack when it sets the new angle. The
+previous character angle can be retrieved by using the GpiPop function.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>          Identifies the presentation space.
+ 
+<i>pgradlAngle  Points to the GRADIE</i>NTL structure that contains a point that
+             defines the character angle. If both fields in the structure
+             are zero, the function sets the character angle to the default
+             value.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_CHAR_ANGLE_ATTR
+     PMERR_INV_HPS
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+The character angle is used only when the character mode is CM_MODE2 or
+CM_MODE3, as set by the GpiSetCharMode function. In CM_MODE2, the system
+uses the character angle to compute the position of each character along the
+baseline. However, when the system draws a character, it places only the
+lower-left corner of the character box at the computed position. The
+orientation of the character box remains relative to the x-axis instead of
+the baseline. In CH_MODE3, the character boxes are rotated to be
+perpendicular to the character baseline. If the world-coordinate system is
+such that one x-axis unit is not physically equal to one y-axis unit, a
+rotated character string appears to be sheared.
+ 
+<b>See Also</b>
+ 
+<b>GpiQueryCharAngle, GpiSetAttrMode, GpiSetAttrs, GpiSetCharMode,</b>
+<b>WinGetLastError, GRADIENTL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

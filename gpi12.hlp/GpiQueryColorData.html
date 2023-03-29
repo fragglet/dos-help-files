@@ -1,0 +1,101 @@
+<html>
+
+<head>
+<title>GpiQueryColorData (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiQueryColorData (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='mix_mode_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Color and Mix Modes 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiQueryColorIndex.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPILOGCOLORTABLE
+ 
+BOOL GpiQueryColorData(hps, clData, alData)
+HPS hps;         /* presentation-space handle */
+LONG clData;     /* number of elements        */
+PLONG alData;    /* three-element array       */
+ 
+The GpiQueryColorData function retrieves the format flag and index-value
+range for the current logical color table. The format flag specifies whether
+the color table has the default, indexed-RGB, or RGB format. The index-value
+range specifies the first and last indexes in the table. (These apply to
+color tables having the default or indexed RGB formats.)
+ 
+The function typically copies the format flags and the first and last index
+values to the array pointed to by the alData parameter; however, the
+function uses the clData parameter to determine the number of values to
+copy. The clData parameter must be set to 3 in order to copy all values.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>clData</i>     Specifies the number of values to copy to the array pointed to by
+           the alData parameter.
+ 
+<i>alData</i>     Points to the array that receives the format flag and index-value
+           range. The elements of the array have the following meanings:
+ 
+           Element index    Meaning
+           ─────────────────────────────────────────────────────────────────
+           QCD_LCT_FORMAT   Specifies the format of color table. It is
+                            LCOLF_DEFAULT if the current color table is the
+                            default color table; LCOLF_INDRGB if the color
+                            table translates indices to RGB color values; or
+                            LCOLF_RGB if the color-table indices and RGB
+                            color values are equal.
+ 
+           QCD_LCT_LOINDEX  Specifies the smallest color index. For the
+                            default color table, the smallest index is
+                            zero.
+ 
+           QCD_LCT_HIINDEX  Specifies the largest color index. For the
+                            default color table, the largest index is one
+                            less than the maximum number of entries in the
+                            table.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiQueryColorData function to retrieve the smallest
+color-table index. The GpiQueryLogColorTable function is then used to
+retrieve the RGB color value for this index.
+ 
+LONG alData[3];
+LONG alColor[1];
+ 
+GpiQueryColorData(hps, 3L, alData);
+GpiQueryLogColorTable(hps, 0L, alData[QCD_LCT_LOINDEX], 1L, alColor);
+ 
+<b>See Also</b>
+ 
+<b>GpiQueryLogColorTable, GpiQueryNearestColor, GpiQueryRealColors,</b>
+<b>GpiQueryRGBColor</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

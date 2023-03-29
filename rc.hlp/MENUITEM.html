@@ -1,0 +1,196 @@
+<html>
+
+<head>
+<title>MENUITEM (1.2) - rc.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+rc.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MENUITEM (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MESSAGETABLE.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+ 
+                  The Resource Compiler MENUITEM Statement
+ 
+<b>MENUITEM text, menu-id[, [menu-style][, menu-attribute]]</b>
+ 
+<b>MENUITEM SEPARATOR</b>
+ 
+The MENUITEM statement creates a menu item for a menu. The statement,
+permitted only in a MENU or SUBMENU statement, defines the text, identifier,
+and attributes of a menu item. The system displays the text when it displays
+the corresponding menu. If the user chooses the menu item, the system
+generates a WM_COMMAND message that includes the specified menu-item
+identifier and sends it to the window owning the menu.
+ 
+You can provide any number of MENUITEM statements, but each must have a
+unique menu-id value.
+ 
+The alternative form of the MENUITEM statement, MENUITEM SEPARATOR, creates
+a menu separator. A menu separator is a horizontal dividing bar between two
+menu items in a submenu. The separator is not active──that is, the user
+cannot choose it, it has no text associated with it, and it has no
+identifier.
+ 
+<b>Field           Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>text</i>            Specifies the text of the menu item. This field must contain
+                zero or more characters enclosed in double quotation marks.
+                Character values must be in the range 1 through 255. If a
+                double quotation mark is required in the string, you must
+                include the double quotation mark twice. The tilde character
+                (~) and the \t and \a character combinations have special
+                meanings in the string; for details, see the "Comments"
+                section. If the menu-style field is MIS_BITMAP, item-name
+                must be a bitmap identifier instead of a name. The bitmap
+                identifier must have been previously defined using a BITMAP
+                statement, must be preceded by the # character, and must be
+                enclosed in double quotation marks.
+ 
+<i>menu-id</i>         Specifies the menu-item identifier. This value must be an
+                integer in the range 0 through 65,535, or a simple
+                expression that evaluates to a value in that range. Each
+                identifier must be unique.
+ 
+<i>menu-style</i>      Specifies the menu-item style. This value can be a
+                combination of the following:
+ 
+                Value                Meaning
+                ────────────────────────────────────────────────────────────
+                MIS_BITMAP           Specifies that item-name is a bitmap
+                                     identifier.
+ 
+                MIS_BREAK            Specifies that the menu has multiple
+                                     columns of items in one pull-down menu
+                                     or multiple lines of menus in the
+                                     top-level menu.
+ 
+                MIS_BREAKSEPARATOR   Specifies that the menu has a vertical
+                                     line between the columns in a pull-down
+                                     menu.
+ 
+                MIS_BUTTONSEPARATOR  Specifies that the user can activate
+                                     the menu item only by using the mouse.
+                                     The text is centered in the item,
+                                     rather than left justified. This option
+                                     is used for the Help item on the right
+                                     side of the menu bar.
+ 
+                MIS_HELP             Specifies that the menu item generates
+                                     a WM_HELP message.
+ 
+                MIS_OWNERDRAW        Specifies that the menu item is drawn
+                                     by the owner window. The menu sends
+                                     WM_DRAWITEM and WM_MEASUREITEM messages
+                                     to the owner window to draw the item
+                                     and specify its size.
+ 
+                MIS_SEPARATOR        Specifies that the menu item is a menu
+                                     separator. Although the item-name and
+                                     menu-id fields are ignored, you must
+                                     still give values if you specify this
+                                     style.
+ 
+                MIS_STATIC           Specifies that the user cannot choose
+                                     the menu item.
+ 
+                MIS_SUBMENU          Specifies that the MENUITEM statement
+                                     is to be treated as a SUBMENU
+                                     statement. When you specify this value,
+                                     you must follow the MENUITEM statement
+                                     with a BEGIN and END clause, as in a
+                                     SUBMENU statement. You may include a
+                                     PRESPARAMS statement immediately after
+                                     the BEGIN keyword.
+ 
+                MIS_SYSCOMMAND       Specifies that the menu item generates
+                                     a WM_SYSCOMMAND message.
+ 
+                MIS_TEXT             Specifies that item-name is a character
+                                     string. This is the default value.
+ 
+<i>menu-attribute</i>  Specifies the menu-item attributes. This value can be a
+                combination of the following:
+ 
+                Value          Meaning
+                ────────────────────────────────────────────────────────────
+                MIA_CHECKED    Places a check mark next to the menu-item
+                               name.
+ 
+                MIA_DISABLED   Disables the menu item, preventing the system
+                               from generating a message when the user
+                               chooses the command.
+ 
+                MIA_FRAMED     Places a frame (heavy border) around the menu
+                               item.
+ 
+                MIA_HILITED    Places a highlight on the menu-item name when
+                               it is displayed, by inverting the name and
+                               background.
+ 
+                MIA_NODISMISS  Causes a submenu or menu item to remain
+                               displayed after the user chooses an item.
+ 
+<b>Comments</b>
+ 
+You can use the \t or \a character combination in any item name. The \t
+character inserts a tab when the name is displayed and is typically used to
+separate the menu-item name from the name of an accelerator key. The \a
+character aligns to the right all text that follows it. These characters are
+intended to be used for menu items in submenus only. The width of the
+displayed submenu is always adjusted so that there is at least one space
+(and usually more) between any pieces of text separated by a \t or a \a.
+(When compiling the menu resource, the compiler stores the \t and \a
+characters as control characters. For example, the \t is stored as 0x09.)
+ 
+A tilde (~) character in the item name indicates that the following
+character is used as a mnemonic character for the item. When the menu is
+displayed, the tilde is not shown, but the mnemonic character is underlined.
+The user can choose the menu item by pressing the key corresponding to the
+underlined mnemonic character.
+ 
+<b>Example</b>
+ 
+This example creates a menu item named Alpha. The item identifier is 101.
+ 
+MENUITEM "Alpha", 101
+ 
+This example creates a menu item named Beta. The item identifier is 102. The
+menu item has a text style and a checked attribute.
+ 
+MENUITEM "Beta", 102, MIS_TEXT, MIA_CHECKED
+ 
+This example creates a menu separator between menu items named Gamma and
+Delta.
+ 
+MENUITEM "Gamma", 103
+MENUITEM SEPARATOR
+MENUITEM "Delta", 104
+ 
+This example creates a menu item that has a bitmap instead of a name. The
+bitmap identifier, 1, is first defined using a BITMAP statement. The
+identifier for the menu item is 301. Note that a # sign must be placed in
+front of the bitmap identifier in the MENUITEM statement.
+ 
+BITMAP 1 mybitmap.bmp
+ 
+MENUITEM "#1", 301, MIS_BITMAP
+ 
+<b>See Also</b>
+ 
+<b>BITMAP, MENU, PRESPARAMS, SUBMENU</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

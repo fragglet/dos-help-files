@@ -1,0 +1,96 @@
+<html>
+
+<head>
+<title>WinSendMsg (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinSendMsg (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='PM_Message_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Messages and Message Queues 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinSetAccelTable.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMESSAGEMGR
+ 
+MRESULT WinSendMsg(hwnd, msg, mp1, mp2)
+HWND hwnd;     /* handle of the receiving window */
+USHORT msg;    /* message                        */
+MPARAM mp1;    /* first message parameter        */
+MPARAM mp2;    /* second message parameter       */
+ 
+The WinSendMsg function sends a message to the specified window.
+ 
+This function does not return until the message has been processed by the
+window procedure. If the window receiving the message belongs to the same
+thread, the window function is called immediately as a subroutine. If the
+window is of another thread or process, Presentation Manager switches to the
+appropriate thread and calls the appropriate window function, passing the
+message to the window function. The message is not placed in the destination
+thread's queue.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwnd</i>       Identifies the window to send the message to.
+ 
+<i>msg</i>        Specifies the message.
+ 
+<i>mp1</i>        Specifies message parameter 1.
+ 
+<i>mp2</i>        Specifies message parameter 2.
+ 
+<b>Return Value</b>
+ 
+The return value is the result returned by the invoked window procedure.
+ 
+<b>Comments</b>
+ 
+The WM_USER constant marks the beginning of values you can use for your own
+messages. For example, you might have a section of a header file that looks
+like this:
+ 
+#define WM_USERMSG00  (WM_USER + 0)
+#define WM_USERMSG01  (WM_USER + 1)
+#define WM_USERMSG02  (WM_USER + 2)
+#define WM_USERMSG03  (WM_USER + 3)
+ 
+The following lists some of the differences between WinPostMsg and
+<b>WinSendMsg</b>:
+ 
+♦  WinPostMsg returns immediately. WinSendMsg waits for the receiver to
+   return.
+ 
+♦  A thread that does not have a message queue can still call WinPostMsg. It
+   cannot call WinSendMsg.
+ 
+♦  Calling WinSendMsg to send a message to another thread is costly in terms
+   of CPU time. This is not true of WinPostMsg.
+ 
+<b>Example</b>
+ 
+This example gets the window handle of the system menu and calls WinSendMsg
+to send a message to disable the Close menu item.
+ 
+HWND hwndSysMenu;
+ 
+hwndSysMenu = WinWindowFromID(hwndDlg, FID_SYSMENU);
+WinSendMsg(hwndSysMenu, MM_SETITEMATTR,
+    MPFROM2SHORT(SC_CLOSE, TRUE),
+    MPFROM2SHORT(MIA_DISABLED, MIA_DISABLED));
+ 
+<b>See Also</b>
+ 
+<b>WinBroadcastMsg, WinPostMsg</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,157 @@
+<html>
+
+<head>
+<title>Using Static Controls (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Static Controls (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Static_Controls.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#static control messages'>Message Group</a><span class='grhilite'>►</span>                      <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='title_bar_controls.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                           Using Static Controls
+ 
+Static controls can be used in dialog windows and client windows. There is
+usually very little interaction between an application and the static
+control once the control is created. However, an application can change the
+state of the static control.
+ 
+Static controls also are associated with a long-word handle which may be set
+and queried by an application. By default, icon and bitmap static controls
+use this handle to contain a handle to their display object. Applications
+can modify this handle by using the SM_SETHANDLE and SM_QUERYHANDLE messages
+to change static-control appearance.
+ 
+<b>Static Controls in a Dialog Window</b>
+ 
+Static controls are most commonly used as labels and separators in dialog
+windows. As such, they are defined as part of a dialog template in the
+application resource file. Once the dialog window is displayed, the static
+controls do not interact with the application unless the application changes
+their state. Typically, an application might change the text or position of
+a static control. These operations are achieved by using the
+<b>WinSetWindowText and WinSetWindowPos functions.</b>
+ 
+When defining icon or bitmap static controls in a dialog template, the text
+for the control is interpreted as the resource ID of the bitmap or the icon.
+There are two ways that the text can be interpreted. If the first byte is
+'#', the rest of the text is assumed to be an ASCII decimal representation
+of the icon-or bitmap-resource ID. If the first byte of the text is 0xFF,
+the second byte is the low byte of the resource ID, and the third byte is
+the high byte of the resource ID. The following are two sample Resource
+Compiler definitions:
+ 
+CONTROL "#256",ID_ICON1, 140, 20, 0, 0, WC_STATIC,
+    SS_ICON | WS_VISIBLE
+ 
+CONTROL 0xFF000100, ID_ICON2, 140, 20, 0, 0, WC_STATIC,
+    SS_ICON | WS_VISIBLE
+ 
+Each definition specifies an SS_ICON static control that uses an icon with
+resource ID 256 (0x0100). The icon is assumed to be in the current
+application resource file.
+ 
+The window handle for a static-control window can be obtained by calling the
+<b>WinWindowFromID</b> function using the dialog-window handle and the window ID of
+the static control as defined in the dialog template.
+ 
+<b>Static Controls in Client Windows</b>
+ 
+Applications can create static-control windows in non-dialog windows by
+calling the WinCreateWindow function with a WC_STATIC window class. The
+appearance of the control is defined by the style parameter to the
+<b>WinCreateWindow</b> function.
+ 
+If the application creates a control with SS_ICON or SS_BITMAP style, it
+must ensure that the resource ID specified by the window text corresponds to
+an actual resource in the application resource file or the static control
+will not be created.
+ 
+Once created, the static-control window can be moved and sized just like any
+other child window. An application can obtain the window handle of the
+static control by calling the WinWindowFromID function, supplying the parent
+window and the window ID of the static control.
+ 
+<b>Changing the Static-Control Handle</b>
+ 
+The static-window handle contains a handle to an icon or bitmap.
+Applications can query and set this handle by using the SM_QUERYHANDLE and
+<b>SM_SETHANDLE</b> messages. Setting the handle causes the static item to be
+redrawn, so the handle must be a valid icon or bitmap handle.
+ 
+For non-icon and non-bitmap static-control items, the handle is available
+for use by the application and has no effect on the appearance of the
+control.
+ 
+<b>Default Static-Control Behavior</b>
+ 
+This section describes all the messages specifically handled by the
+predefined static-control class.
+ 
+<b>Message               Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>WM_PAINT</i>              Draws the static control based on its style
+                      attributes.
+ 
+<i>WM_CREATE</i>             Sets the window text for static-text controls. Loads
+                      the bitmap or icon resource for the bitmap or icon
+                      static controls. Returns TRUE if the resource cannot
+                      be loaded.
+ 
+<i>WM_DESTROY</i>            Frees the text for static-text controls. Destroys the
+                      bitmap or icon for the bitmap and icon static
+                      controls. The icon for a sysicon static control is not
+                      destroyed, because it belongs to the system.
+ 
+<i>WM_ADJUSTWINDOWPOS    Adjusts the SWP structure so tha</i>t the new window size
+                      matches the bitmap, icon, or sysicon dimensions
+                      associated with the control.
+ 
+<i>WM_QUERYWINDOWPARAMS</i>  Returns the requested window parameters.
+ 
+<i>WM_SETWINDOWPARAMS</i>    Allows the window text to be set for static-text
+                      controls only.
+ 
+<i>WM_ENABLE</i>             Invalidates the entire control window, forcing it to
+                      be redrawn.
+ 
+<i>WM_QUERYDLGCODE</i>       Returns the predefined constant DLGC_STATIC.
+ 
+<i>WM_MOUSEMOVE</i>          Sets the mouse pointer to the arrow pointer and
+                      returns TRUE.
+ 
+<i>WM_SETFOCUS</i>           Sets the focus to the next sibling window that can
+                      accept the focus, or if no such sibling exists, it
+                      sets the focus to the parent window.
+ 
+<i>SM_SETHANDLE</i>          Sets the handle associated with the static control and
+                      invalidates the control window, forcing it to be
+                      redrawn.
+ 
+<i>SM_QUERYHANDLE</i>        Returns the handle associated with the static-control
+                      window.
+ 
+<i>WM_MATCHMNEMONIC      Returns TRUE if the mnemon</i>ic passed in the mp1
+                      parameter matches the mnemonic in the control-window
+                      text.
+ 
+<i>WM_HITTEST</i>            Returns HT_TRANSPARENT for the following static
+                      control styles: SS_GROUPBOX, SS_FGNDRECT,
+                      SS_HALFTONERECT, SS_BKGNDRECT, SS_FGNDFRAME,
+                      SS_HALFTONEFRAME, SS_BKGNDFRAME. For other styles,
+                      returns the WinDefWindowProc function.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

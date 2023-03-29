@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>GpiCloseSegment (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiCloseSegment (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='retained_graphics.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiCombineRegion.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPISEGMENTS
+ 
+BOOL GpiCloseSegment(hps)
+HPS hps;    /* presentation-space handle */
+ 
+The GpiCloseSegment function closes the current segment. Closing a segment
+does not delete the segment or affect output on the current device. If any
+element bracket is open, GpiCloseSegment automatically closes it.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_AREA_INCOMPLETE
+     PMERR_IMAGE_INCOMPLETE
+     PMERR_INV_HPS
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_INV_MODE_FOR_REOPEN_SEG
+     PMERR_NO_CURRENT_GRAPHICS_SEG
+     PMERR_NOT_IN_SRG
+     PMERR_PATH_INCOMPLETE
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+You must explicitly end any area or path bracket before closing the segment.
+Failing to end an area or path may invalidate the segment.
+ 
+<b>GpiCloseSegment</b> resets the current viewing transformation to identity.
+ 
+<b>Example</b>
+ 
+This example uses the GpiCloseSegment function to close a segment. The
+<b>GpiOpenSegment opens the segment; GpiMove and GpiPolyLine draw a trian</b>gle.
+ 
+POINTL ptlStart = { 0, 0 };
+POINTL ptlTriangle[] = { 100,100, 200,0, 0,0 };
+ 
+GpiOpenSegment(hps, 1L);             /* open the segment          */
+GpiMove(hps, &amp;ptlStart);             /* move to start point (0,0) */
+GpiPolyLine(hps, 3L, ptlTriangle);   /* draw triangle             */
+GpiCloseSegment(hps);                /* close the segment         */
+ 
+<b>See Also</b>
+ 
+<b>GpiOpenSegment, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

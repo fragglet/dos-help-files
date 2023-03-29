@@ -1,0 +1,119 @@
+<html>
+
+<head>
+<title>GpiSetInitialSegmentAttrs (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiSetInitialSegmentAttrs (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='retained_graphics.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiSetLineEnd.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPISEGMENTS
+ 
+BOOL GpiSetInitialSegmentAttrs(hps, flAttribute, flAttrFlag)
+HPS hps;             /* presentation-space handle */
+LONG flAttribute;    /* attribute type            */
+LONG flAttrFlag;     /* attribute on/off flag     */
+ 
+The GpiSetInitialSegmentAttrs function sets the initial segment attributes.
+The system applies these attributes to each new segment as it is created.
+The function can change these attributes, one at a time, by turning them on
+or off.
+ 
+When the presentation space is first created, the initial segment attributes
+create visible, chained, dynamic, and fast-chaining segments that propagate
+visibility and detectabililty, even though they are not detectable. These
+attribute have no effect on primitives outside of segments.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>          Identifies the presentation space.
+ 
+<i>flAttribute</i>  Specifies the segment attribute to change. It can be one of the
+             following values:
+ 
+             Value                 Meaning
+             ───────────────────────────────────────────────────────────────
+             ATTR_CHAINED          Adds the segment to the picture chain. If
+                                   this attribute is off, a new segment is
+                                   an unchained segment. Although unchained
+                                   segments can be drawn individually, they
+                                   cannot be added to the picture chain.
+                                   (However, they can be called from a
+                                   segment in the picture chain.)
+ 
+             ATTR_DETECTABLE       Enables correlation for the segment. If
+                                   this attribute is on, the
+                                   GpiCorrelateChain, GpiCorrelateFrom, and
+                                   GpiCorrelateSegment functions can be used
+                                   to correlate each new segment.
+ 
+             ATTR_DYNAMIC          Creates a dynamic segment. Dynamic
+                                   segments are designed to be rapidly
+                                   updated without affecting other segments
+                                   in the picture chain. The system draws
+                                   dynamic segments using the exclusive-OR
+                                   operator. This lets the segments be
+                                   erased. Only retained segments can be
+                                   dynamic.
+ 
+             ATTR_FASTCHAIN        Relaxes the automatic reset of primitive
+                                   attributes for the segment. If this
+                                   attribute is off, the system resets all
+                                   primitive attributes just before a
+                                   segment in the picture chain is drawn.
+ 
+             ATTR_PROP_DETECTABLE  Forces all segments beneath the segment
+                                   to inherit the detectable attribute. If
+                                   this attribute is on, all segments called
+                                   by the segment can be correlated.
+ 
+             ATTR_PROP_VISIBLE     Forces all segments beneath the segment
+                                   to be visible. The visibility lasts only
+                                   as long as the segment is called by the
+                                   segment with this attribute on.
+ 
+             ATTR_VISIBLE          Makes the segment visible. The attribute
+                                   lets the system draw the segment on the
+                                   output device.
+ 
+<i>flAttrFlag</i>   Specifies whether to turn the attribute on or off. If it is
+             ATTR_ON, the function turns the attribute on. If it is
+             ATTR_OFF, the function turns the attribute off.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_INV_SEG_ATTR
+     PMERR_INV_SEG_ATTR_VALUE
+     PMERR_PS_BUSY
+ 
+<b>See Also</b>
+ 
+<b>GpiCorrelateChain, GpiCorrelateFrom, GpiCorrelateSegment, GpiOpenSegment,</b>
+<b>GpiSetDrawControl, GpiSetDrawingMode, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,111 @@
+<html>
+
+<head>
+<title>DosWriteQueue (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosWriteQueue (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='queues.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Interprocess Communication 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80e5.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='new_dos_functions.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSQUEUES
+ 
+USHORT DosWriteQueue(hqueue, usRequest, cbBuf, pbBuf, usPriority)
+HQUEUE hqueue;       /* target-queue handle                     */
+USHORT usRequest;    /* request/identification data             */
+USHORT cbBuf;        /* number of bytes to write                */
+PBYTE pbBuf;         /* pointer to buffer with element to write */
+UCHAR usPriority;    /* priority of element to write            */
+ 
+The DosWriteQueue function writes an element to the specified queue. The
+position of the element in the queue is determined by the value specified in
+the fQueueOrder parameter of the DosCreateQueue function when the queue was
+created; if this parameter was set to 0x0002 (priority queue), the
+<i>usPriority parameter of the Do</i>sWriteQueue function can be used to set the
+priority of the element. After the element is written, the process that owns
+the queue can read the element by using the DosPeekQueue or DosReadQueue
+function.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hqueue</i>      Identifies the queue to be written to. This handle must have
+            been created or opened by using the DosCreateQueue or
+            DosOpenQueue function.
+ 
+<i>usRequest</i>   Specifies a program-supplied event code. MS OS/2 does not use
+            this field; it is reserved for the program's use. The queue
+            owner can retrieve this value by using the DosPeekQueue or
+            DosReadQueue function.
+ 
+<i>cbBuf</i>       Specifies the number of bytes to be copied from the buffer
+            pointed to by the pbBuf parameter.
+ 
+<i>pbBuf</i>       Points to the buffer that contains the element to be written to
+            the queue.
+ 
+<i>usPriority</i>  Specifies the element priority. This parameter can be any value
+            from 0 through 15; 15 is the highest priority.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_QUE_INVALID_HANDLE
+     ERROR_QUE_NO_MEMORY
+ 
+<b>Comments</b>
+ 
+The DosWriteQueue function returns an error value if the queue has been
+closed by the process that owns it.
+ 
+If the queue owner uses a RAM semaphore to notify it when elements are added
+to the queue, the semaphore must be shared. If the notifying semaphore is a
+system semaphore, the writing process must have opened the semaphore by
+using the DosOpenSem function.
+ 
+<b>Example</b>
+ 
+This example opens a queue called \queues\queuename. In order to write to
+the queue, the process allocates shared memory, gives the memory to the
+queue owner, copies data to the shared memory, and calls DosWriteQueue. The
+process then frees the shared memory. The queue owner must also free the
+shared memory before it becomes available to the system again. For more
+information, see DosReadQueue.
+ 
+PID pidOwner;
+SEL sel, selRecipient;
+ 
+DosOpenQueue(&amp;pidOwner, &amp;hqueue,
+    "\\queues\\queuename");                /* opens queue             */
+DosAllocSeg(512, &amp;sel, SEG_GIVEABLE);      /* allocates shared memory */
+DosGiveSeg(sel, pidOwner, &amp;selRecipient);  /* gives it to queue owner */
+    .
+    . /* Copy the data to the shared memory segment. */
+    .
+       DosWriteQueue(hqueue,    /* queue handle                */
+           0,                   /* request data                */
+           11,                  /* length of data              */
+    MAKEP(selRecipient, 0),     /* data buffer                 */
+           0);                  /* element priority            */
+       DosFreeSeg(sel);         /* frees shared memory segment */
+ 
+<b>See Also</b>
+ 
+<b>DosCreateQueue, DosOpenQueue, DosOpenSem, DosPeekQueue, DosReadQueue</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

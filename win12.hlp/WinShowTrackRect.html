@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>WinShowTrackRect (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinShowTrackRect (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinShowWindow.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINTRACKRECT
+ 
+BOOL WinShowTrackRect(hwnd, fShow)
+HWND hwnd;     /* handle of the window */
+BOOL fShow;    /* show/hide flag       */
+ 
+The WinShowTrackRect function hides or shows the tracking rectangle. A track
+rectangle show level count is kept internally. (You can retrieve this value
+using the WinQuerySysValue function with SV_TRACKRECTLEVEL as the system
+value.) It is incremented by a hide operation and decremented by a show
+operation. The track rectangle is visible only if the count is zero.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwnd       I</i>dentifies the window passed to the WinTrackRect function.
+ 
+<i>fShow      Spec</i>ifies whether the rectangle is shown or hidden. If fShow is
+           TRUE, the function shows the tracking rectangle. If fShow is
+           FALSE, the function hides the tracking rectangle.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful or FALSE if an error
+occurs.
+ 
+<b>Comments</b>
+ 
+An application must call this function to hide a rectangle it is tracking if
+there is a possibility of corrupting the track rectangle while drawing
+(showing it afterward). Since rclTrack in the TRACKINFO structure is
+updating continuously, the application can examine the current tracking
+rectangle coordinates to determine whether temporary hiding is necessary.
+ 
+An application needs to call WinShowTrackRect only during asynchronous
+drawing. If an application is drawing on one thread and issuing the
+<b>WinTrackRect</b> function on another, pieces of a tracking rectangle may be left
+behind. The drawing thread should call WinShowTrackRect when tracking may be
+in progress. The application should provide for communication between the
+two threads to ensure that if one thread is tracking, the drawing thread
+will issue WinShowTrackRect. This can be achieved with a semaphore.
+ 
+<b>See Also</b>
+ 
+<b>WinQuerySysValue, WinTrackRect, TRACKINFO</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

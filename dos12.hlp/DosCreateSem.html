@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<title>DosCreateSem (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosCreateSem (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='semaphores.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Interprocess Communication 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80bc.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosCreateThread.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSSEMAPHORES
+ 
+USHORT DosCreateSem(fExclusive, phssm, pszSemName)
+USHORT fExclusive;    /* exclusive/nonexclusive ownership flag    */
+PHSYSSEM phssm;       /* pointer to variable for semaphore handle */
+PSZ pszSemName;       /* pointer to semaphore name                */
+ 
+The DosCreateSem function creates a system semaphore and copies the
+semaphore handle to a variable. A process can use a system semaphore to
+indicate to another process a change in the status of a shared resource.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>fExclusive</i>  Specifies ownership of the semaphore. If this parameter is
+            CSEM_PRIVATE, the process receives exclusive ownership. If this
+            parameter is CSEM_PUBLIC, the process does not receive exclusive
+            ownership.
+ 
+<i>phssm</i>       Points to the variable that receives the semaphore handle.
+ 
+<i>pszSemName</i>  Points to a null-terminated string that identifies the
+            semaphore. The string must have the form \sem\name. The string
+            name, name, must have the same format as an MS OS/2 filename and
+            must be unique.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_ALREADY_EXISTS
+     ERROR_INVALID_NAME
+     ERROR_INVALID_PARAMETER
+     ERROR_TOO_MANY_SEMAPHORES
+ 
+<b>Comments</b>
+ 
+The process calling DosSemCreate receives exclusive ownership of the
+semaphore if the CSEM_PRIVATE flag is set in the fExclusive parameter.
+Exclusive ownership prevents other processes from setting or clearing the
+semaphore. Other processes can open the semaphore and wait for it to change
+status, but they cannot change its status. Another process can obtain
+ownership of the semaphore, however, by calling the DosSemRequest function.
+If ownership of the semaphore changed through DosSemRequest, the process
+that originally called DosCreateSem no longer has ownership. It cannot
+change the status of the semaphore until it regains ownership by calling
+<b>DosSemRequest</b>.
+ 
+<b>Example</b>
+ 
+This example calls DosCreateSem to create a system semaphore, and then calls
+<b>DosSemSet to set it and Dos</b>SemClear to clear it:
+ 
+HSYSSEM hssm;               /* handle to semaphore */
+DosCreateSem(CSEM_PRIVATE,  /* specifies ownership */
+    &amp;hssm,                  /* address of handle   */
+    "\\sem\\abc.sem");      /* name of semaphore   */
+DosSemSet(hssm);            /* sets semaphore      */
+    .
+    .
+    .
+DosSemClear(hssm);          /* clears semaphore    */
+ 
+<b>See Also</b>
+ 
+<b>DosCloseSem, DosMuxSemWait, DosOpenSem, DosSemClear, DosSemRequest,</b>
+<b>DosSemSet, DosSemSetWait, DosSemWait</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

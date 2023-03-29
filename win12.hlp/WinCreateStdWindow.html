@@ -1,0 +1,151 @@
+<html>
+
+<head>
+<title>WinCreateStdWindow (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinCreateStdWindow (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Frame_window_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Frame Windows 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L812b.html'>Changes</a><span class='grhilite'>►</span>       </i>        <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinCreateSwitchEntry.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINFRAMEMGR
+ 
+HWND WinCreateStdWindow(hwndParent, flStyle, pflCreateFlags,
+    pszClientClass, pszTitle, flClientStyle, hmod, idResources,
+    phwndClient)
+HWND hwndParent;          /* handle of the parent window         */
+ULONG flStyle;            /* frame-window style                  */
+PULONG pflCreateFlags;    /* creation flags                      */
+PSZ pszClientClass;       /* client-window class name            */
+PSZ pszTitle;             /* address of title-bar text           */
+ULONG flClientStyle;      /* client-window style                 */
+HMODULE hmod;             /* handle of the resource module       */
+USHORT idResources;       /* frame-window identifier             */
+PHWND phwndClient;        /* address of the client-window handle */
+ 
+The WinCreateStdWindow function creates a standard frame window.
+ 
+<b>Parameter       Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwndParent</i>      Identifies the parent window. A main window is created if
+                this parameter is HWND_DESKTOP or a window handle returned
+                by the WinQueryDesktopWindow function. An object window is
+                created if this parameter is HWND_OBJECT or a window handle
+                returned by the WinQueryObjectWindow function.
+ 
+<i>flStyle</i>         Specifies the frame-window style. It can be any combination
+                of the WS_ styles (see <span class='grhilite'>◄</span><a href='unknown#Window styles 1.2'>Window styles</a><span class='grhilite'>►</span>) and the FS_ styles
+                (see <span class='grhilite'>◄</span><a href='unknown#frame styles 1.2'>Frame styles</a><span class='grhilite'>►</span>).
+ 
+<i>pflCreateFlags</i>  Specifies options that control how the frame window is
+                created. If no options are specified, FCF_STANDARD is used.
+                For a list of possible flags that may be used with this
+                parameter, see the <span class='grhilite'>◄</span><a href='unknown#Frame control flags 1.2'>Frame control flags</a><span class='grhilite'>►</span> topic.
+ 
+<i>pszClientClass</i>  Points to the client-window class name. If the
+                pszClientClass parameter is not a zero-length string, a
+                client window of style flClientStyle and class
+                pszClientClass is created. This parameter is an
+                application-specified name (defined by the WinRegisterClass
+                function), the name of a preregistered WC class, or a WC
+                constant. If this parameter is NULL, no client area is
+                created.
+ 
+<i>pszTitle</i>        Points to the title-bar text. This parameter is ignored if
+                FCF_TITLEBAR is not specified in the pflCreateFlags
+                parameter.
+ 
+<i>flClientStyle</i>   Specifies the client-window style. For a list of styles that
+                can be used for this parameter, see the <span class='grhilite'>◄</span><a href='unknown#Window styles 1.2'>Window styles</a><span class='grhilite'>►</span>
+                topic.
+ 
+                This parameter is ignored if the pszClientClass parameter is
+                a zero-length string.
+ 
+<i>hmod</i>            Identifies the module that contains the resource
+                definitions. This parameter can be either the module handle
+                returned by the DosLoadModule function or NULL for the
+                application's module. This parameter is ignored unless
+                FS_ICON, FS_ACCELTABLE, or FS_MENU is specified in the
+                flStyle parameter.
+ 
+<i>idResources</i>     Identifies the frame-window identifier and the identifier
+                within the resource definition of the required resource. The
+                application must ensure that all resources related to one
+                frame window have the same identifier value.
+ 
+<i>phwndClient</i>     Points to the variable that receives the client-window
+                handle. It will be NULL if the function fails.
+ 
+<b>Return Value</b>
+ 
+The return value is the handle of the frame window, or it is NULL if an
+error occurs.
+ 
+<b>Comments</b>
+ 
+The client window created by WinCreateStdWindow does not have an owner. If
+the client window must have an owner (for example, if the client window is a
+list box), the application must call the WinSetOwner function to set the
+owner of the client window after the call to WinCreateStdWindow.
+ 
+<b>Example</b>
+ 
+This example shows a typical initialization function for a window. The
+function first registers the window class, then calls WinCreateStdWindow to
+create a standard window and returns immediately if the function fails.
+Otherwise, it continues on to do other initialization processing.
+ 
+Note that the FCF_STANDARD constant can be used only if you have defined all
+the resources. For example, if you use this constant and you don't have an
+accelerator table, the function will fail.
+ 
+CHAR szClassName[] = "Generic";          /* window class name    */
+HWND hwndClient;                         /* handle to the client */
+HWND hwndFrame;                          /* handle to the frame  */
+ 
+BOOL GenericInit()
+{
+    ULONG flStyle;
+ 
+    flStyle = FCF_STANDARD;
+    if (!WinRegisterClass(hab, szClassName, GenericWndProc, 0L, 0))
+        return (FALSE);
+ 
+    hwndFrame = WinCreateStdWindow(HWND_DESKTOP,
+        0L,                     /* frame-window style            */
+        &amp;flStyle,               /* window style                  */
+        szClassName,            /* class name                    */
+        "Generic Application",  /* window title                  */
+        0L,                     /* default client style          */
+        NULL,                   /* resource in executable file   */
+        IDM_RESOURCE,           /* resource id                   */
+        &amp;hwndClient);           /* receives client window handle */
+ 
+    if (!hwndFrame)
+        return (FALSE);
+    else {
+        .
+        . /* other initialization code */
+        .
+ 
+<b>See Also</b>
+ 
+<b>DosLoadModule, WinCreateWindow, WinQueryDesktopWindow, WinQueryObjectWindow,</b>
+<b>WinSetSysModalWindow, WinSetSysValue, WinSetWindowPos, WinSetWindowUShort</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

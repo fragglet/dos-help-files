@@ -1,0 +1,601 @@
+<html>
+
+<head>
+<title>Using Dynamic Data Exchange (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Dynamic Data Exchange (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Dynamic_Data_Exchange.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#dde functions 1.2'>Function Groups</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#dde messages 1.2'>Message Group</a><span class='grhilite'>►</span>  </i> <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Entry_Field_Controls.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                        Using Dynamic Data Exchange
+ 
+A DDE transaction between two applications actually takes place between two
+windows, one for each of the participating applications. Applications open a
+window for each conversation they engage in. (Note that such windows are
+typically not visible.) A window is identified by its handle. The window
+belonging to the server application is the server window; the window
+belonging to the client application is the client window.
+ 
+After a conversation has been initiated by the client, the client interacts
+with the server by issuing transactions. When issuing a transaction, the
+client requests that the server perform a particular action. There are six
+types of transactions: request, advise, unadvise, poke, execute, and
+terminate. These transactions are permitted only within an exchange begun by
+using the WM_DDE_INITIATE message. DDE transactions are one-way: The client
+application always issues the transactions. If the server issues a
+transaction to the client, the server must initiate a new exchange for that
+purpose. The server becomes the client in this new exchange. (The only
+exception to the one-way rule is the terminate transaction, which can be
+issued by either the client or the server.)
+ 
+<b>Detailed DDE Example</b>
+ 
+This section presents a more detailed view of the workings of the DDE
+protocol. It discusses the example of the Collector and spreadsheet
+interaction and illustrates forwarding stock quotes from the Collector
+application to the spreadsheet. For the sake of simplicity, this example
+will be limited to the exchange of quotes for a single stock, BTRX.
+ 
+The Collector DDE server application is started first. Typically,
+applications designed to operate as dedicated DDE servers have some user
+interface for initialization and then run as icons at the bottom of the
+Presentation Manager screen. As part of the initialization process, the
+Collector DDE server application goes through whatever steps are necessary
+(entering passwords, testing, etc.) to ensure that data can be provided to
+clients.
+ 
+The spreadsheet is started next, and the stock-portfolio document is loaded.
+At this time, the spreadsheet calls the WinDdeInitiate function, which sends
+a WM_DDE_INITIATE message to all current top-level frame windows.
+ 
+The WM_DDE_INITIATE message is a request to initiate an exchange with an
+application on a specified topic──in this case, NYSE. An application can
+accept this message by responding with a positive WM_DDE_INITIATEACK
+message, or can decline it by passing the message on to the
+<b>WinDefWindowProc</b> function. If no application accepts the request, the
+spreadsheet assigns an error value to the external reference and its DDE
+activity concludes.
+ 
+If the Collector application acknowledges the request, the spreadsheet can
+use the newly established exchange to request the Collector application to
+provide continuous updates on a specified data item. To make this request,
+the spreadsheet posts a WM_DDE_ADVISE message to the Collector application
+(actually, to a window within the Collector application that is acting as
+the message recipient for DDE messages), indicating that updates should be
+sent every time there is a new value available for the data item named
+"BTRX," and that the updates should be in a particular format──for example,
+DDEFMT_TEXT.
+ 
+Upon receiving this message, the Collector application records the request
+in its database and posts a WM_DDE_ACK message to the spreadsheet. From then
+on, the Collector application posts a WM_DDE_DATA message to the spreadsheet
+application (actually, to the window in the spreadsheet that initiated the
+exchange) whenever it receives a new BTRX stock quote from the server. Each
+of these messages carries a selector for a shared memory object. The object
+itself contains the data, rendered in the requested format. Whenever the
+spreadsheet receives such a message, it retrieves the data from the
+referenced memory object and uses the data to update the value of the cell
+containing the external reference.
+ 
+The periodic updates continue until the spreadsheet document is closed. At
+that point the spreadsheet application posts a WM_DDE_UNADVISE message to
+the Collector application, indicating that further updating is not
+necessary. Upon receipt of this message, the Collector application removes
+the corresponding data request from its database and posts a positive
+<b>WM_DDE_ACK</b> message back to the spreadsheet.
+ 
+Finally, unless the spreadsheet initiates other data exchanges under this
+same topic, it posts a WM_DDE_TERMINATE message to the Collector
+application, indicating the end of the DDE transaction. The Collector
+application responds with a WM_DDE_TERMINATE message.
+ 
+<b>DDE Message Contents</b>
+ 
+DDE uses the three-level hierarchy──application, topic, and item──to
+uniquely identify a unit of data. An item is a data object that can be
+passed in a DDE transaction. For example, an item might be a single integer,
+a string, several paragraphs of text, or a bitmap. A topic is a logical data
+context. For applications that operate on file-based documents, topics are
+usually filenames; for other applications they are other
+application-specific strings. Using the Collector and spreadsheet model
+described earlier, the application name is collector, the topic name is
+NYSE, and the item name is BTRX.
+ 
+There are two data structures used for DDE transactions: the DDEINIT
+structure and the DDESTRUCT structure. The DDEINIT structure is used for the
+<b>WM_DDE_INITIATE and WM_DDE_INITIATEACK messages. DDEINIT contains pointers</b>
+to the application-name and topic-name strings.
+ 
+An application typically does not need to fill in a DDEINIT structure, since
+the operating system fills it in automatically when the application calls
+the WinDdeInitiate or WinDdeRespond function. It is important, however, to
+understand the organization of the DDEINIT structure when receiving a
+<b>WM_DDE_INITIATE or WM_DDE_INITIATEACK message</b>, so that you can extract the
+application name and the topic name.
+ 
+The DDESTRUCT structure is passed with all DDE transaction messages. It
+contains a byte count of the data, the format of the data, the item name, a
+status word, and the data being transferred.
+ 
+The data in a DDE message is contained in a shared memory segment. The
+segment must be large enough to hold a DDESTRUCT data structure and the
+actual data to be transferred. The sender allocates the segment, then passes
+the selector for the memory as part of the message.
+ 
+The sender must allocate the segment as SEG_GIVEABLE. After filling the
+segment, the sender calls the WinDdePostMsg function to give the segment to
+the receiver and free the segment in the sender's process. The sender should
+not call DosGiveSeg to give the segment or DosFreeSeg to free the segment.
+Also, the sender should not try to access the segment once it has been sent
+to the recipient in a DDE message.
+ 
+The following code fragment shows a function that creates a shared segment
+for a DDE transaction. The function parameters include the destination
+window for the DDE message, the item name for the transaction, the status
+word, the format of the data, the actual data to be transferred (if any),
+and the length of the data. The segment allocated by this function must be
+big enough to hold the DDESTRUCT structure, the item name, and the actual
+data to be transferred. The function returns a pointer (PDDESTRUCT) to a
+shared segment that is ready to post as part of a DDE message.
+ 
+PDDESTRUCT MakeDDEObject(pszItemName, fsStatus, usFormat,
+    pabData, usDataLen)
+PSZ    pszItemName;
+USHORT fsStatus;
+USHORT usFormat;
+PVOID  pabData;
+USHORT usDataLen;
+{
+    PDDESTRUCT pddes;            /* pointer to DDESTRUCT     */
+    USHORT     usItemLen;        /* length of item name      */
+    SEL        selBuf;           /* total length of object   */
+ 
+    if (pszItemName != (PSZ) NULL)
+        usItemLen = strlen(pszItemName) + 1;
+    else
+        usItemLen = 0;
+ 
+    if (! DosAllocSeg (sizeof (DDESTRUCT) + usItemLen + usDataLen,
+         &amp;selBuf, SEG_GIVEABLE))
+        {
+ 
+        /* Initialize DDESTRUCT. */
+ 
+        pddes = SELTOPDDES (selBuf);
+        pddes-&gt;cbData = usDataLen;
+        pddes-&gt;fsStatus = fsStatus;
+        pddes-&gt;usFormat = usFormat;
+        pddes-&gt;offszItemName = sizeof(DDESTRUCT);
+        if ((usDataLen) &amp;&amp; (pabData != NULL))
+            pddes-&gt;offabData = sizeof(DDESTRUCT) + usItemLen;
+        else
+            pddes-&gt;offabData = sizeof(DDESTRUCT);
+ 
+        /*
+         * Copy item name immediately following DDESTRUCT. (The _fstrcpy
+         * function is from the Microsoft C 6.0 run-time library.)
+         */
+ 
+        if (pszItemName != NULL)
+            _fstrcpy(DDES_PSZITEMNAME(pddes), pszItemName);
+ 
+        /*
+         * Copy data immediately following the item name. (The _fmemcpy
+         * function is from the Microsoft C 6.0 run-time library.)
+         */
+ 
+        if (pabData != NULL)
+            _fmemcpy(DDES_PABDATA(pddes), pabData);
+ 
+        return (pddes);
+    }
+    return ((PDDESTRUCT) NULL);
+}
+ 
+This function is used in many examples in the following sections to
+demonstrate the creation of DDE shared segments. You may want to define a
+similar function in your own programs as well.
+ 
+<b>Unique Data Formats</b>
+ 
+Whenever you exchange data by using the DDE protocols you must specify the
+format of the data in the usFormat field of the DDESTRUCT structure. The
+system-defined standard format is DDEFMT_TEXT, which indicates text data.
+ 
+Applications can define their own data formats. Each nonstandard DDE format
+must have a unique identification number. The application should register
+the name of the format in the system atom table, receiving an identification
+number for that format name. Other applications that have the name of the
+format can also query the system atom table for the format's identification
+number. This method ensures that all applications use the same atom to
+identify a format.
+ 
+The following code fragment shows how an application can obtain a unique
+identification number for a DDE format. This technique can be used by the
+application that creates the format and by an application that is able to
+use the format.
+ 
+hatomtbl = WinQuerySystemAtomTable();
+formatID = WinAddAtom(hatomtbl, "SuperCAD_Format");
+ 
+<b>Sample DDE Transactions</b>
+ 
+This section discusses beginning and ending a DDE transaction and the five
+basic types of interchange supported by DDE. Each of the following
+subsections provides a detailed description of the message protocols that
+are associated with the transactions it discusses.
+ 
+<b>Initiating an Exchange Between Two Applications</b>
+ 
+To initiate a DDE transaction, the client calls the WinDdeInitiate function,
+specifying the server application-name and topic-name strings. This function
+sends a WM_DDE_INITIATE message to all frame windows whose parent is
+HWND_DESKTOP. Because the message is sent rather than posted,
+<b>WinDdeInitiate</b> requires all of the message's recipients to respond to the
+message before control is returned. Either the application name or the topic
+name can be a null string, in which case the server ignores that name. For
+example, a client could send a valid application name with a null topic name
+to request an exchange on all available topics for that application.
+ 
+The server applications that respond to the WM_DDE_INITIATE message will
+call the WinDdeRespond function, as shown in the following pseudocode:
+ 
+If ((specific app requested and server is instance of app) or
+    (specific app not requested){
+ 
+     If (specific topic requested)
+          If (server can support topic)
+ 
+               acknowledge the requested topic
+ 
+     Else
+          acknowledge each supported topic
+}
+ 
+To acknowledge a specific topic, the server responds with the following code
+fragment:
+ 
+WinDdeRespond(hwndClient, hwndServer, pszAppName, pszTopicName);
+ 
+To acknowledge more than one topic, the server makes one such response for
+each topic. This initiates an exchange on each topic. The client should post
+a WM_DDE_TERMINATE message for all unneeded transactions.
+ 
+<b>The System Topic</b>
+ 
+Applications are encouraged to support the "System" topic at all times. This
+topic provides a context for information that may be of general interest to
+any partners in a DDE transaction. DDE applications should request an
+exchange on the System topic with a NULL application name when they start
+up, to find out what kinds of information other DDE-capable programs can
+provide.
+ 
+The System topic should support the following terms, as well as any other
+items the application may use:
+ 
+<b>Item           Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>SysItems</i>       A list of the items supported under the System topic by this
+               application.
+ 
+<i>Topics</i>         A list of the topics supported by the application at the
+               current time (this may vary from moment to moment).
+ 
+<i>ReturnMessage  Supporting detail for th</i>e most recently issued WM_DDE_ACK
+               message. (This is useful when more than eight bits of
+               application-specific return code are required.)
+ 
+<i>Status</i>         An indication of the current status of the application.
+ 
+<i>Formats</i>        A list of DDE format numbers that the application can
+               render.
+ 
+Individual elements of lists should be delimited by tabs (the DDEFMT_TEXT
+format).
+ 
+<b>Positive WM_DDE_ACK Response</b>
+ 
+A client or server often must positively acknowledge a DDE message that it
+receives by posting a WM_DDE_ACK message with the DDE_FRESPONSE flag set in
+the status word of the DDESTRUCT structure. Sending a positive WM_DDE_ACK
+message means that the sender will respond to the previous message. The
+following code fragment is an example of a positive acknowledgment message:
+ 
+pddeStruct = MakeDDESegment(hwndDest,   /* handle of destination  */
+    "BTRX",                             /* item name              */
+    DDE_FACK | DDE_FRESPONSE,           /* status flags           */
+    DDEFMT_TEXT,                        /* data format            */
+    NULL,                               /* no data for request    */
+    0);                                 /* data length            */
+ 
+WinDdePostMsg(hwndDest,                 /* handle of destination  */
+    hwndSource,                         /* handle of source       */
+    WM_DDE_ACK,                         /* message                */
+    pddeStruct,                         /* shared-segment pointer */
+    1);                                 /* retry                  */
+ 
+<b>Negative WM_DDE_ACK Response</b>
+ 
+When an application receives a DDE message that it cannot respond to (such
+as a request for data in a format that it does not support), the application
+must post a WM_DDE_ACK message with the DDE_NOTPROCESSED flag set in the
+status word of the DDESTRUCT structure. The following code fragment is an
+example of a negative acknowledgment message:
+ 
+pddeStruct = MakeDDESegment(hwndDest,   /* handle of destination  */
+    "BTRX",                             /* item name              */
+    DDE_NOTPROCESSED,                   /* status flags           */
+    DDEFMT_TEXT,                        /* data format            */
+    NULL,                               /* no data for request    */
+    0);                                 /* data length            */
+ 
+WinDdePostMsg(hwndDest,                 /* handle of destination  */
+    hwndSource,                         /* handle of source       */
+    WM_DDE_ACK,                         /* message                */
+    pddeStruct,                         /* shared-segment pointer */
+    1);                                 /* retry                  */
+ 
+If an application is busy when it receives a DDE message, it can post a
+<b>WM_DDE_ACK</b> message with the DDE_FBUSY flag set.
+ 
+<b>One-Time Data Transfer Between Two Applications</b>
+ 
+A client application can use the DDE protocol to obtain a data item from a
+server WM_DDE_REQUEST, or to submit a data item to a server WM_DDE_POKE. In
+either case, the client must have already initiated an exchange with the
+server, as described earlier.
+ 
+The client posts a WM_DDE_REQUEST message to the server, specifying an item
+and format by allocating a shared segment and filling in a DDESTRUCT
+structure and passing the structure to the WinDdePostMsg function. For
+example, if a DDE exchange has been started on the NYSE topic, the client
+could request data for the BTRX item by using the following code fragment:
+ 
+pddeStruct = MakeDDESegment(hwndServer, /* handle of server       */
+    "BTRX",                             /* item name              */
+    0,                                  /* status flags           */
+    DDEFMT_TEXT,                        /* data format            */
+    NULL,                               /* no data for request    */
+    0);                                 /* data length            */
+ 
+WinDdePostMsg(hwndServer,               /* handle of server       */
+    hwndClient,                         /* handle of client       */
+    WM_DDE_REQUEST,                     /* message                */
+    pddeStruct,                         /* shared-segment pointer */
+    1);                                 /* retry                  */
+ 
+If the server is unable to satisfy the request, it sends the client a
+negative WM_DDE_ACK message. If the server can satisfy the request, it
+renders the item in the requested format and includes it with a DDESTRUCT
+structure in a shared memory object and posts a WM_DDE_DATA message to the
+client, as shown in the following code fragment:
+ 
+pddeStruct = MakeDDESegment(hwndClient, /* handle of client       */
+    "BTRX",                             /* item name              */
+    0,                                  /* status flags           */
+    DDEFMT_TEXT,                        /* data format            */
+    pabData,                            /* pointer to data        */
+    usDataLen);                         /* data length            */
+ 
+WinDdePostMsg(hwndClient,               /* handle of client       */
+    hwndServer,                         /* handle of server       */
+    WM_DDE_DATA,                        /* message                */
+    pddeStruct,                         /* shared-segment pointer */
+    1);                                 /* retry                  */
+ 
+Upon receiving a WM_DDE_DATA message, the client processes the data item.
+The DDESTRUCT structure at the beginning of the shareable segment contains a
+status word indicating whether the sender has requested an acknowledgment
+message. If the DDE_FACKREQ bit of the status word is set, the client should
+send the server a positive WM_DDE_ACK message.
+ 
+Upon receiving a negative WM_DDE_ACK message, the client can ask for the
+same item again, specifying a different DDE format. Typically, a client will
+first ask for the most complex format it can support, then step down, if
+necessary, through progressively simpler formats until it finds one the
+server can provide.
+ 
+<b>Permanent Data Link Between Two Applications</b>
+ 
+A client application can use DDE to establish a link to an item in a server
+application. When such a link is established, the server sends periodic
+updates about the linked item to the client (typically, whenever the data
+that is associated with the item in the server application has changed). A
+permanent "data stream" is established between the two applications and
+remains in place until it is explicitly disconnected.
+ 
+The client sends the server a WM_DDE_ADVISE message to set up the data link.
+(Of course, the client must have first initiated an exchange by using the
+<b>WM_DDE_INITIATE</b> message, as described previously.) The advise message
+contains a shared-memory pointer containing a DDESTRUCT structure with the
+item name, format information, and status information, as shown in the
+following code fragment:
+ 
+pddeStruct = MakeDDESegment(hwndServer, /* handle of server       */
+    "BTRX",                             /* item name              */
+    DDE_FACKREQ,                        /* status flags           */
+    DDEFMT_TEXT,                        /* data format            */
+    NULL,                               /* no data for advise     */
+    0);                                 /* data length            */
+ 
+WinDdePostMsg(hwndServer,               /* handle of server       */
+    hwndClient,                         /* handle of client       */
+    WM_DDE_ADVISE,                      /* message                */
+    pddeStruct,                         /* shared-segment pointer */
+    1);                                 /* retry                  */
+ 
+If the server has access to the requested item and can render it in the
+desired format, the server records the new link and then sends the client a
+positive WM_DDE_ACK message. Until the client issues a WM_DDE_UNADVISE
+message, the server sends data messages to the client every time the source
+data changes that is associated with the item in the server application.
+ 
+If the server is unable to satisfy the request, it sends the client a
+negative WM_DDE_ACK message.
+ 
+When a link is established with the DDE_FNODATA status bit cleared, the
+client is sent the data each time the data changes. In such cases, the
+server renders the new version of the item in the previously specified
+format and posts a WM_DDE_DATA message to the client.
+ 
+When the client receives a WM_DDE_DATA message, it extracts data from the
+shared memory segment by using the DDESTRUCT structure at the beginning of
+the segment. If the DDE_FACKREQ status bit in the status word of the
+<b>DDESTRUCT structure is set,</b> the client must post a positive WM_DDE_ACK
+message to the server.
+ 
+When a link is established with the DDE_FNODATA status flag set, a
+notification, not the data itself, is posted to the client each time the
+data changes. In this case, the server does not render the new version of
+the item when the source data changes, but simply posts a WM_DDE_DATA
+message with zero bytes of data and the DDE_FNODATA status flag set, as
+shown in the following code fragment:
+ 
+pddeStruct = MakeDDESegment(hwndClient, /* handle of client       */
+    "BTRX",                             /* item name              */
+    DDE_FNODATA,                        /* status flags           */
+    DDEFMT_TEXT,                        /* data format            */
+    NULL,                               /* no data                */
+    0);                                 /* data length            */
+ 
+WinDdePostMsg(hwndClient,               /* handle of client       */
+    hwndServer,                         /* handle of server       */
+    WM_DDE_DATA,                        /* message                */
+    pddeStruct,                         /* shared-segment pointer */
+    1);                                 /* retry                  */
+ 
+The client can request the latest version of the data by performing a
+regular one-time WM_DDE_REQUEST transaction, or it can simply ignore the
+data-change notice from the server. In either case, if the DDE_FACKREQ
+status bit is set, the client should send a positive WM_DDE_ACK message to
+the server.
+ 
+To terminate a specific item link, the client posts a WM_DDE_UNADVISE
+message to the server, as shown in the following code fragment:
+ 
+pddeStruct = MakeDDESegment(hwndServer, /* handle of server       */
+    "BTRX",                             /* item name              */
+    DDE_FACKREQ,                        /* status flags           */
+    DDEFMT_TEXT,                        /* data format            */
+    NULL,                               /* no data for unadvise   */
+    0);                                 /* data length            */
+ 
+WinDdePostMsg(hwndServer,               /* handle of server       */
+    hwndClient,                         /* handle of client       */
+    WM_DDE_UNADVISE,                    /* message                */
+    pddeStruct,                         /* shared-segment pointer */
+    1);                                 /* retry                  */
+ 
+The server checks that the client currently has a link to the specified item
+in this exchange. If the link exists, the server sends a positive
+<b>WM_DDE_ACK</b> message to the client and no longer sends updates on the item in
+this exchange. If the server has no such link, it sends a negative
+<b>WM_DDE_ACK</b> message.
+ 
+To terminate all links for a particular exchange, the client application
+posts a WM_DDE_UNADVISE message with a null item name to the server. The
+server checks that the exchange has at least one link currently established.
+If so, the server posts a positive WM_DDE_ACK message to the client, and no
+longer sends any updates in the exchange. If the server has no links in the
+exchange, it posts a negative WM_DDE_ACK message.
+ 
+<b>Executing Commands in a Remote Application</b>
+ 
+A Presentation Manager application can use the DDE protocol to cause a
+command or series of commands to be executed in another application. Such
+remote executions are performed by means of the WM_DDE_EXECUTE transaction.
+ 
+To execute a remote command, the client application posts to the server a
+<b>WM_DDE_EXECUTE</b> message containing a selector for a shared-memory object that
+contains a DDESTRUCT structure and a command string, as shown in the
+following code fragment:
+ 
+pddeStruct = MakeDDESegment(hwndServer,   /* handle of server     */
+    "BTRX",                          /* item name                 */
+    DDE_FACKREQ,                     /* status flags              */
+    DDEFMT_TEXT,                     /* data format               */
+    pabData,                         /* pointer to command string */
+    usDataLen);                      /* data length               */
+ 
+WinDdePostMsg(hwndServer,            /* handle of server          */
+    hwndClient,                      /* handle of client          */
+    WM_DDE_EXECUTE,                  /* message                   */
+    pddeStruct,                      /* shared-segment pointer    */
+    1);                              /* retry                     */
+ 
+The server attempts to execute the specified string according to some
+agreed-upon protocol. If successful, the server posts a positive WM_DDE_ACK
+message to the client; if unsuccessful, a negative WM_DDE_ACK message is
+posted.
+ 
+<b>Terminating an Exchange Between Two Applications</b>
+ 
+At any time, either the client or the server may terminate an exchange by
+using the following procedure to issue a WM_DDE_TERMINATE message.
+Similarly, both the client application and server application should be able
+to receive a WM_DDE_TERMINATE message at any time.
+ 
+An application must end its exchanges before terminating. The application
+posts a WM_DDE_TERMINATE message with a NULL shared-segment pointer, as
+shown in the following code fragment. A WM_DDE_TERMINATE message stops all
+transactions for a given exchange.
+ 
+WinDdePostMsg(hwndDest,      /* handle of destination     */
+    hwndSource,              /* handle of source          */
+    WM_DDE_TERMINATE,        /* message                   */
+    NULL,                    /* no shared-segment pointer */
+    1);                      /* retry                     */
+ 
+The WM_DDE_TERMINATE message means that the sender will send no further
+messages in that exchange and that the recipient may destroy its DDE window.
+The recipient must always send a WM_DDE_TERMINATE message promptly in
+response; it is not permissible to send a negative, busy, or positive
+<b>WM_DDE_ACK</b> message instead.
+ 
+If the sender of the original termination request receives any other message
+before the WM_DDE_TERMINATE message arrives from the recipient of the
+request, no response should be sent to this other message; the sender of the
+other message may already have destroyed the window to which the response
+would be sent.
+ 
+<b>Synchronization Rules</b>
+ 
+A window processing DDE requests from another window must process them
+strictly in the order in which the requests were received.
+ 
+A window does not need to apply this first-in first-out rule between
+requests from different windows──that is, it may provide asynchronous
+support for multiple processes. For example, a window might have the
+following requests in its queue:
+ 
+♦  Message from window x (request 1)
+ 
+♦  Message from window y (request 2)
+ 
+♦  Message from window x (request 3)
+ 
+The window must process request 1 before 3, but it does not need to process
+2 before 3. If y has a lower priority than x, the window follows the order
+1, 3, 2.
+ 
+If a server is unable to process an incoming request because it is waiting
+for an external process, it must post a busy WM_DDE_ACK message to the
+client, to prevent deadlock. A busy WM_DDE_ACK message can also be sent if
+the server is unable to process an incoming request quickly.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

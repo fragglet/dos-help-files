@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<title>DosChgFilePtr (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosChgFilePtr (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosCLIAccess.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosChgFilePtr(hf, lDistance, fMethod, pulNewPtr)
+HFILE hf;            /* file handle          */
+LONG lDistance;      /* distance to move     */
+USHORT fMethod;      /* method of moving     */
+PULONG pulNewPtr;    /* new pointer location */
+ 
+The DosChgFilePtr function moves the file pointer to a new position in the
+file. The file pointer is maintained by the system. It points to the next
+byte to be read from a file or to the next position in the file to receive a
+byte.
+ 
+The DosChgFilePtr function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hf</i>         Identifies the file. This handle must have been created
+           previously by using the DosOpen function.
+ 
+<i>lDistance</i>  Specifies the number of bytes to move the file pointer in the
+           file. If this value is positive, the pointer moves forward
+           through the file. If the value is negative, the pointer moves
+           backward.
+ 
+<i>fMethod</i>    Specifies where the move will start. This parameter must be one
+           of the following values:
+ 
+           Value         Meaning
+           ─────────────────────────────────────────────────────────────────
+           FILE_BEGIN    Start move at the beginning of the file.
+ 
+           FILE_CURRENT  Start move at the current location.
+ 
+           FILE_END      Start move at the end of the file.
+ 
+<i>pulNewPtr</i>  Points to the long variable that receives the new file-pointer
+           location.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_INVALID_FUNCTION
+     ERROR_INVALID_HANDLE
+     ERROR_SEEK_ON_DEVICE
+ 
+<b>Comments</b>
+ 
+The system automatically advances the file pointer for each byte read or
+written; the pointer is at the beginning of the file when the file is
+opened.
+ 
+<b>Example</b>
+ 
+This example opens the file abc for read and write access, calls the
+<b>DosChgFilePtr</b> function to set the file pointer at the end of the file,
+writes the string "Hello World", and closes the file. The ulFilePointer
+variable contains the file's current length when the pointer is at the end
+of the file.
+ 
+HFILE hf;
+USHORT usAction, cbBytesWritten;
+ULONG ulFilePointer;
+DosOpen("abc", &amp;hf, &amp;usAction, 0L, FILE_NORMAL,
+    FILE_OPEN | FILE_CREATE,
+    OPEN_ACCESS_WRITEONLY | OPEN_SHARE_DENYWRITE, 0L);
+DosChgFilePtr(hf,                    /* file handle             */
+    0L,                              /* distance to move        */
+    FILE_END,                        /* type of movement        */
+    &amp;ulFilePointer);                 /* address of new position */
+DosWrite(hf, "Hello World\r\n", 13, &amp;cbBytesWritten);
+DosClose(hf);
+ 
+<b>See Also</b>
+ 
+<b>DosNewSize, DosOpen, DosRead, DosWrite</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

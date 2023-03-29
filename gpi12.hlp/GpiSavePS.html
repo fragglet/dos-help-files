@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>GpiSavePS (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiSavePS (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='presentation_spaces.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Presentation Spaces and Device Contexts 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiScale.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPICONTROL
+ 
+LONG GpiSavePS(hps)
+HPS hps;    /* presentation-space handle */
+ 
+The GpiSavePS function saves the state of the presentation space on the
+presentation-space (PS) stack. The PS stack is a last-in, first-out stack,
+maintained by the system, on which an application can save one or more
+presentation-space states. The function saves the state and returns a unique
+identifier. The identifier can be used with the GpiRestorePS function to
+restore the given state.
+ 
+The GpiSavePS function saves the current position of the presentation space,
+the viewing limits, all attributes, and transformation matrices. It also
+saves the clip path, clip region, logical color table, and references to any
+loaded logical fonts and the regions created on the associated device
+context. It does not save the visible region. The function does not actually
+copy resources such as logical fonts and regions to the PS stack. Instead,
+it copies a reference to the resource. The application must ensure that the
+resources are available when these references are restored.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space. If it identifies a micro
+           presentation space, the drawing mode must be DM_DRAW.
+ 
+<b>Return Value</b>
+ 
+The return value is an identifier of the saved presentation space if the
+function is successful or GPI_ERROR if an error occurred. The identifier is
+equal to the depth of the saved presentation space on the save/restore
+stack, with 1 as the base level.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_NOT_IN_DRAW_MODE
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+The function can be used in an open segment, but only if the drawing mode is
+DM_DRAW. It can also be used in an element bracket. When it occurs within an
+open area or path bracket, then the corresponding call to the GpiRestorePS
+function should take place before the bracket is closed. Although the
+function can be used when creating a metafile, the drawing mode must be
+DM_DRAW when replaying the metafile.
+ 
+The PS stack is not the same as the attribute stack (that is, the stack used
+to save attributes when the attribute mode is AM_PRESERVE).
+ 
+<b>See Also</b>
+ 
+<b>GpiPop, GpiRestorePS, GpiSetDr</b>awingMode
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

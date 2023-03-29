@@ -1,0 +1,96 @@
+<html>
+
+<head>
+<title>VioGetBuf (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioGetBuf (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L806f.html'>Changes</a><span class='grhilite'>►</span>                       </i>          <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioGetConfig.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioGetBuf(pulLVB, pcbLVB, hvio)
+PULONG pulLVB;     /* pointer to variable for address of LVB */
+PUSHORT pcbLVB;    /* pointer to variable for length of LVB  */
+HVIO hvio;         /* video handle                           */
+ 
+The VioGetBuf function retrieves the address of the logical video buffer
+(LVB) that contains the current character attributes for the text output of
+a process. The logical video buffer is available for text-mode screens
+only.
+ 
+A process can access and modify the contents of the logical video buffer at
+any time, even if the process is in the background. Changes made to the
+logical video buffer do not affect the physical screen until the process
+calls the VioShowBuf function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pulLVB</i>     Points to the variable that receives the address of the logical
+           video buffer.
+ 
+<i>pcbLVB</i>     Points to the variable that specifies the length (in bytes) of
+           the logical video buffer. You can use the VioGetMode function to
+           determine the dimensions of the buffer.
+ 
+<i>hvio</i>       Identifies an advanced video-input-and-output (AVIO) presentation
+           space. For AVIO programs, this handle must have been created
+           using the VioCreatePS function. For other programs, hvio must be
+           NULL.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_VIO_INVALID_HANDLE
+ 
+<b>Comments</b>
+ 
+If the process calling VioGetBuf is in the foreground, all VIO output calls
+are written to both the physical display buffer and the logical video
+buffer.
+ 
+If the VioSetMode function is called following a call to VioGetBuf, the size
+of the logical video buffer is adjusted to correspond to the new mode.
+ 
+There is one logical video buffer per session (or presentation space, for an
+AVIO application).
+ 
+<b>Example</b>
+ 
+This example calls VioGetBuf to retrieve the address of the logical video
+buffer. It sets the character attributes in the buffer for foreground
+blinking by using the OR operator to set the high bit, then it calls the
+<b>VioShowBuf</b> function to display the character attributes.
+ 
+PBYTE pbLVB;
+USHORT cbLVB, i;
+VioGetBuf((PULONG) &amp;pbLVB, &amp;cbLVB, 0);
+for (i = 0; i &lt; cbLVB; i += 2)
+ 
+    /* OR in the high bit to make it a blinking attribute */
+ 
+    *(pbLVB + i + 1) = *(pbLVB + i + 1) | 0x80;
+VioShowBuf(0, cbLVB, 0);           /* displays buffer     */
+ 
+<b>See Also</b>
+ 
+<b>VioGetMode, VioGetPhysBuf, VioShowBuf</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

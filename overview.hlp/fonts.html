@@ -1,0 +1,404 @@
+<html>
+
+<head>
+<title>About Fonts and Character Primitives (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Fonts and Character Primitives (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Fonts_and_Character_Primitives.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#font and text output functions 1.2'>Function Group</a><span class='grhilite'>►</span>               </i>      <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='lines.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                    About Fonts and Character Primitives
+ 
+This topic defines typographic terms and concepts that are part of the
+Microsoft Operating System/2 application programming interface (API). You
+should also be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='device_contexts.html'>Presentation spaces and device contexts</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='coordinate_spaces.html'>Coordinate spaces and transformations</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='mix_modes.html'>Color and mix modes</a><span class='grhilite'>►</span>
+ 
+A font family is a collection of fonts that share common stroke-width and
+serif characteristics. The term stroke width refers to the width of lines
+used to draw characters and symbols from a font. A font, part of a font
+family, is a collection of characters and symbols that share a common
+height, line weight, and appearance. The height of a font is specified in
+printer's points, or points, a point being a typographic unit of measurement
+equal to 1/72 of an inch. The five categories of line weight and appearance
+are listed as follows:
+ 
+♦  Normal
+♦  Bold
+♦  Condensed
+♦  Expanded
+♦  Italic
+ 
+Characters from a bold font are drawn with a heavier line weight. Characters
+from an italic font are drawn with a normal line weight and slanted up and
+to the right. Characters from a normal font are drawn with a normal line
+weight.
+ 
+<b>Font Metrics</b>
+ 
+Every character in a font is drawn within a rectangular region called a
+character cell. Through the lower half of the character cell is drawn an
+imaginary horizontal line called the baseline. All uppercase letters and
+most lowercase letters in a given font rest on the baseline. Some lowercase
+letters, such as g or y, descend below the baseline. MS OS/2 uses the
+baseline to position characters. When an application draws a string of text,
+MS OS/2 positions the leftmost point of the baseline over a predetermined
+point for each character in the string. The distance from the bottom of the
+character cell to its top is the character-cell height, and the distance
+from the baseline to the top of the character cell is the character-cell
+ascent. Similarly, the character-cell descent is the distance from the
+baseline to the bottom of the character cell, and the width of the character
+cell is the distance from one side to the other.
+ 
+The average distance from the baseline to the top of any uppercase character
+is called a font's em height. This measurement was given its name because
+the height of an uppercase letter M is usually equal to the average height
+of all uppercase characters in the font. The average distance from the
+baseline to the top of any lowercase character is called a font's x height.
+This measurement was given its name because the height of a lowercase letter
+<i>x</i> is usually equal to the average height of all lowercase characters in the
+font. The average character width is determined by multiplying the width of
+each lowercase letter by a predetermined factor, adding the results for each
+letter in the alphabet, and then dividing by 1000. The average character
+width is determined by the setting in the lAveCharWidth field in the
+<b>FONTMETRICS</b> structure. Kerning is an adjustment to space between certain
+characters in a font. Some fonts contain a kerning table, which is a table
+of kerning values specifying the amount of space that should appear between
+certain characters. You can examine the kerning information by calling the
+<b>GpiQueryKerningPairs</b> function. You cannot set kerning for a font, but you
+can simulate kerning for an image font, using MS OS/2 Font Editor, by
+adjusting the a-space and c-space for each character. The a-space is the
+space between the left edge of a character cell and the left edge of the
+cell's character. The c-space is the space between the right edge of a
+character cell and the right edge of its character.
+ 
+Most of the terms described in the previous pages have corresponding fields
+in a special structure called a FONTMETRICS structure.
+ 
+<b>Image and Outline Fonts</b>
+ 
+Characters in a font are stored either as bitmaps or as collections of calls
+to line, arc, and path functions. Fonts stored as bitmaps are image fonts.
+Fonts stored as collections of line, arc, and path calls are outline fonts.
+Some fonts adjust the width of character cells so that narrow letters like a
+lowercase l or i appear closer to adjacent characters. Fonts that adjust the
+width of character cells are called proportional fonts; fonts that do not
+are called fixed fonts. Proportional fonts are generally easier to read than
+fixed fonts.
+ 
+<b>Glyphs, Code Pages, and Code Points</b>
+ 
+The image or picture that you associate with each character or symbol in a
+font is a glyph. A set of glyphs is called a code page. Each code page
+contains 256 code points (16-bit integers), in the range 0 through 255, that
+correspond to the glyphs in that code page. MS OS/2 assigns unique
+identifiers to each of its code pages. A common code page is code page 437.
+ 
+Each code page contains four special code points: a first character, a last
+character, a default character, and a break character. The default character
+is the one that appears in text when an application specifies a code point
+that does not lie between the first and last character code points. The
+break character is the space character and often has the same code point as
+the default character.
+ 
+If the current font is the default system font, you can determine the
+current code page by calling the GpiQueryCp function, or you can assign a
+new code page by calling the GpiSetCp function.
+ 
+<b>Text Output</b>
+ 
+Text output is alphanumeric output drawn with characters and symbols from a
+font. In MS OS/2, fonts are stored either in memory or on devices.
+Applications access them through a device context associated with the
+current presentation space. When you create a presentation space by calling
+the GpiCreatePS or WinGetPS function, MS OS/2 assigns the presentation space
+a default font from one of the fonts available either in memory or on the
+associated device. You can retrieve information about this default font by
+calling the GpiQueryFontMetrics function.
+ 
+<b>Text and Character Attributes</b>
+ 
+There are five character attributes that affect the appearance of your
+application's text output. These character attributes are listed as
+follows:
+ 
+♦  Character color
+♦  Character-color mix mode
+♦  Character angle
+♦  Character shear
+♦  Character box
+ 
+There are two character colors: foreground and background. The foreground
+color is the color of the strokes in each character. The background color is
+the color that appears behind the character.
+ 
+There are two character mix modes that affect how MS OS/2 combines the
+character colors with the existing color(s) on your application's drawing
+surface. The foreground character mix mode is overpaint; the background
+character mix mode is leave-alone. If the default colors and mix modes do
+not suit your application, you can change them by calling the GpiSetAttrs
+function. You can determine the current color and mix-mode settings by
+calling the GpiQueryAttrs function. For more information about color and mix
+modes, see the topic <span class='grhilite'>◄</span><a href='mix_modes.html'>Color and mix modes</a><span class='grhilite'>►</span>. A special vector, drawn from the
+origin of a Cartesian coordinate system through a point, defines the
+character-angle attribute. MS OS/2 aligns the baseline with this vector. You
+can retrieve the point that defines the character-angle vector by calling
+the GpiQueryCharAngle function, or you can set the character angle by
+calling the GpiSetCharAngle function and passing it the coordinates of a
+point that defines the new vector.
+ 
+A character box is an imaginary rectangle that applications use to scale
+characters in a font. You can determine the current character-box dimensions
+by calling the GpiQueryCharBox function. You can set new character-box
+dimensions by calling the GpiSetCharBox function. The dimensions that you
+pass to GpiSetCharBox and the dimensions that GpiQueryCharBox returns are
+fixed values. A fixed value, which is a representation of a floating-point
+number, is a 32-bit value whose high-order 16-bits contain the integral part
+of the floating-point number and whose low-order 16-bits contain the
+fractional part. The fractional part is the numerator of a fraction whose
+denominator is fixed at 65,536. If, for example, one of the box dimensions
+were 7.635 world units, you could obtain the corresponding fixed value by
+multiplying 7.635 by 65,536 and storing the integer part of the result
+(500,367) in a fixed variable. The high-order 16-bits would contain 0x0007
+and the low-order 16-bits would contain 0xA28F.
+ 
+A special vector, drawn from the origin of an imaginary Cartesian coordinate
+system through a specified point, defines the character-shear attribute. MS
+OS/2 aligns the vertical lines of the character box and the vertical strokes
+in a character with this vector. You can determine the current
+character-shear angle by calling the GpiQueryCharShear function. This
+function returns a point you can use to determine the shear vector. You can
+set the character-shear angle by calling the GpiSetCharShear function and
+passing it a point structure with the appropriate values.
+ 
+<b>Character Modes</b>
+ 
+There are three character modes that determine whether MS OS/2 draws text
+using the current character attributes. When character mode 1 is set and the
+current font is an image font, MS OS/2 ignores the current shear, angle, and
+box attributes. When character mode 2 is set and the current font is an
+image font, MS OS/2 uses the current shear, angle, and box character
+attributes when it draws image-font text. In the current release of MS OS/2
+Presentation Manager, mode 3 is reserved for outline fonts; if an
+application attempts to draw text output in mode 3 using an image font, MS
+OS/2 issues an error.
+ 
+You can determine which character mode is set by calling the
+<b>GpiQueryCharMode</b> function. You can set a new character mode by calling the
+<b>GpiSetCharMode</b> function.
+ 
+If the current font is an outline font, MS OS/2 always draws text using the
+current character attributes──regardless of the current character mode.
+ 
+<b>Font Files and Dynamic-Link Libraries</b>
+ 
+You can use Font Editor to alter and customize image-font files (files with
+a .fnt extension). After creating a custom font tailored to your
+application, you need to turn it into a dynamic-link library that your
+application can load. Once your application loads this library, it can use
+any font within it. A dynamic-link library is a collection of code and data
+segments that applications can access at run time. The code and data in a
+dynamic-link library is shareable──several applications can access it
+simultaneously. Dynamic-link libraries that contain fonts are unique; they
+contain data segments and empty (or useless) code segments. The MS OS/2
+naming convention for a dynamic-link library requires that the library name
+end with a .fon extension.
+ 
+The following text explains how you can create a dynamic-link library that
+contains your custom font. To create a dynamic-link library, you must use
+<b>masm, the Mi</b>crosoft Macro Assembler; link, the Microsoft
+Segmented-Executable Linker; and rc, the MS OS/2 Resource Compiler. For this
+example, assume that your custom font file is named newfont.fnt.
+ 
+After creating your custom font file, you need to create a special assembler
+file with your editor. You can use the following code fragment as the source
+code for this file:
+ 
+code segment word   ;makes dummy code segment aligned on word boundary
+db "empty_segment"  ;initializes a string in dummy segment
+code ends           ;dummy segment ends here
+end                 ;terminates source file
+ 
+Call this file myfont.asm. After you have created myfont.asm, assemble it
+with the following command:
+ 
+masm myfont
+ 
+After assembling the file, create a module-definition file. Call this file
+<i>myfont.def</i>. It should contain the following statements:
+ 
+LIBRARY myfont
+SEGMENTS  CODE MOVEABLE
+ 
+The first statement tells the linker that you are creating a library with
+the module name myfont. The second statement tells the linker that the
+segments in this library are movable code segments.
+ 
+After creating myfont.def, start the linker with the following command:
+ 
+link myfont,,,,myfont.def
+ 
+This command creates an empty executable file called myfont.exe.
+ 
+After creating the empty executable file (which is the template for a
+dynamic-link library), create a resource file and call it myfont.rc. For
+example, if your font file is called newfont.fnt, you would place the
+following statement in myfont.rc:
+ 
+FONT    200     newfont.fnt
+ 
+This statement assigns an identifier, 200, to the font resource
+<i>newfont.fnt</i>.
+ 
+Finally, use Resource Compiler to add the font file (newfont.fnt) to the
+empty dynamic-link library:
+ 
+rc  myfont.rc
+ 
+The executable file, myfont.exe, now contains your custom fonts. After you
+have renamed this file myfont.fon, you can load the fonts into your
+application by calling the GpiLoadFonts function and passing it a pointer to
+the path and library name as the second argument──for example,
+c:\os2\dll\myfont.fon.
+ 
+<b>Selecting New Fonts</b>
+ 
+If you need to use a font other than the default system font in your
+application, you can select a new one by calling the GpiCreateLogFont
+function. There are two kinds of fonts that you can select: public fonts and
+private fonts.
+ 
+<b>Public Fonts</b>
+ 
+Public fonts are those that a user loads by using the MS OS/2 Presentation
+Manager Control Panel. There are three dynamic-link libraries that contain
+the Courier, Helvetica, and Times Roman fonts. If you load each library by
+using Control Panel, a total of 76 public fonts are available to any
+application that you run. These fonts are available in both outline and
+image formats in point sizes ranging from 8 to 24 points.
+ 
+You can determine how many public fonts are currently loaded by calling the
+<b>GpiQueryFonts</b> function and passing it the QF_PUBLIC flag as the second
+argument, a NULL pointer as the third argument, and a count of 0 as the
+fourth argument, as shown in the following code fragment:
+ 
+FONTMETRICS fm, afm[80];
+LONG lCount, lFontCount;
+HPS hps;
+ 
+lFontCount = GpiQueryFonts(hps,
+    QF_PUBLIC,
+    NULL,   /* queries all public fonts */
+    &amp;lCount,
+    (LONG) (sizeof(fm)),
+    (PFONTMETRICS) afm);
+ 
+You can determine the characteristics of the loaded public fonts by calling
+<b>GpiQueryFonts</b> and passing it the QF_PUBLIC flag, the count of available
+fonts returned by the first call, and the address of an array of
+<b>FONTMETRICS</b> structures, as shown in the following code fragment. MS OS/2
+copies the attributes of the fonts into the array of FONTMETRICS structures,
+which you can then examine in order to select a font.
+ 
+lFontCount = GpiQueryFonts(hps,
+    QF_PUBLIC,
+    NULL,
+    &amp;lCount,
+    (LONG) (sizeof(fm)),
+    (PFONTMETRICS) afm);
+ 
+Once you determine which font you need, call the GpiCreateLogFont function,
+which copies various fields from the FONTMETRICS structure of the desired
+font into their corresponding fields in a FATTRS structure. The fields in
+the FATTRS structure describe the face name, code page, maximum baseline
+extent, and average character width of the font you would like to use. A
+special field, lMatch, contains a unique identifier that MS OS/2 uses to
+match your request to a font. Another field in the FATTRS structure
+specifies whether the font should be an image font or an outline font. You
+can use other fields to request that MS OS/2 synthesize an italic,
+underscored, strikeout, or bold font.
+ 
+If MS OS/2 returns the value 2 after the call to GpiCreateLogFont, the
+function was successful. You can begin using the font after you assign it to
+the application's presentation space by passing the local identifier (lcid)
+from GpiCreateLogFont to the GpiSetCharSet function.
+ 
+<b>Private Fonts</b>
+ 
+Private fonts are fonts that an application loads exclusively for its own
+use. An application loads a private font when it calls the GpiLoadFonts
+function and passes it the name of the dynamic-link library that contains
+the fonts. (Note that in order to load a dynamic-link library of fonts, the
+library must be in one of the directories pointed to by the libpath command
+in the config.sys file.)
+ 
+After the application loads the dynamic-link library of fonts, it can
+determine the characteristics of the fonts in that library by calling the
+<b>GpiQueryFonts</b> function.
+ 
+You can determine how many private fonts are currently loaded by calling
+<b>GpiQueryFonts</b> passing it the QF_PRIVATE flag as the second argument, a NULL
+pointer as the third argument, and a count of 0 as the fourth argument, as
+shown in the following code fragment:
+ 
+FONTMETRICS fm, afm[80];
+LONG lCount;
+ 
+lFontCount = GpiQueryFonts(hps,
+    QF_PRIVATE,
+    NULL,   /* queries all private fonts */
+    &amp;lCount,
+    (LONG) (sizeof(fm)),
+    (PFONTMETRICS) afm);
+ 
+You can determine the characteristics of the loaded private fonts by calling
+<b>GpiQueryFonts</b> and passing it the QF_PRIVATE flag, the count of available
+fonts returned by the first call, and the address of an array of
+<b>FONTMETRICS</b> structures, as shown in the following code fragment. MS OS/2
+copies the font attributes into the array of FONTMETRICS structures, which
+you can then examine in order to select a font.
+ 
+lFontCount = GpiQueryFonts(hps,
+    QF_PRIVATE,
+    NULL,
+    &amp;lCount,
+    (LONG) (sizeof(fm)),
+    (PFONTMETRICS) afm);
+ 
+Once you determine which font you need, call the GpiCreateLogFont function,
+which copies various fields from the FONTMETRICS structure into their
+corresponding fields in a FATTRS structure. The fields in the FATTRS
+structure describe the face name, code page, maximum baseline extent, and
+average character width of the font you would like to use. A special field,
+<b>lMatch</b>, contains a unique identifier that MS OS/2 uses to match your request
+to a font. Other fields in the FATTRS structure specify whether the font is
+an outline font or an image font and whether it is proportional or fixed.
+You can use another of the fields to request that MS OS/2 synthesize an
+italic, underscored, strikeout, or bold font.
+ 
+If MS OS/2 returns the value 2 after the call to GpiCreateLogFont, the
+function was successful. You can begin using the font after you assign it to
+the application's presentation space by passing the local identifier (lcid)
+from GpiCreateLogFont to the GpiSetCharSet function. If MS OS/2 returns 1
+after you call GpiCreateLogFont, the function was not successful and the new
+font is the default system font.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

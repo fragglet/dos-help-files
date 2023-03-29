@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<title>GpiEndArea (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiEndArea (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='areas.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Area Primitives 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiEndElement.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+LONG GpiEndArea(hps)
+HPS hps;    /* presentation-space handle */
+ 
+The GpiEndArea function ends an area bracket──that is, it ends the sequence
+of functions (starting with the GpiBeginArea function) that define the
+outline of an area. The function automatically closes any open figure in the
+area, if necessary, by drawing a line from the current position to the
+starting point of the figure, then draws the area using the filling mode
+specified by the GpiBeginArea function that started the area bracket.
+ 
+The GpiEndArea function does not change the current position unless it must
+draw a line to close a figure in the area. In this case the new position is
+the last point in the line.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK or GPI_HITS if the function is successful. (It is
+GPI_HITS if the detectable attribute is set for the presentation space and a
+correlation hit occurs.) The return value is GPI_ERROR if an error occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_IN_RETAIN_MODE
+     PMERR_NOT_IN_AREA
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiEndArea function to end an area bracket. The
+function draws the area (a triangle) by filling the outline with the current
+fill pattern.
+ 
+POINTL ptlStart = { 0, 0 };
+POINTL ptlTriangle[] = { 100, 100, 200, 0, 0, 0 };
+ 
+GpiBeginArea(hps, BA_NOBOUNDARY | BA_ALTERNATE);
+GpiMove(hps, &amp;ptlStart);
+GpiPolyLine(hps, 3L, ptlTriangle);
+GpiEndArea(hps);
+ 
+<b>See Also</b>
+ 
+<b>GpiBeginArea, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

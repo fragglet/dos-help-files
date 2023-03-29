@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>GpiLabel (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiLabel (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='retained_graphics.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiLine.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPISEGEDITING
+ 
+BOOL GpiLabel(hps, idLabel)
+HPS hps;         /* presentation-space handle */
+LONG idLabel;    /* label                     */
+ 
+The GpiLabel function creates a label element. A label element is an element
+in a segment that contains nothing more than a 32-bit value. The function
+creates a label for an element in the current open segment. If no segment is
+open, no label is created.
+ 
+The GpiLabel function cannot be used in an element bracket.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>idLabel</i>    Specifies the label. It can be any value in the range 0x00000000
+           through 0xFFFFFFFF.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_IN_ELEMENT
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+The GpiLabel function is intended to be used to uniquely identify elements
+in a segment that may be edited. Label elements are typically placed near
+elements to be edited. The label can be used with the
+<b>GpiSetElementPointerAtLabel</b> function to move the element pointer to the
+given element.
+ 
+<b>Example</b>
+ 
+This example uses the GpiLabel function to create label elements in a
+segment. If the segment is subsequently edited, the label elements can still
+be used to locate the elements near it.
+ 
+POINTL ptlStart = { 0, 0 };
+POINTL ptlTriangle[] = { 100, 100, 200, 0, 0, 0 };
+ 
+GpiOpenSegment(hps, 4L);          /* creates a segment */
+GpiLabel(hps, 5L);                /* creates label 5   */
+GpiLabel(hps, 10L);               /* creates label 10  */
+GpiMove(hps, &amp;ptlStart);
+GpiCloseSegment(hps);
+GpiPolyLine(hps, 3L, ptlTriangle);
+ 
+<b>See Also</b>
+ 
+<b>GpiSetElementPointerAtLabel, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

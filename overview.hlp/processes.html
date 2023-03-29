@@ -1,0 +1,368 @@
+<html>
+
+<head>
+<title>About Multitasking (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Multitasking (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Processes.html'>Using Section</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Timers.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                             About Multitasking
+ 
+This topic describes processes, threads, sessions, and the Microsoft
+Operating System/2 multitasking functions used to create and manage them.
+You should also be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='Interprocess_Communication.html'>Interprocess communication</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='File_Systems.html'>File systems</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Dynamic_Link_Libraries.html'>Dynamic-link libraries</a><span class='grhilite'>►</span>
+ 
+Multitasking, one of the principal features of MS OS/2, is the ability of
+the system to manage the execution of more than one program at a time. A
+multitasking system such as MS OS/2 lets users simultaneously run all the
+programs they need to complete their work. This ability helps to optimize
+use of the computer, since time normally spent by a program waiting for user
+input is distributed to other programs that may be printing a document or
+recalculating a spreadsheet. Also, running more than one program at a time
+makes working with multiple programs easier, because the user can readily
+move from one program to another as the work requires.
+ 
+Although MS OS/2 provides multitasking in the traditional sense of having
+more than one program run at a time, it also extends this concept to permit
+a single program to run more than one copy of itself at the same time and to
+provide a means of quickly moving between programs without disrupting the
+display or execution of the programs.
+ 
+<b>Processes and Threads</b>
+ 
+An MS OS/2 program that has been loaded into memory and prepared for
+execution is called a process. Each process has at least one thread, called
+the main thread or thread 1. The process consists of the program code, data,
+and other resources, such as files, pipes, and queues, that belong to the
+program. The thread consists of the current register values, the stack, and
+the state of execution of the program. When MS OS/2 executes a program, it
+confirms that the process's code and data are in memory and that the
+thread's registers and stack are set before it passes execution control.
+Each program has access to all the computer's resources, such as memory,
+disk drives, screen, keyboard, and the CPU itself. The system carefully
+manages these resources so that programs can access them without conflict.
+ 
+A process can have more than one thread. Each thread runs independently,
+keeping its own register, stack, and execution state. Threads share the same
+data segment (that is, they share the program's globally defined variables).
+Although a thread can execute any part of the program, including a part
+being executed by another thread, threads are typically used to execute
+separate parts. This distributes the available CPU time and lets a program
+carry out several tasks simultaneously──for example, loading a file and
+prompting the user for input at the same time.
+ 
+Since the system can create and execute threads quickly, the preferred
+multitasking method is to distribute tasks among parts of the same program
+instead of between programs.
+ 
+A process does not have to rely on MS OS/2 to control execution of its
+threads. A process can use the DosSuspendThread and DosResumeThread
+functions to suspend and resume the execution of a given thread. When a
+process suspends a thread, the thread remains suspended until the process
+calls the DosResumeThread function.
+ 
+A process or thread ends when it calls the DosExit function. MS OS/2
+automatically closes any files or other resources left open by the process
+when the process ends, but when a thread ends, any resources it may have
+open remain open until another thread closes them or the process ends. A
+process can direct MS OS/2 to carry out other actions when the process ends
+by using the DosExitList function to create a list of termination functions.
+MS OS/2 calls the termination functions, in the order given, when the
+process is about to end.
+ 
+Threads in a process must be given a stack when they are created. The stack
+can be in the automatic data segment of the process (that is, be defined as
+a global variable in the program), or it can be a segment that is explicitly
+allocated for use as a stack. In either case, a program that uses multiple
+threads may need to disable code used to check for available space in the
+stack if that code assumes that the program has only one stack.
+ 
+Although each thread in a process has its own registers, a new thread
+inherits some registers, including the es register, from the thread that
+creates it. This may lead to an unexpected protection violation if the
+selector in the es register is later freed or invalidated by the first
+thread and the new thread unwittingly uses the register. (This can happen in
+high-level-language programs in which the es register is automatically saved
+and restored. Restoring an invalid selector may cause a protection
+violation.) A new thread can avoid a protection violation by clearing the
+<b>es</b> register when it first starts. Alternatively, an existing thread can
+clear the es register before creating a new thread. The following
+assembly-language routine, ClearES, clears the es register:
+ 
+ClearES proc far
+        sub ax,ax
+        mov es,ax
+ClearES endp
+ 
+<b>The Scheduler</b>
+ 
+The MS OS/2 system scheduler determines how to distribute execution control
+among the programs currently running. The scheduler uses time slicing to
+distribute execution control. This means the scheduler periodically gives
+each thread in each process a small slice of CPU time. The thread executes
+until its time is up; then the scheduler stops the thread and starts
+another. The amount of time in each time slice is defined by the timeslice
+command in the config.sys file. Timeslice sets a maximum and minimum number
+of milliseconds for the system's time slices.
+ 
+The scheduler does not share CPU time equally among all threads. It uses a
+priority scheme to determine when a thread receives a time slice. The
+scheduler has three priority classes: time-critical, regular, and idle-time.
+A time-critical thread always receives a time slice before a regular thread,
+and a regular thread always receives a time slice before an idle-time
+thread.
+ 
+Time-critical is a special class for threads that must react to events
+outside the system. Time-critical threads should execute quickly and then
+relinquish the CPU for other work until another time-critical event occurs.
+A thread in a communications program that is responsible for reading data
+from the communications device is a good example. The thread needs enough
+time to read all incoming data. Since this amount of time may be more than a
+regular time slice, a time-critical classification ensures that the thread
+gets all the time it needs.
+ 
+Idle-time is a special class for threads that need very little CPU time.
+Idle-time threads get CPU time only when there is no other work to do.
+ 
+Regular class is for all other threads.
+ 
+Within each class, the scheduler maintains a priority level for a thread.
+The priority level can be from 0 through 31. A thread with priority level 31
+always receives a time slice before a thread with priority level 30, and so
+on. If two or more threads have the same priority level, the scheduler
+distributes the CPU time equally by using a round-robin scheme; that is, the
+scheduler gives a time slice to first one, then another, and so on, and then
+goes back to the first. A process can set and retrieve the priority level by
+using the DosSetPrty and DosGetPrty functions.
+ 
+Although you can set the priority level of a thread at any time, you should
+do so only for programs that use more than one thread or process. The best
+use of priority is to speed up threads or processes on which other threads
+or processes depend. For example, you might temporarily increase the
+priority of a thread loading a file if another thread is waiting for that
+file to be loaded.
+ 
+Since the priority of a thread is relative to all other threads in the
+system, increasing the priority of the threads in your program merely to get
+the extra CPU time will adversely affect the overall operation of the
+system.
+ 
+On personal computers, most programs spend a considerable amount of time
+interacting with the user. A program may occasionally execute without
+interaction for a period of time, such as when recalculating a column of
+numbers or formatting a paragraph of text, but for the majority of the time
+the program is either processing input from the user or waiting for more
+input. MS OS/2 can dynamically alter the priority of a process based on
+whether the user is using it. If the priority command in the config.sys file
+specifies dynamic, MS OS/2 grants higher priority to the foreground process
+than to background processes. This ensures that the foreground process──the
+process most likely to be in use──receives enough CPU time to provide quick
+response to user input. If priority specifies absolute, all processes
+receive CPU time based on the priority established by the DosSetPrty
+function.
+ 
+<b>Child Processes</b>
+ 
+Programs can load and execute other programs by using the DosExecPgm
+function. The new program, once loaded, is called a child process. The
+process that starts the new program is called the parent process. A child
+process is like any other process. It has its own program code and data and
+its own threads. The child process inherits the other resources of the
+parent process, such as files, pipes, and queues. The child process can use
+the inherited resources without preparing them. For example, if the parent
+process opens a file for reading and then starts the child process, the
+child process can read from the file immediately; it does not have to open
+the file for itself. Once the child process has been created, however, any
+additional resources that the parent process may create are not available to
+the child process. Similarly, any resources that the child process may
+create are not available to the parent process.
+ 
+The parent process determines how the child process should run. A child
+process can run independently of the parent process──that is, both can run
+at the same time──or the parent process can wait until the child process
+ends before continuing execution. A process can use the DosCwait function to
+retrieve the termination status of a child process that runs independently.
+ 
+<b>Program Start-Up</b>
+ 
+Unlike MS-DOS, MS OS/2 does not prepare a program segment prefix (PSP) for
+protected-mode programs. Instead, it creates an environment segment that
+contains the definitions for environment variables and the command line used
+to start the program. When a program first starts, MS OS/2 gives the program
+access to this environment segment, as well as to information about the
+version of MS OS/2.
+ 
+A program can retrieve definitions from the environment segment by first
+using the DosGetEnv function to retrieve the segment selector. The
+<b>DosScanEnv and DosSearchPath f</b>unctions also permit the program to use the
+information in the environment segment.
+ 
+When MS OS/2 first starts a program, it sets the CPU registers to the
+following values:
+ 
+<b>Value  Description</b>
+────────────────────────────────────────────────────────────────────────────
+<b>cs:ip</b>  Contains the program's initial entry point. This is the same as the
+       entry point specified in the executable file.
+ 
+<b>ss:sp</b>  Contains the starting address of the stack. This is the same stack
+       address as specified in the executable file.
+ 
+<b>ds</b>     Contains the segment selector of the automatic data segment. The
+       automatic data segment is specified in the executable file.
+ 
+<b>es</b>     Contains zero.
+ 
+<b>ax</b>     Contains the segment selector of the environment segment. The
+       environment segment contains the environment strings and command-line
+       arguments for the program.
+ 
+<b>bx</b>     Contains the offset to the start of the program command line from the
+       beginning of the environment segment.
+ 
+<b>cx</b>     Contains the size (in bytes) of the automatic data segment. If this
+       value is zero, the segment is 65,536 bytes.
+ 
+<b>bp</b>     Contains zero.
+ 
+A program written in assembly language can use these registers to access the
+command line and environment string. Programs written in high-level
+languages can retrieve the environment-segment selector and command-line
+offset by using the DosGetEnv function.
+ 
+When MS OS/2 starts a dynamic-link library, it sets the CPU registers to the
+following values:
+ 
+<b>Value  Description</b>
+────────────────────────────────────────────────────────────────────────────
+<b>cs:ip</b>  Contains the entry-point address of the library initialization
+       function.
+ 
+<b>ss:sp</b>  Contains the address of the current system stack. The initialization
+       function can use the stack to define local variables and call other
+       functions, but it must restore the stack to its previous state before
+       returning.
+ 
+<b>ds</b>     Contains the segment selector of the library's automatic data segment
+       (if it has one), or contains the selector for the data-segment
+       program or system library that called the DosLoadModule function to
+       load the library.
+ 
+<b>ax</b>     Contains the module handle of the dynamic-link library.
+ 
+All other register values are undefined.
+ 
+The initialization function can carry out any task, but it must return by
+using an intersegment return instruction. All registers except ax and dx
+must be restored to their previous values. The function can use the ax
+register to indicate whether it was successful. The system expects the
+function to set the ax register to a nonzero value if the function was
+successful, or to zero if the function failed.
+ 
+<b>Sessions</b>
+ 
+MS OS/2 uses sessions to help the user move from one program to the next
+without disrupting the screen display of a program. A session consists of at
+least one process and either a full, character-based screen or a
+Presentation Manager window. When the system creates a session, the process
+in the session displays output in the screen or window. The user can view
+the output and supply input by moving to the session. The user moves to a
+session by pressing the ALT+ESC key combination or by selecting the title of
+the session from the list of program titles in the Task Manager window.
+ 
+A process creates and controls sessions by using the MS OS/2 session-manager
+functions. Processes that use these functions have much the same control
+over sessions as does Task Manager, but only for the sessions they create.
+The functions are typically used by debugging programs to keep output of the
+program being debugged separate from the debugger's output.
+ 
+A process creates a new session by using the DosStartSession function. The
+function uses a STARTDATA structure that specifies the name of the program
+to start in the session. It also specifies whether the session should be
+full-screen or in a window. When a session is created, MS OS/2 adds the
+program title for the session to the list of titles in Task Manager.
+ 
+A session can be either a child session or an unrelated session. A child
+session, created by setting the Related field in STARTDATA to TRUE, is under
+the control of the process that created it. The process can select, set, or
+stop a child session by using the DosSelectSession, DosSetSession, or
+<b>DosStopSession function, respectively. Dos</b>StartSession gives the child
+session a unique session identifier for use in these functions.
+ 
+An unrelated session, created by setting the Related field to FALSE, is not
+under the process's control. Once an unrelated session starts, it is
+controlled entirely by the user.
+ 
+A session can be either a foreground or a background session. A process can
+create a foreground session only if the process is in the current foreground
+session or if one of the sessions created by the process is the current
+foreground session.
+ 
+A process can select a child session by using the session identifier in the
+<b>DosSelectSession</b> function. Selecting a child session causes that session to
+move to the foreground. A process can make a child session "unselectable" by
+using the DosSetSession function to change the SelectInd field in the
+<b>STATUSDATA</b> structure. This prevents the user from selecting the session from
+Task Manager but does not prevent a process from selecting the child session
+by using DosSelectSession.
+ 
+A process can also bind a child session to its own session by using the
+<b>DosSetSession</b> function. Binding a session causes that session to move to the
+foreground whenever the user selects the parent session from Task Manager.
+ 
+A process can use a session identifier with the DosSetSession function only
+if the process created the identifier. It cannot use session identifiers
+created by other processes.
+ 
+Although a child session is related to the session that started it, the
+processes in the child and original sessions are not related. This means
+that even though DosStartSession supplies the process identifier of the
+process in the child session, the identifier cannot be used with MS OS/2
+functions such as DosSetPrty.
+ 
+A process can stop a child session by using the DosStopSession function.
+Stopping the session terminates the process in the session. It also stops
+any sessions related to the child session. If a child session is in the
+foreground when it is stopped, the parent session becomes the foreground
+session. The DosStopSession function breaks any bond that exists between the
+parent session and the specified child session.
+ 
+A process running in the session specified in the DosStopSession function
+can refuse to terminate. If this happens, DosStopSession still returns zero
+(indicating success). The only way to be certain that the child session has
+terminated is to wait for notification through the termination queue that is
+specified in the DosStartSession function. MS OS/2 writes a data element
+into the specified queue when the child session terminates. The process in
+the parent session must call the DosReadQueue function to retrieve this data
+element, which contains the session identifier for the child session and the
+result code for the process in the child session. DosReadQueue also sets the
+request word to zero. Only the process that created the child session can
+read the data element. After reading and processing the data element, the
+process must free the segment that contains the data element by using the
+<b>DosFreeSeg</b> function.
+ 
+Because the DosStartSession function does not supply a session identifier
+for an unrelated session, the process that created the unrelated session
+cannot select it, bind it, stop it, or make it unselectable.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

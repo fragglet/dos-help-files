@@ -1,0 +1,110 @@
+<html>
+
+<head>
+<title>DosSetVec (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosSetVec (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='x_at_L80dd.html'>Changes</a><span class='grhilite'>►</span>                                             <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosSetVerify.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMISC
+ 
+USHORT DosSetVec(usVecNum, pfnFunction, ppfnPrev)
+USHORT usVecNum;   /* type of exception                                   */
+PFN pfnFunction;   /* pointer to function                                 */
+PPFN ppfnPrev;     /* pointer to variable for previous function's address */
+ 
+The DosSetVec function installs or removes an exception handler for a
+specified exception. An exception is a program error, such as division by
+zero, that causes the system to pass control to the exception handler. The
+exception handler is an assembly-language routine that corrects errors or
+cleans up programs before terminating. The system calls the exception
+handler whenever the specified exception occurs. If a process does not
+install its own exception handler, the default exception handler terminates
+the process when an exception occurs.
+ 
+The DosSetVec function is a family API function.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>usVecNum</i>     Specifies the number of the exception vector. This parameter
+             can be one of the following values:
+ 
+             Value                   Meaning
+             ───────────────────────────────────────────────────────────────
+             VECTOR_DIVIDE_BY_ZERO   Division by zero
+ 
+             VECTOR_EXTENSION_ERROR  Processor extension error
+ 
+             VECTOR_INVALIDOPCODE    Invalid operation code (opcode)
+ 
+             VECTOR_NO_EXTENSION     Processor extension not available
+ 
+             VECTOR_OUTOFBOUNDS      Out of bounds
+ 
+             VECTOR_OVERFLOW         Overflow
+ 
+<i>pfnFunction</i>  Points to the address of the exception handler that receives
+             control when the specified exception occurs. If this parameter
+             is zero, the DosSetVec function removes the current exception
+             handler. For a full description, see the following "Comments"
+             section.
+ 
+<i>ppfnPrev</i>     Points to the variable that receives the address of the
+             previous exception handler. The new exception handler can use
+             this address to chain exception handling through all previous
+             handlers or to restore the previous exception handler.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_INVALID_FUNCTION
+ 
+<b>Comments</b>
+ 
+When the system calls the exception handler, it enables interrupts and
+pushes the machine status word and far return address on the stack. If the
+exception handler returns, it must use the iret (return-from-interrupt)
+instruction.
+ 
+If the DosSetVec function is used to install an exception handler for the
+vector VECTOR_EXTENSION_ERROR, the function sets the machine status word to
+indicate that no 80287 processor is available. The emulation bit is set and
+the monitor-processor bit is cleared. (This is done without regard for the
+true state of the hardware.) If the DosSetVec function is used to remove the
+exception handler for VECTOR_EXTENSION_ERROR, the function sets the machine
+status word to reflect the true state of the hardware.
+ 
+If the routine being registered is in a segment that has the iopl
+instruction indicated, the exception when it occurs, causes a general
+protection fault and the process is terminated.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restriction applies to the DosSetVec function:
+ 
+♦  Because the 8086 and 8088 microprocessors do not raise this exception,
+   usVecNum cannot be VECTOR_EXTENSION_ERROR.
+ 
+<b>See Also</b>
+ 
+<b>DosDevConfig, DosError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

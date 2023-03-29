@@ -1,0 +1,242 @@
+<html>
+
+<head>
+<title>Using Video Input and Output (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Video Input and Output (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Video_Input_and_Output.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#VIO'>Function Group</a><span class='grhilite'>►</span>                     <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='index.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                        Using Video Input and Output
+ 
+Since output for Presentation Manager applications is provided by using
+windows and the Gpi functions, only non-Presentation Manager programs use
+the MS OS/2 Vio functions. Typically, you use these functions in
+character-based programs. The following sections explain how to use some of
+the Vio functions.
+ 
+<b>Displaying a Character</b>
+ 
+The KbdCharIn function does not echo a keystroke as it reads it; that is,
+the function does not write the corresponding character to the screen. If
+you want to display the character, you can do so by using the VioWrtTTY
+function. The following code fragment writes the letter A to the screen:
+ 
+CHAR ch = 'A';
+ 
+VioWrtTTY(&amp;ch, 1, 0);
+ 
+Video functions, like keyboard functions, require a handle to identify the
+screen to be accessed. In the preceding example, the third argument, 0, is
+the default video handle and identifies the system screen. The system screen
+is always available to programs and does not need be opened to be used.
+Video handle 0 and standard-output handle 1 are not the same. The
+standard-output file can be closed or redefined, but the system-screen
+handle cannot.
+ 
+If the standard-output handle has not been redirected, you can also write a
+character to the screen by using the DosWrite function. DosWrite calls the
+<b>VioWrtTTY</b> function to write the character, so when writing to the screen,
+these functions are identical.
+ 
+The VioWrtTTY function always writes the character to the current position
+of the cursor and then advances the cursor one position. If the cursor
+reaches the end of a line, it wraps to the beginning of the next line. If
+the cursor reaches the end of the screen, VioWrtTTY scrolls the screen
+contents up one line.
+ 
+<b>Writing a Character to a Specific Location</b>
+ 
+You can write a character to a specific location on the screen by using the
+<b>VioWrtNChar</b> function. This function lets you specify the row and column at
+which to place the character. The following code fragment writes the letter
+<i>A</i> to row 10, column 15:
+ 
+CHAR ch = 'A';
+ 
+VioWrtNChar(&amp;ch, 1, 10, 15, 0);
+ 
+The VioWrtNChar function uses the coordinate system of the screen to
+determine where to place the character. Such a coordinate system typically
+divides the screen into rows and columns. Each coordinate represents a
+character cell, a rectangular area of the screen large enough to display one
+character. When you write a character to a particular coordinate, it
+overwrites the character that was previously there.
+ 
+In MS OS/2, the upper-left corner of the screen is at position (0,0) and,
+for most screen modes, the lower-right corner is at position (24,79). If you
+attempt to write a character outside these boundaries, the function returns
+an error.
+ 
+You can write the same character to the screen repeatedly by specifying a
+value greater than 1 as the second argument. For example, the following code
+fragment clears a 25 by 80 screen:
+ 
+CHAR ch = ' ';
+ 
+VioWrtNChar(&amp;ch, 2000, 0, 0, 0);
+ 
+If the VioWrtNChar function reaches the end of a line, it automatically
+wraps to the beginning of the next line. However, it does not scroll the
+screen contents when it reaches the bottom of the screen, and it does not
+update the cursor position.
+ 
+You can write a single attribute to the screen a specified number of times
+by using the VioWrtNAttr function.
+ 
+<b>Writing a String of Characters to the Screen</b>
+ 
+You can write a string of characters directly to the screen by using the
+<b>VioWrtCharStr</b> function. When you write characters to the screen in this way,
+you can specify the row and column at which the characters are to start.
+This function is similar to the VioWrtNChar function, except that instead of
+a single character, you specify an array of characters. The following code
+fragment writes the string "Hello, world" to the middle of the screen:
+ 
+VioWrtCharStr("Hello, world",  12, 13, 34, 0 );
+ 
+You can write a string of characters to the screen with a specific attribute
+by using the VioWrtCharStrAtt function.
+ 
+<b>Writing Character Cells to the Screen</b>
+ 
+You can write character cells to the screen by using the VioWrtNCell or
+<b>VioWrtCellStr</b> function. A character cell is a 2-byte value that specifies a
+character and its attribute. A character attribute defines the color,
+intensity, and appearance of the character to be written. The following code
+fragment writes a red letter A to the middle of a color screen:
+ 
+BYTE abCell[2] = { 'A', 0x04 };
+ 
+VioWrtNCell(abCell, 1, 13, 40, 0);
+ 
+Character cells are useful in programs that take full advantage of the
+text-mode capabilities of the display adapter. However, the meaning and
+range of values for attributes depend on the device, so it is important that
+you check the display-adapter type. You can do this by using the
+<b>VioGetConfig</b> function, as shown in the following code fragment:
+ 
+VIOCONFIGINFO vioin;
+vioin.cb = sizeof(vioin);
+ 
+VioGetConfig(0, &amp;vioin, 0);
+switch (vioin.adapter) {
+    case DISPLAY_MONOCHROME:   /* monochrome adapter              */
+        break;
+    case DISPLAY_CGA:          /* color graphics adapter (CGA)    */
+        break;
+    case DISPLAY_EGA:          /* enhanced graphics adapter (EGA) */
+        break;
+}
+ 
+<b>Moving and Hiding the Cursor</b>
+ 
+If you choose to use the VioWrtTTY or DosWrite function to write text to the
+screen, you can control the placement of that text on the screen by using
+the VioSetCurPos and VioGetCurPos functions to set and get the position of
+the cursor. The cursor is the flashing underscore or block on the screen
+that marks the location that will receive the next character written to the
+screen. The following code fragment moves the cursor to the middle of the
+screen and writes the string "Hello, world":
+ 
+VioSetCurPos(13, 34, 0);
+VioWrtTTY("Hello, world", 12, 0);
+ 
+If you choose not to use the cursor, you can remove it from the screen by
+using the VioSetCurType function, which requires a VIOCURSORINFO structure.
+If you set the attr field in the VIOCURSORINFO structure to 0xFFFF, as shown
+in the following code fragment, the function hides the cursor:
+ 
+VIOCURSORINFO vioci;
+ 
+VioGetCurType(&amp;vioci, 0);    /* retrieve current cursor type */
+vioci.attr = 0xFFFF;         /* hide the cursor              */
+VioSetCurType(&amp;vioci, 0);    /* set new cursor type          */
+ 
+You can restore the cursor by setting the attr field to its original value.
+In the preceding example, the VioGetCurType function was used to fill the
+<b>VIOCURSORINFO</b> structure with the current information before the structure
+was modified to hide the cursor. In general, whenever you use an MS OS/2
+function that takes values from a structure, you should be sure that all
+fields contain valid values. In this case, the way to ensure valid values is
+to fill the structure first by using the VioGetCurType function.
+ 
+You can also use the VioSetCurType function to change the shape of the
+cursor. For example, you can change the shape from an underscore to a block
+by setting the yStart and cEnd fields to appropriate values. The following
+code fragment creates a block cursor:
+ 
+VioGetCurType(&amp;vioci, 0);    /* retrieve current cursor type */
+vioci.yStart = 10;           /* start of cursor              */
+vioci.cEnd = 0;              /* end of cursor                */
+VioSetCurType(&amp;vioci, 0);    /* set new cursor type          */
+ 
+<b>Reading Characters from the Screen</b>
+ 
+You can read characters from the screen by using the VioReadCellStr or
+<b>VioReadCharStr</b> function. Reading characters is an easy way to determine the
+content of the screen. Some programs use this as a method of input. For
+example, a "help" program might check the location of the cursor and read
+the line at that point to provide context-sensitive help.
+ 
+The following code fragment reads a character string at the current cursor
+position:
+ 
+CHAR achBuffer[80];
+USHORT cchBuffer = 80;
+USHORT usRow, usCol;
+ 
+VioGetCurPos(&amp;usRow, &amp;usCol, 0);
+VioReadCharStr(achBuffer, &amp;cchBuffer, usRow, usCol, 0 );
+ 
+<b>Scrolling the Screen Contents</b>
+ 
+You can scroll all or part of the screen contents by using the VioScrollDn,
+<b>VioScrollUp, VioScrollLf, and VioScrollRt functions.</b>
+ 
+The following code fragment scrolls the screen contents up three lines,
+leaving three blank lines at the bottom of the screen:
+ 
+BYTE abCell[2] = { ' ', 0x07 };
+ 
+VioScrollUp(3, 0, 24, 79, 3, abCell,  0);
+ 
+You can also use the scroll functions to clear the screen. Whenever the
+rectangle that you specify has the same dimensions as the screen, the entire
+screen is cleared. The following code fragment clears a 25 by 80 screen:
+ 
+BYTE abCell[2] = { ' ', 0x07 };
+ 
+VioScrollUp(0, 0, 24, 79, 0xFFFF, abCell, 0);
+ 
+<b>Using the ANSI Display Mode</b>
+ 
+You can set the video display to ANSI mode by using the VioSetAnsi function.
+When in ANSI mode, the video display checks for and carries out the actions
+specified by any ANSI escape sequences that are written to the screen by
+such functions as VioWrtTTY.
+ 
+An ANSI escape sequence is a combination of characters, starting with the
+escape character (27), that specifies a particular action to be taken by the
+video display, such as moving the cursor or displaying subsequent characters
+in a new display mode.
+ 
+<b>Note:</b>  The ANSI escape sequences that change color may behave differently
+       when used in a VIO window instead of a full-screen session.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

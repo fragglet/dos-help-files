@@ -1,0 +1,118 @@
+<html>
+
+<head>
+<title>GpiQuerySetIds (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiQuerySetIds (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Bitmap_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Bitmaps 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiQueryStopDraw.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPILCIDS
+ 
+BOOL GpiQuerySetIds(hps, cSets, alTypes, pstr8, alcid)
+HPS hps;          /* presentation-space handle              */
+LONG cSets;       /* number of objects to query             */
+PLONG alTypes;    /* address of array of types              */
+PSTR8 pstr8;      /* address of array for names             */
+PLONG alcid;      /* address of array for local identifiers */
+ 
+The GpiQuerySetIds function retrieves a list of types, names, and local
+identifiers for all current logical fonts and tagged bitmaps. The function
+copies the information to the arrays pointed to by the alTypes, pstr8, and
+<i>alcid</i> parameters. The type specifies whether the object is a logical font or
+tagged bitmap. The name is an 8-character string that uniquely identifies
+the object. Not all objects have names.
+ 
+The GpiQuerySetIds function retrieves information for only the number of
+objects specified by the cSets parameter, starting with the object having
+local identifier 1. If information for all objects is needed, the
+<b>GpiQueryNumberSetIds</b> function returns a count of all local identifiers in
+use.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>cSets</i>      Specifies the number of objects to retrieve. It must not be
+           greater than the number of local identifiers currently in use.
+ 
+<i>alTypes</i>    Points to the array to receive the type for each object. The
+           function sets each element in this array to either LCIDT_FONT or
+           LCIDT_BITMAP. The array must have the number of elements
+           specified by cSets.
+ 
+<i>pstr8</i>      Points to the array to receive the name for each object. Each
+           element, itself an array, receives an object name of up to eight
+           characters. If an object has no name, the element is set to zero.
+           The array must have the number of elements specified by cSet.
+ 
+<i>alcid</i>      Points to the array that receives the local identifiers. The
+           array must have the number of elements specified by cSets.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiQuerySetIds function to retrieve the local
+identifier for all logical fonts. It then uses the identifiers to delete the
+logical fonts.
+ 
+LONG cIds;
+SEL sel;
+PLONG plType;
+PSTR8 pstr8;
+PLONG plcid;
+ 
+cIds = GpiQueryNumberSetIds(hps); /* get number of local identifiers */
+ 
+/* Allocate space for type, name, and local-identifier arrays. */
+ 
+DosAllocSeg((USHORT) cIds * sizeof(LONG), &amp;sel, SEG_NONSHARED);
+plType = MAKEP(sel, 0);
+DosAllocSeg((USHORT) cIds * sizeof(STR8), &amp;sel, SEG_NONSHARED);
+pstr8 = MAKEP(sel, 0);
+DosAllocSeg((USHORT) cIds * sizeof(LONG), &amp;sel, SEG_NONSHARED);
+plcid = MAKEP(sel, 0);
+ 
+/* Get the types, names, and local identifiers. */
+ 
+GpiQuerySetIds(hps, cIds, plType, pstr8, plcid);
+ 
+/* Delete each local identifier that has LCIDT_FONT type. */
+ 
+for (i = 1; i &lt; cIds; i++)
+    if (plTypes[i] == LCIDT_FONT)
+        GpiDeleteSetId(hps, plcid[i]);
+ 
+<b>See Also</b>
+ 
+<b>GpiCreateLogFont, GpiQueryNumberSetIds, GpiSetBitmapId, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

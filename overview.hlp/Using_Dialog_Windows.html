@@ -1,0 +1,462 @@
+<html>
+
+<head>
+<title>Using Dialog Windows (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Dialog Windows (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Dialog_Windows.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Dialog and message box functions 1.2'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#dialog box messages'>Message Group</a><span class='grhilite'>►</span>    <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Drawing_in_Windows.html'>Next</a></i><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                            Using Dialog Windows
+ 
+The simplest dialog window is the message box. Most message boxes present
+simple messages and offer the user one, two, or three responses (represented
+by buttons). A message box is easy to use and is appropriate when an
+application requires a clearly defined response to a static message.
+However, message boxes lack flexibility in size and placement on the screen,
+and they are limited in the choices they offer the user. Applications that
+require more control over size, position, and content should use regular
+dialog boxes instead of message boxes.
+ 
+<b>Message Boxes</b>
+ 
+Message boxes provide an easy way for applications to display simple
+messages without creating dialog templates or writing dialog procedures.
+Message boxes are intended mainly for conveying information to users,
+although they do have limited input capabilities.
+ 
+There are several different kinds of predefined message boxes. There are
+three parts to a message box: the icon, the message, and buttons.
+Applications specify the icons and buttons using message-box style
+constants. Message text is specified by a null-terminated string.
+ 
+To create a message box, the application calls the WinMessageBox function,
+which displays the message box and processes user input until the user
+selects a button in the message box. The return value of the WinMessageBox
+function indicates which button was selected.
+ 
+The following code fragment illustrates how to create a message box with a
+default Yes button, a No button, and a question-mark (?) icon. This example
+assumes that you have defined a string resource with the MY_MESSAGESTR_ID
+identifier in the resource file.
+ 
+CHAR szMessageString[255];
+USHORT cch;
+USHORT usResult;
+ 
+cch = WinLoadString(hab,
+    (HMODULE) NULL,
+    MY_MESSAGESTR_ID,
+    sizeof(szMessageString),
+    szMessageString);
+ 
+usResult = WinMessageBox(hwndFrame,  /* parent    */
+    hwndFrame,                       /* owner     */
+    szMessageString,                 /* text      */
+    (PSZ) "",                        /* caption   */
+    MY_MESSAGEWIN,                   /* window ID */
+    MB_YESNO |
+    MB_ICONQUESTION |
+    MB_DEFBUTTON1);                  /* style     */
+ 
+ if (usResult == MBID_YES)
+ 
+      /* do yes case */
+ 
+ else
+ 
+      /* do no case  */
+ 
+The WinMessageBox function returns predefined values indicating which button
+has been selected.
+ 
+Note that strings for message boxes should be defined as string resources to
+facilitate program translation for other countries. However, there is a
+danger in using string resources in message boxes that are called in
+low-memory situations. Loading a string resource in these situations could
+cause severe memory problems and cause an application to fail. One way to
+solve this problem is to preload the string resource and make it
+nondiscardable so it will be available when the message box must be
+displayed.
+ 
+<b>System-Modal Message Boxes</b>
+ 
+Message boxes are always modal. The default style for a message box is
+application-modal. With this style, a user cannot select another window in
+the same application until the message box is dismissed. However, the user
+can switch to a different application.
+ 
+It is possible to create a message box that is system-modal. A system-modal
+message box prevents a user from selecting another window in the current
+application or switching to a different application until responding to the
+message box. A system-modal message box is useful when displaying a warning
+to the user that there may be serious problems with the system, such as
+insufficient memory.
+ 
+There are two levels of modality for system-modal message boxes──soft modal
+and hard modal. A soft-modal message box does not allow keystrokes or mouse
+input to reach any other window, but does allow other messages, such as
+deactivation and timer messages, to reach other windows. A hard-modal
+message box does not allow any messages to reach other windows. A hard-model
+message box is appropriate for serious system warnings.
+ 
+A hard-modal message box is created by combining the MB_ICONHAND style with
+the MB_SYSTEMMODAL style. A soft-modal message box is created by using the
+MB_SYSTEMMODAL style with any style other than MB_ICONHAND. The
+MB_SYSTEMMODAL icon is always in memory and is available even in low-memory
+situations.
+ 
+<b>Dialog Boxes</b>
+ 
+When using dialog boxes, an application must load the dialog box, process
+user input, and destroy the dialog box when the user finishes the task. The
+process for handling dialog boxes varies, depending on whether the dialog
+box is modal or modeless. A modal dialog box requires the user to dismiss
+the dialog box before activating another window in the application. However,
+the user can activate windows in different applications. A modeless dialog
+box does not require an immediate response from the user. It is similar to a
+frame window containing control windows. The following sections discuss how
+to use both types of dialog boxes.
+ 
+<b>Modal Dialog Boxes</b>
+ 
+Modal dialog boxes present users with information and questions in such a
+way that they must respond before proceeding with other operations in the
+application.
+ 
+The easiest way to use a modal dialog box is to define a dialog template in
+the resource file and then call the WinDlgBox function, specifying the
+dialog-box resource ID and a pointer to the dialog procedure. The WinDlgBox
+function loads the dialog-box resource, displays the dialog box, and handles
+all user input until the user dismisses the dialog box. The dialog procedure
+receives messages when the dialog box is created (WM_INITDLG) and other
+messages when the user interacts with each dialog item, such as entering
+text in entry fields or selecting buttons.
+ 
+You must specify both the parent and owner windows when loading a dialog box
+using the WinDlgBox function. Generally, the parent window should be
+HWND_DESKTOP and the owner should be a client window in your application.
+ 
+Dialog boxes typically contain buttons that send WM_COMMAND messages when
+selected by the user. WM_COMMAND messages passed to the WinDefDlgProc
+function result in the WinDismissDlg function being called, with the window
+ID of the source button as the return code. Dialog boxes with OK or Cancel
+as the only buttons can ignore WM_COMMAND messages, allowing them to be
+passed to the WinDefDlgProc function. The WinDefDlgProc function calls the
+<b>WinDismissDlg</b> function to dismiss the dialog box and returns the DID_OK or
+DID_CANCEL code.
+ 
+Passing WM_COMMAND messages to the WinDefDlgProc function means that all
+button presses in the dialog box will dismiss the dialog box. If you want
+particular buttons to initiate operations without closing the dialog box or
+if you want to perform some processing without closing the dialog box, you
+should handle the WM_COMMAND messages in the dialog procedure.
+ 
+If you handle WM_COMMAND messages in the dialog procedure, you must call the
+<b>WinDismissDlg</b> function to dismiss the dialog box. Your dialog procedure
+passes the DID_OK code to the WinDismissDlg function if the user selects the
+OK button or the DID_CANCEL code if the user selects the Cancel button.
+ 
+When you call the WinDismissDlg function or pass the WM_COMMAND message to
+the WinDefDlgProc function, the dialog box is dismissed and the WinDlgBox
+function returns the value passed to the WinDismissDlg function. This return
+value identifies the button selected.
+ 
+An alternative to using the WinDlgBox function is to call the individual
+functions that duplicate its functionality, as shown in the following code
+fragment:
+ 
+dlg = WinLoadDlg(...);
+result = WinProcessDlg(dlg);
+WinDestroyWindow(dlg);
+ 
+After calling the WinProcessDlg function, your dialog procedure must call
+the WinDismissDlg function to dismiss the dialog box. Although the dialog
+box is dismissed (hidden), it still exists. You must call the
+<b>WinDestroyWindow</b> function to destroy a dialog box if it was loaded using the
+<b>WinLoadDlg function. The WinDl</b>gBox function automatically destroys a dialog
+box before returning.
+ 
+If you want to manipulate individual items in a dialog box or add a menu
+after loading the dialog box (but before calling WinProcessDlg), it is
+better to make individual calls rather than calling the WinDlgBox function.
+Individual calls are also useful for querying individual dialog items, such
+as the contents of an entry-field control after a dialog box is closed but
+before it is destroyed. Destroying a dialog box also destroys any
+dialog-item control windows that are child windows of the dialog box.
+ 
+<b>Modeless Dialog Boxes</b>
+ 
+A modeless dialog box, unlike a modal dialog box, does not require user
+interaction to activate another window in the current application.
+ 
+To use a modeless dialog box in an application, you should create a dialog
+template in the resource file, just as for a modal dialog box. Because
+modeless dialog boxes share the screen equally with other frame windows, it
+is a good idea to give modeless dialog boxes a title bar so they can be
+moved around the screen. The following Resource Compiler source fragment
+shows a dialog template for a dialog box with a title bar, a System menu,
+and a Minimize Box.
+ 
+DLGTEMPLATE IDD_SAMP
+BEGIN
+    DIALOG "Modeless Dialog", IDD_SAMP, 80, 92, 126, 130,
+        WS_VISIBLE | FS_DLGBORDER,
+        FCF_TITLEBAR | FCF_SYSMENU | FCF_MINIMIZE
+    BEGIN
+ 
+    /* Put control-window definitions here. */
+ 
+    END
+END
+ 
+The application loads the dialog resource from the resource file by using
+the WinLoadDlg function, receiving in return a window handle to the dialog
+box. The application treats the dialog box as if it were an ordinary window.
+Messages for the dialog box are dispatched through the event loop the
+application uses for its other windows. In fact, an application can have a
+modeless dialog box as its only window.
+ 
+The resource for a modeless dialog box is just like that used for a modal
+dialog box. The difference between modal and modeless dialog boxes is in the
+way applications handle input to each box. For a modal dialog, the
+<b>WinDlgBox and WinProcessDlg</b> functions handle all user input to the dialog
+box, preventing access to other windows in the application. For a modeless
+dialog box, the application does not call these functions, relying instead
+on a normal message loop to dispatch messages to the dialog procedure.
+ 
+The main difference between a modeless dialog box and a standard frame
+window with child control windows is that for a modeless dialog box, an
+application can define child windows for the dialog box in a dialog
+template, automating the creation process of the window and its child
+windows. The same effect can be achieved by creating a standard frame
+window, but the child control windows must be created individually.
+ 
+It is important that an application keep track of all open modeless dialog
+boxes so that it can destroy all open windows before terminating.
+ 
+<b>Initializing a Dialog Box</b>
+ 
+Generally, an application defines a dialog template in its resource file and
+loads the dialog box by calling the WinLoadDlg function or the WinDlgBox
+function (which itself calls WinLoadDlg). The dialog box is created as an
+invisible window unless the window style WS_VISIBLE is specified in the
+dialog template. A WM_INITDLG message is sent to the dialog procedure before
+the WinLoadDlg function returns. As each control defined in the template is
+created, the dialog procedure may receive various control notifications
+before the function returns. A dialog window can be destroyed by using the
+<b>WinDestroyWindow function. The WinLoadDlg functi</b>on returns a handle to the
+dialog window immediately after creating a dialog box.
+ 
+In general, it is a good idea to define a dialog box as invisible since this
+allows for optimization. For example, an experienced user may rapidly type
+ahead, anticipating the processing of a dialog-box command. In such a case,
+there is no need to display the dialog box because the user has finished the
+interaction before the window can be displayed. This is how the
+<b>WinProcessDlg</b> function works──it does not display a dialog box while there
+are still WM_CHAR messages in the input queue. It allows these messages to
+be processed first.
+ 
+As control windows in a dialog box are created from the template, strings in
+the template are processed by the WinSubstituteStrings function. Any
+<b>WM_SUBSTITUTESTRING</b> messages are sent to the dialog procedure before the
+<b>WinLoadDlg</b> function returns.
+ 
+When child windows of a dialog window are created, the WinSubstituteStrings
+function is used so child windows can make substitutions in their window
+text. If any child-window text string contains the percent sign (%)
+substitution character, the length of the text string is limited to 256
+characters after it is returned from the substitution.
+ 
+<b>Menus in Dialog Boxes</b>
+ 
+To create a menu bar and menus in a dialog box, an application should first
+load the dialog box to get a handle to the dialog-frame window. The
+dialog-frame window can be associated with a menu resource by calling the
+<b>WinLoadMenu</b> function. This function requires arguments specifying the menu
+ID and handle of the parent window for the menu. Finally, the dialog-frame
+window must incorporate the menu by sending a WM_UPDATEFRAME message to the
+dialog box. The following code fragment illustrates these operations:
+ 
+/* Get the dialog resource. */
+ 
+hwndDialog = WinLoadDlg(...);
+ 
+/* Get the menu resource and attach it to the dialog. */
+ 
+hwndMenu = WinLoadMenu(hwndDialog, ...);
+ 
+/* Inform the dialog that it has a new menu. */
+ 
+WinSendMsg(hwndDialog, WM_UPDATEFRAME, 0L, 0L);
+ 
+Applications can create menus in modal and modeless dialog boxes. The code
+fragment above can be used for either type of dialog box. In the case of a
+modal dialog box, your application should call the WinProcessDlg function to
+handle user input until the dialog box is dismissed. For a modeless dialog
+box, your application should call the WinShowWindow function to display the
+dialog box, allowing the message loop to direct messages to the dialog box.
+ 
+<b>Dialog Procedure</b>
+ 
+The main difference between a dialog procedure and a window procedure is
+that a dialog procedure does not receive WM_CREATE messages. Instead, a
+dialog procedure receives WM_INITDLG messages, which are sent after a dialog
+box is created but before it is displayed. The WM_INITDLG message can be
+used to do the same type of initialization tasks that are handled by
+<b>WM_CREATE</b> messages.
+ 
+For example, if a dialog box contains a list box, you should use the
+<b>WM_INITDLG</b> message to fill the list box with items. This procedure can also
+be used to enable or disable buttons in a dialog box, depending on your
+application.
+ 
+You can also call the WinSetDlgItemText or WinSetDlgItemShort function
+during dialog initialization to set up text items that reflect the current
+conditions in your application.
+ 
+Another typical task for the WM_INITDLG message handler is centering a
+dialog on the screen or within its owner window. The following code fragment
+illustrates how to center a dialog box on screen using the WM_INITDLG
+message:
+ 
+case WM_INITDLG:
+    /* Center the dialog box and get the screen rectangle. */
+ 
+    WinQueryWindowRect(HWND_DESKTOP, &amp;rclScreenRect);
+ 
+    /* Get the dialog-box rectangle. */
+ 
+    WinQueryWindowRect(hwnd, &amp;rclDialogRect);
+ 
+    /* Get the dialog-box width. */
+ 
+    sWidth = (SHORT) (rclDialogRect.xRight - rclDialogRect.xLeft);
+ 
+    /* Get the dialog-box height. */
+ 
+    sHeight = (SHORT) (rclDialogRect.yTop - rclDialogRect.yBottom);
+ 
+    /* Set the lower-left corner horizontal coordinate. */
+ 
+    sBLCx = ((SHORT) rclScreenRect.xRight - sWidth) / 2;
+ 
+    /* Set the lower-left corner vertical coordinate. */
+ 
+    sBLCy = ((SHORT) rclScreenRect.yTop - sHeight) / 2;
+ 
+    /* Move, size, and show the window. */
+ 
+    WinSetWindowPos(hwnd,
+        HWND_TOP,
+        sBLCx, sBLCy,
+        0, 0,          /* Ignores size arguments. */
+        SWP_MOVE);
+ 
+    return 0L;
+ 
+The dialog procedure receives notification messages from each control-window
+item in a dialog box whenever a user clicks an item or enters text in an
+entry field. Most dialog procedures wait for the user to select one or more
+dialog-window buttons to signal that he or she has finished with the dialog
+box. When the dialog procedure receives one of these messages, it should
+call the WinDismissDlg function, as shown in the following code fragment.
+The second argument to the WinDismissDlg function is the value returned by
+the WinDlgBox or WinProcessDlg function. Generally, the ID of the button
+that was pressed is returned.
+ 
+MRESULT FAR PASCAL SampDialogProc(hwnd, usMessage, mp1, mp2)
+HWND hwnd;
+USHORT usMessage;
+MPARAM mp1;
+MPARAM mp2;
+{
+    switch (usMessage) {
+        case WM_COMMAND:
+            switch (SHORT1FROMMP(mp1)) {
+                case DID_OK:
+ 
+                   /*
+                    * Final dialog-item queries,
+                    * dismiss the dialog.
+                    */
+ 
+                   WinDismissDlg(hwnd, DID_OK);
+                   return 0L;
+            }
+            break;
+    }
+    return (WinDefDlgProc(hwnd, usMessage, mp1, mp2));
+}
+ 
+Other dialog-box items send notification messages specific to the type of
+control window. Your dialog procedure should respond to notification
+messages from each dialog item. Any messages that a dialog procedure does
+not handle should be passed to the WinDefDlgProc function for default
+processing. The default dialog procedure is exactly the same as the default
+frame-window procedure.
+ 
+The WM_COMMAND message from the OK button indicates that the user has
+selected the OK button and is finished with the dialog box. If the dialog
+box has other controls, such as entry fields or check boxes, your dialog
+procedure should query the contents or state of each control when it
+receives a message from the OK button. Before dismissing a dialog box, your
+dialog procedure should collect input from each dialog-box control before
+closing the dialog box.
+ 
+<b>Manipulating Dialog Items</b>
+ 
+Dialog items are control windows, and as such they can be manipulated using
+standard window-management function calls. The window handle is obtained for
+each dialog item by calling the WinWindowFromID function and passing the
+window handle for the dialog box and the window ID for the dialog item as
+defined in the dialog template. For example, the following Resource Compiler
+source-code fragment should be included in your dialog template:
+ 
+DLGTEMPLATE IDD_ABOUT
+BEGIN
+    DIALOG "", IDD_ABOUT, 80, 92, 126, 130, FS_DLGBORDER, 0
+    BEGIN
+        PUSHBUTTON "My Button", ITEMID_MYBUTTON, 37, 107, 56, 12
+ 
+        /* Other item definitions ... */
+ 
+    END
+END
+ 
+Based on the above code fragment, your application will receive the
+button-item handle by initiating the following call to the WinWindowFromID
+function:
+ 
+hwndItem = WinWindowFromID(hwndDialog, ITEMID_MYBUTTON);
+ 
+Applications often change the contents, enabled state, or position of dialog
+items at run time. For example, in a dialog box that contains a list box of
+filenames and an Open button, the Open button should be disabled until the
+user selects a file from the list. To do this, the button should be defined
+as disabled in the dialog resource so that it is disabled when the dialog
+box is first displayed. At run time, the dialog procedure receives a
+notification message from the list box when the user selects a file. At that
+time, the dialog procedure calls the WinEnableWindow function to enable the
+Open button.
+ 
+Applications can also change the text in static dialog items and buttons.
+This is done by calling the WinSetWindowText function and using the window
+handle of particular dialog item.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

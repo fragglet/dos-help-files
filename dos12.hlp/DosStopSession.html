@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>DosStopSession (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosStopSession (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Multitasking_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#multitasking 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosSubAlloc.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSSESMGR
+ 
+USHORT DosStopSession(fScope, idSession, ulReserved)
+USHORT fScope;       /* all sessions/specified session stopped */
+USHORT idSession;    /* session identifier                     */
+ULONG ulReserved;    /* must be zero                           */
+ 
+The DosStopSession function terminates a session that was started by using
+the DosStartSession function.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>fScope</i>      Specifies whether the function stops all sessions or only the
+            specified session. If the fScope parameter is 0x0000, the
+            function stops only the specified session. If it is 0x0001, the
+            function stops all sessions.
+ 
+<i>idSession</i>   Specifies the identifier of the session to be stopped. This
+            identifier must have been created previously by using the
+            DosStartSession function. This parameter is ignored if the
+            fScope parameter is set to 0x0001.
+ 
+<i>ulReserved</i>  Specifies a reserved value; must be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value.
+ 
+<b>Comments</b>
+ 
+The DosStopSession function can terminate only child sessions that were
+started by using the DosStartSession function (child sessions of the
+terminated session will terminate as well). Sessions that were started as
+independent sessions cannot be terminated by using DosStopSession.
+ 
+A parent session can be running in either the foreground or the background
+when DosStopSession is issued. If a child session is in the foreground when
+it is stopped, the parent session becomes the foreground session. The
+<b>DosStopSession</b> function breaks any bond between the parent session and the
+specified child session.
+ 
+A process running in the session specified by the idSession parameter can
+refuse to terminate. If this happens, DosStopSession returns zero. To verify
+that the target session has terminated, a process can wait for notification
+through the termination queue that is specified in the DosStartSession
+function.
+ 
+<b>See Also</b>
+ 
+<b>DosSetSession, DosStartSession</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

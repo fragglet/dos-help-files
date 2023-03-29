@@ -1,0 +1,115 @@
+<html>
+
+<head>
+<title>GpiFullArc (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiFullArc (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='arcs.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Line and Arc Primitives 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiGetData.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+LONG GpiFullArc(hps, flFlags, fxMultiplier)
+HPS hps;               /* presentation-space handle  */
+LONG flFlags;          /* fill and outline indicator */
+FIXED fxMultiplier;    /* arc-size multiplier        */
+ 
+The GpiFullArc function creates a full arc. A full arc is a complete circle
+or ellipse, drawn by using the current arc parameters. The function first
+scales the width and height of the arc by using the multipier specified by
+the fxMultiplier parameter, then draws either the outline of the arc, the
+interior of the arc, or both, depending on the flags specified by the
+<i>flFlags</i> parameter.
+ 
+The function uses the current position as the center of the arc but does not
+change the current position. The function uses the arc parameters to
+determine whether to draw the full arc clockwise or counterclockwise. When
+an arc is used as part of an area or path, the direction in which the arc is
+drawn can affect how it is filled.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>           Identifies the presentation space.
+ 
+<i>flFlags</i>       Specifies whether to fill and/or outline the arc. It can be
+              one of the following values:
+ 
+              Value            Meaning
+              ──────────────────────────────────────────────────────────────
+              DRO_FILL         Fills the interior of the arc with the
+                               current fill pattern.
+ 
+              DRO_OUTLINE      Draws the outline of the arc by using the
+                               current line style and color.
+ 
+              DRO_OUTLINEFILL  Draws the outline and fills the arc
+                               interior.
+ 
+              Do not use DRO_FILL or DRO_OUTLINEFILL when using GpiFullArc
+              in an area bracket.
+ 
+<i>fxMultiplier</i>  Specifies how much to scale the width and height of the arc.
+              It must be a fixed-point value in the range 1 through 255 (or
+              in the range 0x10000 through 0xFF0000 if expressed as 32-bit
+              values). This means the function can scale the arc from 1 to
+              255 times the current arc-parameter dimensions.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK or GPI_HITS if the function is successful (it is
+GPI_HITS if the detectable attribute is set for the presentation space and a
+correlation hit occurs). The return value is GPI_ERROR if an error occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_ARC_CONTROL
+     PMERR_INV_HPS
+     PMERR_INV_MULTIPLIER
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+When correlating an arc, the system generates a hit if the arc boundary
+intersects the pick aperture. If the pick aperture is inside the arc, the
+system generates a hit only if the interior of the arc has been filled.
+ 
+<b>Example</b>
+ 
+This example uses GpiFullArc to draw five concentric circles. The arc
+parameters are set before drawing the arc. Only the outline is drawn for the
+arc.
+ 
+SHORT i;
+ARCPARAMS arcp = { 1, 1, 0, 0 };
+ 
+GpiSetArcParams(hps, &amp;arcp);
+ 
+for (i = 5; i &gt; 0; i --)
+    GpiFullArc(hps,             /* presentation-space handle       */
+        DRO_OUTLINE,            /* outline                         */
+        MAKEFIXED(i, 0));       /* converts integer to fixed point */
+ 
+<b>See Also</b>
+ 
+<b>GpiMove, GpiPointArc, GpiQueryArcParams, GpiSetArcParams, GpiSe</b>tAttrs,
+<b>GpiSetColor, GpiSetCurrentPosition, GpiSetLineType, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

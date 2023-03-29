@@ -1,0 +1,90 @@
+<html>
+
+<head>
+<title>GpiBeginElement (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiBeginElement (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='retained_graphics.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiBeginPath.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPISEGEDITING
+ 
+BOOL GpiBeginElement(hps, lType, pszDesc)
+HPS hps;        /* presentation-space handle      */
+LONG lType;     /* element type                   */
+PSZ pszDesc;    /* address of element description */
+ 
+The GpiBeginElement function starts an element bracket, that is, a sequence
+of functions that define the contents of an element. All subsequent graphics
+functions, up to the next GpiEndElement or GpiCloseSegment function, apply
+to the new element.
+ 
+The GpiBeginElement may only be used while creating a segment. The element
+type and element description, specified by the lType and pszDesc parameters,
+are values that the application supplies to distinguish one element from
+another within a segment.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>lType</i>      Specifies the element type. It can be any integer value.
+ 
+<i>pszDesc</i>    Points to a null-terminated string. If no description is needed,
+           it may point to an empty string.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_ALREADY_IN_ELEMENT
+     PMERR_INV_HPS
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+The GpiBeginElement function cannot be used within an element bracket.
+ 
+<b>Example</b>
+ 
+This example uses the GpiBeginElement function to create an element in a
+segment. The element type is 1 and the element description is "Triangle".
+The application can use these later to identify the element.
+ 
+POINTL ptlStart = { 0, 0 };
+POINTL ptlTriangle[] = { 100, 100, 200, 0, 0, 0 };
+GpiBeginElement(hps,                   /* start element bracket      */
+    1L,                                /* element type is 1          */
+    "Triangle");                       /* element description        */
+GpiMove(hps, &amp;ptlStart);               /* move to start point (0, 0) */
+GpiPolyLine(hps, 3L, ptlTriangle);     /* draw triangle              */
+GpiEndElement(hps);                    /* end element bracket        */
+ 
+<b>See Also</b>
+ 
+<b>GpiCloseSegment, GpiDeleteElement, GpiEndElement, GpiQueryElement,</b>
+<b>GpiQueryElementPointer, GpiSetElementPointer, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

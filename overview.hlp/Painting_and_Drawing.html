@@ -1,0 +1,108 @@
+<html>
+
+<head>
+<title>About Painting and Drawing (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Painting and Drawing (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Strategies_for_Painting_and_Drawing.html'>Using Section</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Profile_Manager.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                         About Painting and Drawing
+ 
+This topic describes presentation spaces, device contexts, and window
+regions, and how an application uses them for painting and drawing. You
+should also be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='Frame_Windows.html'>Frame windows</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='device_contexts.html'>Presentation spaces and device contexts</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Messages_and_Message_Queues.html'>Messages and message queues</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Graphics programming interface</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Drawing_in_Windows.html'>Drawing in windows</a><span class='grhilite'>►</span>
+ 
+An application typically maintains an internal representation of the data
+that it is manipulating. The information displayed by a screen, window, or
+by printed copy is a visual representation of some portion of that data. MS
+OS/2 provides a rich environment for displaying information in a variety of
+ways. This topic introduces concepts and strategies necessary to make your
+application function smoothly and cooperatively in the MS OS/2 display
+environment.
+ 
+<b>Presentation Spaces and Device Contexts</b>
+ 
+A presentation space is a data structure maintained by the operating system
+that describes the drawing environment for an application. An application
+can create and hold several presentation spaces, each describing a different
+drawing environment. All drawing in an MS OS/2 application must be directed
+into a presentation space.
+ 
+Each presentation space is associated with a device context that describes
+the physical device where graphics commands are displayed. The device
+context translates graphics commands made to the presentation space into
+commands that cause the physical device to display information. Typical
+device contexts are the screen (windows), printers and plotters, and
+off-screen memory bitmaps.
+ 
+By creating presentation spaces and associating them with particular device
+contexts, an application can control where its graphics output appears.
+Because a presentation space and device context isolate the application from
+the physical details of displaying graphics, the same graphics commands can
+typically be used for many types of displays. This virtualization of output
+can reduce the amount of display code that an application needs to support.
+ 
+This topic discusses how an application sets up its presentation spaces and
+device contexts before drawing and how to use window-drawing functions.
+Other topics in this database discuss the individual graphics routines
+available in MS OS/2.
+ 
+<b>Window Regions</b>
+ 
+A window and the presentation space associated with it have three regions
+that control where drawing takes place in the window. These regions ensure
+that the application does not draw outside the boundaries of the window or
+intrude into the space of an overlapping window.
+ 
+<b>Region          Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Update region</i>   This region represents the area of the window that needs to
+                be redrawn. This region changes when overlapping windows
+                change their Z order or when an application explicitly adds
+                an area to the update region to force a window to be
+                painted.
+ 
+<i>Clip region</i>     This region and the visible region determine where drawing
+                takes place. Applications can change the clip region to
+                limit drawing to a particular portion of a window.
+                Typically, a presentation space is created with a clip
+                region equal to NULL, which means that there is no clipping
+                supplied by this region.
+ 
+<i>Visible region</i>  This region and the clip region determine where drawing
+                takes place. The system changes the visible region to
+                represent the portion of a window that is visible.
+                Typically, the visible region is used to mask out
+                overlapping windows. When the application calls the
+                WinBeginPaint function in response to a WM_PAINT message,
+                the system sets the visible region to the intersection of
+                the visible region and the update region to produce a new
+                visible region. Applications cannot change the visible
+                region directly.
+ 
+Whenever drawing occurs in a window's presentation space, the output is
+clipped to the intersection of the visible region and the clip region.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

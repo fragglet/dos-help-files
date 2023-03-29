@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>GpiErrorSegmentData (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiErrorSegmentData (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Error functions'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiExcludeClipRectangle.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPICONTROL
+ 
+LONG GpiErrorSegmentData(hps, pidSegment, plContext)
+HPS hps;             /* presentation-space handle          */
+PLONG pidSegment;    /* address of segment identifier      */
+PLONG plContext;     /* address of variable for error type */
+ 
+The GpiErrorSegmentData function returns information about the last error
+that occurred while drawing a segment. The function copies the segment
+identifier and error type to the variables pointed to by pidSegment and
+<i>plContext</i>, then returns either a byte offset or an element pointer position,
+depending on the type of error.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>         Identifies the presentation space.
+ 
+<i>pidSegment</i>  Points to a variable to receive the identifier of the segment
+            causing the error.
+ 
+<i>plContext</i>   Points to a variable to receive the error type. It can be one of
+            the following values:
+ 
+            Value         Meaning
+            ────────────────────────────────────────────────────────────────
+            GPIE_DATA     A graphics order in the buffer for the GpiPutData
+                          function caused an error. The return value is the
+                          byte offset from the beginning of the buffer to
+                          this graphics order.
+ 
+            GPIE_ELEMENT  A graphics order in the buffer for the GpiElement
+                          function caused an error. The return value is the
+                          byte offset from the beginning of the buffer to
+                          this graphics order.
+ 
+            GPIE_SEGMENT  An element in the given segment caused an error.
+                          The return value is the position of the element
+                          pointer for this element.
+ 
+<b>Return Value</b>
+ 
+The return value is either a byte offset or an element pointer position if
+the function is successful. Otherwise, it is GPI_ALTERROR.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_PS_BUSY
+ 
+<b>See Also</b>
+ 
+<b>GpiCloseSegment, GpiElement, GpiOpenSegment, GpiPutData, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

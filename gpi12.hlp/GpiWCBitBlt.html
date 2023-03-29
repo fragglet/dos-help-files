@@ -1,0 +1,233 @@
+<html>
+
+<head>
+<title>GpiWCBitBlt (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiWCBitBlt (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Bitmap_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Bitmaps 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L810f.html'>Changes</a><span class='grhilite'>►</span>    </i>           <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='new_gpi_functions.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIBITMAPS
+ 
+LONG GpiWCBitBlt(hps, hbm, cPoints, aptl, lRop, flOptions)
+HPS hps;            /* presentation-space handle        */
+HBITMAP hbm;        /* bitmap handle                    */
+LONG cPoints;       /* number of points                 */
+PPOINTL aptl;       /* address of structure with points */
+LONG lRop;          /* mixing function                  */
+ULONG flOptions;    /* options                          */
+ 
+The GpiWCBitBlt function copies a bitmap to a presentation space. It can
+also modify the bitmap within a rectangle in a presentation space. The exact
+operation carried out by GpiWCBitBlt depends on the raster operation
+specified by the lRop parameter.
+ 
+If lRop directs GpiWCBitBlt to copy a bitmap, the function copies the bitmap
+specified by hbm to the presentation space. The presentation space must be
+associated with a device context for the display, for memory, or for some
+other suitable raster device. The aptl parameter points to an array of
+points that specify the corners of a rectangle in the bitmap as well as the
+corners of the rectangle in the presentation space to receive the bitmap.
+The bitmap rectangle is specified in device coordinates; the
+presentation-space rectangle in world coordinates. If the bitmap and
+presentation-space rectangles are not the same (after converting the
+presentation space to device coordinates), GpiWCBitBlt stretches or
+compresses the bitmap to fit the presentation-space rectangle.
+ 
+If lRop directs GpiWCBitBlt to modify a bitmap, the function uses the raster
+operation to determine how to alter the bits in a rectangle in the
+presentation space. Raster operations include changes such as inverting
+existing bits, replacing bits with pattern bits, and mixing existing and
+pattern bits to create new colors. For some raster operations, the function
+mixes the bits of the bitmap with the presentation space and/or pattern
+bits.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>hbm</i>        Identifies the bitmap.
+ 
+<i>cPoints    Specifies </i>the number of points pointed to by the aptl parameter.
+           It must be 4.
+ 
+<i>aptl       P</i>oints to an array of POINTL structures that contains the number
+           of points specified in the cPoints parameter. The points must be
+           given in the following order:
+ 
+           Element index  Coordinate
+           ─────────────────────────────────────────────────────────────────
+           0              Specifies the lower-left corner of the target
+                          rectangle in world coordinates.
+ 
+           1              Specifies the upper-right corner of the target
+                          rectangle in world coordinates.
+ 
+           2              Specifies the lower-left corner of the source
+                          rectangle in device coordinates.
+ 
+           3              Specifies the upper-right corner of the source
+                          rectangle in device coordinates.
+ 
+<i>lRop</i>       Specifies the raster operation for the function. It can be any
+           value in the range 0 through 255 or one of the following values,
+           which represent common raster operations:
+ 
+           Value            Meaning
+           ─────────────────────────────────────────────────────────────────
+           ROP_DSTINVERT    Inverts the target.
+ 
+           ROP_MERGECOPY    Combines the source and the pattern using the
+                            bitwise AND operator.
+ 
+           ROP_MERGEPAINT   Combines the inverse of the source and the
+                            target using the bitwise OR operator.
+ 
+           ROP_NOTSRCCOPY   Copies the inverse of the source to the target.
+ 
+           ROP_NOTSRCERASE  Combines the inverse of the source and the
+                            inverse of the target bitmaps using the bitwise
+                            AND operator.
+ 
+           ROP_ONE          Sets all target pels to 1.
+ 
+           ROP_PATCOPY      Copies the pattern to the target.
+ 
+           ROP_PATINVERT    Combines the target and the pattern using the
+                            bitwise exclusive XOR operator.
+ 
+           ROP_PATPAINT     Combines the inverse of the source, the pattern,
+                            and target using the bitwise OR operator.
+ 
+           ROP_SRCAND       Combines the source and target bitmaps using the
+                            bitwise AND operator.
+ 
+           ROP_SRCCOPY      Copies the source bitmap to the target.
+ 
+           ROP_SRCERASE     Combines the source and the inverse of the
+                            target bitmaps using the bitwise AND operator.
+ 
+           ROP_SRCINVERT    Combines the source and target bitmaps using the
+                            bitwise exclusive OR operator.
+ 
+           ROP_SRCPAINT     Combines the source and target bitmaps using the
+                            bitwise OR operator.
+ 
+           ROP_ZERO         Sets all target pels to 0.
+ 
+<i>flOptions</i>  Specifies how to compress a bitmap if the target rectangle is
+           smaller than the source. It can be one of the following values:
+ 
+           Value       Meaning
+           ─────────────────────────────────────────────────────────────────
+           BBO_AND     Compresses two rows or columns into one by combining
+                       them with the bitwise AND operator. This value is
+                       useful for compressing bitmaps that have black images
+                       on a white background.
+ 
+           BBO_OR      Compresses two rows or columns into one by combining
+                       them with the bitwise OR operator. This value is the
+                       default and is useful for compressing bitmaps that
+                       have white images on a black background.
+ 
+           BBO_IGNORE  Compresses two rows or columns by throwing one out.
+                       This value is useful for compressing color bitmaps.
+ 
+           All values in the range 0x0100 to 0xFF00 are reserved for
+           privately supported modes for particular devices.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK or GPI_HITS if the function is successful (it is
+GPI_HITS if the detectable attribute is set for the presentation space and a
+correlation hit occurs). The return value is GPI_ERROR if an error occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_BASE_ERROR
+     PMERR_BITMAP_NOT_SELECTED
+     PMERR_INCOMPATIBLE_BITMAP
+     PMERR_INV_BITBLT_MIX
+     PMERR_INV_BITBLT_STYLE
+     PMERR_INV_COORDINATE
+     PMERR_INV_DC_TYPE
+     PMERR_INV_HBITMAP
+     PMERR_INV_HDC
+     PMERR_INV_IN_AREA
+     PMERR_INV_IN_PATH
+     PMERR_INV_LENGTH_OR_COUNT
+ 
+<b>Comments</b>
+ 
+The GpiWCBitBlt function can be used in an open segment. If the drawing mode
+is DM_DRAWANDRETAIN or DM_RETAIN, the function builds a graphics order in
+the current open segment. The order identifies the bitmap handle and uses
+uses long or short coordinates, as determined by the presentation-space
+format.
+ 
+<b>GpiWCBitBlt</b> does not affect the pels in the upper and right boundaries of
+the presentation-space rectangle. This means the function draws up to but
+does not include those pels. Also, the function ignores any rotation
+transformations.
+ 
+If the lRop parameter includes a pattern, GpiWCBitBlt uses the current area
+color, area background color, pattern set, and pattern symbol of the
+presentation space. Although the function may stretch or compress the
+bitmap, it never stretches or compresses the pattern.
+ 
+If the presentation-space and the bitmap have different color formats,
+<b>GpiWCBitBlt</b> converts the bitmap color format as it copies the bitmap. This
+applies to bitmaps copied to a device context having a monochrome format. To
+convert a monochrome bitmap to a color bitmap, GpiWCBitBlt converts 1 pels
+to the presentation foreground color, and 0 pels to the current-area
+background color.
+ 
+<b>Example</b>
+ 
+This example uses GpiWCBitBlt to copy and compress a bitmap in a
+presentation space. The function copies the bitmap that is 100 pels wide and
+100 pels high into a 50-by-50-pel rectangle at the location (300,400). Since
+the raster operation is ROP_SRCCOPY, GpiWCBitBlt replaces the image
+previously in the presentation-space rectangle. The function compresses the
+bitmap to fit the new rectangle by discarding extra rows and columns as
+specified by the BBO_IGNORE option.
+ 
+HPS hps;
+HBITMAP hbm;
+POINTL aptl[4] = {
+    300, 400,      /* lower-left corner of target             */
+    350, 450,      /* upper-right corner of target            */
+    0, 0,          /* lower-left corner of source             */
+    100, 100 };    /* upper-right corner of source            */
+ 
+GpiWCBitBlt(hps,   /* presentation space                      */
+    hbm,           /* bitmap handle                           */
+    4L,            /* four points needed to compress          */
+    aptl,          /* points for source and target rectangles */
+    ROP_SRCCOPY,   /* copy source replacing target            */
+    BBO_IGNORE);   /* discard extra rows and columns          */
+ 
+<b>See Also</b>
+ 
+<b>DevOpenDC, GpiBitBlt, GpiCreateBitmap, GpiLoadBitmap, GpiSetBitmap,</b>
+<b>GpiSetBitmapDimension, GpiSetBitmapId, POINTL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

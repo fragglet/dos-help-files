@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<title>DosGetEnv (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosGetEnv (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Multitasking_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#multitasking 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosGetHugeShift.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMISC
+ 
+USHORT DosGetEnv(pselEnviron, pusOffsetCmd)
+PUSHORT pselEnviron;     /* pointer to variable for selector */
+PUSHORT pusOffsetCmd;    /* pointer to variable for offset   */
+ 
+The DosGetEnv function retrieves the address of the process's environment
+and an offset into the environment where the command line is stored that was
+used to start the process. This offset can be used to retrieve command-line
+arguments.
+ 
+The environment is one or more null-terminated strings that name and define
+the environment variables available to the current process. The command-line
+string is a single null-terminated string that is a copy of the command line
+that was used to run the process.
+ 
+The DosGetEnv function is a family API function.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pselEnviron</i>   Points to the variable that receives the environment's segment
+              selector. The environment begins in the first byte of the
+              segment identified by this parameter.
+ 
+<i>pusOffsetCmd</i>  Points to the variable that receives the offset from the
+              beginning of the specified segment to the beginning of the
+              command line.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_INVALID_ACCESS
+ 
+<b>Comments</b>
+ 
+Each string in the environment has the following form:
+ 
+    stringname=value
+ 
+Each environment string ends with a null character. The last string is
+followed by an additional null character to indicate the end of the
+environment. The two null characters are followed by the command-line
+string.
+ 
+The DosGetEnv function is typically used to retrieve the command-line
+arguments. Although DosGetEnv can be used to retrieve a single environment
+variable, an easier way to do this is to call the DosScanEnv function.
+ 
+<b>Example</b>
+ 
+This example calls the DosGetEnv function to retrieve the selector to the
+environment and the offset to the argument table within the environment. The
+<i>pszEnviron</i> parameter points to the beginning of the environment, and the
+<i>pszArgument</i> parameter points to the beginning of the argument table.
+ 
+PSZ pszEnviron, pszArgument;
+SEL selEnviron;
+USHORT usOffsetCmd;
+DosGetEnv(&amp;selEnviron, &amp;usOffsetCmd);
+pszEnviron = MAKEP(selEnviron, 0);
+pszArgument = MAKEP(selEnviron, usOffsetCmd);
+ 
+<b>See Also</b>
+ 
+<b>DosExecPgm, DosScanEnv</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

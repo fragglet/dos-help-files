@@ -1,0 +1,124 @@
+<html>
+
+<head>
+<title>GpiQueryLogColorTable (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiQueryLogColorTable (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='mix_mode_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Color and Mix Modes 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiQueryMarker.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPILOGCOLORTABLE
+ 
+LONG GpiQueryLogColorTable(hps, flOptions, iStart, clTable, alTable)
+HPS hps;            /* presentation-space handle        */
+ULONG flOptions;    /* color type to retrieve           */
+LONG iStart;        /* starting index                   */
+LONG clTable;       /* maximum number of values to copy */
+PLONG alTable;      /* address of array for elements    */
+ 
+The GpiQueryLogColorTable function retrieves the current logical-color-table
+entries. This function copies the RGB color values from the current logical
+color table to the array pointed to by alTable. It may also copy the
+color-table index values for each RGB color value, depending on the value of
+<i>flOptions</i>.
+ 
+<b>GpiQueryLogColorTable uses iStart as the index of the first col</b>or table
+entry to copy. It continues to copy subsequent entries until it reaches the
+end of the table or it has copied the number of values specified by clTable.
+If a logical color-table entry has no corresponding RGB color value, the
+function either copies -1 to the array or skips the entry, depending on the
+value of flOptions. It skips the entry only if it is copying both the
+color-table index and the RGB value to the array.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>flOptions</i>  Specifies whether to retrieve indexes and RGB color values or
+           just RGB values. If flOptions is LCOLOPT_INDEX, the function
+           retrieves indexes and RGB color values. If it is 0x0000, the
+           function retrieves RGB color values only.
+ 
+<i>iStart</i>     Specifies the color-table index for the first entry to copy. The
+           function copies this entry and all subsequent entries up to the
+           number of values specified by clTable or the end of the logical
+           color table.
+ 
+<i>clTable</i>    Specifies the maximum number of values to copy to the array
+           pointed to by alTable. If flOptions is 0x0000, this parameter
+           specifies the number of RGB color values to retrieve. If
+           flOptions is LCOLOPT_INDEX, this parameter specifies the combined
+           total of index and RGB values to retrieve and must be an even
+           value.
+ 
+<i>alTable</i>    Points to the array to receive the color-table entries. If
+           flOptions is equal to 0x0000, each element in the array receives
+           an RGB color value. If flOptions is LCOLOPT_INDEX, each pair of
+           array elements receives an index and a corresponding RGB value,
+           with the first element in the pair receiving the index.
+ 
+<b>Return Value</b>
+ 
+The return value is the number of values copied to alTable if the function
+is successful or QLCT_ERROR if an error occurred. The return value is
+QLCT_RGB if flOptions is LCOLOPT_INDEX and the current logical color table
+does not use indexes.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+the following:
+ 
+     PMERR_INV_COLOR_OPTIONS
+     PMERR_INV_COLOR_START_INDEX
+     PMERR_INV_HPS
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiQueryLogColorTable function to retrieve all the
+entries in the current logical color table.
+ 
+LONG cColors;
+SEL sel;
+PLONG alColor;
+ 
+/* Find out how many colors are in the color table. */
+ 
+DevQueryCaps(GpiQueryDevice(hps), CAPS_COLORS, 1L, &amp;cColors);
+ 
+/* Allocate space for the color values and indexes. */
+ 
+DosAllocSeg((USHORT) cColors * 2, &amp;sel, SEG_NONSHARED);
+alColor = MAKEP(sel, 0);
+ 
+/* Retrieve the values. */
+ 
+GpiQueryLogColorTable(hps,   /* presentation space              */
+    LCOLOPT_INDEX,           /* retrieve indexes and RGB values */
+    0L,                      /* start with first entry          */
+    cColors * 2,             /* copy 2 values for each entry    */
+    alColor);                /* array to receive values         */
+ 
+<b>See Also</b>
+ 
+<b>GpiCreateLogColorTable, GpiQueryColorData, GpiQueryNearestColor,</b>
+<b>GpiQueryRealColors, GpiQueryRGBColor, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

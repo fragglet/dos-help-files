@@ -1,0 +1,124 @@
+<html>
+
+<head>
+<title>GpiCharStringPos (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiCharStringPos (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='text_output.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Fonts and Character Primitives 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiCharStringPosAt.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+LONG GpiCharStringPos(hps, prcl, flOptions, cchString, pchString, adx)
+HPS hps;            /* presentation-space handle                      */
+PRECTL prcl;        /* address of structure for rectangle coordinates */
+ULONG flOptions;    /* formatting flags                               */
+LONG cchString;     /* number of characters in string                 */
+PCH pchString;      /* address of string to draw                      */
+PLONG adx;          /* address of array of increment values           */
+ 
+The GpiCharStringPos function draws a character string starting at the
+current position and using one or more formatting options. The options
+direct the function to draw a background for the string, clip the string to
+the given rectangle, or position the characters in the string using
+distances given in an array. After drawing the string, the function either
+leaves the current position at the end of the string or resets it to the
+beginning of the string.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>prcl       P</i>oints to a RECTL structure that contains the lower-left and
+           upper-right corners of a rectangle. The function draws the
+           rectangle if the CHS_OPAQUE option is given. It uses the
+           rectangle to clip the string if the CHS_CLIP option is given.
+           Otherwise the rectangle is ignored.
+ 
+<i>flOptions</i>  Specifies the formatting options. It can be one or more of the
+           following values:
+ 
+           Value         Meaning
+           ─────────────────────────────────────────────────────────────────
+           CHS_CLIP      Clips the string to the rectangle, omitting any
+                         portion of any character outside the rectangle. The
+                         function clips the string regardless of whether
+                         CHS_OPAQUE is specified.
+ 
+           CHS_LEAVEPOS  Resets the current position back to the start of
+                         the string. If not given, GpiCharStringPos moves
+                         the current position to the end of string.
+ 
+           CHS_OPAQUE    Draws the rectangle whose lower-left and
+                         upper-right corners are specified by prcl, then
+                         fills the rectangle with the current background
+                         color. The string is drawn after filling the
+                         rectangle.
+ 
+           CHS_VECTOR    Advances the current position after each character
+                         is drawn by using the next value in the array adx.
+                         The current character direction defines which
+                         direction the current position is advanced.
+ 
+           All other values are reserved.
+ 
+<i>cchString</i>  Specifies the number of characters in the string pointed to by
+           pchString.
+ 
+<i>pchString</i>  Points to the character string to be drawn.
+ 
+<i>adx</i>        Points to an array of increment values. Each value is a 4-byte,
+           signed integer specifying the distance in world coordinates to
+           advance the current position after drawing a character. There
+           must be one value for each character in the string. The first
+           element specifies the distance to advance after drawing the first
+           character, the second element specifies the distance after the
+           second character, and so on.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK or GPI_HITS if the function is successful (it is
+GPI_HITS if the detectable attribute is set for the presentation space and a
+correlation hit occurs). The return value is GPI_ERROR if an error occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_FONT_AND_MODE_MISMATCH
+     PMERR_INV_CHAR_POS_OPTIONS
+     PMERR_INV_COORDINATE
+     PMERR_INV_HPS
+     PMERR_INV_RECT
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+If CHS_OPAQUE is specified and the drawing mode is DM_RETAIN,
+<b>GpiCharStringPos</b> uses the color mix mode BM_OVERPAINT to fill the rectangle.
+In other drawing modes, the function uses the BM_LEAVEALONE.
+<b>GpiCharStringPos</b> draws the rectangle using the coordinates specified in
+<i>prcl</i>. It does not use the start of the string to compute the rectangle's
+location.
+ 
+<b>See Also</b>
+ 
+<b>GpiCharString, GpiCharStringAt, GpiCharStringPosAt, RECTL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

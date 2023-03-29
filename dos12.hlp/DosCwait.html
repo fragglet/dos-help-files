@@ -1,0 +1,113 @@
+<html>
+
+<head>
+<title>DosCwait (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosCwait (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Multitasking_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#multitasking 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosDelete.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSPROCESS
+ 
+USHORT DosCwait(fScope, fWait, prescResults, ppidProcess,
+    pidWaitProcess)
+USHORT fScope;             /* flag scope                                  */
+USHORT fWait;              /* wait/no-wait flag                           */
+PRESULTCODES prescResults; /* pointer to structure receiving result codes */
+PPID ppidProcess;          /* pointer to variable for process identifier  */
+PID pidWaitProcess;        /* process identifier of process to wait for   */
+ 
+The DosCwait function waits for a child process to terminate, then retrieves
+the result codes from that process. The function copies the process
+identifier of the terminated process to the variable pointed to by the
+<i>ppidProcess</i> parameter and copies a termination code to the structure pointed
+to by the prescResults parameter.
+ 
+<b>Parameter       Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>fScope</i>          Specifies how many processes to wait for. If the value of
+                this parameter is DCWA_PROCESS, the thread waits until the
+                specified process ends. If it is DCWA_PROCESSTREE, the
+                thread waits until the specified process and all its child
+                processes end.
+ 
+<i>fWait</i>           Specifies whether or not to wait for child processes. If
+                this parameter is DCWW_WAIT, the thread waits while child
+                processes are running. If it is DCWW_NOWAIT, the thread does
+                not wait. This option is used to retrieve the result codes
+                of a child process that has already ended.
+ 
+<i>prescResults    Points to the RESULT</i>CODES structure that receives the
+                termination code and result code for the child process's
+                termination.
+ 
+<i>ppidProcess</i>     Points to the variable that receives the process identifier
+                of the ending process.
+ 
+<i>pidWaitProcess</i>  Specifies which process to wait for. If this parameter is a
+                process identifier, the thread waits for that process to
+                end. If it is zero, the thread waits until any child process
+                ends.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_CHILD_NOT_COMPLETE
+     ERROR_INVALID_PROCID
+     ERROR_WAIT_NO_CHILDREN
+ 
+<b>Comments</b>
+ 
+The DosCwait function may wait for a child process and any processes started
+by the child process to end before it returns, but it will not report the
+status of the processes that were started by the child process.
+ 
+When the function is waiting for more then one child process, the
+<i>ppidProcess</i> variable is used to determine which child process has
+terminated.
+ 
+Do not call the DosCwait function before starting a child process. When this
+happens, the process calling DosCwait waits indefinitely, since a child
+process cannot start asynchronously.
+ 
+<b>Example</b>
+ 
+This example runs the cmd.exe program as a child process, then calls the
+<b>DosCwait function to wai</b>t until cmd.exe terminates:
+ 
+UCHAR szFailName[CCHMAXPATH];
+RESULTCODES rescResults;
+PID pidProcess;
+DosExecPgm(szFailName, sizeof(szFailName),
+    EXEC_ASYNC, "cmd\0", 0, &amp;rescResults, "cmd.exe");
+    .
+    .
+    .
+DosCwait(DCWA_PROCESS,          /* execution flag                */
+    DCWW_WAIT,                  /* wait option                   */
+    &amp;rescResults,               /* address for result codes      */
+    &amp;pidProcess,                /* address of process identifier */
+    rescResults.codeTerminate); /* process to wait for           */
+ 
+<b>See Also</b>
+ 
+<b>DosExecPgm, DosExit, DosKillProcess, RESULTCODES</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

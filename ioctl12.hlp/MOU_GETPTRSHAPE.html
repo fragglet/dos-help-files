@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>MOU_GETPTRSHAPE (1.2) - ioctl12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ioctl12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MOU_GETPTRSHAPE (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='IOCtls.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MOU_GETQUESTATUS.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVIOCTL
+ 
+USHORT DosDevIOCtl(pbBuffer, ppsShape, 0x0068, 0x0007, hDevice)
+PBYTE pbBuffer;        /* pointer to buffer for pointer masks        */
+PPTRSHAPE ppsShape;    /* pointer to structure for shape information */
+HFILE hDevice;         /* device handle                              */
+ 
+The MOU_GETPTRSHAPE function retrieves the current pointer shape.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pbBuffer</i>   Points to the buffer that receives the pointer shape. The image
+           format depends on the mode of the display. For currently
+           supported modes, the buffer always consists of the AND image data
+           followed by the XOR image data. The buffer always describes one
+           display plane.
+ 
+<i>ppsShape   Points to the</i> PTRSHAPE structure that receives the pointer
+           information and shape.
+ 
+<i>hDevice</i>    Identifies the pointing device that receives the device-control
+           function. The handle must have been created previously by using
+           the DosOpen function.
+ 
+<b>Return Value</b>
+ 
+The function exits in a normal state if the input pointer-image buffer is
+large enough to store the pointer image. The current pointer information is
+returned in the pointer-data record, and the pointer-image data is copied
+into the data-packet buffer.
+ 
+An "invalid buffer size" error occurs if the input pointer-image buffer is
+smaller than the amount of storage necessary for copying the data. The
+buffer length returned will be minimum value.
+ 
+<b>Comments</b>
+ 
+The parameter values are in the same mode as the current screen-group
+display mode. For text mode, these are character values; for graphics mode,
+these are pel values.
+ 
+On input, the only field in the pointer-definition record used by the mouse
+device driver is the length of the pointer-image buffer.
+ 
+<b>See Also</b>
+ 
+<b>DosOpen, MOU_SETPTRSHAPE, PTRSHAPE</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,99 @@
+<html>
+
+<head>
+<title>DosSetFileInfo (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosSetFileInfo (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80da.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosSetFileMode.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosSetFileInfo(hf, usInfoLevel, pInfoBuf, cbInfoBuf)
+HFILE hf;              /* handle of file about which data is sought */
+USHORT usInfoLevel;    /* level of file data required               */
+PBYTE pInfoBuf;        /* pointer to file-data buffer               */
+USHORT cbInfoBuf;      /* length of file-data buffer                */
+ 
+The DosSetFileInfo function sets information about a specific file. The file
+information consists of the date and time the file was created, the date and
+time it was last accessed, the date and time it was last written to, the
+size of the file, and its attributes. It can also be used to set extended
+attributes for a file.
+ 
+The DosSetFileInfo function is a family API function.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hf</i>           Identifies the file about which information is to be set. This
+             handle must have been created by using the DosOpen function.
+ 
+<i>usInfoLevel</i>  Specifies the level of file information. This may be one of the
+             following values:
+ 
+             Value         Meaning
+             ───────────────────────────────────────────────────────────────
+             FIL_STANDARD  This uses a FILESTATUS structure. Any date and
+                           time fields in this structure that the file
+                           system does not support should be set to zero.
+ 
+             FIL_EAOP      This uses an EAOP structure, which contains the
+                           file's extended-attribute information.
+ 
+<i>pInfoBuf</i>     Points to the structure that contains the file information.
+             This structure will be FILESTATUS or EAOP, depending on the
+             usInfoLevel parameter.
+ 
+<i>cbInfoBuf</i>    Specifies the length (in bytes) of the buffer that contains the
+             file information.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_BUFFER_OVERFLOW
+     ERROR_DIRECT_ACCESS_HANDLE
+     ERROR_EA_LIST_INCONSISTENT
+     ERROR_INVALID_EA_NAME
+     ERROR_INVALID_HANDLE
+     ERROR_INVALID_LEVEL
+ 
+<b>Comments</b>
+ 
+<b>DosSetFileInfo</b> works only for files opened in a mode that allows write
+access.
+ 
+Prior to the function being called, the fpFEAlist field in the EAOP
+structure should be initialized so that it points to the FEALIST structure
+that contains the relevant FEA structure. The cbList field in the FEALIST
+structure is valid, giving the size of the FEA structure.
+ 
+A zero value in both the date and time components of a field causes that
+field to be unchanged. For example, if both the fdateLastWrite and
+<b>ftimeLastWrite fields are zero in the FILE</b>STATUS structure, both attributes
+of the file remain unchanged. If either of these fields are nonzero, both
+attributes of the file are set to the new values. If extended attributes are
+modified, the file's last modification date and time are changed.
+ 
+<b>See Also</b>
+ 
+<b>DosBufReset, DosClose, DosNewSize, DosOpen, DosSetFileMode, DosQFileInfo,</b>
+<b>EAOP, FEA, FEALIST, FILESTAT</b>US
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

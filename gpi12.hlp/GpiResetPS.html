@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<title>GpiResetPS (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiResetPS (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='presentation_spaces.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Presentation Spaces and Device Contexts 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L810a.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> </i><span class='grhilite'>◄</span><a href='GpiRestorePS.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPICONTROL
+ 
+BOOL GpiResetPS(hps, flOption)
+HPS hps;           /* presentation-space handle */
+ULONG flOption;    /* reset option              */
+ 
+The GpiResetPS function resets the presentation space. In general, resetting
+the presentation space restores attributes to their default values──that is,
+the values given to the attributes when the presentation space was created
+or the values specified in the last call to the GpiSetDefAttrs function. The
+function can reset the presentation space in three ways: as if a segment
+were closed; as if the presentation space had just been created, but without
+deleting any resources; and as if the presentation space had just been
+created. It uses the flOption parameter to determine how to reset the
+presentation space.
+ 
+The GpiResetPS function does not draw or erase the device. It is up to the
+application to erase the screen, if this is required. Also, the function
+does not affect the association between the specified presentation space and
+a device context.
+ 
+The GpiResetPS function also deselects a bitmap if any are selected into a
+memory device context.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>flOption</i>   Specifies the reset option. It can be one of the following:
+ 
+           Value          Meaning
+           ─────────────────────────────────────────────────────────────────
+           GRES_ATTRS     Sets all current attributes to their default
+                          values, the current model transform to unity, and
+                          the current position to (0,0). The option also
+                          ends any open path, area, or element brackets and
+                          closes any open segment. Finally, it sets the
+                          current clip path and viewing limits to their
+                          widest possible values.
+ 
+           GRES_SEGMENTS  Resets as described for GRES_ATTRS, plus it
+                          deletes all retained segments, clears any boundary
+                          data, releases the clip region (if any), enables
+                          kerning (if the device supports it), and sets the
+                          default values for initial segment attributes,
+                          default viewing transform, graphics field, drawing
+                          mode, draw controls, edit mode, and attribute
+                          mode.
+ 
+           GRES_ALL       Resets as described for GRES_ATTRS and
+                          GRES_SEGMENTS, plus it deletes any logical fonts
+                          and local identifiers for bitmaps and sets the
+                          logical color table to its default value.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_RESET_OPTIONS
+     PMERR_PS_BUSY
+ 
+<b>See Also</b>
+ 
+<b>GpiAssociate, GpiCreatePS, GpiSetAttrs, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

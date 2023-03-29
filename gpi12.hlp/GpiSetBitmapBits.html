@@ -1,0 +1,96 @@
+<html>
+
+<head>
+<title>GpiSetBitmapBits (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiSetBitmapBits (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Bitmap_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Bitmaps 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiSetBitmapDimension.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIBITMAPS
+ 
+LONG GpiSetBitmapBits(hps, iScanStart, cScans, pbBuffer, pbmi)
+HPS hps;             /* presentation-space handle                     */
+LONG iScanStart;     /* index of first scan line                      */
+LONG cScans;         /* number of scan lines                          */
+PBYTE pbBuffer;      /* address of buffer with bitmap data            */
+PBITMAPINFO pbmi;    /* address of structure with bitmap header table */
+ 
+The GpiSetBitmapBits function copies image data to a bitmap from the buffer
+pointed to by pbBuffer. The function copies the image data to the bitmap
+currently set for the presentation space. The presentation space must be
+associated with a memory device context.
+ 
+To copy the image data, the function needs the width and height of the
+bitmap, the count of planes and adjacent color bits, and the array of RGB
+color values for the bitmap pels. These values must be specified in the
+fields of the structure pointed to by pbmi. An application must make sure
+there is sufficient space in the structure to hold all elements of the array
+of RGB color values. The number of elements in the array depends on the
+format of the bitmap.
+ 
+The buffer holding the image data must have sufficient image data to set all
+pels in the bitmap. The number of bytes for the buffer is equal to the
+number of scan lines to be copied, multiplied by the width of the bitmap in
+bytes (multiplied by the number of adjacent color bits and rounded up to the
+next multiple of 4), multiplied by the number of color planes. If the bitmap
+width (in bytes) is not an exact multiple of 4, the function discards any
+extra bits. If the format of the bitmap does not match the device format,
+the function converts the bitmap. The function can convert standard formats
+only.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>         Identifies the presentation space.
+ 
+<i>iScanStart</i>  Specifies the number of the first scan line to copy to the
+            buffer. If it is zero, the function copies the first scan line
+            in the bitmap.
+ 
+<i>cScans</i>      Specifies the number of scan lines to copy.
+ 
+<i>pbBuffer</i>    Points to the buffer that contains the image data for the
+            bitmap.
+ 
+<i>pbmi        </i>Points to the BITMAPINFO structure that contains the bitmap
+            information table.
+ 
+<b>Return Value</b>
+ 
+The return value is the number of scan lines set, or GPI_ALTERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INCORRECT_DC_TYPE
+     PMERR_INV_DC_TYPE
+     PMERR_INV_HPS
+     PMERR_INV_INFO_TABLE
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_INV_SCAN_START
+     PMERR_NO_BITMAP_SELECTED
+     PMERR_PS_BUSY
+ 
+<b>See Also</b>
+ 
+<b>GpiAssociate, GpiCreateBitmap, GpiLoadBitmap, WinGetLastError, BITMAPINFO</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

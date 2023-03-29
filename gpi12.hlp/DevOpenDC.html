@@ -1,0 +1,108 @@
+<html>
+
+<head>
+<title>DevOpenDC (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DevOpenDC (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Metafile_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Metafiles 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='dev.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DevPostDeviceModes.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DEV
+ 
+HDC DevOpenDC(hab, type, pszToken, count, pbData, hdcComp)
+HAB hab;                /* anchor-block handle                     */
+LONG type;              /* type of device context                  */
+PSZ pszToken;           /* pointer to device-information token     */
+LONG count;             /* number of elements in structure         */
+PDEVOPENDATA pbData;    /* pointer to structure for device context */
+HDC hdcComp;            /* handle of compatible device context     */
+ 
+The DevOpenDC function creates a device context. This function initializes
+the use count (to one) of the number of processes that have access to the
+device context.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hab</i>        Identifies the anchor block.
+ 
+<i>type</i>       Specifies the type of device context. It can be one of the
+           following:
+ 
+           Value        Meaning
+           ─────────────────────────────────────────────────────────────────
+           OD_QUEUED    A device, such as a printer or plotter, for which to
+                        queue output.
+ 
+           OD_DIRECT    A device, such as a printer or plotter, for which to
+                        not queue output.
+ 
+           OD_INFO      Same as for OD_DIRECT, but used only to retrieve
+                        information (for example, font metrics). Drawing can
+                        be performed to a presentation space associated with
+                        such a device context, but no output medium is
+                        updated.
+ 
+           OD_METAFILE  A device context that is used to write a metafile.
+                        The graphics field defines the area of interest
+                        within the metafile picture.
+ 
+           OD_MEMORY    A device context that is used to contain a bitmap.
+ 
+<i>pszToken</i>   Points to the null-terminated string that contains the
+           device-information token. This device information, which is held
+           in the os2.ini file, is the same as that which may be pointed to
+           by the pbData parameter; any information obtained from pbData
+           overrides the information obtained by using this parameter. If
+           you specify an asterisk (*) for pszToken, no device information
+           is taken from the os2.ini file. MS OS/2 version 1.2 acts as if
+           "*" is specified but allows you to specify any string.
+ 
+<i>count      Spec</i>ifies the number of elements in the DEVOPENSTRUC structure.
+           This number may be less than the number of items in the full list
+           if omitted items are irrelevant or are supplied from the
+           pszToken parameter or elsewhere.
+ 
+<i>pbData</i>     Points to a data area that describes the output device. This can
+           be either a pointer array, or a DEVOPENSTRUC structure.
+ 
+<i>hdcComp    Identifies</i> the compatible device context. When the type parameter
+           is OD_MEMORY, this parameter identifies a device context that is
+           compatible with the bitmaps to be used with it. If you do not
+           supply this parameter or if it is NULL, the DC that MS OS/2 opens
+           is compatible with the screen.
+ 
+<b>Return Value</b>
+ 
+The return value identifies the device context if the function is
+successful. The return value is DEV_ERROR if the function is unsuccessful.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+the following:
+ 
+     PMERR_INV_DC_TYPE
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_INV_DC_DATA
+     PMERR_INV_HDC
+ 
+<b>See Also</b>
+ 
+<b>DEVOPENSTRUC</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

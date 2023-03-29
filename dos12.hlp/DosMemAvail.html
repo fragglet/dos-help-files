@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>DosMemAvail (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosMemAvail (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='memory.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#memory management 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosMkDir.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMEMMGR
+ 
+USHORT DosMemAvail(pulAvailMem)
+PULONG pulAvailMem;    /* pointer to variable for available memory */
+ 
+The DosMemAvail function retrieves the size of the largest consecutive block
+of free memory available when the function is called. This function does not
+cause segments to be moved, swapped, or discarded.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pulAvailMem</i>  Points to the variable that receives the size (in bytes) of the
+             largest free block of memory.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value.
+ 
+<b>Comments</b>
+ 
+Since other processes may allocate and free memory at any time, the size of
+the largest free block can be expected to change.
+ 
+The DosMemAvail function returns only the amount of memory currently
+available without swapping or moving. More memory can be allocated than
+indicated by the DosMemAvail function──when necessary, the system moves
+memory, swaps memory, or discards unlocked memory to meet memory-allocation
+requests.
+ 
+<b>Example</b>
+ 
+This example calls DosMemAvail to determine the amount of available memory.
+It then allocates one third of that memory and allows for reallocation of up
+to ten 64K segments.
+ 
+#define SEGSIZE (64L * 1024L)
+LONG lAvail;
+SEL sel;
+ 
+DosMemAvail(&amp;lAvail);               /* gets amount of current memory  */
+lAvail /= 3L;                       /* calculates one third of memory */
+DosAllocHuge((USHORT) (lAvail / SEGSIZE), /* number of segments       */
+    (USHORT) (lAvail % SEGSIZE),          /* size of last segment     */
+    &amp;sel,                                 /* address of selector      */
+    10,                             /* allows reallocation up to 640K */
+    SEG_NONSHARED);                 /* sharing flag                   */
+ 
+<b>See Also</b>
+ 
+<b>DosAllocHuge</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

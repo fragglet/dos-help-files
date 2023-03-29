@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<title>WinAllocMem (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinAllocMem (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Heap_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Heaps 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinAssociateHelpInstance.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINHEAP
+ 
+NPBYTE WinAllocMem(hHeap, cb)
+HHEAP hHeap;    /* handle of the heap          */
+USHORT cb;      /* number of bytes to allocate */
+ 
+The WinAllocMem function allocates memory from a heap and returns the 16-bit
+offset from the start of the segment that contains the heap.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hHeap</i>      Identifies the heap from which to allocate memory. This handle is
+           returned by a previous call to the WinCreateHeap function.
+ 
+<i>cb</i>         Specifies the number of bytes to allocate.
+ 
+<b>Return Value</b>
+ 
+The return value points to the allocated memory block if the function is
+successful or is NULL if an error occurs.
+ 
+<b>Comments</b>
+ 
+The low two bits of the returned pointer are always zero. This function
+returns NULL when it cannot allocate the memory object, either because an
+invalid heap handle is specified or because there is not enough room in the
+heap for an object of the specified size and it is unable to grow the
+segment containing the heap by an amount large enough to satisfy the
+request.
+ 
+If the specified heap is created with the HM_MOVEABLE option, the value of
+the cb parameter is remembered in the second reserved word of the allocated
+block.
+ 
+If no free block is found, WinAllocMem seeks space by calling the
+<b>WinAvailMem</b> function. If this does not generate a free block large enough,
+<b>WinAllocMem</b> attempts to grow the segment by the maximum of the size of the
+request and the minimum growth parameter specified on the call to the
+<b>WinCreateHeap</b> function. If that fails, this function returns NULL.
+ 
+No synchronization is done for this call. Multi-threaded applications should
+use semaphores if more than one thread will be making this call to prevent
+two or more threads from calling this function at the same time.
+ 
+If the heap was created in the default data segment, the returned value may
+be used directly as a near pointer. Otherwise, it must be combined with the
+selector of the heap segment to create a far pointer. The MAKEP macro can be
+used for this purpose as in the following code fragment:
+ 
+NPBYTE npb;
+PBYTE pb;
+ 
+npb = WinAllocMem(...);
+pb = MAKEP(sel,          /* heap segment selector           */
+    (USHORT) npb);       /* value returned from WinAllocMem */
+ 
+<b>See Also</b>
+ 
+<b>WinAvailMem, WinCreateHeap, WinFreeMem, WinReallocMem, MAKEP, MOVBLOCKHDR,</b>
+<b>SETMEMBACKPTR</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

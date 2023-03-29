@@ -1,0 +1,206 @@
+<html>
+
+<head>
+<title>Using Clipping (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Clipping (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Clipping.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#clipping functions 1.2'>Function Group</a><span class='grhilite'>►</span>         </i>            <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='mix_modes.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                               Using Clipping
+ 
+You can use clipping functions to perform the following tasks:
+ 
+♦  Exclude a rectangular area from a clip region.
+ 
+♦  Intersect a rectangular area with a clip region.
+ 
+♦  Determine the size of the smallest rectangle that will completely
+   surround the intersection of the current clip areas.
+ 
+♦  Determine the size of the current clip region, graphics field, or viewing
+   limit.
+ 
+♦  Set a clip path, clip region, graphics field, or viewing limit.
+ 
+<b>Excluding a Rectangular Area from a Clip Region</b>
+ 
+Some applications let you prepare output in multiple stages (for example, a
+word-processor application may allow you to prepare your text first and then
+add bitmaps that enhance and support the text). These applications can use
+the GpiExcludeClipRectangle function to exclude an area from a clip region,
+preventing the user from destroying output that already exists. To exclude
+an area from a clip region, you must perform the following steps:
+ 
+1  Determine the dimensions (in device coordinates) of the smallest
+   rectangle that completely surrounds the area containing original output
+   (this is the area to exclude from the clip region).
+ 
+2  Call the GpiExcludeClipRectangle function and pass it the dimensions of
+   the area that contains the original output.
+ 
+The following code fragment illustrates these steps:
+ 
+HPS hps;       /* presentation-space handle */
+RECTL rcl;     /* rectangle structure       */
+    .
+    .    /* Set rectangle coordinates here. */
+    .
+GpiExcludeClipRectangle(hps, &amp;rcl);
+ 
+<b>Adding a Rectangular Area to a Clip Region</b>
+ 
+Some applications may need to increase the size of a clip region. For
+example, a user might request that a desktop-publishing application extend a
+column of text on a page. To do this, the application can call the
+<b>GpiIntersectClipRectangle</b> function to combine a rectangular area with a clip
+region.
+ 
+To intersect the rectangle with a clip region, you perform the following
+steps:
+ 
+1  Determine the dimensions (in device coordinates) of the rectangular area
+   to intersect with the clip region.
+ 
+2  Call the GpiCreateRegion function and pass it the dimensions of the
+   rectangle that you obtained in Step 1.
+ 
+3  Call GpiCreateRegion again and create a third region that will become the
+   final destination region.
+ 
+4  Call the GpiCombineRegion function and combine the original region with
+   the new one to form a final region.
+ 
+5  Call the GpiSetClipRegion function and pass it the handle returned by
+   GpiCombineRegion.
+ 
+The following code fragment illustrates these steps:
+ 
+HPS hps;       /* presentation-space handle */
+RECTL rcl;     /* rectangle structure       */
+    .
+    .
+    .
+/* Create the first clipping region. */
+ 
+hrgn = GpiCreateRegion(hps, 1L, &amp;rcl); /* creates rgn1 */
+GpiSetClipRegion(hps, hrgn, NULL);
+    .
+    .
+    .
+/* Compute coordinates of second region here. */
+    .
+    .
+    .
+/*
+ * Create second and third regions and generate a
+ * new clipping region, identified by hrgn3.
+ */
+ 
+hrgn2 = GpiCreateRegion(hps, 1L, &amp;rcl); /* creates rgn2 */
+hrgn3 = GpiCreateRegion(hps, 1L, &amp;rcl); /* creates rgn3 */
+GpiCombineRegion(hps, hrgn3, hrgn, hrgn2, CRGN_OR);
+GpiSetClipRegion(hps, hrgn3, NULL);
+ 
+<b>Determining the Size of a Clipping Area</b>
+ 
+If a computer-aided-design (CAD) application is able to set a clip path in
+world space, a viewing limit in model space, and a graphics field in page
+space, it may be necessary for you to determine the size of the clipping
+area formed by the intersection of the three. The GpiQueryClipBox function
+returns the dimensions (in world coordinates) of the smallest rectangle that
+completely surrounds the intersection of the defined clipping areas.
+ 
+The following code fragment shows how to use GpiQueryClipBox to fill a
+rectangle structure with the desired coordinates:
+ 
+HPS hps;         /* presentation-space handle */
+RECTL rcl;       /* rectangle structure       */
+ 
+GpiQueryClipBox(hps, &amp;rcl);
+ 
+<b>Setting a Clip Region</b>
+ 
+Clip regions are useful when an application must clip to an area shaped like
+a rectangle or like a number of intersecting rectangles. To create a clip
+region, you must perform the following tasks:
+ 
+1  Determine the shape and dimensions of the clip region.
+ 
+2  Load the coordinates for the rectangle(s) that define the clip region
+   into an array of rectangle structures.
+ 
+3  Create the clip region by calling the GpiCreateRegion function.
+ 
+4  Set the region to a clip region with GpiSetClipRegion.
+ 
+The following code fragment shows how to create a clip region:
+ 
+HPS hps;        /* presentation-space handle                     */
+HRGN hrgn;      /* region handle                                 */
+RECTL arcl[4];  /* array of structures for rectangle coordinates */
+ 
+/*
+ * Load the array of RECTL structures with the appropriate rectangle
+ * coordinates.
+ */
+ 
+hrgn = GpiCreateRegion(hps, 4L, arcl);
+GpiSetClipRegion(hps, hrgn (PHRGN) NULL);
+ 
+<b>Setting a Clip Path</b>
+ 
+Drawing and computer-aided-design (CAD) applications may require clipping to
+curved edges. If so, they should use a clip path to define a curved clipping
+area in world coordinates. But clip paths, especially ones that clip to
+curved edges, require considerable memory and processing time. So when
+clipping to a straight edge, your application should use a clip region,
+graphics page, or viewing limit, all of which require less memory and
+processing time than a clip path.
+ 
+You should perform the following steps when you create a clip path:
+ 
+1  Determine the shape and size (in world coordinates) of the clip path.
+ 
+2  Call the GpiBeginPath function to begin the path definition.
+ 
+3  Create the path.
+ 
+4  Close the path by using the GpiEndPath function.
+ 
+5  Create a clip path from the path definition by using the GpiSetClipPath
+   function.
+ 
+The following code fragment shows how to create an elliptic clip path:
+ 
+HPS hps;       /* presentation-space handle */
+POINTL ptl1;   /* point structure           */
+ 
+/*
+ * Determine the location of the clip path and load ptl1 with the
+ * appropriate coordinates.
+ */
+ 
+GpiBeginPath(hps, 1L);     /* begins path           */
+GpiMove(hps, &amp;ptl1);       /* sets current position */
+GpiFullArc(hps,            /* defines ellipse       */
+    DRO_OUTLINE, 6553600);
+GpiEndPath(hps);           /* end the path          */
+GpiSetClipPath(hps, 1L, SCP_ALTERNATE | SCP_AND);
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

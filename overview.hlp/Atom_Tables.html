@@ -1,0 +1,110 @@
+<html>
+
+<head>
+<title>About Atom Tables (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Atom Tables (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Atom_Tables.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#atom functions 1.2'>Function Group</a><span class='grhilite'>►</span>       </i>              <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Button_Controls.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                             About Atom Tables
+ 
+This topic describes how to use atom tables in your applications. You should
+also be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='Messages_and_Message_Queues.html'>Messages and message queues</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='unknown#standard clipboard formats'>Clipboard formats</a><span class='grhilite'>►</span>
+ 
+The MS OS/2 atom manager provides a mechanism for converting a string (atom
+name) into a 16-bit word (atom) that can be used as a constant to represent
+the string in various data structures for the application and the system.
+You can save space by converting strings to atoms when the same string must
+be kept in a number of data structures. You can also save time when
+searching for a particular string, since after you convert the search string
+to an atom you can compare words with the atoms stored in the data
+structures. There are other situations in which you must convert a string
+into an atom to be sure that the atom is unique throughout the system──for
+example, when creating a new clipboard format of an interapplication-message
+type.
+ 
+The atom manager uses an atom table to hold the strings associated with
+atoms and the control structures needed to query the table to determine if a
+string is there. Each atom has an associated use count that specifies how
+many times it is added to the table. Many different applications or threads
+within a single application can add the same atom string to the system atom
+table. Each time an atom string is added to the table, the use count for the
+corresponding atom is incremented. Each time an application or thread
+deletes an atom, the atom's use count is decremented. An atom is removed
+from the system atom table when its use count reaches zero.
+ 
+<b>String Atoms</b>
+ 
+Applications pass null-terminated strings to atom tables and receive string
+atoms (16-bit integers) in return. Atom tables have the following
+properties:
+ 
+♦  The maximum length of an atom name is 255 characters. A zero-length
+   string is not a valid atom name.
+ 
+♦  Case is significant when searching for an atom name in an atom table and
+   the entire string must match──that is, no substring matching is
+   performed.
+ 
+♦  The maximum amount of data that can be stored in an atom table is 64K.
+   This includes any control data needed by the atom manager to manage the
+   atom table.
+ 
+♦  The maximum number of string atoms allowed is 16K. The values of string
+   atoms can be from 0xC000 through 0xFFFF.
+ 
+♦  A use count is associated with each string atom. The use count is
+   incremented each time the atom is added to the table and decremented each
+   time the atom is deleted from the table. This allows different users of
+   the same string atom to avoid destroying each other's atoms.
+ 
+♦  Atom tables can be used only by the process that creates them. Only the
+   system atom table can be used by multiple processes.
+ 
+<b>Integer Atoms</b>
+ 
+Integer atoms differ from string atoms as follows:
+ 
+♦  Integer atoms are values from 0x0001 through 0xBFFF. The values of
+   integer atoms and string atoms do not overlap, so the two types of atoms
+   can be intermixed.
+ 
+♦  The string representation of an integer atom is #ddddd, where ddddd are
+   decimal digits. Leading zeros are ignored. These strings must be
+   specified in the system code page.
+ 
+♦  There is no use count or storage overhead associated with an integer
+   atom.
+ 
+♦  Integer atoms are useful for predefined system constants exported by a
+   dynamic-link library, because they behave exactly like atoms except that
+   they have no overhead. An example of using integer atoms is in the
+   predefined MS OS/2 window classes. Application-defined window-class names
+   are strings that are converted into atoms and then used to determine if a
+   class name is being defined more than once; this means the predefined
+   window classes implemented by MS OS/2 need to be expressible as atoms.
+   When these atoms are integer atoms, they can be expressed as compile-time
+   constants in an MS OS/2 header file; the application can refer to these
+   classes and create windows by using them without including a string
+   constant in its data segment.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

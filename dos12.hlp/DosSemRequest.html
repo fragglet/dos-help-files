@@ -1,0 +1,106 @@
+<html>
+
+<head>
+<title>DosSemRequest (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosSemRequest (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='semaphores.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Interprocess Communication 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80d9.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosSemSet.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSSEMAPHORES
+ 
+USHORT DosSemRequest(hsem, lTimeOut)
+HSEM hsem;        /* semaphore handle */
+LONG lTimeOut;    /* time out         */
+ 
+The DosSemRequest function obtains and sets a semaphore. If no previous
+thread has set the semaphore, DosSemRequest sets the semaphore and returns
+immediately. If the semaphore has already been set by another thread, the
+function waits until a thread clears the semaphore (by using the
+<b>DosSemClear function) or until a </b>time-out occurs. The DosSemRequest function
+is also used to obtain ownership of a system semaphore created with the
+CSEM_PRIVATE flag set (see DosCreateSem).
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hsem</i>       Identifies the semaphore to set. This value can be the handle of
+           a system semaphore that has been previously created or opened by
+           using the DosCreateSem or DosOpenSem function, or it can be the
+           address of a RAM semaphore.
+ 
+<i>lTimeOut</i>   Specifies how long to wait for the semaphore to clear. If the
+           value is greater then zero, this parameter specifies the number
+           of milliseconds to wait before returning. If the value is
+           SEM_IMMEDIATE_RETURN, the function returns immediately. If the
+           value is SEM_INDEFINITE_WAIT, the function waits indefinitely.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_INTERRUPT
+     ERROR_SEM_OWNER_DIED
+     ERROR_SEM_TIMEOUT
+     ERROR_TOO_MANY_SEM_REQUESTS
+ 
+<b>Comments</b>
+ 
+If DosSemRequest is used to obtain exclusive ownership of a semaphore
+created by another process, it will wait (if lTimeOut is non-zero) until the
+semaphore is clear, or until the process that currently owns the semaphore
+closes the semaphore or terminates. If the process owning the semaphore
+terminates, DosSemRequest will return with an error value of
+ERROR_SEM_OWNER_DIED, however ownership will be transferred and the
+semaphore will be set and can be used by the calling process.
+ 
+The effects of DosSemRequest are cumulative. If multiple calls to the
+<b>DosSemRequest</b> function set the semaphore, the same number of calls to the
+<b>DosSemClear</b> function are required to clear the semaphore.
+ 
+If more than one thread has requested to set the semaphore, a thread may
+have to wait through several changes of the semaphore before it continues
+(depending on which thread clears the semaphore and when the system
+scheduler passes control to the thread). As long as the semaphore is set
+(even if it has been cleared and reset since the thread originally called
+the function), the thread must wait.
+ 
+The DosSemRequest function can set system or RAM semaphores. A system
+semaphore is initially clear when it is created. A RAM semaphore is clear if
+its value is zero. Programs that use RAM semaphores should assign the
+initial value of zero.
+ 
+<b>Example</b>
+ 
+This example uses the DosSemRequest function to create a RAM semaphore. It
+also shows how to set and clear the semaphore.
+ 
+ULONG hsem = 0;
+DosSemRequest(&amp;hsem,           /* address of handle  */
+    SEM_INDEFINITE_WAIT);      /* waits indefinitely */
+    .
+    .
+    .
+DosSemClear(&amp;hsem);            /* clears semaphore   */
+ 
+<b>See Also</b>
+ 
+<b>DosCreateSem, DosExitList, DosMuxSemWait, DosOpenSem, DosSemClear,</b>
+<b>DosSemSet, DosSemSetWait, DosSemWait</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

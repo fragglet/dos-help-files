@@ -1,0 +1,96 @@
+<html>
+
+<head>
+<title>VioModeWait (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioModeWait (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioPopUp.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioModeWait(fEvent, pfNotify, hvio)
+USHORT fEvent;       /* event flag                          */
+PUSHORT pfNotify;    /* pointer to variable for notify flag */
+USHORT hvio;         /* video handle                        */
+ 
+The VioModeWait function waits for a change in the current video mode before
+returning. When a change occurs, MS OS/2 sets the variable pointed to by the
+<i>pfNotify</i> parameter to a value indicating the type of change. The thread may
+then restore the video registers or carry out other tasks related to
+restoring the video mode for the process.
+ 
+The VioModeWait function is used typically by graphics programs (or text
+programs that access video registers directly) to restore the screen after a
+pop-up screen has closed. Pop-up screens often change the video mode and
+video-register values without fully restoring them when closed. A thread
+that calls the VioModeWait function waits until a pop-up screen closes so
+that it can restore the screen.
+ 
+MS OS/2 permits only one process in a screen group to wait for a video-mode
+change. The first process to make a request owns it.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>fEvent</i>     Specifies the event flag of the event to wait for. If this
+           parameter is VMWR_POPUP, the function waits for a pop-up screen
+           to close. No other flags are permitted.
+ 
+<i>pfNotify</i>   Points to the variable that receives a flag specifying the action
+           to carry out in response to the given event. If this flag is
+           VMWN_POPUP, the process should restore the video mode. No other
+           values are returned.
+ 
+<i>hvio</i>       Identifies an advanced video-input-and-output (AVIO) presentation
+           space. For AVIO programs, this handle must have been created
+           previously using the VioCreatePS function. For other programs,
+           hvio must be NULL.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_VIO_FUNCTION_OWNED
+     ERROR_VIO_INVALID_PARMS
+     ERROR_VIO_RETURN
+ 
+<b>Comments</b>
+ 
+A program should use the VioModeWait function if it changes the video
+registers directly. MS OS/2 automatically saves and restores the physical
+video buffer and screen mode whenever a pop-up screen is used.
+ 
+The thread that calls VioModeWait should carry out only those tasks directly
+related to restoring the screen mode. Whenever a mode change occurs, the
+thread should restore the mode and call VioModeWait as quickly as possible.
+The thread should not call MS OS/2 functions (netiher directly nor
+indirectly through other functions) that may generate pop-up screens or
+error pop-up screens. Doing so may cause MS OS/2 to lock up (that is, each
+call of the thread generates a pop-up screen, which in turn calls the thread
+and generates another pop-up screen, and so on). You can use the
+<b>VioModeUndo</b> function to end the thread when it is no longer needed.
+ 
+Programs that save and restore the video mode and screen before and after a
+screen switch should use the VioSavRedrawWait function.
+ 
+<b>See Also</b>
+ 
+<b>VioCreatePS, VioModeUndo, VioPopUp, VioSavRedrawWait</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

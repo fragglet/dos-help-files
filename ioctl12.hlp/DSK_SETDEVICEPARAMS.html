@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<title>DSK_SETDEVICEPARAMS (1.2) - ioctl12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ioctl12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DSK_SETDEVICEPARAMS (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='IOCtls.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DSK_SETLOGICALMAP.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVIOCTL
+ 
+USHORT DosDevIOCtl(pbBPB, pbCommand, 0x0043, 0x0008, hDevice)
+PBYTE pbBPB;        /* pointer to structure with BIOS parameter blocks */
+PBYTE pbCommand;    /* pointer to buffer with command                  */
+HFILE hDevice;      /* device handle                                   */
+ 
+The DSK_SETDEVICEPARAMS function sets the device parameters for an MS OS/2
+block device. The device driver maintains two BIOS parameter blocks (BPB)
+for each disk drive. One block is the BPB that corresponds to the medium
+currently in the disk drive. The other block is a recommended BPB, based on
+the type of medium that corresponds to the physical device. For example, a
+high-density disk drive has a BPB for a 96 tracks per inch (tpi) floppy
+disk; a low-density disk drive has a BPB for a 48-tpi floppy disk.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pbBPB      Poin</i>ts to the BIOSPARAMETERBLOCK structure that contains the
+           device parameters to be set for the drive.
+ 
+<i>pbCommand</i>  Point to the variable that contains the command description. This
+           variable can be one of the following values:
+ 
+           Value                   Meaning
+           ─────────────────────────────────────────────────────────────────
+           BUILD_BPB_FROM_MEDIUM   Build the BIOS parameter block (BPB) from
+                                   the medium for all subsequent build BPB
+                                   requests.
+ 
+           REPLACE_BPB_FOR_DEVICE  Change the default BPB for the physical
+                                   device.
+ 
+           REPLACE_BPB_FOR_MEDIUM  Change the BPB for the medium to the
+                                   specified BPB. Return the new BPB as the
+                                   BPB for the medium for all subsequent
+                                   build BPB requests.
+ 
+<i>hDevice</i>    Identifies the disk drive that receives the device-control
+           function. The handle must have been created previously by using
+           the DosOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful or an error value if
+an error occurs.
+ 
+<b>See Also</b>
+ 
+<b>DosOpen, DSK_GETDEVICEPARAMS, BIOSP</b>ARAMETERBLOCK
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

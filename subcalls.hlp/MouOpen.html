@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<title>MouOpen (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MouOpen (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Mouse 1.2'>Overview</a><span class='grhilite'>►</span>                   </i>                         <span class='grhilite'>◄</span><a href='mou.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MouReadEventQue.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_MOU
+ 
+USHORT MouOpen(pszDriverName, phmou)
+PSZ pszDriverName;    /* mouse driver name                    */
+PHMOU phmou;          /* address of variable for mouse handle */
+ 
+The MouOpen function opens the mouse for the current screen group and
+creates a handle that can be used in subsequent Mou functions (to display
+the mouse pointer, retrieve the current location of the mouse pointer,
+etc.).
+ 
+The MouOpen function creates the mouse handle for the current screen group
+only. Any number of processes may open this handle, but all processes in the
+screen group share it. For example, if one process changes the color of the
+mouse pointer, the pointer color changes for all other processes in the same
+screen group.
+ 
+When the mouse handle is first created, MouOpen does not display the mouse
+pointer. The MouDrawPtr function must be called to display the pointer. (A
+mouse device driver is required to draw the pointer. If the mouse device
+driver pointed by the pszDriverName parameter does not exist or cannot be
+opened, an error occurs and the pointer is not drawn. If pszDriverName is
+set to zero, the default mouse device driver is used; that is, the driver
+specified in a device command in the config.sys file is used.)
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pszDriverName</i>  Points to the null-terminated string that contains the name
+               of the mouse device driver. The name must be a valid
+               filename. If this parameter is set to zero, the default
+               pointer-draw driver is used.
+ 
+<i>phmou</i>          Points to the variable that receives the mouse handle.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_MOUSE_INV_MODULE
+     ERROR_MOUSE_NO_DEVICE
+ 
+<b>Example</b>
+ 
+This example calls the MouOpen function to create a mouse handle to be used
+by the current screen group:
+ 
+HMOU hmou;
+MouOpen(0L, &amp;hmou);
+ 
+<b>See Also</b>
+ 
+<b>MouClose, MouDrawPtr</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,135 @@
+<html>
+
+<head>
+<title>GpiPutData (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiPutData (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='retained_graphics.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiQueryArcParams.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPISEGMENTS
+ 
+LONG GpiPutData(hps, cmdFormat, pcb, pb)
+HPS hps;           /* presentation-space handle                    */
+LONG cmdFormat;    /* coordinate type                              */
+PLONG pcb;         /* address of variable for length of order data */
+PBYTE pb;          /* address of buffer for order data             */
+ 
+The GpiPutData function draws the graphics orders given in the buffer
+pointed to by the pb parameter. The function carries out the graphics
+operation specified by each graphics order. The buffer can contain any
+number of graphics orders as long as the buffer does not exceed 63K. The
+<i>pcb</i> parameter specifies the number of bytes of graphics-order data in the
+buffer. The function converts the coordinates in the graphics orders if the
+format specified by the cmdFormat parameter is not the same as the format
+used by the presentation space.
+ 
+The GpiPutData function is used typically with the GpiGetData function to
+copy graphics orders from one segment to another. For convenience, the last
+order in the buffer does not have to be complete. If the order is not
+complete, the function does not copy the order. Instead, it replaces the
+count in pcb with the count of bytes copied. This count can be used to
+locate the incomplete order in the buffer.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies a presentation space.
+ 
+<i>cmdFormat</i>  Specifies the type of coordinates used in the graphics orders. It
+           can be one of the following values:
+ 
+           Value            Meaning
+           ─────────────────────────────────────────────────────────────────
+           DFORM_S370SHORT  Uses S/370-format short (2-byte) integers.
+ 
+           DFORM_PCSHORT    Uses PC-format short (2-byte) integers.
+ 
+           DFORM_PCLONG     Uses PC-format long (4-byte) integers.
+ 
+<i>pcb</i>        Points to a variable. When this function is called, the variable
+           specifies the size (in bytes) of the buffer pointed to by the pb
+           parameter. When the function returns, the variable contains the
+           length of the data copied to the pb buffer.
+ 
+<i>pb</i>         Points to the buffer that contains the graphics-order data. It
+           must not contain more than 63K of data.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK or GPI_HITS if the function is successful (it is
+GPI_HITS if the detectable attribute is set for the presentation space and a
+correlation hit occurs). The return value is GPI_ERROR if an error occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_DATA_TOO_LONG
+     PMERR_INV_EDIT_MODE
+     PMERR_INV_ELEMENT_POINTER
+     PMERR_INV_HPS
+     PMERR_INV_IN_CURRENT_EDIT_MODE
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_INV_ORDER_LENGTH
+     PMERR_INV_PUTDATA_CONTROL
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+The current drawing mode determines whether the function draws the graphics
+orders or copies them to a segment. To copy the graphics orders to the
+currently open segment, an application must set the current segment editing
+mode to SEGEM_INSERT and move the element pointer to the last element in the
+segment. The function can be used in an element bracket if the
+graphics-order data does not contain an element bracket.
+ 
+<b>Example</b>
+ 
+This example uses the GpiPutData function to copy graphics orders from one
+segment to another:
+ 
+LONG fFormat = DFORM_NOCONV;   /* do not convert coordinates        */
+LONG offSegment = 0L;          /* offset in segment                 */
+LONG offNextElement = 0L;      /* offset in segment to next element */
+LONG cb = 0L;                  /* bytes retrieved                   */
+BYTE abBuffer[512];
+ 
+GpiOpenSegment(hps, 3L);       /* open segment to receive the data  */
+do {
+    offSegment += cb;
+    offNextElement = offSegment;
+    cb = GpiGetData(hps, 2L, &amp;offNextElement, fFormat, 512L, abBuffer);
+ 
+    /* Put data in other segment. */
+ 
+    if (cb &gt; 0L) GpiPutData(hps, /* presentation-space handle        */
+        fFormat,                 /* format of coordinates            */
+        &amp;cb,                     /* number of bytes in buffer        */
+        abBuffer);               /* buffer with graphics-order data  */
+ 
+} while (cb &gt; 0L);
+GpiCloseSegment(hps);            /* close segment that received data */
+ 
+<b>See Also</b>
+ 
+<b>GpiBeginElement, GpiEndElement, GpiGetData, GpiSetDrawingMode,</b>
+<b>GpiSetEditMode, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

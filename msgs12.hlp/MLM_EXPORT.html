@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<title>MLM_EXPORT(1.2) - msgs12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msgs12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MLM_EXPORT(1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='mle.html'>Message Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#MLE controls 1.2'>Overview</a><span class='grhilite'>►</span>            </i>               <span class='grhilite'>◄</span><a href='messages.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MLM_FORMAT.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMLE
+ 
+<b>MLM_EXPORT</b>
+mp1 = MPFROMP((PIPT) plOffset);     /* beginning of copy area */
+mp2 = MPFROMP((PULONG) pcbCopy);    /* bytes to copy          */
+ 
+An application sends an MLM_EXPORT message to export text from a
+multiple-line entry field (MLE) by copying the specified number of
+characters from the MLE to the buffer specified by the MLM_SETIMPORTEXPORT
+message. If all of the specified characters are on a single line, only the
+specified characters are copied. If the specified characters are on more
+than one line, the entire line containing the last specified character is
+copied.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>plOffset   Low and high </i>word of mp1. Points to the variable that specifies
+           the offset (number of characters from the beginning of the text)
+           of the first character to copy. A value of -1 specifies the
+           current cursor position. On return, this variable contains the
+           offset to the first character not copied to the buffer.
+ 
+<i>pcbCopy    Low and hi</i>gh word of mp2. Points to the variable that specifies
+           the number of characters to copy. On return, this variable is
+           zero if the number of characters actually copied does not exceed
+           the numbers specified to be copied. It is nonzero if the number
+           of characters specified includes a line break and a portion of
+           another line.
+ 
+<b>Return Value</b>
+ 
+The return value is a 32-bit value (ULONG) that specifies the number of
+bytes actually copied. This value includes carriage-return and linefeed
+characters copied to the buffer.
+ 
+<b>Comments</b>
+ 
+The text is copied in the form set by the MLM_FORMAT message. Note that the
+buffer is not zero-terminated.
+ 
+All exports are done in full characters. Therefore, if the length of the
+buffer or the number of bytes to be exported results in the last byte
+transferred being only half of a double-byte character set (DBCS) character,
+the MLE does not transfer that byte.
+ 
+<b>See Also</b>
+ 
+<b>MLM_FORMAT, MLM_SETIMPORTEXPOR</b>T
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

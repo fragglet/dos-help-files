@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>DosGetResource2 (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosGetResource2 (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosGetSeg.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSRESOURCES
+ 
+USHORT DosGetResource2(hmod, idType, idName, ppData)
+HMODULE hmod;          /* module handle                            */
+USHORT idType;         /* resource-type identifier                 */
+USHORT idName;         /* resource-name identifier                 */
+PVOID FAR * ppData;    /* pointer to variable for resource address */
+ 
+The DosGetResource2 function retrieves a pointer to a resource.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hmod</i>       Identifies the module that contains the resource. This parameter
+           can be the module handle returned by the DosLoadModule function
+           or NULL for the application's module.
+ 
+<i>idType</i>     Specifies the type of resource to retrieve. For a list of
+           predefined types, see the <span class='grhilite'>◄</span><a href='unknown#Resource types'>Resource types</a><span class='grhilite'>►</span> topic.
+ 
+<i>idName</i>     Specifies the name of the resource to retrieve.
+ 
+<i>ppData</i>     Points to the variable that receives the pointer to the
+           resource.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_INVALID_PARAMETER
+     ERROR_INVALID_MODULETYPE
+ 
+<b>Comments</b>
+ 
+The DosGetResource2 function allocates a segment, copies the resource into
+the segment, and returns a pointer to the resource. A process can use this
+pointer to access the resource directly. For compatibility with future
+versions of MS OS/2, this function should be used instead of the
+<b>DosGetResource</b> function, which returns a selector instead of a pointer.
+ 
+<b>Example</b>
+ 
+This example calls DosGetResource2 to retrieve a resource from the
+application's module, and then calls DosFreeResource to free the memory used
+by the resource:
+ 
+PBYTE pResource;
+ 
+if (!DosGetResource2(
+        (HMODULE) NULL,      /* loads from application's module */
+        RT_MENU,             /* gets menu resource              */
+        IDM_MENU,            /* ID of menu to get               */
+        &amp;pResource)) {       /* pointer address                 */
+    .
+    .
+    .
+    DosFreeResource(pResource);  /* frees resource              */
+ 
+<b>See Also</b>
+ 
+<b>DosFreeResource, DosGetResource, DosLoadModule, <a href='unknown#rc.exe'>Resource Compiler</a></b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

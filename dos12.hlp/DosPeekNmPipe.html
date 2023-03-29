@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<title>DosPeekNmPipe (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosPeekNmPipe (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='named_pipes.html'>Function Group</a><span class='grhilite'>►</span>                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosPeekQueue.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSNMPIPES
+ 
+USHORT DosPeekNmPipe(hp, pbBuf, cbBuf, pcbRead, pavldt, pfsState)
+HPIPE hp;             /* pipe handle                                    */
+PBYTE pbBuf;          /* pointer to buffer for data                     */
+USHORT cbBuf;         /* length of buffer for data                      */
+PUSHORT pcbRead;      /* pointer to variable for number bytes read      */
+PAVAILDATA pavldt;    /* pointer to variable for number bytes available */
+PUSHORT pfsState;     /* pointer to variable for pipe state             */
+ 
+The DosPeekNmPipe function copies a pipe's data into a buffer.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hp</i>         Identifies the pipe to read from.
+ 
+<i>pbBuf</i>      Points to a buffer that receives the data from the pipe.
+ 
+<i>cbBuf</i>      Specifies the length (in bytes) of the buffer that receives the
+           data from the pipe.
+ 
+<i>pcbRead</i>    Points to the variable that receives a value specifying the
+           number of bytes read from the pipe.
+ 
+<i>pavldt     Points </i>to the AVAILDATA structure that the receives a value
+           specifying the number of bytes that were available to be read.
+ 
+<i>pfsState</i>   Points to the variable that receives the state of the pipe. The
+           state may be one of the following values:
+ 
+           Value            Meaning
+           ─────────────────────────────────────────────────────────────────
+           NP_CLOSING       The pipe is closed and can no longer be used.
+ 
+           NP_CONNECTED     The pipe has been opened and is available for
+                            reading and writing.
+ 
+           NP_DISCONNECTED  The serving end must call the DosConnectNmPipe
+                            function to put the pipe into a listening state
+                            before a call to the DosOpen function will be
+                            accepted. A pipe is in a disconnected state
+                            between a call to the DosMakeNmPipe function and
+                            a call to the DosConnectNmPipe function.
+ 
+           NP_LISTENING     The pipe will accept a call to the DosOpen
+                            function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_BAD_PIPE
+     ERROR_PIPE_NOT_CONNECTED
+ 
+<b>Comments</b>
+ 
+The DosPeekNmPipe function never blocks, regardless of the blocking mode of
+the pipe.
+ 
+If the DosDisConnectNmPipe function has been called, the pipe will remain
+disconnected until a call is made to the DosConnectNmPipe function.
+ 
+<b>See Also</b>
+ 
+<b>DosConnectNmPipe, DosDisConnectNmPipe, DosMakeNmPipe, DosOpen, DosRead,</b>
+<b>AVAILDATA</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

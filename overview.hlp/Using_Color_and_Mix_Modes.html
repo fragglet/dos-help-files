@@ -1,0 +1,135 @@
+<html>
+
+<head>
+<title>Using Color and Mix Modes (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Color and Mix Modes (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='mix_modes.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Color and Mix Mode functions 1.2'>Function Group</a><span class='grhilite'>►</span>              </i>       <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='coordinate_spaces.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                         Using Color and Mix Modes
+ 
+You can use the color and mix-mode functions to perform the following
+tasks:
+ 
+♦  Create a logical color table.
+ 
+♦  Determine the format and the starting and ending index values of the
+   current logical color table.
+ 
+♦  Determine the index value for an entry in the logical color table that is
+   the closest match to an RGB value.
+ 
+♦  Determine the RGB value associated with a particular entry in the logical
+   color table.
+ 
+♦  Determine and set the current foreground and background colors.
+ 
+♦  Determine and set the current foreground and background mix modes.
+ 
+<b>Creating a Logical Color Table</b>
+ 
+To create a logical color table, you must perform the following tasks:
+ 
+1  Create an array of RGB values that will replace the existing logical
+   color table.
+2  Call the GpiCreateLogColorTable function, using the LCOL_RESET and
+   LCOLF_CONSECRGB flags.
+ 
+The following code fragment demonstrates this process:
+ 
+LONG alTable[] = {
+    0xFFFFFF,  /* white */
+    0xEDEDED,
+    0xDBDBDB,
+    0xC9C9C9,
+    0xB7B7B7,
+    0xA6A6A6,
+    0x949494,
+    0x828282,
+    0x707070,
+    0x5E5E5E,
+    0x4D4D4D,
+    0x3B3B3B,
+    0x292929,
+    0x171717,
+    0x050505,
+    0x000000 }; /* black */
+ 
+GpiCreateLogColorTable(hps,
+    LCOL_RESET,      /* begins with default         */
+    LCOLF_CONSECRGB, /* consecutive RGB values      */
+    0L,              /* starting index in table     */
+    16L,             /* number of elements in table */
+    alTable);
+ 
+<b>Determining the Color-Table Format and Index Values</b>
+ 
+To determine the format and the starting and ending index values of the
+current logical color table, you can call the GpiQueryColorData function.
+The following code fragment calls GpiQueryColorData to determine whether the
+default logical color table is loaded and, if so, loads a new table:
+ 
+LONG lClrData[3];
+    .
+    .
+    .
+GpiQueryColorData(hps, 3L, lClrData);
+if (lClrData == LCOLF_DEFAULT)
+    GpiCreateLogColorTable(hps,
+        LCOL_RESET,      /* begins with default         */
+        LCOLF_CONSECRGB, /* consecutive RGB values      */
+        0L,              /* starting index in table     */
+        16L,             /* number of elements in table */
+        alTable);
+ 
+<b>Determining an Index Value for an RGB Value</b>
+ 
+To determine the logical-color-table index value associated with an RGB
+value, you can call the GpiQueryColorIndex function. The following code
+fragment shows how to determine which index value matches the RGB value for
+pink (0x00FF00FF) and then use that index entry to set the foreground color
+to pink for each of the primitive attributes:
+ 
+LONG lIndex = 255;    /* logical-color-table index */
+ 
+lIndex = GpiQueryColorIndex(hps, LCOLOPT_REALIZED, 0x00FF00FF);
+if ((lIndex &gt;= 0) &amp;&amp; (lIndex &lt;= 15))    /* checks for valid index */
+    GpiSetColor(hps, lIndex);
+ 
+<b>Setting the Primitive Color Attributes</b>
+ 
+To set the color attributes for a single primitive, you can call the
+<b>GpiSetAttrs</b> function, or you can set the color attributes for all of the
+primitives in a presentation space by calling the GpiSetColor and
+<b>GpiSetBackColor</b> functions.
+ 
+The following code fragment shows how to use GpiSetAttrs to set the
+line-primitive color attribute to dark gray:
+ 
+LINEBUNDLE lbnd; /* line-primitive attribute bundle */
+ 
+lbnd.lColor = CLR_DARKGRAY;
+GpiSetAttrs(hps, PRIM_LINE, LBB_COLOR, 0L, &amp;lbnd);
+ 
+The next code fragment shows how to use GpiSetColor to set the foreground
+color attribute for all of the primitives to dark gray:
+ 
+GpiSetColor(hps, CLR_DARKGRAY);
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

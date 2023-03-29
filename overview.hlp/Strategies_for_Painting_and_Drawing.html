@@ -1,0 +1,381 @@
+<html>
+
+<head>
+<title>Strategies for Painting and Drawing (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Strategies for Painting and Drawing (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Painting_and_Drawing.html'>About Section</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Profile_Manager.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                    Strategies for Painting and Drawing
+ 
+The following sections discuss drawing strategies for an MS OS/2
+application. Because an application shares the screen with other windows and
+applications, drawing must not interfere with other applications and
+windows. When these strategies are followed, your application will coexist
+with other applications and still take full advantage of the graphics
+capabilities of MS OS/2.
+ 
+<b>When to Draw in a Window</b>
+ 
+Ideally, all drawing in a window should occur during the processing of a
+<b>WM_PAINT</b> message. Applications maintain an internal representation of what
+should be displayed in the window, such as text or a linked list of graphics
+objects, and use the WM_PAINT message as a cue to display a visual
+representation of that data in the window.
+ 
+To route all display output through the WM_PAINT message, an application
+should not draw on the screen at the time its data changes. Instead, the
+application should update the internal representation of the data and then
+call the WinInvalidateRect or WinInvalidateRegion function to invalidate the
+portion of the window that needs to be redrawn. Of course, it is often much
+more efficient to draw directly in a window without relying on the WM_PAINT
+message──for example, when drawing and redrawing an object for a user who is
+dragging or sizing with the mouse.
+ 
+If the window has the WS_SYNCPAINT or CS_SYNCPAINT style, invalidating a
+portion of the window causes a WM_PAINT message to be sent to the window
+immediately. Because sending a message is essentially like making a function
+call, the actions corresponding to the WM_PAINT message are carried out
+before the call that caused the invalidation returns──that is, the painting
+is synchronous.
+ 
+If the window does not have the WS_SYNCPAINT or CS_SYNCPAINT style,
+invalidating a portion of the window causes the invalidated region to be
+added to the window's update region. The next time the application calls the
+<b>WinGetMsg or WinPeekMsg fun</b>ction when there are no other messages in the
+queue and the update region for the window is not empty, the application is
+sent a WM_PAINT message. If there are many messages in the queue the
+painting occurs after the invalidation──that is, the painting is
+asynchronous. Painting for windows that do not have the WS_SYNCPAINT or
+CS_SYNCPAINT style is a low-priority operation; all other messages are
+processed first. Because a WM_PAINT message is not posted to the queue in
+this case, all invalidation operations since the last WM_PAINT message are
+consolidated into a single WM_PAINT message the next time the application
+has no messages in the queue.
+ 
+There are advantages to both synchronous and asynchronous painting. Windows
+that have simple painting routines should be painted synchronously. Most of
+the system-defined control windows, such as buttons and frame controls, are
+painted synchronously because they can be painted quickly without
+interfering with the responsiveness of the program. Windows with more
+time-consuming painting operations should be painted asynchronously so that
+the painting can be initiated only when there are no other pending messages
+that might otherwise be blocked while waiting for the window to be painted.
+Also, windows that use an incremental approach to invalidating small
+portions of the window should usually allow those operations to consolidate
+into a single asynchronous WM_PAINT message, rather than a series of
+synchronous WM_PAINT messages.
+ 
+If necessary, an application can call the WinUpdateWindow function to cause
+an asynchronous window to update itself without going through the event
+loop. WinUpdateWindow sends a WM_PAINT message directly to the window if the
+window's update region is not empty.
+ 
+<b>The WM_PAINT Message</b>
+ 
+A window receives a WM_PAINT message whenever its update region is not NULL.
+A window procedure should respond to a WM_PAINT message by calling the
+<b>WinBeginPaint</b> function, drawing to fill in the update areas, and then
+calling the WinEndPaint function.
+ 
+The WinBeginPaint function returns a handle to a presentation space that is
+associated with the device context for the window and that has a visible
+region equal to the intersection of the window's update region and its
+visible region. This means that only those portions of the window that need
+to be redrawn are drawn. Attempts to draw outside this region are clipped
+and do not appear on the screen.
+ 
+If the application maintains its own presentation space for the window, it
+can pass that handle of the presentation space to the WinBeginPaint
+function, which modifies the visible region of the presentation space and
+passes the presentation-space handle back to the caller. If the application
+does not have its own presentation space, it can pass a NULL
+presentation-space handle and the system will return a cached-micro
+presentation space for the window. In either case, the application can use
+the presentation space to draw in the window.
+ 
+The WinBeginPaint function takes a pointer to a RECTL structure that it
+fills in with the coordinates of the rectangle enclosing the area to update.
+The application can use this rectangle to optimize drawing, by drawing only
+those portions of the window that intersect with the rectangle. If an
+application passes a NULL pointer for the rectangle argument, the
+application draws the entire window and relies on the clipping mechanism to
+filter out the unneeded areas.
+ 
+After the WinBeginPaint function sets the update region of a window to NULL,
+the application does the drawing necessary to fill the update areas. If an
+application handles a WM_PAINT message and does not call WinBeginPaint or
+otherwise empty the update region, the application continues to receive
+<b>WM_PAINT</b> messages as long as the update region is not empty.
+ 
+Once the application has finished drawing, it should call the WinEndPaint
+function to restore the presentation space to its former state. When a
+cached-micro presentation space is returned by the WinBeginPaint function,
+the presentation space is returned to the system for reuse. If the
+application supplies its own presentation space to WinBeginPaint, the
+presentation state is restored to its previous state.
+ 
+<b>Drawing the Minimized View</b>
+ 
+When an application creates a standard frame window, it has the option of
+specifying an icon that the system will use to represent the application in
+its minimized state. Typically, if an icon is supplied, the system draws the
+icon in the minimized window and labels the icon with the name of the
+window. If the application does not specify the FS_ICON style for the
+window, the window receives a WM_PAINT message when it is minimized. The
+code in the window procedure that handles the WM_PAINT message can determine
+if the frame window is currently minimized and then draw accordingly. Notice
+that because the WS_MINIMIZED style is relevant only for the frame window,
+not for the client, the window procedure checks the frame window rather than
+the client window. The following code fragment shows how to draw a window in
+the minimized state and the normal state:
+ 
+case WM_PAINT:
+    hps = WinBeginPaint(hwnd, NULL, &amp;rect);
+ 
+    /* See if the frame window (client's parent) is minimized. */
+ 
+    ulStyle = WinQueryWindowULong(WinQueryWindow(hwnd, QW_PARENT,
+        FALSE), QWL_STYLE);
+ 
+    if (ulStyle &amp; WS_MINIMIZED) {
+        .
+        . /* paints the minimized state */
+        .
+    }
+    else {
+        .
+        . /* paints the normal state    */
+        .
+    }
+    WinEndPaint(hps);
+    return 0L;
+ 
+<b>Drawing Without the WM_PAINT Message</b>
+ 
+An application can draw in a window's presentation space if it has not
+received a WM_PAINT message. As long as there is a presentation space for
+the window, an application can draw into the presentation space an avoid
+intruding into other windows or the desktop. Applications that draw without
+using the WM_PAINT message typically call the WinGetPS function to obtain a
+cached-micro presentation space for the window and call the WinReleasePS
+function when they have finished drawing. An application can also use any of
+the other types of presentation spaces described in the following sections.
+ 
+<b>Three Kinds of Presentation Spaces</b>
+ 
+All drawing must take place within a presentation space. MS OS/2 provides
+three kinds of presentation spaces for drawing: the normal presentation
+space, the micro presentation space, and the cached-micro presentation
+space.
+ 
+The normal presentation space provides the most functionality, allowing
+access to all the graphics functions of MS OS/2 and allowing the application
+to draw to all device types. The normal presentation space is more difficult
+to use than the other two kinds of presentation spaces and it uses more
+memory. It is created by using the GpiCreatePS function and it is destroyed
+by using the GpiDestroyPS function.
+ 
+The micro presentation space allows access to only a subset of the MS OS/2
+graphics functions, but it uses less memory and is faster than a normal
+presentation space. The micro presentation space also allows the application
+to draw to all device types. It is created by using the GpiCreatePS function
+and destroyed by using the GpiDestroyPS function.
+ 
+The cached-micro presentation space provides the least functionality of the
+three kinds of presentation spaces, but it is the most efficient and easiest
+to use. The cached-micro presentation space draws only to the screen. It is
+created and destroyed by using either the WinBeginPaint and WinEndPaint
+functions or the WinGetPS and WinReleasePS functions.
+ 
+The following sections describe each of the three types of presentation
+spaces in detail and discuss strategies for using each type in an
+application. (For more information, see All three kinds of presentation
+spaces can be used in a single application. Some windows, especially if they
+will never be printed, are best served by cached-micro presentation spaces.
+Other windows may require the more flexible services of micro or normal
+presentation spaces.
+ 
+<b>Cached-Micro Presentation Spaces</b>
+ 
+The cached-micro presentation space provides the simplest and most efficient
+drawing environment. It can be used only for drawing on the screen,
+typically in the context of a window. It is most appropriate for application
+tasks that need simple window-drawing functions that do not need to be
+printed. Cached-micro presentation spaces do not support retained graphics.
+ 
+After an application draws to a cached-micro presentation space, the drawing
+commands are routed through an implied device context to the current
+display. The application does not need information about the actual device
+context, since it is assumed to be the display. This process makes
+cached-micro presentation spaces easy for applications to use.
+ 
+There are two common strategies for using cached-micro presentation spaces
+in an application. The simplest is to call the WinBeginPaint function during
+the WM_PAINT message, use the resulting cached-micro presentation space to
+draw in the window, and then return the presentation space to the system by
+calling the WinEndPaint function. By using this method, the application only
+interacts with the presentation space when it needs to draw in the
+presentation space. This method is most appropriate for simple drawing. A
+disadvantage of this method is that the application must set up any special
+attributes for the presentation space, such as line color and font, each
+time a new presentation space is obtained.
+ 
+A second strategy is for the application to allocate a cached-micro
+presentation space during initialization, by calling the WinGetPS function
+and saving the resulting presentation-space handle in a static variable. The
+application can then set attributes in the presentation space that persist
+for the life of the program. The presentation-space handle can be used as an
+argument to the WinBeginPaint function each time the window gets a WM_PAINT
+message; the system modifies the visible region and returns the presentation
+space to the application with its attributes intact. This strategy is
+appropriate for applications that need to customize their window-drawing
+attributes.
+ 
+A presentation space that is obtained by calling the WinGetPS function
+should be released by calling WinReleasePS when the application has finished
+using it. (Typically, this will be during program termination.) A
+presentation space that is obtained by calling the WinBeginPaint function
+should be released by calling the WinEndPaint function, typically as the
+last part of processing a WM_PAINT message.
+ 
+<b>Micro Presentation Spaces</b>
+ 
+The main advantage of a micro presentation space over a cached-micro
+presentation space is that it can be used for printing as well as for
+painting in a window. An applications that uses a micro presentation space
+must explicitly associate it with a device context. This makes the micro
+presentation space useful for painting to a printer, plotter, or an
+off-screen memory bitmap.
+ 
+A micro presentation space does not support the full set of MS OS/2 graphics
+functions. Unlike a normal presentation space, a micro presentation space
+does not support retained graphics.
+ 
+An application that needs to display in a window and print to a printer or
+plotter typically maintains two presentation spaces: one for the window and
+one for the printing device.
+ 
+An application creates a micro presentation space by calling the
+<b>GpiCreatePS</b> function. Because a device context must be supplied at the time
+the micro presentation space is created, an application typically creates a
+device context and then a presentation space. The following code fragment
+demonstrates this by obtaining a device context for a window and associating
+it with a new micro presentation space:
+ 
+hdc = WinOpenWindowDC(...);
+hps = GpiCreatePS(...,hdc,...,GPIA_ASSOC);
+ 
+To create a micro presentation space for a device other than the screen,
+replace the call to the WinOpenWindowDC function with a call to the
+<b>DevOpenDC</b> function, which obtains a device context for a device that is not
+the screen. The device context that is obtained by this call can be used as
+an argument to the GpiCreatePS function.
+ 
+An application typically creates a micro presentation space during
+initialization and uses it until termination. Each time the application
+receives a WM_PAINT message, it should pass the handle of the micro
+presentation space as an argument to the WinBeginPaint function; this
+prevents the system from returning a cached-micro presentation space. The
+system modifies the visible region of the supplied micro presentation space
+and returns the presentation space to the application. This method allows
+the application to use the same presentation space for all drawing in a
+specified window.
+ 
+Micro presentation spaces created by using the GpiCreatePS function should
+be destroyed by calling the GpiDestroyPS function before the application
+terminates. Do not call the WinReleasePS function to release a presentation
+space obtained by using the GpiCreatePS function. Before terminating,
+applications should also use the DevCloseDC function to close any device
+contexts opened by using the DevOpenDC function. No action is necessary for
+device contexts obtained with the WinOpenWindowDC function, since the system
+automatically closes these device contexts when destroying the associated
+windows.
+ 
+<b>Normal Presentation Spaces</b>
+ 
+The normal presentation space supports the full power of MS OS/2 graphics,
+including retained graphics. The main advantages of a normal presentation
+space over the other two presentation-space types are its support of all
+graphics functions, including retained graphics, and its ability to be
+associated with many kinds of device contexts.
+ 
+A normal presentation space can be associated with many different device
+contexts. Typically, this means that an application creates a normal
+presentation space and associates it with a window device context for screen
+display. When the user asks to print, the application associates the same
+presentation space with a printer device context. Later, the application can
+reassociate the presentation space with the window device context. A
+presentation space can be associated with only one device context at a time,
+but the normal presentation space allows the application to change the
+device context whenever necessary.
+ 
+A normal presentation space can be associated with a device context when the
+normal presentation space is created, or association can be deferred to a
+later time. The GpiAssociate function associates a device context with a
+normal presentation space after the presentation space has been created. An
+application typically associates the normal presentation space with a device
+context when calling the GpiCreatePS function and later associates the
+presentation space with a different device context by calling GpiAssociate.
+To obtain a device context for a window, call the WinOpenWindowDC function.
+To obtain a device context for a device other than the screen, call the
+<b>DevOpenDC</b> function.
+ 
+An application typically creates a normal presentation space during
+initialization and uses it until termination. Each time the application
+receives a WM_PAINT message, it should pass the handle of the normal
+presentation space as an argument to the WinBeginPaint function; this
+prevents the system from returning a cached-micro presentation space. The
+system modifies the visible region of the supplied normal presentation space
+and returns the presentation space to the application. This method allows
+the application to use the same presentation space for all drawing in a
+specified window.
+ 
+Normal presentation spaces created by using the GpiCreatePS function should
+be destroyed by calling the GpiDestroyPS function before the application
+terminates. Do not call the WinReleasePS function to release a presentation
+space obtained by using the GpiCreatePS function. Before terminating,
+applications should also use the DevCloseDC function to close any device
+contexts opened by using the DevOpenDC function. No action is necessary for
+device contexts obtained with the WinOpenWindowDC function, since the system
+automatically closes these device contexts when destroying the associated
+windows.
+ 
+<b>Printing</b>
+ 
+Although a detailed discussion of printing is beyond the scope of this
+topic, printing should be seen as a variation of screen painting. To draw in
+a window, an application issues graphics calls to a presentation space
+associated with a screen device context. To print, the application makes
+graphics calls to a presentation space associated with a printer device
+context. In an application that supports a what-you-see-is-what-you-get
+window display, the printing code should be the same as or very similar to
+the window-display code, as though the printed page were an 8 ½-by-11-inch
+window. (Of course, many applications will optimize printing code to take
+advantage of such properties of the output device as high-resolution
+page-description languages.)
+ 
+An application achieves greater device-independence if it does not use pels
+as its drawing unit. For example, if an application does all its drawing
+into a presentation space with PU_LOENGLISH units (.01 inch), a 100-unit
+line is certain to be one inch long on any printing device. The presentation
+space and device context automatically scale a drawing to compensate for the
+resolution of the output device.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

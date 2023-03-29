@@ -1,0 +1,447 @@
+<html>
+
+<head>
+<title>About Messages and Message Queues (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Messages and Message Queues (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Messages_and_Message_Queues.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#PM Message functions 1.2'>Function Group</a><span class='grhilite'>►</span>          </i>           <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MLE_Controls.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                     About Messages and Message Queues
+ 
+This topic describes creating and using messages and message queues in MS
+OS/2 Presentation Manager applications. You should also be familiar with the
+following topics:
+ 
+    <span class='grhilite'>◄</span><a href='Windows.html'>Windows</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Window_Procedures.html'>Window procedures</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='processes.html'>Multitasking</a><span class='grhilite'>►</span>
+ 
+Unlike traditional applications that take complete control of the computer's
+keyboard, mouse, and screen, Presentation Manager applications must share
+these resources with other applications running at the same time. Because
+all applications run independently, Presentation Manager applications rely
+on MS OS/2 to help them manage shared resources. The system manages shared
+resources by controlling the operation of each application, communicating
+with each application when there is keyboard and mouse input or when an
+application must move and size its windows. The system uses messages to
+communicate with an application and the windows belonging to that
+application.
+ 
+A message is information, a request for information, or a request for an
+action to be carried out by the application. The system communicates a
+message to an application so that the application can use the information or
+respond to the request. The system communicates in two ways: posting and
+sending.
+ 
+The system posts a message to an application's message queue if the message
+represents information or a request that does not need immediate action. The
+message queue is an application-created storage area used to hold messages.
+The application can then retrieve and process a message at the appropriate
+time. The system posts a message by copying the message data to the message
+queue.
+ 
+The system sends a message to an application when it needs an immediate
+response from the application. It sends a message by passing the message
+data as arguments to the window procedure. The window procedure carries out
+the request or lets the system carry out default processing for the
+message.
+ 
+The following sections describe messages and message queues in detail.
+ 
+<b>Messages</b>
+ 
+All messages contain information that an application uses to carry out
+tasks. There are two types of messages: queue messages and window messages.
+Queue messages are messages stored in a message queue. Window messages are
+messages sent to a window procedure. Although these message types have very
+different formats, the information they contain is nearly identical.
+ 
+Every message contains a message identifier. The message identifier is an
+integer value that determines whether the message is information or a
+request. When an application processes a message, it uses the message
+identifier to determine what to do.
+ 
+Every message contains a window handle. The window handle identifies the
+window for which the message is intended. The window handle is important
+because most message queues and window procedures serve more than one
+window. The window handle ensures that the application processes the message
+for the appropriate window.
+ 
+Messages contain two message parameters. A message parameter is a 32-bit
+value that specifies data or the location of data to be used in processing
+the message. The meaning and value of a message parameter depends on the
+message. Message parameters can be pointers to structures containing
+additional data, integer values, packed bit flags, and so on. Some messages
+do not use message parameters and typically set the parameters to zero. An
+application always checks the message identifier to determine how to
+interpret the message parameters.
+ 
+Queue messages also contain the message time and mouse position. The message
+time specifies the system time, in milliseconds, when the message was
+created. The mouse position specifies the location of the mouse pointer, in
+screen coordinates, when the message was created.
+ 
+A queue message is a QMSG data structure that contains six fields
+representing the window handle, message identifier, two message parameters,
+message time, and mouse position. The time and position are provided because
+most queue messages are input messages, representing keyboard or mouse input
+from the user. The time and position help the application identify the
+context of the message. The system posts a queue message by filling the
+<b>QMSG</b> structure and copying it to a message queue.
+ 
+A window message consists of the window handle, the message identifier, and
+two message parameters. A window message does not include the message time
+and mouse position because most window messages are requests to carry out a
+task that is not related to the current time or mouse-pointer position.The
+system sends a window message by passing these values as individual
+arguments to a window procedure.
+ 
+<b>Message Queues</b>
+ 
+Every Presentation Manager application needs a message queue. A message
+queue is the only means an application has to receive input from the
+keyboard or mouse. Only applications that create message queues can create
+windows.
+ 
+A message queue is internal storage reserved by the application for
+receiving and holding posted messages. An application creates a message
+queue by using the WinCreateMsgQueue function. This function returns a
+handle the application can use to access the message queue. After an
+application creates a message queue, the system posts messages intended for
+windows in the application to that queue. The application can retrieve queue
+messages by specifying the message-queue handle in a call to the WinGetMsg
+function. It can examine messages without retrieving them by using the
+<b>WinPeekMsg</b> function. When an application no longer needs the message queue,
+it can destroy it by using the WinDestroyMsgQueue function.
+ 
+Message queues serve all windows created by the application. This means a
+queue may hold messages for several windows. Most messages specify the
+windows to which they belong, so the application can easily apply a message
+to the appropriate window. Messages that do not specify a window apply to
+the entire application.
+ 
+An application that has more than one thread can create more than one
+message queue. The system allows one message queue for each thread. A
+message queue created by an application thread belongs to that thread and
+has no connection to other queues in that application. When an application
+creates a window in a given thread, the system associates the window with
+the message queue in that thread. The system then posts all subsequent
+messages intended for the window to that queue.
+ 
+Although multiple message queues are possible, most Presentation Manager
+applications use threads sparingly and so use only one message queue.
+ 
+Since several windows typically use a message queue, it is important that
+the message queue be large enough to hold all possible messages that may be
+posted to it. An application can set the size of the message queue when it
+creates the queue by specifying the maximum number of messages the queue can
+hold.
+ 
+To minimize the queue size, several types of posted messages are not
+actually stored in a message queue. Instead, the system keeps a record in
+the queue of the message being posted and combines any information contained
+in the message with information from previous messages. Timer, semaphore,
+and paint messages are handled in this way. For example, if more than one
+<b>WM_PAINT</b> message is posted, the system combines the update regions for each
+into a single update region. Although there is no actual message in the
+queue, the system constructs one WM_PAINT message with the single update
+region when an application uses the WinGetMsg function.
+ 
+Mouse and keyboard input messages are also not stored in the message queue.
+These are stored in the system message queue. The system message queue is a
+system-owned queue that receives and holds messages for all mouse and
+keyboard input. The system does not copy these messages to application
+message queues. Instead, the WinGetMsg function searches the system queue
+for input messages belonging to the application when there are no other
+higher-priority messages in the application's message queue. The system
+message queue is usually large enough to hold all input messages, even if
+the user is typing or moving the mouse very quickly. If the system queue
+does run out of room, the system ignores the most recent keyboard input
+(usually beeping to indicate it is ignored) and collects mouse motions into
+a single motion.
+ 
+Every message queue has a corresponding data structure. The data structure
+specifies the identifiers of the process and thread that own the message
+queue and gives a count of the maximum number of messages the queue can
+receive. An application can retrieve the data structure by using the
+<b>WinQueryQueueInfo</b> function.
+ 
+A message queue also has a current status. The status specifies whether any
+messages are available in the queue. An application can retrieve the queue
+status by using the WinQueryQueueStatus function. Since this function is
+very fast, applications typically use it to check for messages rather than
+using the WinPeekMsg function, which inspects the thread's message queue.
+ 
+<b>Message Loop</b>
+ 
+Every application with a message queue is responsible for retrieving the
+messages from that queue. An application can do this by using a message
+loop. A message loop is a program loop, usually in the application's main
+function, that retrieves messages from the message queue and dispatches them
+to the appropriate windows. The message loop consists of two function calls:
+one to the WinGetMsg function, the other to the WinDispatchMsg function. The
+message loop has the following form:
+ 
+while (WinGetMsg(hab, &amp;qmsg, NULL, 0, 0))
+    WinDispatchMsg(hab, &amp;qmsg);
+ 
+An application starts the message loop after creating the message queue and
+at least one application window. Once started, the message loop continues to
+retrieve messages from the message queue and to dispatch (send) them to the
+appropriate windows. The WinDispatchMsg function sends each message to the
+window specified by the window handle in the message.
+ 
+Only one message loop is needed for a message queue, even if the queue
+contains messages for more than one window. Each queue message is a QMSG
+structure that contains the handle of the window to which the message
+belongs, so the WinDispatchMsg function always dispatches the message to the
+proper window. The WinGetMsg function retrieves messages from the queue in
+first-in, first-out (FIFO) order, so the messages are dispatched to windows
+in the same order they were put in the queue.
+ 
+If there are no messages in the queue, the system temporarily stops
+processing the WinGetMsg function until a message arrives. This means that
+CPU time slices that would otherwise be spent waiting for a message can be
+given to the applications (or threads) that do have messages in their
+queues.
+ 
+The message loop continues to retrieve and dispatch messages until the
+<b>WinGetMsg function retrieve</b>s a WM_QUIT message. This message causes the
+function to return FALSE, terminating the loop. In most cases, terminating
+the message loop is the first step in terminating the application. An
+application can terminate its own loop by posting the WM_QUIT message in its
+own queue.
+ 
+An application can modify its message loop in a variety of ways. For
+example, it can retrieve messages from the queue without dispatching them to
+a window. This is useful for applications that post messages that do not
+specify a window (these messages apply to the application rather than to a
+specific window; they have NULL window handles). An application can also
+direct the WinGetMsg function to search for specific messages, leaving other
+messages in the queue. This is useful for applications that temporarily need
+to bypass the usual first-in, first-out order of the message queue.
+ 
+<b>Messages and Window Procedures</b>
+ 
+When the system needs an immediate response from an application, it sends a
+message to a window procedure. A window procedure is a function that
+receives and processes all input and requests for action sent to the window
+by the system. Every window class has a window procedure and every window
+created using that class uses the window procedure to respond to messages.
+ 
+The system sends a message to the window procedure by passing the message
+data as arguments to the window procedure. The window procedure carries out
+an appropriate action for the given request. Most window procedures check
+the message identifier, then use the information specified by the message
+parameters to carry out the request. When it has completed processing the
+message, the window procedure returns a message result. Each message has a
+particular set of possible return values. The window procedure must return
+the appropriate value for the processing it carried out.
+ 
+A window procedure cannot ignore a message. If it does not process a
+message, it must pass the message back to the system for default processing.
+The window procedure can do this by calling the WinDefWindowProc function.
+This function carries out a default action and returns the message result.
+The window procedure must return this value as its own message result.
+ 
+A window procedure commonly processes messages for several windows. It uses
+the window handle specified in the message to identify the appropriate
+window. Most window procedures process just a few types of messages and pass
+the others on to the system by calling the WinDefWindowProc function.
+ 
+<b>Application Messages</b>
+ 
+Any application can post and send messages. Like the system, an application
+posts a message by copying it to a message queue. It sends a message by
+passing the message data as arguments to a window procedure. An application
+can post a message by using the WinPostMsg function. It can send a message
+by using the WinSendMsg function.
+ 
+Typically, an application posts a message to notify a specific window to
+carry out a task. The WinPostMsg function creates a QMSG structure for each
+message and copies the message to the message queue corresponding to the
+given window. The application's message loop eventually retrieves the
+message and dispatches it to the appropriate window procedure. One message
+commonly posted is WM_QUIT. This message terminates the application by
+terminating the message loop.
+ 
+Typically, an application sends a message to notify a specific window
+procedure to immediately carry out a task. The WinSendMsg function passes
+the message to the window procedure corresponding to the given window. The
+function waits until the window procedure completes processing and then
+returns the message result. It is very common for parent and child windows
+to communicate by sending messages to each other. For example, a parent
+window that has an entry-field control (as its child window) can set the
+text of the control by sending the child window a message. The control can
+notify the parent window of changes to the text (carried out by the user) by
+sending messages back to the parent window.
+ 
+Occasionally, an application may need to send or post a message to all
+windows in the system. For example, if the application changes a system
+value, it must notify all windows about the change by sending a
+<b>WM_SYSVALUECHANGED</b> message. An application can send or post messages to any
+number of windows by using the WinBroadcastMsg function. The options in
+<b>WinBroadcastMsg</b> determine whether the message is sent or posted and specify
+the number of windows to receive the message.
+ 
+If an application has more than one thread, any thread in the application
+can post messages to a message queue, even if that thread has no message
+queue of its own. However, only threads that have a message queue can send
+messages. Posting or sending messages between threads is relatively
+uncommon. One reason for this is that it is costly in terms of system
+performance to send a message. If you do post messages between threads, it
+is likely to be for semaphore messages. Semaphore messages permit window
+procedures to jointly manage a shared resource.
+ 
+An application can post a message without specifying a window. If the
+application supplies a NULL window handle when it calls the WinPostMsg
+function, the function posts the message that is in the message queue of the
+thread calling the function. Because the message has no window handle, the
+message loop processes the message. This is one way to create messages that
+apply to the entire application instead of to a specific window.
+ 
+A window procedure can determine whether it is processing a message sent by
+another thread by using the WinInSendMsg function. This is useful when
+message processing depends on the origin of the message.
+ 
+A common programming error is to assume that the WinPostMsg function always
+posts a message. This is not true when the message queue is full. An
+application should check the return value of the function to see if the
+message has been posted. In general, if an application intends to post many
+messages to the queue, it should set the message queue to an appropriate
+size when it creates the queue. The default message-queue size is ten
+messages.
+ 
+<b>System-Defined Messages</b>
+ 
+There are many system-defined messages. The system uses these messages to
+control the operation of applications and to provide input and other
+information for applications to process. The system sends or posts a
+system-defined message when it communicates with an application. An
+application can also send or post system-defined messages. Applications
+typically use these messages to control the operation of control windows
+created using the preregistered window classes.
+ 
+Each system message has a unique message identifier and a corresponding
+symbolic constant. The symbolic constant, defined in MS OS/2 header files,
+typically states the purpose of the message. For example, the WM_PAINT
+constant represents the paint message. The paint message requests a window
+to paint its contents.
+ 
+The symbolic constants also specify the message category. System-defined
+messages can belong to several categories; the prefix identifies the type of
+window that can interpret and process the messages. The following list gives
+the prefixes and related message categories:
+ 
+<b>Prefix  Message category</b>
+────────────────────────────────────────────────────────────────────────────
+<i>BM</i>      Button-control
+<i>EM</i>      Entry-field control
+<i>LM</i>      List-box control
+<i>MM</i>      Menu
+<i>SBM</i>     Scroll-bar control
+<i>SM</i>      Static control
+<i>TBM</i>     Title-bar control
+<i>WM</i>      General window
+ 
+General window messages cover a wide range of information and requests and
+include mouse and keyboard-input messages, menu and dialog-input messages,
+window-creation and window-management messages, and dynamic-data-exchange
+(DDE) messages.
+ 
+<b>Application-Defined Messages</b>
+ 
+An application can create its own messages to use in its own windows. If an
+application creates messages, the window procedure that receives the message
+must interpret the message and provide appropriate processing.
+ 
+MS OS/2 reserves the message-identifier values in the range 0x0000 through
+(WM_USER-1) for system-defined messages. Applications cannot use these
+values for private messages. Values in the range WM_USER through 0xBFFF are
+available for message identifiers defined by an application for use in that
+application. Values in the range 0xC000 through 0xFFFF are reserved for
+message identifiers defined by an application.
+ 
+<b>Semaphore Messages</b>
+ 
+The semaphore messages are a way of signaling the end of an event through
+the message queue. Applications use these messages like they use MS OS/2
+semaphore functions to coordinate events by passing signals. Semaphore
+messages are often used in conjunction with MS OS/2 semaphores.
+ 
+There are four semaphore messages: WM_SEM1, WM_SEM2, WM_SEM3, and WM_SEM4.
+An application posts one of the semaphore messages to signal the end of the
+given event. The window that is waiting for the given event receives the
+semaphore message when the message loop retrieves and dispatches the
+message.
+ 
+Each semaphore message includes a bit flag that can be used to uniquely
+identify 32 possible semaphores for each semaphore message. The application
+passes the bit flag (with the appropriate bit set) as a message parameter
+with the message. The window procedure that receives the message then uses
+the bit flag to identify the semaphore.
+ 
+To save space in a message queue, the system does not store semaphore
+messages in the message queue. Instead, it sets a record in the queue,
+indicating the semaphore message has been received, and then combines the
+bit flag for the message with the bit flags from previous messages. When the
+window procedure eventually receives the message, the bit flag specifies
+each semaphore message posted since the last message was retrieved.
+ 
+<b>Message Priorities</b>
+ 
+The WinGetMsg function retrieves messages from the message queue based on
+message priority. The function retrieves messages with higher priority
+first. If it finds more than one message at a particular priority level, it
+retrieves the oldest message first. Messages have the following priority:
+ 
+<b>Priority  Message</b>
+────────────────────────────────────────────────────────────────────────────
+<i>1  </i>       WM_SEM1
+<i>2  </i>       Messages posted using WinPostMsg
+<i>3</i>         Input messages from the keyboard or mouse
+<i>4  </i>       WM_SEM2
+<i>5  </i>       WM_PAINT
+<i>6  </i>       WM_SEM3
+<i>7  </i>       WM_TIMER
+<i>8  </i>       WM_SEM4
+ 
+<b>Message Filtering</b>
+ 
+Applications can choose specific messages to retrieve from the message queue
+(ignoring other messages) by specifying a message filter with the WinGetMsg
+or WinPeekMsg function. The message filter is a range of message identifiers
+(specified by a first and last identifier), a window handle, or both. The
+functions use the message filter to select the messages to retrieve from the
+queue. Message filtering is useful if an application needs to search ahead
+in the message queue for messages that have a lower priority or that arrived
+in the queue later than other less important messages.
+ 
+Any application that filters messages must ensure that a message satisfying
+the message filter can be posted. For example, filtering for a WM_CHAR
+message in a window that does not have the input focus prevents the
+<b>WinGetMsg function from ret</b>urning. Some messages, such as WM_COMMAND, are
+generated from other messages; filtering for them may also prevent
+<b>WinGetMsg</b> from returning.
+ 
+The constants WM_MOUSEFIRST and WM_MOUSELAST, WM_BUTTONCLICKFIRST and
+<b>WM_BUTTONCLICKLAST, and WM_DDE_FIRST and WM_DDE_LAST can be used to filter</b>
+for mouse, button, and DDE messages.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

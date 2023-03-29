@@ -1,0 +1,94 @@
+<html>
+
+<head>
+<title>VioGetPhysBuf (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioGetPhysBuf (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioGetState.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioGetPhysBuf(pviopb, usReserved)
+PVIOPHYSBUF pviopb;    /* pointer to structure for physical video buffer */
+USHORT usReserved;     /* must be zero                                   */
+ 
+The VioGetPhysBuf function retrieves the selector of the physical video
+buffer. The physical video buffer contains the text or graphics information
+that defines the current screen image. In text mode, the buffer contains the
+character and attribute for each character cell. In graphics mode, the
+buffer is a bitmap (in one or more planes) of the image on the screen. The
+content of the screen depends on the current screen mode and the type of
+display adapter.
+ 
+The VioGetPhysBuf function is a family API function.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pviopb      Points</i> to the VIOPHYSBUF structure that specifies the address
+            and length of the physical video buffer, and receives the
+            selector(s) used to address the video buffer.
+ 
+<i>usReserved</i>  Specifies a reserved value. This parameter must be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_VIO_EXTENDED_SG
+     ERROR_VIO_IN_BG
+     ERROR_VIO_INVALID_HANDLE
+ 
+<b>Comments</b>
+ 
+Since the physical video buffer is subject to change by the current
+foreground process, only the foreground process should access the buffer. To
+ensure that the foreground process has complete control of the physical
+buffer, use the VioScrLock function.
+ 
+If a background process calls VioGetPhysBuf, the function will return
+ERROR_VIO_IN_BG. If a background process attempts to access the physical
+video buffer, it will be terminated.
+ 
+Only a full-screen application can call the VioGetPhysBuf function. If an
+application running in a VIO window calls this function, the function will
+return ERROR_VIO_EXTENDED_SG.
+ 
+<b>Example</b>
+ 
+This example locks the screen, calls VioGetPhysBuf to retrieve the address
+of the physical video buffer, unlocks the screen, and assigns the address of
+the physical video buffer to a pointer:
+ 
+VIOPHYSBUF viopb;
+PCH pchScreen;
+USHORT fStatus;
+ 
+viopb.pBuf = (PBYTE) 0xB8000L;
+viopb.cb = 4000L;
+VioScrLock(LOCKIO_WAIT, (PBYTE) &amp;fStatus, 0);
+VioGetPhysBuf(&amp;viopb, 0);
+VioScrUnLock(0);
+pchScreen = (PCH) MAKEP(viopb.asel[0], 0);
+ 
+<b>See Also</b>
+ 
+<b>VioGetBuf, VioScrLock, VioScrUnLock, VioShowBuf, VIOPHYSBUF</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

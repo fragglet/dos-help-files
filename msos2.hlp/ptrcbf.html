@@ -1,0 +1,227 @@
+<html>
+
+<head>
+<title>PTRACEBUF (1.2) - msos2.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msos2.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> PTRACEBUF (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='ptrcbf.html'>Changes</a><span class='grhilite'>►</span>                                             <span class='grhilite'>◄</span><a href='Structures.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='PPTRDRAWADDRESS.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSTRACE
+ 
+typedef struct _PTRACEBUF {    /* ptrcbf */
+    PID    pid;
+    TID    tid;
+    USHORT cmd;
+    USHORT value;
+    USHORT offv;
+    USHORT segv;
+    USHORT mte;
+    USHORT rAX;
+    USHORT rBX;
+    USHORT rCX;
+    USHORT rDX;
+    USHORT rSI;
+    USHORT rDI;
+    USHORT rBP;
+    USHORT rDS;
+    USHORT rES;
+    USHORT rIP;
+    USHORT rCS;
+    USHORT rF;
+    USHORT rSP;
+    USHORT rSS;
+} PTRACEBUF;
+ 
+The PTRACEBUF structure contains various debugging information.
+ 
+<b>Field  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<b>pid</b>    Specifies the process identifier of the program being debugged.
+ 
+<b>tid</b>    Specifies the thread identifier of the program being debugged.
+ 
+<b>cmd</b>    Specifies the command to carry out. It can be one of the following
+       values:
+ 
+       Value   Meaning
+       ─────────────────────────────────────────────────────────────────────
+       0x0001  Read memory instruction space (I-space).
+ 
+       0x0002  Read memory data space (D-space).
+ 
+       0x0003  Read registers.
+ 
+       0x0004  Write memory I-space.
+ 
+       0x0005  Write memory D-space.
+ 
+       0x0006  Write registers.
+ 
+       0x0007  Begin execution.
+ 
+       0x0008  Terminate child process.
+ 
+       0x0009  Single step.
+ 
+       0x000A  Suspend child process.
+ 
+       0x000B  Freeze child process.
+ 
+       0x000C  Resume child process.
+ 
+       0x000D  Convert segment number to selector.
+ 
+       0x000E  Get floating-point registers. The segv and offv fields must
+               specify the address of a 94-byte buffer that receives the
+               floating-point register values.
+ 
+       0x000F  Set floating-point registers. The segv and offv fields must
+               specify the address of a 94-byte buffer that contains the
+               floating-point register values.
+ 
+       0x0010  Get library-module name. The value field must contain the
+               handle of the library module. The segv and offv fields must
+               contain the address of the buffer that receives the name.
+               This command should be used instead of the DosGetModHandle
+               and DosGetModName functions to verify the name of a library
+               loaded by the program being debugged.
+ 
+       0x0011  Get the thread identifier of the next thread. This field is
+               circular; to read the registers of all threads in the
+               process, use this value until a thread identifier is
+               repeated. For more information about this value, see the
+               "Comments" section.
+ 
+       When the command identified in the cmd field returns, it copies a
+       code to the value field that specifies the result of the command. The
+       return code can be one of the following values:
+ 
+       Value   Meaning
+       ─────────────────────────────────────────────────────────────────────
+       0x0000  Success return code.
+ 
+       0xFFFF  Error. The error code is in the value field.
+ 
+       0xFFFE  About to receive signal.
+ 
+       0xFFFD  Single-step interrupt.
+ 
+       0xFFFC  Hit break point.
+ 
+       0xFFFB  Parity error.
+ 
+       0xFFFA  Process dying.
+ 
+       0xFFF9  General protection fault. The fault type is in the value
+               field. The segv and offv fields contain the address that
+               caused the fault.
+ 
+       0xFFF8  Library module has just been loaded. The value field contains
+               the library-module handle.
+ 
+       0xFFF7  Process has not used 287 yet.
+ 
+       0xFFF6  Thread ending.
+ 
+       0xFFF5  Asynchronous stop.
+ 
+<b>value</b>  Specifies the value to be used for a given command or a return value
+       from a command. If an error occurs, this field is set to one of the
+       following values:
+ 
+       Value   Meaning
+       ─────────────────────────────────────────────────────────────────────
+       0x0001  Bad command.
+ 
+       0x0002  Child process not found.
+ 
+       0x0005  Child process untraceable.
+ 
+<b>offv</b>   Specifies the offset from the given segment.
+ 
+<b>segv</b>   Specifies the segment selector.
+ 
+<b>mte</b>    Identifies the handle of the module that contains the segment.
+ 
+<b>rAX    Sp</b>ecifies the ax register.
+ 
+<b>rBX    Sp</b>ecifies the bx register.
+ 
+<b>rCX    Sp</b>ecifies the cx register.
+ 
+<b>rDX    Sp</b>ecifies the dx register.
+ 
+<b>rSI    Sp</b>ecifies the si register.
+ 
+<b>rDI    Sp</b>ecifies the di register.
+ 
+<b>rBP    Sp</b>ecifies the bp register.
+ 
+<b>rDS    Sp</b>ecifies the ds register.
+ 
+<b>rES    Sp</b>ecifies the es register.
+ 
+<b>rIP    Sp</b>ecifies the ip register.
+ 
+<b>rCS    Sp</b>ecifies the cs register.
+ 
+<b>rF</b>     Specifies flags.
+ 
+<b>rSP    Sp</b>ecifies the sp register.
+ 
+<b>rSS    Sp</b>ecifies the ss register.
+ 
+<b>Comments</b>
+ 
+The 0x0011 value in the cmd field causes a thread identifier to be
+retrieved. The status of this thread is returned in a ThreadStatus buffer
+pointed to by the segv and offv fields. The format of the ThreadStatus
+buffer is as follows:
+ 
+struct ThreadStatus {
+    UCHAR  fDebugState;
+    UCHAR  fThreadState;
+    USHORT usThreadPriority;
+    };
+ 
+The DebugState field contains one of the following values:
+ 
+<b>Value  Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>0</i>      Thread not frozen by debugger.
+<i>1</i>      Thread frozen by debugger.
+ 
+The ThreadState field contains one of the following:
+ 
+<b>Value  Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>0</i>      Thread can be run.
+<i>1</i>      Thread is suspended.
+<i>2</i>      Thread is blocked.
+<i>3</i>      Thread state is a critical section.
+ 
+The ThreadPriority field receives the priority of the specified thread. The
+high byte receives the priority class, and the low byte receives the
+priority level.
+ 
+<b>See Also</b>
+ 
+<b>DosGetModHandle, DosGetModName, DosPTrace</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

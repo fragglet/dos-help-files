@@ -1,0 +1,99 @@
+<html>
+
+<head>
+<title>WM_SEM1 (1.2) - msgs12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msgs12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WM_SEM1 (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='messages.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WM_SEM2.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMESSAGEMGR
+ 
+<b>WM_SEM1</b>
+flFlags = LONGFROMMP(mp1);    /* application-defined flags */
+ 
+The WM_SEM1 message is one of four WM_SEM messages that an application can
+use to send signals within and between threads. WM_SEM messages can be used
+much like an MS OS/2 semaphore. Unlike an MS OS/2 semaphore, however, a
+thread waiting for a WM_SEM message can continue to process other messages
+instead of blocking until the WM_SEM message is received.
+ 
+A WM_SEM1 message should be posted, not sent, by using the WinPostMsg
+function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>flFlags</i>    Specifies a 32-bit field that is combined with any previous
+           WM_SEM1 messages that have not been retrieved from the message
+           queue by using the OR operator. The application determines how
+           this parameter is to be used.
+ 
+<b>Return Value</b>
+ 
+An application should return zero if it processes this message.
+ 
+<b>Comments</b>
+ 
+A WM_SEM1 message is quite fast, having a higher priority than other
+messages. The following list shows the message priority of the WM_SEM1
+message in relation to other messages (from highest to lowest):
+ 
+     WM_SEM1
+     Any message posted using the WinPostMsg function or any input message
+     not listed here.
+     WM_SEM2
+     WM_TIMER
+     WM_SEM3
+     WM_PAINT
+     WM_SEM4
+ 
+<b>WM_SEM1</b> messages are handled differently by the system than other messages.
+They can be used even if a message queue is full. When a WM_SEM1 message is
+posted, the system combines each message queue's WM_SEM1 messages into one
+message by combining the flFlags parameter with the message queue's previous
+<b>WM_SEM1 flFlags parameter. The flFl</b>ags parameter is cleared whenever the
+<b>WM_SEM1</b> message is retrieved.
+ 
+The application must determine how the flFlags field is to be used. An
+application might set flag bits to indicate certain actions to be taken by
+the receiver of the WM_SEM1 message, or it might set a bit to indicate who
+is actually posting the WM_SEM1 message.
+ 
+<b>Example</b>
+ 
+In this example, a thread notifies the client window that the thread is
+about to terminate. It sends the constant THREAD3 as the flFlags parameter
+so that when the client window receives the message, it can tell which
+thread terminated.
+ 
+#define THREAD1 1     /* bit #1 */
+#define THREAD2 2     /* bit #2 */
+#define THREAD3 4     /* bit #3 */
+VOID FAR Thread3() {
+    .
+    .
+    .
+    WinPostMsg(hwndClient, WM_SEM1, (MPARAM) THREAD3, 0);
+    DosExit(EXIT_THREAD, 0);
+}
+ 
+<b>See Also</b>
+ 
+<b>WinPostMsg</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

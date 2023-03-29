@@ -1,0 +1,103 @@
+<html>
+
+<head>
+<title>DosDevConfig (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosDevConfig (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='system_information.html'>Function Group</a><span class='grhilite'>►</span>                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosDevIOCtl.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVICES
+ 
+USHORT DosDevConfig(pvDevInfo, usItem, usReserved)
+PVOID pvDevInfo;      /* pointer to variable for device information */
+USHORT usItem;        /* item number                                */
+USHORT usReserved;    /* must be zero                               */
+ 
+The DosDevConfig function retrieves information about attached devices.
+ 
+The DosDevConfig function is a family API function.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pvDevInfo</i>   Points to the variable that receives device information. The
+            type of information received depends on the value of the usItem
+            parameter.
+ 
+<i>usItem</i>      Specifies what device information to retrieve. This parameter
+            can be one of the following values:
+ 
+            Value                Meaning
+            ────────────────────────────────────────────────────────────────
+            DEVINFO_ADAPTER      The pvDevInfo parameter points to a BYTE
+                                 variable that is set to FALSE if the
+                                 primary display adapter is a
+                                 monochrome/printer display adapter type, or
+                                 to TRUE for other display adapters.
+ 
+            DEVINFO_COPROCESSOR  The pvDevInfo parameter points to a BYTE
+                                 variable that is set to TRUE if a math
+                                 coprocessor is present.
+ 
+            DEVINFO_FLOPPY       The pvDevInfo parameter points to a USHORT
+                                 variable that receives the number of
+                                 removable-disk drives that are installed.
+ 
+            DEVINFO_MODEL        The pvDevInfo parameter points to a BYTE
+                                 variable that receives the PC model type.
+ 
+            DEVINFO_PRINTER      The pvDevInfo parameter points to a USHORT
+                                 variable that receives the number of
+                                 printers that are attached.
+ 
+            DEVINFO_RS232        The pvDevInfo parameter points to a USHORT
+                                 variable that receives the number of RS232
+                                 cards that are attached.
+ 
+            DEVINFO_SUBMODEL     The pvDevInfo parameter points to a BYTE
+                                 variable that receives the PC submodel
+                                 type.
+ 
+<i>usReserved</i>  Specifies a reserved value; must be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_INVALID_PARAMETER
+ 
+<b>Example</b>
+ 
+This example calls the DosDevConfig function to determine if a math
+coprocessor is present:
+ 
+BYTE bDevInfo;
+DosDevConfig(&amp;bDevInfo,     /* address of variable for device info. */
+    DEVINFO_COPROCESSOR,    /* information requested                */
+    0);                     /* reserved                             */
+if (bDevInfo)
+    VioWrtTTY("Math coprocessor present\r\n", 26, 0);
+else
+    VioWrtTTY("Math coprocessor not present\r\n", 30, 0);
+ 
+<b>See Also</b>
+ 
+<b>DosDevIOCtl, VioGetConfig</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

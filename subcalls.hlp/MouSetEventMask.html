@@ -1,0 +1,100 @@
+<html>
+
+<head>
+<title>MouSetEventMask (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MouSetEventMask (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Mouse 1.2'>Overview</a><span class='grhilite'>►</span>                   </i>                         <span class='grhilite'>◄</span><a href='mou.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MouSetPtrPos.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_MOU
+ 
+USHORT MouSetEventMask(pfsEvents, hmou)
+PUSHORT pfsEvents;    /* address of buffer with event mask */
+HMOU hmou;            /* mouse handle                      */
+ 
+The MouSetEventMask function sets the event mask for the specified mouse.
+The event mask defines the user actions that generate mouse events (movement
+or pressing or releasing a button).
+ 
+The MouSetEventMask function enables or disables specific user actions. When
+an action is enabled, MS OS/2 copies a mouse event to the event queue
+whenever the user carries out the action. When an action is disabled, no
+mouse event is copied.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pfsEvents</i>  Points to the variable that contains the event mask. The variable
+           can be any combination of the following values:
+ 
+           Value                       Meaning
+           ─────────────────────────────────────────────────────────────────
+           MOUSE_MOTION                Enable mouse motion with
+                                       no-buttons-down event.
+ 
+           MOUSE_MOTION_WITH_BN1_DOWN  Enable mouse motion with
+                                       button-1-down event.
+ 
+           MOUSE_BN1_DOWN              Enable button-1-down event.
+ 
+           MOUSE_MOTION_WITH_BN2_DOWN  Enable mouse motion with
+                                       button-2-down event.
+ 
+           MOUSE_BN2_DOWN              Enable button-2-down event.
+ 
+           MOUSE_MOTION_WITH_BN3_DOWN  Enable mouse motion with
+                                       button-3-down event.
+ 
+           MOUSE_BN3_DOWN              Enable button-3-down event.
+ 
+<i>hmou</i>       Identifies the mouse. The handle must have been created
+           previously by using the MouOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_MOUSE_INV_PARMS
+     ERROR_MOUSE_NO_DEVICE
+ 
+<b>Comments</b>
+ 
+Button 1 is the left button on the mouse.
+ 
+<b>Example</b>
+ 
+This example creates a mouse handle and then calls the MouSetEventMask
+function to set the event mask so that only the mouse motion or the pressing
+of the left button are recognized by the MouReadEventQue function:
+ 
+USHORT fsEvents;
+HMOU hmou;
+MouOpen(0L, &amp;hmou);
+ 
+/* detect motion and button 1 */
+ 
+fsEvents = MOUSE_MOTION |
+    MOUSE_MOTION_WITH_BN1_DOWN | MOUSE_MOTION_WITH_BN1_DOWN;
+MouSetEventMask(&amp;fsEvents, hmou);
+ 
+<b>See Also</b>
+ 
+<b>MouGetEventMask, MouOpen, MouReadEventQue</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

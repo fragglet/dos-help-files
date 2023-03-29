@@ -1,0 +1,168 @@
+<html>
+
+<head>
+<title>WinRegisterClass (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinRegisterClass (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='x_at_L8144.html'>Changes</a><span class='grhilite'>►</span>                                             <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinRegisterWindowDestroy.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINWINDOWMGR
+ 
+BOOL WinRegisterClass(hab, pszClassName, pfnWndProc, flStyle,
+    cbWindowData)
+HAB hab;                /* handle of anchor block      */
+PSZ pszClassName;       /* pointer to class name       */
+PFNWP pfnWndProc;       /* address of window procedure */
+ULONG flStyle;          /* window-style flags          */
+USHORT cbWindowData;    /* amount of reserved data     */
+ 
+The WinRegisterClass function registers a window class.
+ 
+When an application registers a private class with the window procedure in a
+dynamic-link library, the application must resolve the window-procedure
+address before calling WinRegisterClass.
+ 
+Private classes are deleted when the process that registers them
+terminates.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hab</i>           Identifies the anchor block.
+ 
+<i>pszClassName</i>  Points to a null-terminated string that specifies the name of
+              the window class. The string can be either a name specified by
+              an application or the name of one of the following
+              preregistered classes:
+ 
+              Class          Description
+              ──────────────────────────────────────────────────────────────
+              WC_BUTTON      A button, which can be a push button, a radio
+                             button, a check box, or a user button.
+ 
+              WC_COMBOBOX    A combination entry field and list box.
+ 
+              WC_ENTRYFIELD  An entry field that allows single line text
+                             editing.
+ 
+              WC_FRAME       A standard frame window.
+ 
+              WC_LISTBOX     A list box that displays items in a list that
+                             can be scrolled.
+ 
+              WC_MLE         A multiple-line entry field.
+ 
+              WC_MENU        A menu, including the menu bar and the menus
+                             that can be selected from it.
+ 
+              WC_SCROLLBAR   A scroll bar that allows a user to scroll the
+                             contents of a window.
+ 
+              WC_STATIC      A static control that displays text, icon, or
+                             bitmap data.
+ 
+              WC_TITLEBAR    A title bar that displays the title of a window
+                             across the top of the frame and allows the user
+                             to drag the frame window to a new location.
+ 
+<i>pfnWndProc</i>    Points to the window procedure. This value can be NULL if the
+              application does not provide a window procedure. An
+              application written in a language that does not allow the
+              system to call the application's window procedure (for
+              example, COBOL or FORTRAN) should also use NULL for this
+              parameter. For more information, see WinGetDlgMsg.
+ 
+<i>flStyle</i>       Specifies the default window style, which can be any of the
+              standard CS class styles or any styles that are defined with
+              the class specified by pszClassName. These styles can be
+              augmented when a window of this class is created. A public
+              window class is created if the CS_PUBLIC style is specified;
+              otherwise, a private class is created. Public classes are
+              available from any process for creating a window. Private
+              classes are available only to the registering process.
+ 
+              The following list describes the standard classes:
+ 
+              Style            Meaning
+              ──────────────────────────────────────────────────────────────
+              CS_CLIPCHILDREN  Sets the WS_CLIPCHILDREN style for windows
+                               created by using this class.
+ 
+              CS_CLIPSIBLINGS  Sets the WS_CLIPSIBLINGS style for windows
+                               created by using this class.
+ 
+              CS_FRAME         Identifies windows created by using this
+                               class as frame windows.
+ 
+              CS_HITTEST       Directs the system to send a WM_HITTEST
+                               message to a window of this class whenever
+                               the mouse moves in the window.
+ 
+              CS_MOVENOTIFY    Directs the system to send a WM_MOVE message
+                               to the window whenever the window moves.
+ 
+              CS_PARENTCLIP    Sets the WS_PARENTCLIP style for windows
+                               created by using this class.
+ 
+              CS_PUBLIC        Creates a public window class.
+ 
+              CS_SAVEBITS      Sets the WS_SAVEBITS style for windows
+                               created by using this class.
+ 
+              CS_SIZEREDRAW    Directs the system to invalidate the entire
+                               window whenever the size of the window
+                               changes.
+ 
+              CS_SYNCPAINT     Sets the WS_SYNCPAINT style for windows
+                               created by using this class.
+ 
+<i>cbWindowData</i>  Specifies the number of bytes of storage reserved for use by
+              applications for each window created with the specified
+              class.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful or FALSE if an error
+occurs.
+ 
+<b>Comments</b>
+ 
+If a private class is registered with the same name as one that already
+exists, the parameters replace the old class parameters.
+ 
+<b>Example</b>
+ 
+This example calls WinRegisterClass to register a class or returns FALSE if
+an error occurs.
+ 
+HAB hab;
+CHAR szClassName[] = "Generic"; /* window class name      */
+ 
+if (!WinRegisterClass(hab,   /* anchor-block handle       */
+        szClassName,         /* class name                */
+        GenericWndProc,      /* window procedure          */
+        0L,                  /* window style              */
+        0))                  /* amount of reserved memory */
+    return (FALSE);
+ 
+<b>See Also</b>
+ 
+<b>WinGetDlgMsg, WinQueryClassInfo, WinQueryClassName, WinQueryWindowPtr,</b>
+<b>WinQueryWindowULong, WinQueryWindowUShort</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

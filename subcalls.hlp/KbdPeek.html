@@ -1,0 +1,113 @@
+<html>
+
+<head>
+<title>KbdPeek (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> KbdPeek (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Keyboard 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='kbd.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='KbdRegister.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_KBD
+ 
+USHORT KbdPeek(pkbciKeyInfo, hkbd)
+PKBDKEYINFO pkbciKeyInfo;    /* pointer to structure for keystroke info. */
+HKBD hkbd;                   /* keyboard handle                          */
+ 
+The KbdPeek function retrieves character and scan-code information from a
+logical keyboard. The function copies information to the structure pointed
+to by the pkbciKeyInfo parameter. The keystroke information includes the
+character value of the key, the scan code, the keystroke status, the state
+of the shift keys, and the system time (in milliseconds) when the keystroke
+occurred.
+ 
+The KbdPeek function is a family API function.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pkbciKeyInfo  Points to the KBDKEYIN</i>FO structure that receives the keystroke
+              information.
+ 
+<i>hkbd</i>          Identifies the logical keyboard. The handle must have been
+              created previously by using the KbdOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value.
+ 
+<b>Comments</b>
+ 
+The KbdPeek function copies but does not remove keystroke information from
+the input buffer of the specified logical keyboard. Although echo mode for
+the logical keyboard may be turned on, the KbdPeek function does not echo
+the characters it reads. If the keyboard is in ASCII mode, KbdPeek retrieves
+keystroke information for each key pressed, except shift keys and MS OS/2
+CTRL keys. If the keyboard is in binary mode, KbdPeek retrieves keystroke
+information for any key pressed, except shift keys. In most cases, a shift
+key is pressed in combination with other keys to create a single keystroke.
+In binary mode with shift report turned on, a shift key by itself creates a
+keystroke that this function can retrieve. For more information on binary
+mode and shift-report mode, see the KbdSetStatus function.
+ 
+The KbdPeek function retrieves extended ASCII codes, such as when the ALT
+key and another key, called the primary key, are pressed simultaneously.
+When the KbdPeek function retrieves an extended ASCII code, it sets the
+<b>chChar field of th</b>e KBDKEYINFO structure to 0x0000 or 0x00E0 and copies the
+code to the chScan field. The extended code is usually the scan code of the
+primary key. In ASCII mode, the function retrieves only complete extended
+codes, which means that if both bytes of the extended code do not fit in the
+buffer, neither byte is retrieved.
+ 
+The KbdPeek function must be called twice to retrieve a code for a
+double-byte character set (DBCS). If the code retrieved is the first byte of
+a double-byte character, the fbStatus field of the KBDKEYINFO structure is
+set to 0x0080.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restrictions apply to the KbdPeek function:
+ 
+♦  It does not copy the system time to the KBDKEYINFO structure, and there
+   is no interim character support.
+ 
+♦  It retrieves characters only from the default logical keyboard (handle
+   0).
+ 
+♦  The fbStatus field may be 0x0000 or SHIFT_KEY_IN.
+ 
+♦  The hkbd parameter is ignored.
+ 
+<b>Example</b>
+ 
+This example calls the KbdPeek function to read a character from the default
+keyboard without removing it from the keyboard input buffer. If there is
+already a character in the buffer, the fbStatus field specifies this by
+setting the sixth bit (0x40):
+ 
+KBDKEYINFO kbciKeyInfo;
+    .
+    .
+    .
+KbdPeek(&amp;kbciKeyInfo, 0);
+if (kbciKeyInfo.fbStatus &amp; 0x40) {
+ 
+<b>See Also</b>
+ 
+<b>KbdCharIn, KbdGetStatus, KbdOpen, KbdSetStatus, KBDKEYINFO</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

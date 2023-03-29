@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<title>DosGetProcAddr (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosGetProcAddr (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='dll.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#dynamic link libraries 1.2'>Overview</a><span class='grhilite'>►</span>                </i>          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosGetPrty.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMODULEMGR
+ 
+USHORT DosGetProcAddr(hmod, pszProcName, ppfnProcAddress)
+HMODULE hmod;            /* handle of module                          */
+PSZ pszProcName;         /* pointer to module-name string             */
+PPFN ppfnProcAddress;    /* pointer to variable for procedure address */
+ 
+The DosGetProcAddr function retrieves the address of a procedure in a
+specified dynamic-link module. This address can then be used to call the
+procedure.
+ 
+<b>Parameter        Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hmod</i>             Identifies the dynamic-link module. This handle must have
+                 been created previously by using the DosLoadModule or
+                 DosGetModName function.
+ 
+<i>pszProcName</i>      Points to a null-terminated string that specifies the
+                 procedure name to retrieve. If this string starts with a
+                 number sign (#), the remaining part of the string is
+                 treated as an ASCII ordinal. Alternately, if the selector
+                 portion of the pointer is zero, the offset portion of the
+                 pointer is an explicit entry number (an ordinal) within the
+                 dynamic-link module.
+ 
+<i>ppfnProcAddress</i>  Points to the variable that receives the procedure
+                 address.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_INTERRUPT
+     ERROR_INVALID_HANDLE
+     ERROR_PROC_NOT_FOUND
+ 
+<b>Comments</b>
+ 
+Although the DosGetProcAddr function can be used to retrieve procedure
+addresses from the DOSCALLS dynamic-link module, these procedures are
+available through ordinal values only. If you attempt to retrieve a
+procedure address from the DOSCALLS module by using a procedure name,
+<b>DosGetProcAddr</b> returns an error.
+ 
+<b>Example</b>
+ 
+This example calls the DosLoadModule function to load the dynamic-link
+module qhdll.dll. It then calls the DosGetProcAddr function to retrieve the
+address of the BOXMESSAGE function that is defined in the module and calls
+the DosFreeModule function to free the dynamic-link module. (This example is
+accurate if qhdll.dll exists in a directory defined by the libpath parameter
+of the config.sys file, and if qhdll.dll contains the BOXMESSAGE function
+that uses the Pascal calling convention.)
+ 
+UCHAR szFailName[CCHMAXPATH];
+HMODULE hmod;
+VOID (PASCAL FAR *pfnBoxMsg) (PSZ, BYTE, BYTE, SHANDLE, SHANDLE, BOOL);
+ 
+DosLoadModule(szFailName, sizeof(szFailName), "qhdll", &amp;hmod);
+DosGetProcAddr(hmod,         /* module handle                 */
+    "BOXMESSAGE",            /* name of function              */
+    &amp;pfnBoxMsg);             /* variable for function address */
+pfnBoxMsg("Hello World", 0x30, 1, 0, 0);
+DosFreeModule(hmod);
+ 
+<b>See Also</b>
+ 
+<b>DosFreeModule, DosGetModName, DosLoadModule</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

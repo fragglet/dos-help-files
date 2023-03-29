@@ -1,0 +1,251 @@
+<html>
+
+<head>
+<title>GpiPlayMetaFile (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiPlayMetaFile (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Metafile_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Metafiles 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L8102.html'>Changes</a><span class='grhilite'>►</span>     </i>          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiPointArc.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIMETAFILES
+ 
+LONG GpiPlayMetaFile(hps, hmf, cOptions, alOptions, pcSegments, cchDesc,
+    pszDesc)
+HPS hps;             /* presentation-space handle                */
+HMF hmf;             /* metafile handle                          */
+LONG cOptions;       /* number of elements in array              */
+PLONG alOptions;     /* address of array of load options         */
+PLONG pcSegments;    /* address of count of renumbered segments  */
+LONG cchDesc;        /* number of bytes in record                */
+PSZ pszDesc;         /* address of buffer for descriptive record */
+ 
+The GpiPlayMetaFile function plays the metafile specified by the hmf
+parameter. The function plays the metafile file by converting the graphics
+data in the file to graphics operations for the given presentation space.
+The function uses the load options specified by the alOptions parameter to
+determine how to prepare the presentation space for playing the metafile.
+This may include resetting the presentation space, replacing tagged bitmaps
+and logical fonts, and replacing the logical color table.
+ 
+Since the metafile may create segments, the application must close any open
+segment before calling GpiPlayMetaFile. If the metafile creates segments,
+the function retains the segments only if the current drawing mode is
+DM_RETAIN or DM_DRAWANDRETAIN. If chained segments are retained, the
+function adds them to the end of the existing segment chain.
+ 
+The GpiPlayMetaFile function can play a metafile any number of times.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>         Identifies a presentation space.
+ 
+<i>hmf</i>         Identifies the metafile to play. It must have been created or
+            loaded previously by using the DevOpenDC or GpiLoadMetaFile
+            function.
+ 
+<i>cOptions</i>    Specifies the number of elements in the array pointed to by the
+            alOptions parameter.
+ 
+<i>alOptions</i>   Points to the array specifying the load options. For a full
+            description, see the following "Comments" section.
+ 
+<i>pcSegments</i>  Points to a variable for the count of renumbered segments. This
+            parameter is reserved and is set to zero.
+ 
+<i>cchDesc</i>     Specifies the number of bytes in the buffer pointed to by the
+            pszDesc parameter.
+ 
+<i>pszDesc</i>     Points to the buffer that receives the null-terminated string
+            describing the metafile. This descriptive record is the record
+            set by the DevOpenDC function for the metafile. If the buffer is
+            smaller than the record, the function truncates the record.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK or GPI_HITS if the function is successful (it is
+GPI_HITS if the detectable attribute is set for the presentation space and a
+correlation hit occurs). The return value is GPI_ERROR if an error occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following values:
+ 
+     PMERR_INCOMPATIBLE_METAFILE
+     PMERR_INV_ELEMENT_POINTER
+     PMERR_INV_HMF
+     PMERR_INV_HPS
+     PMERR_INV_IN_CURRENT_EDIT_MODE
+     PMERR_INV_LENGTH
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_INV_METAFILE
+     PMERR_INV_MICROPS_ORDER
+     PMERR_INV_OUTSIDE_DRAW_MODE
+     PMERR_INV_PLAY_METAFILE_OPTION
+     PMERR_PROLOG_ERROR
+     PMERR_PS_BUSY
+     PMERR_STOP_DRAW_OCCURRED
+ 
+<b>Comments</b>
+ 
+The GpiPlayMetaFile function uses several options to control how a metafile
+is played. The options are specified in an array passed to the function by
+using the alOptions parameter. The array has at most ten elements, and there
+are eight predefined array indexes that can be used to access these
+elements. The following describes the purpose and possible values for each
+element:
+ 
+<b>Value                Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>PMF_SEGBASE</i>          Specifies a reserved element. It must be zero.
+ 
+<i>PMF_LOADTYPE</i>         Specifies the transformation to use when playing the
+                     metafile. It can be one of the following values:
+ 
+                     Value            Meaning
+                     ───────────────────────────────────────────────────────
+                     LT_DEFAULT       Default; same as LT_NOMODIFY.
+ 
+                     LT_NOMODIFY      Use the current viewing transformation
+                                      as set by the application by using the
+                                      GpiSetViewingTransformMatrix function.
+                                      This is the default action.
+ 
+                     LT_ORIGINALVIEW  Use the viewing transformations
+                                      defined in the metafile.
+ 
+<i>PMF_RESOLVE</i>          Specifies a reserved element. It must be RS_DEFAULT or
+                     RS_NODISCARD.
+ 
+<i>PMF_LCIDS</i>            Specifies whether to use tagged bitmaps and logical
+                     fonts from the metafile or from the application. It can
+                     be one of the following values:
+ 
+                     Value        Meaning
+                     ───────────────────────────────────────────────────────
+                     LC_DEFAULT   Default; same as LC_NOLOAD.
+ 
+                     LC_NOLOAD    Use the tagged bitmaps and logical fonts
+                                  defined by the application. The
+                                  application must define the appropriate
+                                  objects and local identifiers before
+                                  playing the metafile. This is the
+                                  default.
+ 
+                     LC_LOADDISC  Use the tagged bitmaps and logical fonts
+                                  defined in the metafile. The function
+                                  loads the object from the metafile and
+                                  assigns a local identifier. If the local
+                                  identifier is already defined by the
+                                  application, the function deletes the
+                                  identifier before creating the new
+                                  object.
+ 
+<i>PMF_RESET</i>            Specifies whether the presentation space should be
+                     reset before playing the metafile, with the page units
+                     and size being set as defined in the metafile. It can
+                     be one of the following values:
+ 
+                     Value        Meaning
+                     ───────────────────────────────────────────────────────
+                     RES_DEFAULT  Default; same as RES_NORESET.
+ 
+                     RES_NORESET  Does not reset the presentation space.
+ 
+                     RES_RESET    Resets the presentation space. The
+                                  function resets the page units and page
+                                  size to the values specified by the
+                                  metafile. It then sets up default
+                                  transformations, based on page units and
+                                  size, as if the presentation space had
+                                  just been created with these values, and
+                                  modifies the device transformation (if
+                                  necessary) to ensure that the physical
+                                  size of the metafile picture is preserved.
+                                  Finally, it resets the presentation space
+                                  as if calling the GpiResetPS function with
+                                  the GRES_ALL option.
+ 
+<i>PMF_SUPPRESS</i>         Specifies whether to continue playing the metafile
+                     after resetting the presentation space. It can be one
+                     of the following values:
+ 
+                     Value           Meaning
+                     ───────────────────────────────────────────────────────
+                     SUP_DEFAULT     Default; same as SUP_NOSUPPRESS.
+ 
+                     SUP_NOSUPPRESS  Does not suppress the metafile.
+ 
+                     SUP_SUPPRESS    Suppresses the metafile after the
+                                     presentation space is reset as
+                                     specified by the PMF_RESET option. All
+                                     other options are ignored.
+ 
+<i>PMF_COLORTABLES</i>      Specifies whether to use logical color tables from the
+                     metafile or from the application. It can be one of the
+                     following values:
+ 
+                     Value          Meaning
+                     ───────────────────────────────────────────────────────
+                     CTAB_DEFAULT   Default; same as CTAB_NOMODIFY.
+ 
+                     CTAB_NOMODIFY  Uses the logical color table defined by
+                                    the application. This is the default.
+ 
+                     CTAB_REPLACE   Uses the logical color tables implied by
+                                    or given in the metafile. The
+                                    application's existing logical color
+                                    table is overwritten.
+ 
+<i>PMF_COLORREALIZABLE</i>  Specifies whether the logical color tables defined by
+                     the metafile should be realizable. It can be one of the
+                     following values:
+ 
+                     Value           Meaning
+                     ───────────────────────────────────────────────────────
+                     CREA_DEFAULT    Default; same as CREA_NOREALIZE.
+ 
+                     CREA_REALIZE    Creates realizable color tables.
+ 
+                     CREA_NOREALIZE  Does not create realizable color
+                                     tables. This is the default.
+ 
+<i>PMF_PATHBASE</i>         Specifies a reserved element. It must be zero.
+ 
+<i>PMF_RESOLVEPATH</i>      Specifies a reserved element. It must be RSP_DEFAULT or
+                     RSP_NODISCARD.
+ 
+<b>Example</b>
+ 
+This example uses the GpiPlayMetaFile function to play the given metafile.
+The function uses all the default actions for playing the metafile.
+ 
+HMF hmf;
+LONG cSegments;
+CHAR szBuffer[80];
+ 
+hmf = GpiLoadMetaFile(hab, "sample.met");
+GpiPlayMetaFile(hps, hmf, 0L, (PLONG) NULL, &amp;cSegments, 80L, szBuffer);
+ 
+<b>See Also</b>
+ 
+<b>DevCloseDC, DevOpenDC, GpiCreateLogColorTable, GpiCreateLogFont,</b>
+<b>GpiLoadMetaFile, GpiResetPS, GpiSetDrawingMode,</b>
+<b>GpiSetViewingTransformMatrix, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

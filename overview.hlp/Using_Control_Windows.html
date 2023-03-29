@@ -1,0 +1,107 @@
+<html>
+
+<head>
+<title>Using Control Windows (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Control Windows (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Control_Windows.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#control window messages'>Message Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Control Classes'>Control Classes</a><span class='grhilite'>►</span>   <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Cursors.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                           Using Control Windows
+ 
+Control windows can be used in dialog windows and standard-frame or client
+windows.
+ 
+To use a control window in a dialog window, an application defines the
+control. A dialog template typically includes several control windows as
+part of the dialog template in its resource file. Then, when the dialog
+resource is loaded and displayed, control windows are automatically
+displayed as part of the dialog window. The application can then send
+messages to the control window to change its state. The dialog-window
+procedure defined by an application receives notification messages from the
+control window. The nature of these messages depends on the specific type of
+control window.
+ 
+To use a control window in a non-dialog window, an application must call the
+<b>WinCreateWindow</b> function using the appropriate window-class specification.
+An application usually specifies one of its client windows as the owner of
+the control window. Therefore, the client-window procedure receives
+notification messages from the control window. In some cases where a control
+is owned by the frame window (such as a menu control), the notification
+messages to the frame are passed on to the client window.
+ 
+<b>Creating a Custom Control Window</b>
+ 
+MS OS/2 provides several predefined control-window classes. You can create
+custom-control windows to fit specific purposes in the an application by
+doing the following:
+ 
+♦  Using the user-drawn buttons, list boxes, and menus
+ 
+♦  Subclassing an existing control-window class
+ 
+♦  Registering and implementing a window class from scratch
+ 
+Buttons, list boxes, and menus have an optional style designation that marks
+them as "user-drawn." This means that the owner window of the control with
+this style receives a message whenever the control must be drawn. (If the
+owner window is a frame window, it sends owner-drawn messages to its client
+windows, which should be handled by the client-window procedure.) This
+allows you to alter the appearance of a control window. For buttons, the
+owner-drawn style affects the drawing of the entire control. For menus and
+list boxes, the owner draws the individual items within the control, and the
+system draws the external outline of the control.
+ 
+Subclassing an existing control window is an easy way to make custom
+controls. When you subclass an existing control window, you only alter those
+behaviors you want to change, letting all other messages through to the
+original control-window procedure.
+ 
+The techniques for defining a custom control window are the same as those
+used in creating a client-window class. However, if you are creating your
+own custom-control window class, be sure it can send and receive
+"Control-window messages."
+ 
+If you create a custom control-window class by subclassing a control class
+or by creating a window class from scratch, you can use its class name in
+the dialog template just like a predefined window-class constant. For
+example, if you define and register a window class called "MyControlClass"
+in an application, you can define a dialog window containing a control
+window using the following resource definition:
+ 
+DLGTEMPLATE IDD_CUSTOM_TEST
+BEGIN
+    DIALOG "", IDD_CUSTOM_TEST, 1, 1, 126, 130, FS_DLGBORDER, 0
+    BEGIN
+        CONTROL "This is Text", IDD_TITLE,
+                 37, 107, 56, 12,
+                 WC_STATIC,
+                 SS_TEXT | DT_CENTER | DT_TOP | DT_WORDBREAK
+                 | WS_VISIBLE
+        CONTROL "Custom Control", IDD_CUSTOM,
+                 33, 68, 64, 13,
+                "MyControlClass",
+                WS_VISIBLE
+        CONTROL "Okay", DID_OK,
+                57, 10, 24, 14,
+                WC_BUTTON,
+                BS_PUSHBUTTON | BS_DEFAULT | WS_TABSTOP | WS_VISIBLE
+    END
+END
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,269 @@
+<html>
+
+<head>
+<title>GpiBitBlt (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiBitBlt (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Bitmap_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Bitmaps 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiBox.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIBITMAPS
+ 
+LONG GpiBitBlt(hpsTarg, hpsSrc, cPoints, aptl, lRop, flOptions)
+HPS hpsTarg;        /* target presentation-space handle */
+HPS hpsSrc;         /* source presentation-space handle */
+LONG cPoints;       /* number of points in array        */
+PPOINTL aptl;       /* address of array                 */
+LONG lRop;          /* mixing method                    */
+ULONG flOptions;    /* line/column-compression flag     */
+ 
+The GpiBitBlt function copies a bitmap from one presentation space to
+another. It can also modify the bitmap within a rectangle in a presentation
+space. The exact operation carried out by GpiBitBlt depends on the raster
+operation specified by the lRop parameter.
+ 
+If lRop directs GpiBitBlt to copy a bitmap, the function copies the bitmap
+from a source presentation space specified by hpsSrc to a target
+presentation space specified by hpsTarg. Each presentation space must be
+associated with a device context for the display, for memory, or for some
+other suitable raster device. The target and source presentation spaces can
+be the same if desired. The aptl parameter points to an array of points that
+specify the corners of a rectangle containing the bitmap in the source
+presentation space as well as the corners of the rectangle in the target
+presentation space to receive the bitmap. If the source and target
+rectangles are not the same, GpiBitBlt stretches or compresses the bitmap to
+fit the target rectangle.
+ 
+If lRop directs GpiBitBlt to modify a bitmap, the function uses the raster
+operation to determine how to alter the bits in a rectangle in the target
+presentation space. Raster operations include changes such as inverting
+target bits, replacing target bits with pattern bits, and mixing target and
+pattern bits to create new colors. For some raster operations, the function
+mixes the bits of a bitmap from a source presentation space with the target
+and/or pattern bits.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hpsTarg</i>    Identifies the target presentation space.
+ 
+<i>hpsSrc</i>     Identifies the source presentation space.
+ 
+<i>cPoints    Specifies </i>the number of points pointed to by the aptl parameter.
+           It may be one of the following values:
+ 
+           Value  Meaning
+           ─────────────────────────────────────────────────────────────────
+           2      The points specify the lower-left and upper-right corners
+                  of the target rectangle. If 2 is given, the raster
+                  operation specified by the lRop parameter must not include
+                  a source.
+ 
+           3      The points specify the lower-left and upper-right corners
+                  of the target rectangle, and the lower-left corner of the
+                  source rectangle. The upper-right corner of the source
+                  rectangle is computed such that the target and source
+                  rectangles have equal width and height. Any raster
+                  operation may be used. If the operation does not include a
+                  source, the third point is ignored.
+ 
+           4      The points specify the lower-left and upper-right corners
+                  of the target and the source rectangles. If the rectangles
+                  do not have equal width and height, the source bitmap is
+                  stretched or compressed to fit the target rectangle.
+                  GpiBitBlt uses the flOptions parameter to determine how
+                  the bitmap should be compressed. If the raster operation
+                  does not include a source, the source coordinates are
+                  ignored.
+ 
+<i>aptl       P</i>oints to an array of POINTL structures containing the number of
+           points specified in the cPoints parameter. The points must be
+           given in the following order:
+ 
+           Element index  Coordinate
+           ─────────────────────────────────────────────────────────────────
+           0              Specifies the lower-left corner of the target
+                          rectangle.
+ 
+           1              Specifies the upper-right corner of the target
+                          rectangle.
+ 
+           2              Specifies the lower-left corner of the source
+                          rectangle.
+ 
+           3              Specifies the upper-right corner of the source
+                          rectangle.
+ 
+           All points must be in device coordinates.
+ 
+<i>lRop</i>       Specifies the raster operation for the function. It can be any
+           value in the range 0 through 255 or one of the following values,
+           which represent common raster operations:
+ 
+           Value            Meaning
+           ─────────────────────────────────────────────────────────────────
+           ROP_DSTINVERT    Inverts the target.
+ 
+           ROP_MERGECOPY    Combines the source and the pattern using the
+                            bitwise AND operator.
+ 
+           ROP_MERGEPAINT   Combines the inverse of the source and the
+                            target using the bitwise OR operator.
+ 
+           ROP_NOTSRCCOPY   Copies the inverse of the source to the target.
+ 
+           ROP_NOTSRCERASE  Combines the inverse of the source and the
+                            inverse of the target bitmaps using the bitwise
+                            AND operator.
+ 
+           ROP_ONE          Sets all target pels to 1.
+ 
+           ROP_PATCOPY      Copies the pattern to the target.
+ 
+           ROP_PATINVERT    Combines the target and the pattern using the
+                            bitwise exclusive XOR operator.
+ 
+           ROP_PATPAINT     Combines the inverse of the source, the pattern,
+                            and target using the bitwise OR operator.
+ 
+           ROP_SRCAND       Combines the source and target bitmaps using the
+                            bitwise AND operator.
+ 
+           ROP_SRCCOPY      Copies the source bitmap to the target.
+ 
+           ROP_SRCERASE     Combines the source and the inverse of the
+                            target bitmaps using the bitwise AND operator.
+ 
+           ROP_SRCINVERT    Combines the source and target bitmaps using the
+                            bitwise exclusive OR operator.
+ 
+           ROP_SRCPAINT     Combines the source and target bitmaps using the
+                            bitwise OR operator.
+ 
+           ROP_ZERO         Sets all target pels to 0.
+ 
+<i>flOptions</i>  Specifies how to compress a bitmap if the target rectangle is
+           smaller than the source. It can be one of the following values:
+ 
+           Value       Meaning
+           ─────────────────────────────────────────────────────────────────
+           BBO_AND     Compresses two rows or columns into one by combining
+                       them with the bitwise AND operator. This value is
+                       useful for compressing bitmaps
+ 
+           BBO_IGNORE  Compresses two rows or columns by throwing one out.
+                       This value is useful for compressing color bitmaps.
+                       that have black images on a white background.
+ 
+           BBO_OR      Compresses two rows or columns into one by combining
+                       them with the bitwise OR operator. This value is the
+                       default and is useful for compressing bitmaps that
+                       have white images on a black background.
+ 
+           All values in the range 0x0100 through 0xFF00 are reserved for
+           privately supported modes for particular devices.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_BASE_ERROR
+     PMERR_BITBLT_LENGTH_EXCEEDED
+     PMERR_BITMAP_NOT_SELECTED
+     PMERR_INCOMPATIBLE_BITMAP
+     PMERR_INCORRECT_DC_TYPE
+     PMERR_INV_BITBLT_MIX
+     PMERR_INV_BITBLT_STYLE
+     PMERR_INV_COORDINATE
+     PMERR_INV_DC_TYPE
+     PMERR_INV_HBITMAP
+     PMERR_INV_HDC
+     PMERR_INV_HPS
+     PMERR_INV_IN_AREA
+     PMERR_INV_IN_PATH
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_NO_BITMAP_SELECTED
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+The source and target presentation spaces may be associated with any device
+context having raster capabilities. Some raster devices, such as banded
+printers, can receive bitmaps but cannot supply them. These devices cannot
+be used as a source.
+ 
+<b>GpiBitBlt</b> does not affect the pels in the upper and right boundaries of the
+target rectangle. This means the function draws up to but does not include
+those pels.
+ 
+If lRop includes a pattern, GpiBitBlt uses the current area color, area
+background color, pattern set, and pattern symbol of the target presentation
+space. Although the function may stretch or compress the bitmap, it never
+stretches or compresses the pattern.
+ 
+If the target and source presentation spaces are associated with device
+contexts that have different color formats, GpiBitBlt converts the bitmap
+color format as it copies the bitmap. This applies to bitmaps copied to or
+from a device context having a monochrome format. To convert a monochrome
+bitmap to a color bitmap, GpiBitBlt converts 1 pels to the target's
+foreground color, and 0 pels to the current area background color. To
+convert a color bitmap to a monochrome bitmap, GpiBitBlt converts pels with
+the source's background color to the target's background color, and all
+other pels to the target's foreground color.
+ 
+The bitmap associated with a source presentation space is always a finite
+size. Although GpiBitBlt will copy a bitmap when given a source rectangle
+that is larger than the source bitmap or extends past the boundaries of the
+source bitmap, any pels not associated with the source bitmap are
+undefined.
+ 
+<b>Example</b>
+ 
+This example uses GpiBitBlt to copy and compress a bitmap in a presentation
+space. The function copies the bitmap that is 100 pels wide and 100 pels
+high into a 50-by-50-pel rectangle at the location (300,400). Since the
+raster operation is ROP_SRCCOPY, GpiBitBlt replaces the image previously in
+the target rectangle. The function compresses the bitmap to fit the new
+rectangle by discarding extra rows and columns as specified by the
+BBO_IGNORE option.
+ 
+HPS hps;
+POINTL aptl[4] = {
+    300, 400,         /* lower-left corner of target    */
+    350, 450,         /* upper-right corner of target   */
+    0, 0,             /* lower-left corner of source    */
+    100, 100 };       /* upper-right corner of source   */
+ 
+GpiBitBlt(hps,        /* target presentation space      */
+    hps,              /* source presentation space      */
+    4L,               /* four points needed to compress */
+    aptl,             /* points to source and target    */
+    ROP_SRCCOPY,      /* copy source replacing target   */
+    BBO_IGNORE);      /* discard extra rows and columns */
+ 
+<b>See Also</b>
+ 
+<b>DevOpenDC, GpiCreateBitmap, GpiLoadBitmap, GpiSetBitmap,</b>
+<b>GpiSetBitmapDimension, GpiSetBitmapId, GpiWCBitBlt, WinGetLastError, POINTL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

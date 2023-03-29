@@ -1,0 +1,102 @@
+<html>
+
+<head>
+<title>GpiQueryElementType (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiQueryElementType (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='retained_graphics.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiQueryFontFileDescriptions.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPISEGEDITING
+ 
+LONG GpiQueryElementType(hps, plType, cbDesc, pszDesc)
+HPS hps;         /* presentation-space handle         */
+PLONG plType;    /* address of variable for type      */
+LONG cbDesc;     /* length in bytes of buffer         */
+PSZ pszDesc;     /* address of buffer for description */
+ 
+The GpiQueryElementType function retrieves the type and description for an
+element in current open segment. It also returns the size in bytes of the
+element. The element pointer must point to the element to retrieve. The
+function copies the type to the variable pointed to by the plType parameter,
+and copies the description, up to the number of bytes specified by cbDesc,
+to the buffer pointed to by the pszDesc parameter.
+ 
+The function can be used only in an open segment and only when the drawing
+mode is DM_RETAIN. It cannot be used in an element bracket.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>plType</i>     Points to the variable that receives the element type.
+ 
+<i>cbDesc</i>     Specifies the maximum number of bytes of description to copy to
+           the buffer specified by the pszDesc parameter.
+ 
+<i>pszDesc</i>    Points to the buffer that receives the description, a
+           null-terminated string, for the element. The buffer must have the
+           number of bytes specified by cbDesc. If the description is longer
+           than the buffer, it is truncated.
+ 
+<b>Return Value</b>
+ 
+The return value is the size of the data required to hold the element if the
+function is successful or GPI_ALTERROR if an error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_IN_ELEMENT
+     PMERR_INV_LENGTH
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_NO_CURRENT_ELEMENT
+     PMERR_NOT_IN_RETAIN_MODE
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiQueryElementType function to retrieve the size of
+the current element. The size is used to retrieve the graphics-order data in
+the element.
+ 
+BYTE abElement[512];
+LONG cbElement;
+LONG lType;
+ 
+/* move pointer to first element in segment */
+ 
+GpiSetElementPointer(hps, 1L);
+cbElement = GpiQueryElementType(
+    hps,             /* presentation space             */
+    &amp;lType,          /* variable to receive type       */
+    0L,              /* copy zero bytes of description */
+    (PSZ) NULL);     /* no buffer for description      */
+ 
+GpiQueryElement(hps, 0L, cbElement, abElement);
+ 
+<b>See Also</b>
+ 
+<b>GpiBeginElement, GpiElement, GpiQueryElement, GpiQueryElementPointer,</b>
+<b>WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

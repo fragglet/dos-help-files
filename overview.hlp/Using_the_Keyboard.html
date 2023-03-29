@@ -1,0 +1,248 @@
+<html>
+
+<head>
+<title>Using the Keyboard (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using the Keyboard (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Keyboard.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#KBD'>Function Group</a><span class='grhilite'>►</span>                     <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='memory_manager.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                             Using the Keyboard
+ 
+Since keyboard input for Presentation Manager applications is provided
+automatically through the message queue, only non-Presentation Manager
+programs use the MS OS/2 keyboard functions. Typically, you use the keyboard
+functions in character-based programs that need as much information as
+possible about each keystroke the user makes. The following sections explain
+how to use the keyboard functions.
+ 
+<b>Reading Keystrokes</b>
+ 
+You can read keystrokes from the keyboard at any time by using the
+<b>KbdCharIn</b> function. Keystroke data includes not only the character value of
+the key pressed but also the scan code, the state of the shift keys (SHIFT,
+CTRL, ALT, NUMLOCK, CAPSLOCK, SCROLL LOCK, INS, SYSREQ), and the system time
+when the key was pressed. KbdCharIn is typically used to process keys that
+the DosRead function cannot read, such as ARROW keys, but it can also be
+used to read any key.
+ 
+When the user presses a key, MS OS/2 copies the keystroke information, in
+the form of a KBDKEYINFO structure, to the keyboard-input buffer. The
+<b>KbdCharIn</b> function removes the keystroke from the input buffer as it copies
+the information to the specified structure. The following code fragment
+reads a keystroke from the keyboard:
+ 
+KBDKEYINFO kbci;
+ 
+KbdCharIn(&amp;kbci,     /* copies keystroke info. to this structure */
+    IO_WAIT,         /* waits until user presses a key           */
+    0);              /* reads from the physical keyboard         */
+ 
+if (kbci.chChar == 'A')                 /* is it the letter 'A'? */
+ 
+In this example, the function reads from the default physical keyboard
+(handle 0) and waits for a keystroke if none is in the input buffer.
+Keyboard functions, like file functions, require a handle to identify the
+keyboard to be accessed. The physical keyboard is always available to
+programs and does not have to be opened to be used. Keyboard handle 0 and
+standard-input handle 0 are not the same. The standard-input file can be
+closed or redefined, but the handle to the physical keyboard cannot.
+ 
+You can use the IO_WAIT constant to direct KbdCharIn to wait for a keystroke
+if there are no keystrokes in the buffer. You can use the IO_NOWAIT constant
+to direct the function to return immediately, even if there is no
+keystroke.
+ 
+You can use the KbdPeek function to look at the next character in the buffer
+without removing it.
+ 
+<b>Reading Extended ASCII Keys</b>
+ 
+Not all keystrokes have corresponding character values. Some keys, such as
+the ARROW keys, generate extended ASCII values. An extended ASCII value is a
+2-byte value in which the first byte is either zero or 0xE0 and the second
+byte is the scan code of the key.
+ 
+To identify a ARROW key, you must check both the chChar and chScan fields of
+the KBDKEYINFO structure. The following sample program searches for ARROW
+keys by reading keystrokes from the keyboard:
+ 
+#define INCL_SUB
+#include &lt;os2.h&gt;
+ 
+VOID cdecl main()
+{
+    CHAR ch;
+    KBDKEYINFO kbci;
+    USHORT usCol = 40, usRow = 13;
+ 
+    ch = ' ';
+    VioWrtNChar(&amp;ch, 2000, 0, 0, 0);
+    ch = 'A';
+    do {
+        VioWrtNChar(&amp;ch, 1, usRow, usCol, 0);
+ 
+        KbdCharIn(&amp;kbci, IO_WAIT, 0);
+ 
+        if (kbci.chChar == 0) {  /* is it extended ASCII? */
+            switch (kbci.chScan) {
+                case 80:                     /* down  */
+                    if (usRow &lt; 24) usRow++;
+                    break;
+                case 72:                     /* up    */
+                    if (usRow &gt; 0) usRow--;
+                    break;
+                case 77:                     /* right */
+                    if (usCol &lt; 79) usCol++;
+                    break;
+                case 75:                     /* left  */
+                    if (usCol &gt; 0) usCol--;
+                    break;
+            }
+        }
+    } while (kbci.chChar != 'q');
+}
+ 
+This program updates the usRow and usCol variables by looking for the UP,
+DOWN, LEFT, and RIGHT ARROW keys from the keyboard. Before reading from the
+keyboard, the program writes the letter A to the location specified by the
+current usRow and usCol values. This means that the user can use the ARROW
+keys to leave a trail of As on the screen. The program continues to loop
+until the user presses the Q key.
+ 
+<b>Reading a String of Characters from the Keyboard</b>
+ 
+You can read a string of characters from the keyboard by using the
+<b>KbdStringIn</b> function. Using this function is similar to reading input from
+the keyboard by using the DosRead function and the standard-input file.
+ 
+The KbdStringIn function, unlike the KbdCharIn function, echoes characters
+as you type them, so there is no need to write the characters separately.
+The function reads the specified number of characters or reads up to the
+end-of-line (turnaround) character. The following code fragment reads a line
+of text:
+ 
+CHAR achBuf[80];
+STRINGINBUF kbsi;
+ 
+kbsi.cb = 80;
+ 
+KbdStringIn(achBuf, &amp;kbsi, IO_WAIT, 0);
+ 
+The KbdStringIn function records the number of characters read in the cchIn
+field in the STRINGINBUF structure. You can use this field to enable or
+disable the MS OS/2 editing keys for your program. These editing keys let
+the user recall and modify the previously typed line. If you set the cchIn
+field to zero before making the next call to KbdStringIn, you disable the
+editing keys. Otherwise, you enable editing up to the number of characters
+that you specify.
+ 
+<b>Opening and Using Logical Keyboards</b>
+ 
+The keyboard, like the mouse, is a shared resource to which all programs in
+a screen group have access. To avoid conflicts between programs sharing the
+keyboard, MS OS/2 lets programs open and use logical keyboards. A logical
+keyboard is like a file in that it has a handle and corresponds to a
+physical device, the physical keyboard. However, a program cannot receive
+input from a logical keyboard (as it can from a file) unless it has
+requested and received the keyboard focus for the logical keyboard. Since
+only one logical keyboard in a screen group can have the focus at any given
+time, this is an effective way to manage the keyboard access of all programs
+in the screen group.
+ 
+A typical use of a logical keyboard is in a program that has more than one
+thread reading keystrokes. By having each thread create a logical keyboard
+and then wait for the focus before reading keystrokes, you can ensure that
+one thread does not read keystrokes that are intended for another thread.
+Consider an editing program that offers multiple windows through which you
+can edit a file or files. If each window has a separate logical keyboard,
+then keyboard input intended for one window will never be inadvertently read
+by another.
+ 
+You can open a logical keyboard by using the KbdOpen function. Once opened,
+a logical keyboard receives keystrokes only when it has the keyboard focus.
+You can retrieve the focus for a logical keyboard by using the KbdGetFocus
+function. This function retrieves the focus only if no other logical
+keyboard has it. You can request the function to wait for the focus to be
+freed, if it is not immediately available.
+ 
+The following code fragment opens a logical keyboard and requests the
+keyboard focus for it:
+ 
+HKBD hkbd;
+ 
+KbdOpen(&amp;hkbd);
+ 
+KbdGetFocus(IO_WAIT, hkbd); /* retrieve focus; wait if necessary */
+  .
+  . /* read from the keyboard */
+  .
+KbdFreeFocus(hkbd);                             /* release focus */
+ 
+Once a logical keyboard has the focus, it keeps it until you free the focus
+by using the KbdFreeFocus function, even if another thread calls the
+<b>KbdGetFocus</b> function. This means that you must be careful to free the focus
+when you no longer need it. Even if you intend to read from the logical
+keyboard again, you must free the focus in the meantime, in order to permit
+other programs to access it. The logical keyboard remains open even if it
+does not have the focus, so you can request the focus again without
+reopening the keyboard.
+ 
+If you have completely finished reading from the keyboard or are about to
+terminate the program, you can use the KbdClose function to close the
+logical keyboard.
+ 
+Even though your program may use logical keyboards, the physical keyboard is
+always available. That is, even if a logical keyboard has the focus, you can
+still read keystrokes from the physical keyboard by using keyboard handle
+0.
+ 
+<b>Flushing the Keyboard Buffer</b>
+ 
+You can flush unwanted keystrokes from the keyboard buffer by using the
+<b>KbdFlushBuffer</b> function. Flushing the buffer removes all existing keystrokes
+in the buffer. You would typically flush the physical keyboard's buffer if
+you did not want to process keystrokes that were carried over from a
+previous program.
+ 
+<b>Setting the Keyboard-Input Mode</b>
+ 
+You can set the keyboard-input mode by using the KbdSetStatus function. The
+keyboard-input mode defines whether the MS OS/2 control and editing keys are
+interpreted as special keys or only as keystrokes. The keyboard-input mode
+can be binary or ASCII. If it is binary, then only the key combination
+CTRL+BREAK is recognized by the system as a special key. All other keys and
+key combinations are read as keystrokes. If the input mode is ASCII, the
+system recognizes the special keys.
+ 
+You can set the input mode by first retrieving the current keyboard status
+in a KBDINFO structure and then setting the binary-mode constant in the
+<b>fsMask</b> field. The following code fragment sets the keyboard to binary mode:
+ 
+KBDINFO kbst;
+ 
+KbdGetStatus(&amp;kbst, 0);
+kbst.fsMask =
+    (kbst.fsMask &amp; ~KEYBOARD_ASCII_MODE)     /* mask off ascii mode */
+    | KEYBOARD_BINARY_MODE;                  /* OR in binary mode   */
+KbdSetStatus(&amp;kbst, 0);
+ 
+This example makes no assumptions about the keyboard status; it clears the
+ASCII-mode constant and then sets the binary-mode constant.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

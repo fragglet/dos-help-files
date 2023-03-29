@@ -1,0 +1,443 @@
+<html>
+
+<head>
+<title>Using List-Box Controls (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using List-Box Controls (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='List_Box_controls.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#list box messages'>Message Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#list box styles'>Styles</a><span class='grhilite'>►</span>            <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Menus.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                          Using List-Box Controls
+ 
+An application uses a list-box control to display a list in a window. List
+boxes can be displayed in standard application windows, although they are
+more commonly used in dialog windows. Either way, notification messages are
+sent from the list box to the owner window, allowing the application to
+respond to user actions in the list. In practice, if a list box is owned by
+a dialog window, messages are handled in dialog-window procedures. If the
+list box is owned by a client window, notification messages are handled in
+the client-window procedure.
+ 
+Once a list box is created, the application controls inserting and deleting
+list items. Items can be inserted at the end of the list, automatically
+sorted into the list, or inserted at a specified index position.
+Applications can turn list drawing on and off to speed up the process of
+inserting numerous items into a list.
+ 
+The window procedure of the owner window of the list box receives messages
+when a user manipulates the list-box data. Most default list actions (for
+example, highlighting selections and scrolling) are handled automatically by
+the list box itself. The application controls the responses when the user
+chooses an item in the list, either by double-clicking the item or pressing
+ENTER after an item is highlighted. The application is also notified
+whenever the selection changes or when the list is scrolled.
+ 
+Normally, list items are text strings drawn by a list box. An application
+can also draw and highlight the items in a list. This allows customized
+lists containing graphics or special fonts to be created. When an
+application creates a list box with the LS_OWNERDRAW style, the owner of the
+list box receives a WM_DRAWITEM message for each item that should be drawn
+or highlighted. This is similar to the owner-drawn style for menus, but
+unlike menus, the owner-drawn style applies to the entire list rather than
+to individual items.
+ 
+<b>Creating a List-Box Window</b>
+ 
+List boxes are WC_LISTBOX class windows and are predefined by the system.
+Applications can create list boxes by calling the WinCreateWindow function,
+using WC_LISTBOX as the window-class parameter.
+ 
+A list box passes notification messages to its owner window, so an
+application uses its client window, rather than the frame window, as the
+owner of the list. The client-window procedure receives the messages sent
+from the list box.
+ 
+For example, to create a list box that completely fills the client area of a
+frame window, an application would make the client window the owner and
+parent of the list-box window and make the list-box window the same size as
+the client window. This is shown in the following code fragment:
+ 
+/* How big is the client window? */
+ 
+WinQueryWindowRect(hwndClient, &amp;rect);
+ 
+/* Make a list-box window. */
+ 
+hwndList = WinCreateWindow(hwndClient,    /* parent       */
+    WC_LISTBOX,                           /* class        */
+    "",                                   /* name         */
+    WS_VISIBLE | LS_NOADJUSTPOS,          /* style        */
+    0, 0,                                 /* x, y         */
+    rect.xRight, rect.yTop,               /* cx, cy       */
+    hwndClient,                           /* owner        */
+    HWND_TOP,                             /* behind       */
+    ID_LISTWINDOW,                        /* ID           */
+    NULL,                                 /* control data */
+    NULL);                                /* parameters   */
+ 
+Because the list box draws its own border and a frame-window border already
+surrounds the client area of a frame window (because of the adjacent frame
+controls), the effect is a double-thick border around the list box. To
+change this, call the WinInflateRect function to overlap the list-box border
+with the surrounding frame-window border. This results in one list-box
+border.
+ 
+Notice that the code specifies the list-box window style LS_NOADJUSTPOS.
+This ensures that the list box is created in exactly the size specified. If
+the LS_NOADJUSTPOS style is not specified, the list-box height is rounded
+down, if necessary, to make it a multiple of the item height. Allowing a
+list box to automatically adjust its height is useful for preventing partial
+items from being displayed at the bottom of a list box.
+ 
+<b>List Boxes in Dialog Windows</b>
+ 
+List boxes are most commonly used in dialog windows. A list box in a dialog
+box is a control window, like a push button or an entry field. Typically,
+the application defines a list box as one item in a dialog template in the
+resource-definition file, as shown in the following Resource Compiler
+source-code fragment:
+ 
+DLGTEMPLATE IDD_OPEN
+BEGIN
+   DIALOG "Open...", IDD_OPEN, 35, 35, 150, 135,
+            FS_DLGBORDER, FCF_TITLEBAR
+      BEGIN
+          LISTBOX        IDD_FILELIST, 15, 15, 90, 90
+          PUSHBUTTON     "Drive", IDD_DRIVEBUTTON, 115, 70, 30, 14
+          DEFPUSHBUTTON  "Open", IDD_OPENBUTTON, 115, 40, 30, 14
+          PUSHBUTTON     "Cancel", IDD_CANCELBUTTON, 115, 15, 30, 14
+      END
+END
+ 
+Once the dialog resource is defined, the application loads and displays the
+dialog box as it normally would. The application should insert items into
+the list when processing the WM_INITDLG message. The dialog-window procedure
+gets the window handle for the list box by calling the WinWindowFromID
+function using the list-box ID given in the dialog template. The following
+code fragment from a dialog-window procedure illustrates this:
+ 
+case WM_INITDLG:
+    hwndList = WinWindowFromID(hwndDialog, IDD_FILELIST);
+        .
+        . /* Now use hwndList to send LM_INSERTITEM messages. */
+        .
+    return 0L;
+ 
+It is very common for a dialog window with a list box to have an OK button.
+The user may select items in the list and then indicate a final selection by
+double-clicking, pressing ENTER, or clicking the OK button. When the
+dialog-window procedure receives a message that the user has clicked the OK
+button, it should query the list box to determine the current selection (or
+selections if the list allows multiple selections) and then respond as if it
+received a WM_CONTROL message with the LN_ENTER notification code.
+ 
+<b>Adding and Deleting an Item in a List Box</b>
+ 
+Applications can add or delete items in a list box by sending LM_INSERTITEM
+and LM_DELETEITEM messages to the list-box window. Items in a list are
+specified with a zero-based index (beginning at the top of the list). A new
+list is always created empty. The application must initialize the list by
+inserting items.
+ 
+The application specifies the text and position for each new item. It can
+specify an absolute-position index or one of the following predefined index
+values:
+ 
+<b>Value               Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>LIT_END</i>             Insert item at end of list.
+ 
+<i>LIT_SORTASCENDING</i>   Insert item alphabetically ascending into list.
+ 
+<i>LIT_SORTDESCENDING</i>  Insert item alphabetically descending into list.
+ 
+The application must send an LM_DELETEITEM message and supply the absolute
+index position of the item when deleting items from a list. The
+<b>LM_DELETEALL</b> message deletes all items in a list.
+ 
+One way an application can speed up the process of inserting list items is
+to suspend drawing in the list while inserting items. The list is redrawn
+after the insertion process is finished. This is a particularly valuable
+approach when using a sorted insertion process, when inserting one item can
+cause rearrangement of the entire list. List drawing is turned off by
+calling the WinEnableWindowUpdate function with FALSE for the enable
+parameter, and then calling the WinShowWindow function. This forces a
+complete update when insertion is complete. The following code fragment
+illustrates this concept:
+ 
+/* Disable updates while filling the list. */
+ 
+WinEnableWindowUpdate(hwndFileList, FALSE);
+    .
+    . /* Send LM_INSERTITEM messages to insert all new items. */
+    .
+ 
+/* Now cause the window to update and show the new information. */
+ 
+WinShowWindow(hwndFileList, TRUE);
+ 
+Note that this optimization is not necessary if adding list items when
+processing a WM_INITDLG message because the list box is not visible and the
+list-box routines are internally optimized.
+ 
+<b>Responding to a User Selection in a List Box</b>
+ 
+The primary notification an application receives when a user chooses an item
+in a list is a WM_CONTROL message with the LN_ENTER control code sent to the
+owner window of the list. The owner window is an application client window
+or a dialog window. Within the window procedure for the owner window, the
+application responds to the LN_ENTER control code by querying the list box
+for the current selection (or selections, in the case of an LS_MULTIPLESEL
+list box).
+ 
+The LN_ENTER control code notifies the application that the user has
+selected a list item. A WM_CONTROL message with an LN_SELECT control code is
+sent to the list-box owner whenever a selection in a list changes, such as
+when a user moves the mouse pointer up and down a list while pressing the
+mouse button. In this case, items are selected but not yet chosen. An
+application may ignore LN_SELECT control codes when the selection changes,
+responding only when the item is actually chosen. An application might use
+the LN_SELECT control code to display context-dependent information that
+changes rapidly with each selection made by the user.
+ 
+<b>Handling Multiple Selections</b>
+ 
+When a list box has the style LS_MULTIPLESEL, more than one item may be
+selected at a time. An application must use different strategies when
+working with this type of list. For example, when responding to an LN_ENTER
+control code, it is not sufficient to send a single LM_QUERYSELECTION
+message because that message will find only the first selection. To find all
+current selections, an application should continue sending
+<b>LM_QUERYSELECTION</b> messages, using the return index of the previous message
+as the starting index of the next message, until no items are returned.
+ 
+<b>Owner-Drawn List Items</b>
+ 
+To draw its own list items, an application must create a list that has the
+style LS_OWNERDRAW. The owner window of the list box must respond to the
+<b>WM_MEASUREITEM and WM_DRAWITEM messages.</b>
+ 
+When the owner window receives a WM_MEASUREITEM message, it must return the
+height of the list item. All items in a list must have the same height
+(greater than or equal to 1). The WM_MEASUREITEM message is sent when the
+list box is created, and every time an item is added. You can change the
+item height by sending an LM_SETITEMHEIGHT message to the list-box window.
+ 
+The owner window receives a WM_DRAWITEM message whenever an item in an
+owner-drawn list should be drawn or highlighted. The owner window returns
+FALSE if the list box must draw the text of the item. The owner window
+returns TRUE if it actually draws the item. This tells the list box not to
+draw the item. This is useful if the owner window alters the appearance of
+certain items, allowing other items to be drawn by the list box.
+ 
+Although it is quite common for an owner-drawn list to draw items, it is
+less common to override the system-default method of highlighting. (The
+system-default highlighting method inverts the rectangle that contains the
+item.) Do not create your own highlighting unless the system-default method
+is unacceptable to you.
+ 
+The WM_DRAWITEM message contains a pointer to an OWNERITEM data structure.
+The OWNERITEM data structure contains the window ID for the list box, a
+presentation-space handle, a bounding rectangle for the item, the position
+index for the item, and the application-defined item handle. This structure
+also contains two fields that determine if a message draws, highlights, or
+removes the highlighting from an item.
+ 
+When the item must be drawn, the owner window receives a WM_DRAWITEM message
+with the fsState field set differently than the fsStateOld field. If the
+owner window draws the item in response to this message, it returns TRUE,
+telling the system not to draw the item. If the owner window returns FALSE,
+the system draws the item using the default list-item drawing method.
+ 
+You can get the text of a list item by sending an LM_QUERYITEMTEXT message
+to the list-box window. You should draw the item using the hps and rclItem
+arguments provided in the OWNERITEM structure.
+ 
+If the item being drawn is currently selected, then the fsState and
+<b>fsStateOld</b> fields will both be TRUE; they will both be FALSE if the item is
+not currently selected. The window receiving a WM_DRAWITEM message can use
+this information to highlight the selected item at the same time it draws
+the item. If the owner window highlights the item, it should leave the
+<b>fsState and fsStateOl</b>d fields equal to each other. If the system provides
+default highlighting for the item (by inverting the item rectangle), the
+owner window should set the fsState field to 1 and the fsStateOld field to 0
+before returning from the WM_DRAWITEM message.
+ 
+The owner window also receives a WM_DRAWITEM message when the highlight
+state of a list item changes. For example, when a user clicks an item, the
+highlighting must be removed from the currently selected item and the new
+selection must be highlighted. If these items are owner-drawn, then the
+owner window receives one WM_DRAWITEM message for each unhighlighted item
+and one message for the newly highlighted item. To highlight an item, the
+<b>fsState field must eq</b>ual TRUE and the fsStateOld field must equal FALSE. In
+this case, the application should highlight the item and return the fsState
+and fsStateOld fields equal to FALSE. This tells the system not to highlight
+the item. The application can also return the fsState and fsStateOld fields
+with two different values (not equal) and the list box will highlight the
+item (the default).
+ 
+To remove highlighting from an item, the fsState field must equal FALSE and
+the fsStateOld field must equal TRUE. An application can remove the
+highlighting and return both the fsState and fsStateOld fields as FALSE, or
+it can return the fsState field with a value that is not equal to the
+<b>fsStateOld</b> field and the system will remove the highlighting (the default).
+ 
+The following code fragment shows these selection processes:
+ 
+case WM_DRAWITEM:
+ 
+    /* Test to see if this is drawing or highlighting/unhighlighting. */
+ 
+    if (((POWNERITEM) mp2)-&gt;fsState !=
+            ((POWNERITEM) mp2)-&gt;fsStateOld) {
+ 
+        /* This is either highlighting or unhighlighting. */
+ 
+        if (((POWNERITEM) mp2)-&gt;fsState) {
+            .
+            . /* Highlight the item. */
+            .
+        } else {
+            .
+            . /* Remove the highlighting.*/
+            .
+        }
+ 
+        /* Set fsState = fsStateOld to tell system you did it. */
+ 
+        ((POWNERITEM) mp2)-&gt;fsState =
+            ((POWNERITEM) mp2)-&gt;fsStateOld = 0;
+ 
+        return (TRUE); /* Tells list box you did the highlighting. */
+ 
+    } else {
+        .
+        . /* Draw the item. */
+        .
+ 
+        /* Check to see if item is selected. */
+ 
+        if (((POWNERITEM) mp2)-&gt;fsState) {
+            .
+            . /* Highlight the item. */
+            .
+ 
+            /* Set fsState = fsStateOld to tell system you did it. */
+ 
+            ((POWNERITEM) mp2)-&gt;fsState =
+                ((POWNERITEM) mp2) -&gt;fsStateOld = 0;
+       }
+       return (TRUE); /* Tells list box you did the drawing. */
+    }
+ 
+<b>Default List-Box Behavior</b>
+ 
+This section lists all the messages handled by the predefined list-box
+window-class procedure.
+ 
+<b>Message                 Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>WM_CREATE</i>               Creates an empty list box with a scroll bar.
+ 
+<i>WM_DESTROY</i>              Destroys the list and deallocates any memory
+                        allocated during its existence.
+ 
+<i>WM_PAINT</i>                Draws the list box and its items.
+ 
+<i>WM_CHAR</i>                 Processes virtual keys for line and page scrolling.
+                        Sends an LN_ENTER notification code for the ENTER
+                        key. Returns TRUE if the key is processed;
+                        otherwise, passes the message to the
+                        WinDefWindowProc function.
+ 
+<i>WM_SETFOCUS</i>             If gaining the focus, creates a cursor and sends an
+                        LN_SETFOCUS notication code to the owner window. If
+                        losing the focus, destroys the cursor and sends an
+                        LN_KILLFOCUS notification code to the owner window.
+ 
+<i>WM_ADJUSTWINDOWPOS</i>      If the list box has the style LS_NOADJUSTPOS, makes
+                        no changes to the SWP structure and returns FALSE.
+                        Otherwise, adjusts the height of the list box so
+                        that a partial item is not shown at the bottom of
+                        the list. Returns TRUE if the SWP structure is
+                        changed.
+ 
+<i>WM_ENABLE</i>               Enables the scroll bar if there are more items than
+                        can be displayed in a list window.
+ 
+<i>WM_TIMER</i>                Uses timers to control automatic scrolling that
+                        occurs when a user drags the mouse pointer outside
+                        the window.
+ 
+<i>WM_BUTTON2DOWN</i>          Returns TRUE; the message is ignored.
+ 
+<i>WM_BUTTON3DOWN</i>          Returns TRUE; the message is ignored.
+ 
+<i>WM_MOUSEMOVE</i>            Sets the mouse pointer to the arrow shape and
+                        returns TRUE to show that the message was
+                        processed.
+ 
+<i>WM_VSCROLL</i>              Handles scrolling indicated by the list-box scroll
+                        bar.
+ 
+<i>LM_QUERYITEMCOUNT</i>       Returns the number of items in the list.
+ 
+<i>LM_INSERTITEM</i>           Inserts a new item in the list according to the
+                        position information passed with the message.
+ 
+<i>LM_SETTOPINDEX</i>          Shows the specified item as the top item in the list
+                        window, scrolling the list as necessary.
+ 
+<i>LM_QUERYTOPINDEX</i>        Returns the zero-based index to the item currently
+                        visible at the top of the list.
+ 
+<i>LM_DELETEITEM</i>           Removes the specified item from the list, redrawing
+                        the list as necessary. Returns the number of items
+                        remaining in the list.
+ 
+<i>LM_SELECTITEM</i>           Selects the specified item. If the list is a
+                        single-selection list, deselects the previous
+                        selection. Sends a WM_CONTROL message (with the
+                        LN_SELECT code) to the owner window.
+ 
+<i>LM_QUERYSELECTION</i>       For a single-selection list box, returns the
+                        zero-based index of the currently selected item. For
+                        multiple-selection list boxes, returns the next
+                        selected item or LIT_NONE if no more items are
+                        selected.
+ 
+<i>LM_SETITEMTEXT</i>          Sets the text for the specified item.
+ 
+<i>LM_QUERYITEMTEXTLENGTH</i>  Returns the length of the specified item text.
+ 
+<i>LM_QUERYITEMTEXT</i>        Copies the specified item's text to a buffer
+                        supplied by the message sender.
+ 
+<i>LM_SETITEMHANDLE</i>        Sets the specified item handle.
+ 
+<i>LM_QUERYITEMHANDLE</i>      Returns the specified item handle.
+ 
+<i>LM_SEARCHSTRING</i>         Searches the list for a match to the specified
+                        string.
+ 
+<i>LM_SETITEMHEIGHT</i>        Sets the item height for the list. All items in the
+                        list have the same height.
+ 
+<i>LM_DELETEALL</i>            Deletes all items in the list.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,632 @@
+<html>
+
+<head>
+<title>About Printing (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Printing (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_the_Print_Queue.html'>Using Section</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='scroll_bar_controls.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                               About Printing
+ 
+This topic describes how to print graphics and text to printers and
+plotters. You should also be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='device_contexts.html'>Presentation spaces and device contexts</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Graphics programming interface</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Profile_Manager.html'>Profile manager</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Drawing_in_Windows.html'>Drawing in windows</a><span class='grhilite'>►</span>
+ 
+<b>About Printing</b>
+ 
+The way an MS OS/2 application prints text and graphics is similar to the
+way it displays text and graphics on the screen. In both cases, the
+application uses the same Gpi functions and can isolate the task of creating
+graphics from the task of sending them to an output device. For example, a
+word processor can display text in a window by calling Gpi character and
+string-drawing functions. When the user wants to print the text, the
+application can use the same Gpi functions; the only difference is that the
+output device is a printer instead of the screen. Printing can be thought of
+as drawing in a window the size of a sheet of paper.
+ 
+<b>The Print Queue and the Spooler</b>
+ 
+An application may share a printer with other applications in the system or
+with applications running on other systems in a network. When an application
+sends output to a printer, it should be able to continue with other
+processing while the print job is being completed. When several applications
+request print jobs at the same time, the system should handle the print jobs
+without forcing any of the applications to resend the jobs or wait for the
+jobs to be completed. These tasks are handled in MS OS/2 by Print Manager,
+the spooler, and the queue processor.
+ 
+Printer Installer (pmprinst.exe) is a Presentation Manager utility that
+installs a printer device driver and associates the driver with a queue.
+Printer Installer provides a simpler user interface than did the previous
+method of setting up the printing environment, which required the user to
+work with Control Panel and Print Manager.
+ 
+Print Manager (pmspool.exe) is a Presentation Manager utility that allows
+the user to view print queues, printer configurations, and queued print
+jobs. The user can also use Print Manager to cancel print jobs, change
+printer and queue configurations, and change the default printer and queue
+for Presentation Manager applications. (The user typically sets the default
+printer and queue by using Printer Installer, however.) Print Manager works
+with the spooler (pmspl.dll) to coordinate print jobs as they wait to be
+processed by the queue processor (pmprint.qpr). In MS OS/2 version 1.21, the
+spooler and Print Manager are always active.
+ 
+Most print jobs are in the form of metafiles when the spooler receives them.
+The queue processor (also called the queue driver or print processor)
+translates the contents of the metafile into printer-specific commands and
+sends these commands to the printer. (In other words, the queue processor
+"plays" the metafile on the device context of a printer driver.) For more
+information about metafiles, see the <span class='grhilite'>◄</span><a href='Metafiles.html'>Metafiles</a><span class='grhilite'>►</span> topic.
+ 
+The queue and printer names and their associated device drivers are stored
+in the os2sys.ini file (os2.ini for MS OS/2 version 1.1). The user defaults
+are stored in the os2.ini file.
+ 
+Although most users will use Printer Installer (pmprinst.exe) to
+simultaneously set up a printer and an associated queue, a user could still
+use Control Panel and Print Manager to set up a printer without setting up a
+queue. Such a printer is called a direct printer, because print jobs are
+sent directly from the printer device driver to the physical port without
+going through the spooler or queue processor. Some printer device drivers
+(for example, pscript.drv) work with ASCII text instead of binary
+information; these drivers can use direct printing to send output directly
+to a file. Only one application at a time can print to a direct printer. The
+application does not need to determine whether its print jobs are going to
+the spooler or to a direct printer; the only difference if the user has set
+up a direct printer is that, before continuing with other processing, an
+application may have to wait for printing to finish.
+ 
+<b>Printer Selection</b>
+ 
+Before an application prints a document, it should determine what printers
+are available on the system and display their names to the user, so that the
+user can select which printer to use. If the application has previously
+stored the preferred printer device driver for a document as one of the
+document's "job properties," the printer that matches the specified driver
+and model should be given as the default choice. Otherwise, the application
+should give the system default printer as the default selection. The first
+task in printing is to determine whether any of the printers on the system
+match the job properties that may have been stored with the document.
+ 
+<b>Job Properties</b>
+ 
+Job properties describe characteristics of a print job that can be modified
+on a document-by-document basis──for example, paper orientation (portrait or
+landscape), print quantity, and paper form. After an application retrieves
+job properties, either from the device driver or from extended attributes
+stored with the document to be printed, it should allow the user to modify
+those job properties before beginning the print job. If the user chooses job
+properties that are different from the system default, the application
+should store the new job properties with the document as extended
+attributes. For information on storing and retrieving extended attributes,
+see the <span class='grhilite'>◄</span><a href='Extended_Attributes.html'>Extended Attributes</a><span class='grhilite'>►</span> topic.
+ 
+<b>Data Retrieval from Initialization Files</b>
+ 
+The initialization files, os2sys.ini and os2.ini, contain information in
+binary form about the configuration of the system, including information
+about the printers that the system supports. An application can use the
+<b>PrfQueryProfileString</b> function to retrieve information from these files.
+(PrfQueryProfileString works only in MS OS/2 versions 1.2 and later. If an
+application requires compatibility with earlier versions of MS OS/2, it
+should use the WinQueryProfileString function.) If job properties were
+stored with a document, an application can call PrfQueryProfileString until
+it finds a match between the job properties and the available printers. If
+the application cannot obtain an exact match between the job properties and
+the capabilities of available printers, it should use the default queue and
+printer that the user has defined. The system stores the system default
+queue and printer device driver in the os2.ini file; the default settings
+for each queue and printer supported by the system are in the os2sys.ini
+file.
+ 
+An application can use PrfQueryProfileString to retrieve many different
+kinds of information from the os2.ini and os2sys.ini files, by specifying
+which file to query in the first parameter and specifying an application
+name and a keyname in the second and third parameters, respectively. (An
+application can also use the DevQueryDeviceNames function to retrieve
+information about a particular printer device driver, although it will still
+need to use PrfQueryProfileString to retrieve the name of the device
+driver.)
+ 
+To retrieve the system default printer device driver or queue from os2.ini,
+the application specifies HINI_USERPROFILE as the first parameter of
+<b>PrfQueryProfileString</b>, PM_SPOOLER for the application name, and either
+PRINTER or QUEUE for the keyname.
+ 
+To retrieve data from os2sys.ini, the application specifies
+HINI_SYSTEMPROFILE as the first parameter of PrfQueryProfileString. If the
+application needs information about the printer, it supplies the printer
+name as the keyname. The following list shows the application names that an
+application can use when querying printer data from the os2sys.ini file and
+the format of the data the function returns:
+ 
+<b>Application name          Format</b>
+────────────────────────────────────────────────────────────────────────────
+<i>PM_SPOOLER_PRINTER        port;driver(s);queue(s);printer parms;</i>
+ 
+<i>PM_SPOOLER_PRINTER_DESCR  queue descr;</i>
+ 
+If the application requires information about the queue, it supplies the
+queue name as the keyname. The following list shows the application names
+that an application can use when querying queue data from the os2sys.ini
+file and the format of the data the function returns:
+ 
+<b>Application name         Format</b>
+────────────────────────────────────────────────────────────────────────────
+<i>PM_SPOOLER_QUEUE         processor;queue parms;queue net parms;</i>
+ 
+<i>PM_SPOOLER_QUEUE_DESCR   queue descr;</i>
+ 
+<i>PM_SPOOLER_QUEUE_DD      driver;</i>
+ 
+<i>PM_SPOOLER_QUEUE_DDDATA  driver data</i>
+ 
+Notice that the driver data returned when an application specifies
+PM_SPOOLER_QUEUE_DDDATA is not followed by a semicolon. If an application
+uses this application name in a call to the PrfQueryProfileString function,
+it must parse the driver data carefully.
+ 
+If an application specifies PM_SPOOLER_PRINTER as the application name, the
+string returned by PrfQueryProfileString may contain more information than
+the application needs. If there is more than one printer device driver or
+queue associated with a port, all of the driver and queue names are returned
+in the string. (When there is more than one driver or queue, the default
+driver or queue is listed first.) Similarly, if model information is
+associated with a printer device driver, the driver name is followed by a
+period and the model information follows the period. The string returned by
+a call to PrfQueryProfileString that specified PM_SPOOLER_PRINTER could look
+like the following:
+ 
+LPT1;EPSON.24-PIN 80 COL,PSCRIPT;LPT1Q,QUEUE2;;
+ 
+In this case, port LPT1 is associated with two printer drivers and two
+queues. EPSON is the default driver and LPT1Q is the default queue. The
+epson driver is followed by information about the printer model.
+ 
+When an application specifies PM_SPOOLER_QUEUE_DD, model information, if
+any, follows the driver name as shown in the preceding example.
+ 
+An application should always check for a comma (,) to make sure only one
+name has been returned. If the application needs only the driver name, and
+not model information, it should parse the driver name and strip off text
+beginning at the period.
+ 
+<b>Setting Job Properties</b>
+ 
+When an application has determined which printer driver to use, it can use
+the default setting of the driver as the job properties or it can set the
+job properties based on information the user stored with the document. In
+either case, it can call the DevPostDeviceModes function to allow the user
+to customize the print job.
+ 
+The DevPostDeviceModes function causes the printer device driver to display
+either a dialog box that allows the user to set job properties, or two
+dialog boxes, one for job properties and the other for printer properties.
+(Job properties apply only to the current print job; printer properties
+change the default characteristics of the printer device driver. An
+application should not change the system default printer, driver, or queue,
+since these are set by the user.) The application should save with the
+document any preferences entered by the user. An application can also use
+<b>DevPostDeviceModes</b> to return the current job properties without displaying
+any dialog boxes.
+ 
+<b>Printer Device Contexts</b>
+ 
+An application uses the queue and device driver data it retrieves from the
+initialization files to open a device context for a printer. A device
+context is a structure containing device-specific information. It acts as a
+bridge between the presentation space in which an application produces a
+document and the device that displays or prints the document. When an
+application associates a presentation space with a screen device context,
+output goes to the screen; when the presentation space is associated with a
+printer device context, the output goes to the specified printer. A device
+context for a printer is specific to a printer device driver and may include
+information about customizing the print job. For more information about
+device contexts, see the <span class='grhilite'>◄</span><a href='device_contexts.html'>Presentation spaces and device contexts</a><span class='grhilite'>►</span> topic.
+ 
+An application opens a device context for a printer by calling the
+<b>DevOpenDC function and pass</b>ing it a pointer to a DEVOPENSTRUC structure.
+Typically, the application specifies the contents of at least the first four
+fields in DEVOPENSTRUC (the logical address, the printer-driver name, the
+driver data, and the data type).
+ 
+<b>Types of Device Contexts</b>
+ 
+The second argument of the DevOpenDC function specifies the type of device
+context to open. A device context for a printer can have type OD_QUEUED,
+OD_DIRECT, or OD_INFO.
+ 
+OD_QUEUED is the most common type of printer device context. This type of
+device context takes advantage of the spooling capabilities of MS OS/2. When
+an application uses this type, the spooler places print jobs into the print
+queue. When the spooler determines that the printer is idle, the queue
+processor either plays the metafile into the printer device context or
+passes the job as raw data, depending on the data type specified in the
+<b>DEVOPENSTRUC</b> structure. The printer device driver translates the output of
+the queue processor into instructions that are meaningful to the printer.
+Specifying OD_QUEUED allows an application to continue with other tasks once
+the spooler has put a job into the print queue. Applications should use the
+OD_QUEUED type of printer device context whenever possible.
+ 
+An application might open an OD_DIRECT printer device context if it needed
+to bypass the print queue (for example, when printing to a file) or if it
+needed to perform drawing operations that the system does not support in
+metafiles. For more information about metafiles, see the <span class='grhilite'>◄</span><a href='Metafiles.html'>Metafiles</a><span class='grhilite'>►</span> topic.
+ 
+An application can use the OD_INFO type to open a device context for
+information only. For example, an application might use this device context
+to determine the page size of the current printer; this information would
+allow the application to provide on-screen pagination information.
+ 
+<b>Logical Address</b>
+ 
+The first field of the DEVOPENSTRUC structure is the pszLogAddress field,
+which specifies the logical address for the device. The logical address of a
+printer is the destination for the print data. Generally, this is the queue
+the user has chosen──for example, LPT1Q. If the application is using a
+driver that works with ASCII text rather than binary data (for example,
+<i>pscript.drv</i>), it can direct print output to a file by specifying a filename
+in this field.
+ 
+<b>Driver Data</b>
+ 
+The third field of the DEVOPENSTRUC structure is the pdriv field, which
+points to a DRIVDATA structure that describes driver-specific aspects of the
+page, such as the page layout (portrait or landscape) and the requested
+paper form. Typically, an application specifies at least the device name and
+structure size in the DRIVDATA structure, even if the application uses only
+the default settings for a device driver, because many device drivers
+support more than one device. If the driver supports only one device, an
+application can set this field to NULL, causing the device driver to use the
+default settings stored in os2sys.ini.
+ 
+If an application uses the DevPostDeviceModes function to enable the user to
+customize the print job, the third field of DEVOPENSTRUC points to the
+buffer filled by DevPostDeviceModes; the application need not specify fields
+in the DRIVDATA structure.
+ 
+<b>Data Type</b>
+ 
+The fourth field of the DEVOPENSTRUC structure is the pszDataType field,
+which specifies the format of the print data. It can be PM_Q_STD or
+PM_Q_RAW.
+ 
+When an application specifies PM_Q_STD, the system records the effects of
+<b>Gpi</b> functions in a metafile. Applications should specify PM_Q_STD whenever
+possible, because this data format is more versatile and device-independent
+than PM_Q_RAW. (If an application requires capabilities that metafiles do
+not support, it cannot use PM_Q_STD. For more information about metafiles,
+see the <span class='grhilite'>◄</span><a href='Metafiles.html'>Metafiles</a><span class='grhilite'>►</span> topic.
+ 
+When an application specifies PM_Q_RAW, the system performs the graphics
+rendering immediately. The printer device driver creates a printer-specific
+data stream and, if the type of the device context is OD_QUEUED, passes the
+data stream to the spooler. Depending on the type of print job and the
+driver, creating the spool file could be time-consuming, and the file the
+driver produces could be very large.
+ 
+<b>Comment</b>
+ 
+The fifth field of the DEVOPENSTRUC structure is the pszComment field, which
+contains a comment string that identifies the application when a print job
+is displayed by Print Manager. Typically, the application name is used for
+this comment. If the application specifies a string in the fourth parameter
+of the DevEscape function, it should not specify a comment string in the
+<b>DEVOPENSTRUC</b> structure.
+ 
+<b>Printer Device Contexts and Presentation Spaces</b>
+ 
+The DevOpenDC function returns a handle to a device context. An application
+uses this handle in the call to the GpiCreatePS function that creates a
+presentation space. When calling GpiCreatePS, the application can associate
+the presentation space with the device context, by specifying GPIA_ASSOC in
+the flOptions parameter.
+ 
+When an application specifies GPIA_ASSOC in the call to the GpiCreatePS
+function, it can specify zero as the width and height in the SIZEL structure
+pointed to by the second parameter. The SIZEL structure contains the
+dimensions of the presentation page, which defines how points in the
+presentation space are mapped to the device. When the application specifies
+zero for these dimensions, the system makes the presentation space large
+enough to include one page, as defined by the device context.
+ 
+The presentation-space type must be GPIT_NORMAL (not GPIT_MICRO) when an
+application creates a presentation space for printing. If the application
+specifies page units that are absolute measurements──for example,
+PU_LOENGLISH or PU_HIMETRIC──graphics are the same size in printed output as
+they are on the screen. If the application specifies PU_PELS, it must apply
+transformations to the graphics to compensate for the different aspect
+ratios and resolutions of the screen and printer.
+ 
+An application can use the same presentation space for printing as it used
+for drawing on the screen. Before the application can associate the
+presentation space with a printer device context, the presentation space
+must be disassociated from the previous device context. To do this, the
+application calls the GpiAssociate function twice: the first time to
+disassociate the presentation space with the original device context and the
+second time to associate the presentation space with the printer device
+context:
+ 
+GpiAssociate(hpsWindow, (HDC) NULL);
+    .
+    .
+    .
+GpiAssociate(hpsWindow, hdcPrinter);
+ 
+If an application uses the same presentation space for printing and window
+drawing, it must process messages carefully in order to prevent conflicts
+between what is displayed on the screen and what is printed. In particular,
+the presentation space should not respond to a WM_PAINT message while
+associated with a printer device context.
+ 
+Once the application has associated a presentation space with a printer
+device context, the application can use graphics functions to draw each page
+of the document.
+ 
+<b>Printing Documents</b>
+ 
+Drawing for printing is similar to drawing in a window the size of a piece
+of paper. If an application uses device-independent world units to produce
+graphics, the system automatically scales the output so that the graphics
+will look the same on any output device; a one-inch circle drawn on the
+screen is printed as a one-inch circle on a 72-dot-per-inch impact printer
+or on a 300-dot-per-inch laser printer. For more information on scaling
+graphics, see the <span class='grhilite'>◄</span><a href='coordinate_spaces.html'>Coordinate Spaces and Transformations</a><span class='grhilite'>►</span> topic.
+ 
+<b>Starting a Print Job</b>
+ 
+Before an application starts drawing graphics in a printer device context,
+it must use the DevEscape function to issue a DEVESC_STARTDOC escape.
+<b>DevEscape</b> allows an application to send an escape directly to a device
+driver──in this case, the escape function tells the printer device driver
+that the printer should be prepared to print a document.
+ 
+<b>Determining Printer Capabilities and Page Size</b>
+ 
+An application can use the DevQueryHardcopyCaps function to determine the
+capabilities of the printer associated with the printer device context.
+<b>DevQueryHardcopyCaps fills one or more HCINFO structures wit</b>h detailed
+information about the page type and page dimensions supported by the device.
+Each HCINFO structure also specifies whether the described configuration is
+currently selected for that device. For example, an application could call
+<b>DevQueryHardcopyCaps to fill five HCINFO structures with inf</b>ormation about a
+printer. If the printer supported Letter paper, Legal paper, Landscape
+paper, Wide paper, and A4 paper, the dimensions of each of these "form
+names" would be specified, and one of them would be designated as the
+current choice for that printer.
+ 
+<b>DevQueryHardcopyCaps</b> returns the dimensions of a page in millimeters. If the
+drawing units in an application's presentation space are absolute values in
+world space (metric or English), determining the page boundaries in the
+presentation space requires only a simple conversion.
+ 
+An application could also use the DevQueryCaps function to retrieve the
+width and height of the printer page in device units. The page size returned
+reflects either portrait or landscape mode, depending on what the user has
+selected. To convert device units into world coordinates, the application
+can call the GpiConvert function.
+ 
+<b>Printing a Page</b>
+ 
+Each page of a print job is drawn by using Gpi functions in a presentation
+space that has been associated with a printer device context. If a document
+consists of only one page, the origin of the presentation space's coordinate
+system typically corresponds to the origin of the device page, so no
+translation is necessary. To print a multiple-page document, however, an
+application must translate the world-space coordinates of the presentation
+space so that a point defining the lower-left corner of the graphic to be
+printed corresponds to the origin of the device page.
+ 
+An application can determine the best places to divide a large image by
+using the page size retrieved by the DevQueryHardcopyCaps or DevQueryCaps
+function. After establishing the page boundaries, the application moves each
+page to the origin of the coordinate space, calls the DevEscape function to
+start a new page, and draws the image. To move a page to the origin of the
+coordinate space, the application calls the GpiQueryDefaultViewMatrix
+function to fill a MATRIXLF structure with the current transformation
+values, sets a POINTL structure to values based on the page size and passes
+a pointer to that structure to the GpiTranslate function, and then calls the
+<b>GpiSetDefaultViewMatrix</b> function to set the new viewing matrix. For more
+information about coordinate spaces and transformations, see the
+<i><span class='grhilite'>◄</span><a href='coordinate_spaces.html'>Coord</i>inate Spaces and Transformations</a><span class='grhilite'>►</span> topic.
+ 
+To start a new page in a multiple-page document, an application must call
+the DevEscape function at the end of each page, specifying the escape
+DEVESC_NEWFRAME. (The application need not send a DEVESC_NEWFRAME escape
+after the last page in a document.)
+ 
+<b>Finishing a Print Job</b>
+ 
+After printing every page in a print job, an application must call the
+<b>DevEscape</b> function, specifying the DEVESC_ENDDOC escape.
+ 
+<b>Printing in a Thread</b>
+ 
+Printing typically begins when a user chooses a command from a menu in an
+application. A client window receives a WM_COMMAND message from the menu and
+begins the printing operation. The application does not process any further
+mouse clicks or keystrokes until it calls the WinGetMsg or WinPeekMsg
+function again. This means that the user cannot interact with the printing
+application or switch to another application until one of these two
+functions is called. If the application is not using the spooler and queue
+processor, or if the print job is lengthy or complicated, the user may have
+an inconvenient wait before being able to resume work.
+ 
+There are two common methods for allowing an application to remain
+responsive during a lengthy printing operation:
+ 
+♦  The application can handle user input by calling the WinGetMsg or
+   WinPeekMsg function.
+ 
+♦  The application can create a separate thread to handle printing. The main
+   thread can continue to call the WinGetMsg function while the printing
+   thread is running.
+ 
+Although printing in a thread is the most common way of solving this
+user-interface problem, handling user input during printing can cause
+problems with data integrity and synchronization. (For example, a user could
+attempt to modify a document while it is printing.) An application could use
+semaphores to protect shared resources whenever there are potential
+conflicts.
+ 
+Processing WM_PAINT messages is a common problem for applications that print
+in a thread and that use the same presentation space for both drawing on the
+screen and printing. An application should not attempt to draw in the window
+when the presentation space is associated with a printer device context.
+ 
+<b>Printing Bitmaps</b>
+ 
+An application must perform the following steps to print a bitmap:
+ 
+1  Create a device context and presentation space for the printer.
+ 
+2  Create a memory device context for the printer and associate it with a
+   presentation space. This memory device context should be compatible with
+   the printer device context.
+ 
+3  Create a bitmap in (or load it into) the printer's memory presentation
+   space.
+ 
+4  Attach the bitmap to the printer's memory presentation space and device
+   context by calling the GpiSetBitmap function.
+ 
+5  Draw the bitmap from the printer's memory presentation space and device
+   context to the printer presentation space and device context by using the
+   GpiBitBlt or GpiWCBitBlt function. Do any scaling necessary to correct
+   for resolution differences between the display and the printer.
+ 
+The GpiSetBitmap function converts between different device formats──for
+example, color to monochrome──but does not correct for differences in pel
+resolution between devices. For example, if an application prints a screen
+bitmap (typically about 72 pels per inch) to a laser printer with 300 pels
+per inch, it must scale the image when converting from the printer's memory
+device context to the device context. The application can determine the
+device resolutions by calling the DevQueryCaps function for each device.
+ 
+<b>Metafile Restrictions</b>
+ 
+Most applications record print jobs as metafiles, which the queue processor
+plays into the printer device context when the spooler determines that the
+printer is idle. Although metafiles are versatile and device-independent,
+some restrictions apply to their use. If an application can use metafiles in
+printing, it specifies PM_Q_STD in the DEVOPENSTRUC structure when opening
+the device context. If the application cannot use metafiles, it specifies
+PM_Q_RAW.
+ 
+An application should not change any of the following items while drawing in
+a metafile:
+ 
+♦  The graphics field.
+ 
+♦  The code page for the default character set.
+ 
+♦  The color table. (The size of the color table must not exceed 31K.)
+ 
+♦  The default viewing transformation.
+ 
+♦  The setting of the draw controls. (The DCTL_DISPLAY flag in the
+   GpiSetDrawControl function must be on.)
+ 
+♦  The default values of attributes, viewing limits, primitive tags, and arc
+   parameters.
+ 
+An application should not call the following functions while drawing in a
+metafile that will be played in a printer device context:
+ 
+♦  DevEscape (for an escape that is stored in a metafile)
+ 
+♦  GpiDeleteSetId
+ 
+♦  GpiErase
+ 
+♦  GpiExcludeClipRectangle
+ 
+♦  GpiIntersectClipRectangle
+ 
+♦  GpiOffsetClipRegion
+ 
+♦  GpiPaintRegion
+ 
+♦  GpiResetPS
+ 
+♦  GpiSetClipRegion
+ 
+♦  GpiSetPel
+ 
+♦  GpiSetPS
+ 
+Because an application should not call the GpiDeleteSetId function when
+using metafiles for printing, local identifiers cannot be reused inside a
+print job. If an application uses a bitmap in a GpiWCBitBlt operation or as
+an area-fill pattern, the application should not modify the bitmap.
+ 
+Applications should not reassociate the presentation space while it is
+associated with an OD_QUEUED device context.
+ 
+An application should use only these foreground mix modes when using a
+metafile for printing:
+ 
+♦  FM_DEFAULT
+ 
+♦  FM_LEAVEALONE
+ 
+♦  FM_OR
+ 
+♦  FM_OVERPAINT
+ 
+An application should use only these background mix modes when using a
+metafile for printing:
+ 
+♦  BM_DEFAULT
+ 
+♦  BM_LEAVEALONE
+ 
+♦  BM_OVERPAINT
+ 
+An application that is using a metafile for printing can use the following
+escapes in calls to the DevEscape function:
+ 
+    DEVESC_ABORTDOC
+    DEVESC_BREAK_EXTRA
+    DEVESC_CHAR_EXTRA
+    DEVESC_DRAFTMODE
+    DEVESC_ENDDOC
+    DEVESC_FLUSHOUTPUT
+    DEVESC_GETSCALINGFACTOR
+    DEVESC_NEWFRAME
+    DEVESC_NEXTBAND
+    DEVESC_QUERYESCSUPPORT
+    DEVESC_QUERYVIOCELLSIZES
+    DEVESC_RAWDATA
+    DEVESC_STARTDOC
+ 
+An application that is using a metafile for printing should not use the
+following escapes in calls to the DevEscape function:
+ 
+    DEVESC_DBE_FIRST
+    DEVESC_DBE_LAST
+    DEVESC_GETCP
+    DEVESC_SETMODE
+    DEVESC_STD_JOURNAL
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

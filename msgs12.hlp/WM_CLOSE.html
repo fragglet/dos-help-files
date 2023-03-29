@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<title>WM_CLOSE (1.2) - msgs12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msgs12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WM_CLOSE (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='x_at_L810b.html'>Changes</a><span class='grhilite'>►</span>                                             <span class='grhilite'>◄</span><a href='messages.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WM_COMMAND.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMESSAGEMGR
+ 
+<b>WM_CLOSE</b>
+ 
+The WM_CLOSE message is sent as a signal that the window or its application
+should terminate. This message allows the window to control the termination
+process.
+ 
+This message does not use any parameters.
+ 
+<b>Return Value</b>
+ 
+An application should return zero if it processes this message.
+ 
+<b>Comments</b>
+ 
+If WM_CLOSE is passed to the WinDefDlgProc function, the function calls the
+<b>WinDismissDlg</b> function and passes the DID_CANCEL result code to it.
+ 
+<b>Example</b>
+ 
+In the following example, the fChanges variable is checked. If it is TRUE,
+the user is asked if he or she wants to exit without saving any changes. If
+the user responds by choosing the No button, then zero is returned and the
+application does not exit. If the user responds by choosing the Yes button,
+then a WM_QUIT message is posted so that the application will terminate.
+ 
+case WM_CLOSE:
+    if (fChanges) {
+        if (WinMessageBox(HWND_DESKTOP, hwndClient,
+                "Do you want to exit without saving your changes?",
+                "", 0, MB_NOICON | MB_YESNO) == MBID_NO)
+            return (0L);
+    }
+    WinPostMsg(hwnd, WM_QUIT, 0L, 0L);
+    return (0L);
+ 
+<b>See Also</b>
+ 
+<b>WinDefWindowProc, WinMessageBox, WinPostMsg, WM_QUIT</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

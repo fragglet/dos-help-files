@@ -1,0 +1,236 @@
+<html>
+
+<head>
+<title>WinSetWindowPos (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinSetWindowPos (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Moving_and_changing_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L8148.html'>Changes</a><span class='grhilite'>►</span>     </i>                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinSetWindowPtr.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMESSAGEMGR
+ 
+BOOL WinSetWindowPos(hwnd, hwndInsertBehind, x, y, cx, cy, fs)
+HWND hwnd;                /* handle of window being set */
+HWND hwndInsertBehind;    /* placement-order handle     */
+SHORT x;                  /* horizontal position        */
+SHORT y;                  /* vertical position          */
+SHORT cx;                 /* width                      */
+SHORT cy;                 /* height                     */
+USHORT fs;                /* window-positioning flags   */
+ 
+The WinSetWindowPos function sets the position of a window.
+ 
+<b>Parameter         Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwnd</i>              Identifies the window being set.
+ 
+<i>hwndInsertBehind</i>  Identifies relative window-placement order. This parameter
+                  is ignored if the fs parameter is not set to SWP_ZORDER.
+                  If this parameter is HWND_BOTTOM, the hwnd window is
+                  placed behind all sibling windows. If it is HWND_TOP, the
+                  hwnd window is placed on top of all sibling windows. Other
+                  values identify the sibling window behind which the hwnd
+                  window is placed.
+ 
+<i>x  </i>               Specifies the horizontal position of the hwnd window (in
+                  window coordinates relative to the lower-left corner of
+                  its parent window). This parameter is ignored if the fs
+                  parameter is not set to SWP_MOVE.
+ 
+<i>y  </i>               Specifies the vertical position of the hwnd window (in
+                  window coordinates relative to the lower-left corner of
+                  its parent window). This parameter is ignored if the fs
+                  parameter is not set to SWP_MOVE.
+ 
+<i>cx</i>                Specifies the horizontal window size (in device units).
+                  This parameter is ignored if the fs parameter is not set
+                  to SWP_SIZE.
+ 
+<i>cy</i>                Specifies the vertical window size (in device units). This
+                  parameter is ignored if the fs parameter is not set to
+                  SWP_SIZE.
+ 
+<i>fs</i>                Identifies the window-positioning options. This parameter
+                  can be one or more of the following values:
+ 
+                  Value                Meaning
+                  ──────────────────────────────────────────────────────────
+                  SWP_ACTIVATE         The window is activated and the focus
+                                       to be set to the window that lost the
+                                       focus the last time the frame window
+                                       was deactivated. The activated window
+                                       may not become the top window if it
+                                       owns other frame windows.
+ 
+                  SWP_DEACTIVATE       Deactivates the window, if it is the
+                                       active window.
+ 
+                  SWP_EXTSTATECHANGE   This flag is for application use. It
+                                       is used to pass an additional flag to
+                                       the portion of code that is handling
+                                       messages.
+ 
+                  SWP_FOCUSACTIVATE    Specifies that a frame window is
+                                       receiving the focus. This flag is set
+                                       so that an application that is
+                                       processing the WM_ADJUSTWINDOWPOS
+                                       message can tell if the message was
+                                       sent as the result of a focus
+                                       change.
+ 
+                  SWP_FOCUSDEACTIVATE  Specifies that a frame window is
+                                       losing the focus.
+ 
+                  SWP_HIDE             Specifies that the window is to be
+                                       hidden when created.
+ 
+                  SWP_MAXIMIZE         With SWP_MINIMIZE, causes a window to
+                                       be minimized, maximized, or restored.
+                                       SWP_MAXIMIZE and SWP_MINIMIZE are
+                                       mutually exclusive. If either
+                                       SWP_MINIMIZE or SWP_MAXIMIZE is
+                                       specified, then both SWP_MOVE and
+                                       SWP_SIZE must also be specified.
+                                       WinSetWindowPos and
+                                       WinSetMultWindowPos depend on the
+                                       previous state of the window; these
+                                       flags cause the appropriate state to
+                                       be toggled, as follows: the x, y, cx,
+                                       and cy parameters specify the size
+                                       and position to which the window will
+                                       be restored if it is subsequently
+                                       restored. This should be the normal
+                                       size of the window.
+ 
+                  SWP_MINIMIZE         See SWP_MAXIMIZE.
+ 
+                  SWP_MOVE             Changes the window's x,y position.
+ 
+                  SWP_NOADJUST         Does not send a WM_ADJUSTWINDOWPOS
+                                       message to the window while
+                                       processing (the window cannot
+                                       readjust itself).
+ 
+                  SWP_NOREDRAW         Does not redraw changes.
+ 
+                  SWP_RESTORE          Restores a minimized or maximized
+                                       window.
+ 
+                  SWP_SHOW             Specifies that the window is to be
+                                       shown when created.
+ 
+                  SWP_SIZE             Changes the window size.
+ 
+                  SWP_ZORDER           Changes the relative window
+                                       placement.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful or FALSE if an error
+occurs.
+ 
+<b>Comments</b>
+ 
+If a window created with the CS_SAVEBITS style is moved, reduced in size, or
+hidden, the saved screen image is used to redraw the area uncovered when the
+window size changes, if those bits are still valid.
+ 
+If the CS_SIZEREDRAW style is present, the entire window area is assumed
+invalid if sized. Otherwise, a WM_CALCVALIDRECTS message is sent to the
+window to inform the window manager which bits it is possible to preserve.
+ 
+Messages sent from WinSetWindowPos and WinSetMultWindowPos have specific
+orders within the window positioning process. The process begins with
+redundancy checks and precalculations on every window for each requested
+operation. For example, if SWP_SHOW is present but the window is already
+visible, then SWP_SHOW is turned off. If SWP_SIZE is present and the new
+size is equal to the previous size, SWP_SIZE is turned off. If the
+operations will create new results, the information is calculated and
+stored. For example, if being sized or moved, the new window rectangle is
+stored for later use. At this point, the WM_ADJUSTWINDOWPOS message is sent
+to any window that is being sized or moved. Also at this point, the
+<b>WM_CALCVALIDRECTS</b> message is sent to any window that is being sized and that
+does not have the CS_SIZEREDRAW window style.
+ 
+When the new window state is calculated, the window-management process
+begins. Window areas that can be preserved are moved from the old to the new
+positions, window areas that are invalidated by these operations are
+calculated and distributed as update regions, and so forth. When this is
+finished, and before any synchronous-paint windows are repainted, the
+<b>WM_SIZE</b> message is sent to any windows that have changed size. Next, all the
+synchronous-paint windows that can be repainted are repainted and the entire
+process is complete.
+ 
+If a synchronous-paint parent window has a size-sensitive area displayed
+that includes synchronous-paint child windows, the parent window will
+reposition those windows when it receives the WM_SIZE message. Their invalid
+regions will be added to the parent window's invalid region, resulting in
+one update after the parent window's WM_SIZE message, rather than many
+independent and subsequently duplicated updates.
+ 
+Certain windows are not positioned precisely to the parameters specified by
+this function. For example, frame windows without the FCF_NOBYTEALIGN style
+creation flag are not positioned to any specific screen coordinate.
+ 
+The following messages are sent by this function:
+ 
+<b>Value               Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>WM_CALCVALIDRECTS</i>   Sent to determine the area of a window that it may be
+                    possible to preserve as the window is sized.
+ 
+<i>WM_SIZE</i>             Sent if the size of the window has changed, after the
+                    change has been effected.
+ 
+<i>WM_MOVE</i>             Sent when a window with CS_MOVENOTIFY class style moves
+                    its absolute position.
+ 
+<i>WM_ACTIVATE</i>         Sent if a different window becomes the active window.
+                    For more information, see the WinSetActiveWindow
+                    function.
+ 
+<i>WM_ADJUSTWINDOWPOS</i>  Sent if SWP_NOADJUST is not specified. The message's
+                    mp1 parameter points to an SWP structure that has been
+                    filled in by the WinSetWindowPos function with the
+                    proposed move/size data. The window can adjust this new
+                    position by changing the contents of the SWP structure.
+ 
+<b>Example</b>
+ 
+This example gets the dimensions of the desktop window, and calls
+<b>WinSetWindowPos</b> to place the application's frame window in the upper left
+corner. By positioning the window relative to the desktop window, the window
+position is device-independent; it will work on any display adapter no
+matter what the vertical and horizontal resolution is.
+ 
+RECTL rcl;
+ 
+WinQueryWindowRect(HWND_DESKTOP, &amp;rcl);
+WinSetWindowPos(hwndFrame, HWND_TOP,
+    rcl.xLeft,                                      /* x pos  */
+    rcl.yTop - 60,                                  /* y pos  */
+    140,                                            /* x size */
+    60,                                             /* y size */
+    SWP_ACTIVATE | SWP_MOVE | SWP_SIZE | SWP_SHOW); /* flags  */
+ 
+<b>See Also</b>
+ 
+<b>WinSetActiveWindow, WinSetMultWindowPos, WM_ACTIVATE, WM_ADJUSTWINDOWPOS,</b>
+<b>WM_CALCVALIDRECTS, WM_MOVE, WM_SIZE, SWP</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

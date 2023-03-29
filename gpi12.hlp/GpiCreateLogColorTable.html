@@ -1,0 +1,180 @@
+<html>
+
+<head>
+<title>GpiCreateLogColorTable (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiCreateLogColorTable (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='mix_mode_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Color and Mix Modes 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiCreateLogFont.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPILOGCOLORTABLE
+ 
+BOOL GpiCreateLogColorTable(hps, flOptions, lFormat, iStart, clTable,
+    alTable)
+HPS hps;            /* presentation-space handle  */
+ULONG flOptions;    /* options                    */
+LONG lFormat;       /* format of entries          */
+LONG iStart;        /* starting index             */
+LONG clTable;       /* number of entries in table */
+PLONG alTable;      /* address of array for table */
+ 
+The GpiCreateLogColorTable function creates a logical color table. The
+logical color table has the format specified by lFormat, with the initial
+value of each entry specified by the array alTable.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>flOptions</i>  Specifies whether the logical color table uses pure, realizable,
+           or default color values. It can be one of the following values:
+ 
+           Value            Meaning
+           ─────────────────────────────────────────────────────────────────
+           0x0000           Creates a logical color table having the entries
+                            specified by alTable. The logical color table
+                            entries map to existing device colors in the
+                            physical palette or to dithered colors if no
+                            matching device color is in the palette. This
+                            means the table is not realized and does not
+                            require pure colors.
+ 
+           LCOL_PURECOLOR   Creates a logical color table whose entries map
+                            to pure (nondithered) colors only. If not given,
+                            the function creates a color table whose entries
+                            map to dithered colors if the physical palette
+                            does not contain matching device colors.
+ 
+           LCOL_REALIZABLE  Creates a logical color table that can be
+                            realized by using the GpiRealizeColorTable
+                            function. Until the logical color table is
+                            realized, colors in the table map to the
+                            existing device colors in the physical palette.
+                            This option is useful only for devices that
+                            permit realization of logical color tables.
+ 
+           LCOL_RESET       Resets all entries in the logical color table to
+                            default values before initializing the entries
+                            specified by the alTable parameter. This option
+                            is useful for quickly initializing all entries
+                            without supplying initial values for every
+                            element in alTable.
+ 
+<i>lFormat</i>    Specifies the logical color table format. It can be one of the
+           following values:
+ 
+           Value            Meaning
+           ─────────────────────────────────────────────────────────────────
+           LCOLF_CONSECRGB  Creates a color table having consecutive
+                            entries. The first entry has the index specified
+                            by iStart.
+ 
+           LCOLF_INDRGB     Creates a color table. The entries are not
+                            required to be consecutive. The alTable array
+                            specifies both the index and RGB color value for
+                            each entry.
+ 
+           LCOLF_RGB        Enables direct RGB color mapping. Applications
+                            use RGB values instead of color indexes to
+                            specify the colors in subsequent drawing
+                            functions.
+ 
+<i>iStart</i>     Specifies the color index of the first entry for a color table
+           having LCOLF_CONSECRGB format. If LCOLF_CONSECRGB is not given,
+           this parameter is ignored.
+ 
+<i>clTable    Specifies </i>the number of elements in the array alTable. If the
+           format LCOLF_INDRGB is given, this parameter must be an even
+           number (that is, two elements for each entry). If LCOL_RESET or
+           LCOLF_RGB is given, this parameter can be zero.
+ 
+<i>alTable</i>    Specifies the start address of the array that contains the color
+           table entries. The format depends on the value of lFormat, as
+           follows:
+ 
+           Value            Format
+           ─────────────────────────────────────────────────────────────────
+           LCOLF_CONSECRGB  Each element is a 4-byte RGB color value.
+ 
+           LCOLF_INDRGB     Each pair of elements contains a 4-byte color
+                            index and a 4-byte RGB color value, in that
+                            order.
+ 
+           LCOLF_RGB        No elements required.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INCOMPAT_COLOR_FORMAT
+     PMERR_INCOMPAT_COLOR_OPTIONS
+     PMERR_INV_COLOR_DATA
+     PMERR_INV_COLOR_FORMAT
+     PMERR_INV_COLOR_OPTIONS
+     PMERR_INV_COLOR_START_INDEX
+     PMERR_INV_HPS
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_PS_BUSY
+     PMERR_REALIZE_NOT_SUPPORTED
+ 
+<b>Comments</b>
+ 
+Although GpiCreateLogColorTable can create a realizable color table, it does
+not realize the colors. Until the color table is realized by using the
+<b>GpiRealizeColorTable</b> function, the logical color table entries are mapped to
+the existing colors in the physical palette. Realizing the logical color
+table causes the physical palette colors to be replaced with the realized
+colors for the logical color table entries.
+ 
+The default physical palette contains at least the standard 16 PC colors
+(unless this is not physically possible). If a device supports more than 16
+colors, the physical palette may have additional colors, but there is no
+guarantee that these additional colors are the same on every device.
+ 
+<b>Example</b>
+ 
+This example uses the GpiCreateLogColorTable function to create a logical
+color table, using data from the previous logical color table:
+ 
+ULONG alTable[16];                       /* assume 16 entries        */
+ 
+/* retrieve the current table */
+ 
+GpiQueryLogColorTable(hps, 0L, 0L, 16L, alTable);
+ 
+alTable[1] = 0x000080;      /* change the second entry to light blue */
+ 
+GpiCreateLogColorTable(hps,              /* presentation space       */
+    0L,                                  /* no special options       */
+    LCOLF_CONSECRGB,                     /* consecutive RGB values   */
+    0L,                                  /* start with color index 0 */
+    16,                                  /* 16 entries               */
+    alTable);                            /* RGB color values         */
+ 
+<b>See Also</b>
+ 
+<b>DevQueryCaps, GpiErase, GpiQueryColorData, GpiQueryLogColorTable,</b>
+<b>GpiRealizeColorTable, GpiSetBitmapBits, WinSetSysColors, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>DosPTrace (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosPTrace (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosPurgeQueue.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSTRACE
+ 
+USHORT DosPTrace(pvPtraceBuf)
+PVOID pvPtraceBuf;    /* pointer to structure receiving register values */
+ 
+The DosPTrace function provides access to the MS OS/2 debugging functions.
+These debugging functions are available to any process that starts a
+protected-mode child process by using the DosExecPgm function with the
+<i>fExecFlags</i> parameter set to EXEC_TRACE.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pvPtraceBuf  Points to the PTRACE</i>BUF structure that receives the current
+             values of the child process's registers and a code that
+             indicates the reason for returning.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_ACCESS_DENIED
+     ERROR_INVALID_FUNCTION
+     ERROR_INVALID_PROCID
+ 
+<b>Comments</b>
+ 
+To use the DosPTrace function, you need to provide the following function
+prototype in your source file:
+ 
+    USHORT DosPTrace(PVOID);
+ 
+The DosPTrace function lets a parent process control the execution of the
+child process and access the child process's memory directly to insert break
+points or change data.
+ 
+The parent process starts the child process to be debugged, then stops the
+child process by using the DosPTrace function with the cmd field of the
+<b>PTRACEBUF</b> structure set to 0x000A. The parent process can then insert break
+points or change memory in the child process by using DosPTrace and the cmd
+field values. Next, the parent process can start execution by setting the
+<b>cmd</b> field to 0x0007 (go until break point) or 0x0009 (single step). The
+parent process can set initial register values by setting cmd to 0x0006.
+After it is started, the child process returns control to the parent process
+if it encounters a break point, a non-maskable interrupt, a single-step
+interrupt, or the end of the program.
+ 
+The DosPTrace function can be used to debug a process with multiple threads
+by setting the tid field of the PTRACEBUF structure to the identifier of the
+thread to be debugged. Other threads in the process are suspended. (The
+address space is the same for all threads in a process.) Commands to read
+from or write to memory locations or set break points affect all threads in
+the process, even if the command is issued with a specific thread
+identifier. If the parent process uses the 0x000B command, a selected thread
+or group of threads can keep running while others are suspended. This allows
+only the selected threads to be affected by the break points and
+manipulated.
+ 
+<b>See Also</b>
+ 
+<b>DosExecPgm, DosGetInfoSeg, PTRACEBUF</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

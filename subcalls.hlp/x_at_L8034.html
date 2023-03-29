@@ -1,0 +1,40 @@
+<html>
+
+<head>
+<title>MouSynch changes - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MouSynch changes</div>
+<pre><i><span class='grhilite'>◄</span><a href='MouSynch.html'>Full Description</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='Mou_(1_dot_2)_changes.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Mou_(1_dot_2)_changes.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+<b>Corrections</b>
+ 
+A registered mouse subsystem should not issue MouSynch when the base video
+subsystem (BVS) issues MouOpen and MouClose functions. A registered mouse
+subsystem must provide the required level of serialization for MouOpen and
+<b>MouClose without calling</b> MouSynch. This special processing is required
+because MouOpen and MouClose are issued by BVS on the VioSetMode path. The
+<b>VioSetMode function can be iss</b>ued, in turn, by a VioSavRedrawWait thread.
+You can assume the synchronization semaphore was already held by another
+thread blocked by a call to MouReadEventQue.
+ 
+Note that if a save/redraw wait thread issues the VioSetMode function, if
+BVS in turn issues the MouOpen or MouClose function, and the mouse subsystem
+in turn issues the MouSynch function, the screen switch will be blocked and
+the system will "hang."
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

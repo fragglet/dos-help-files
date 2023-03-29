@@ -1,0 +1,412 @@
+<html>
+
+<head>
+<title>Using the Print Queue (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using the Print Queue (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='print_queues.html'>About Section</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='scroll_bar_controls.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                           Using the Print Queue
+ 
+The following sections describe the printing procedure of a typical MS OS/2
+application. Following these procedures allows an application to print to a
+wide range of output devices.
+ 
+To print graphics output, an application should follow these steps:
+ 
+1  Determine the job properties of the print job.
+ 
+2  Determine the capabilities of the available printers.
+ 
+3  Select a printer by comparing job properties and printer capabilities.
+ 
+4  Open a device context for the printer.
+ 
+5  Associate a presentation space with the printer device context.
+ 
+6  Start the print job.
+ 
+7  Draw the print job in the presentation space.
+ 
+8  End the print job.
+ 
+9  Destroy the printer device context.
+ 
+<b>Retrieving Data from Initialization Files</b>
+ 
+The following code fragment shows how to use the PrfQueryProfileString
+function to retrieve information from the os2.ini and os2sys.ini files. In
+this case, the code retrieves the default printer and queue:
+ 
+NPSZ npszPrinterName;
+NPSZ npszDriverName;
+NPSZ npszModelName;
+NPSZ npszQueueName;
+CHAR szPath[80];
+SHORT i, j;
+ 
+/* Get default printer. */
+ 
+PrfQueryProfileString(
+    HINI_USERPROFILE,           /* query os2.ini           */
+    "PM_SPOOLER",               /* application name        */
+    "PRINTER",                  /* keyname                 */
+    (PSZ) NULL,                 /* error value             */
+    szPath,                     /* buffer receiving string */
+    sizeof(szPath));            /* buffer size             */
+ 
+/* Truncate string at first semicolon. */
+ 
+for (i = 0; (szPath[i] != '\0') &amp;&amp; (szPath[i] != ';'); i++);
+szPath[i] = '\0';
+ 
+/* Copy string */
+ 
+strcpy(npszPrinterName, szPath);
+ 
+/*
+ * Get the default queue in the same way, using "QUEUE" as the
+ * keyname instead of "PRINTER". The following code shows how to get
+ * the name of the printer driver and model information (if any).
+ */
+ 
+PrfQueryProfileString(
+   HINI_SYSTEMPROFILE,          /* query os2sys.ini        */
+   "PM_SPOOLER_QUEUE_DD",       /* application name        */
+   npszQueueName,               /* keyname                 */
+   (PSZ) NULL,                  /* error value             */
+   szPath,                      /* buffer receiving string */
+   sizeof(szPath));             /* buffer size             */
+ 
+/* Parse the driver and model names. */
+ 
+for (i = 0; szPath[i] != '.' &amp;&amp; szPath[i] != ';'
+    &amp;&amp; szPath[i] != '\0'; i++);
+ 
+if (szPath[i] == '\0')
+    return (ERROR);                        /* no driver or model  */
+else if (szPath[i] == '.') {               /* if no model name    */
+    szPath[i++] = '\0';
+    strcpy(npszDriverName, szPath);        /* set driver name     */
+    for (j = i; szPath[j] != ';'; j++);    /* find model-name end */
+    szPath[j] = '\0';
+    strcpy(npszModelName, szPath + i);     /* copy model name     */
+}
+else {
+    szPath[i] = '\0';
+    strcpy(npszDriverName, szPath);        /* set driver name     */
+    strcpy(npszModelName, npszDriverName); /* model equals driver */
+}
+ 
+<b>Enabling the User to Set Job Properties</b>
+ 
+The following code fragment shows how to use the DevPostDeviceModes function
+to enable the user to set job properties. This example calls
+<b>DevPostDeviceModes</b> twice. The first time, the code passes
+<b>DevPostDeviceModes</b> the names of the device driver, model, and printer that
+were retrieved by using the PrfQueryProfileString function, and
+<b>DevPostDeviceModes</b> returns the size of the buffer required to store data
+from the device driver. After allocating memory for this buffer, the example
+calls DevPostDeviceModes again, to display the job-properties dialog box.
+When the user makes choices in the dialog box, DevPostDeviceModes fills the
+buffer with the job properties.
+ 
+NPSZ npszPrinterName;
+NPSZ npszDriverName;
+NPSZ npszModelName;
+LONG cbBuf;              /* size of buffer for DevPostDeviceModes */
+PDRIVDATA pdriv;         /* buffer for job properties             */
+SEL sel;                 /* selector to memory for job properties */
+ 
+cbBuf = DevPostDeviceModes(hab,  /* handle of anchor block        */
+    (PDRIVDATA) NULL,            /* returns size of buffer needed */
+    npszDriverName,              /* driver name                   */
+    npszModelName,               /* device name                   */
+    npszPrinterName,             /* printer name                  */
+    DPDM_POSTJOBPROP);           /* display dialog box            */
+ 
+DosAllocSeg((USHORT) cbBuf, &amp;sel, SEG_NONSHARED);
+pdriv = MAKEP(sel, 0);
+ 
+DevPostDeviceModes(hab,          /* handle of anchor block        */
+    pdriv,                       /* buffer for driver data        */
+    npszDriverName,              /* driver name                   */
+    npszModelName,               /* device name                   */
+    npszPrinterName,             /* printer name                  */
+    DPDM_POSTJOBPROP);           /* display dialog box            */
+ 
+The second call to the DevPostDeviceModes function fills a buffer with
+driver data. You can use this buffer when you call the DevOpenDC function to
+open a device context for the printer.
+ 
+<b>Opening a Printer Device Context</b>
+ 
+After the user has chosen the printer to use for the print job and
+customized the job properties, the application can open a device context for
+the specified printer device driver. The following code fragment uses the
+PM_Q_STD data type to open a print job that is stored in the spooler as a
+metafile. The first two fields of the DEVOPENSTRUC structure are a queue
+name and driver name that were retrieved in earlier calls to the
+<b>PrfQueryProfileString</b> function.
+ 
+If the application has used the DevPostDeviceModes function to fill a buffer
+with job properties, the application passes that buffer to the DevOpenDC
+function in the third field of the DEVOPENSTRUC structure. Otherwise, this
+field points to a DRIVDATA structure.
+ 
+HDC hdcPrinter;
+DEVOPENSTRUC dop;
+NPSZ npszQueueName;
+NPSZ npszPrinterName;
+PDRIVDATA pdriv;
+ 
+dop.pszLogAddress = npszQueueName;  /* logical address (queue name)  */
+dop.pszDriverName = npszDriverName; /* driver name                   */
+dop.pdriv         = pdriv;          /* pointer to DRIVDATA structure */
+dop.pszDataType   = "PM_Q_STD";     /* store job as metafile         */
+ 
+hdcPrinter = DevOpenDC(hab,         /* handle of anchor block        */
+    OD_QUEUED,                      /* uses spooler                  */
+    "*",                            /* does not use os2.ini          */
+    4L,                             /* number of fields used in dop  */
+    (PDEVOPENDATA) &amp;dop,            /* pointer to dop structure      */
+    (HDC) NULL);
+ 
+<b>Determining the Page Size</b>
+ 
+After opening a printer device context, the application must determine the
+page size supported by the printer. The following code fragment shows how to
+use the DevQueryHardcopyCaps function to determine the width, height, and
+clipping limits of the current page. DevQueryHardcopyCaps is called twice;
+the first time it returns the number of forms supported by the printer, and
+the second time it fills an array of HCINFO structures.
+ 
+HDC hdcPrinter;
+PHCINFO pahci;
+SEL sel;
+SHORT i;
+LONG cForms, lFormWidth, lFormHeight;
+LONG lClipLeft, lClipRight, lClipTop, lClipBottom;
+ 
+cForms = DevQueryHardcopyCaps(hdcPrinter,  /* handle of printer DC   */
+    0L,                                    /* from index zero        */
+    0L,                                    /* get all forms          */
+    (PHCINFO) NULL);                       /* no buffer for query    */
+ 
+DosAllocSeg((USHORT) (cForms * sizeof(HCINFO)), &amp;sel, SEG_NONSHARED);
+pahci = MAKEP(sel, 0);
+ 
+DevQueryHardcopyCaps(hdcPrinter,         /* handle of printer DC     */
+    0L,                                  /* from index zero          */
+    cForms,                              /* number of forms to query */
+    pahci);                              /* structures for forms     */
+ 
+for (i = 0; !pahci[i].flAttributes; i++); /* find current form       */
+lFormWidth = pahci[i].cx;                 /* get page width (in mm)  */
+lFormHeight = pahci[i].cy;                /* get page height (in mm) */
+lClipLeft = pahci[i].xLeftClip;           /* get left clip limit     */
+lClipRight = pahci[i].xRightClip;         /* get right clip limit    */
+lClipTop = pahci[i].yTopClip;             /* get top clip limit      */
+lClipBottom = pahci[i].yBottomClip;       /* get bottom clip limit   */
+ 
+<b>Opening a Presentation Space for Printing</b>
+ 
+The following code fragment uses the GpiCreatePS function to open a
+presentation space for printing. Because GPIA_ASSOC is specified, calling
+the GpiAssociate function is not required before the application begins
+drawing to the presentation space. Specifying GPIA_ASSOC also allows the
+application to specify zero for the fields of the SIZEL structure.
+ 
+HPS hpsPrinter;
+HDC hdcPrinter;
+SIZEL sizl;
+ 
+sizl.cx = sizl.cy = 0L;          /* zero because GPI_ASSOC is used   */
+ 
+hpsPrinter = GpiCreatePS(hab,    /* handle of anchor block           */
+    hdcPrinter,                  /* handle of printer device context */
+    &amp;sizl,                       /* pointer to SIZEL structure       */
+    PU_LOENGLISH |               /* drawing units are .01 inches     */
+    GPIT_NORMAL |                /* use normal presentation space    */
+    GPIA_ASSOC);                 /* associate with device context    */
+ 
+<b>Printing a Document</b>
+ 
+After you have created a presentation space for drawing and associated it
+with a printer device context, you can print your document by drawing into
+the presentation space. Every print job begins with a call to the DevEscape
+function that specifies the DEVESC_STARTDOC escape and ends with a call to
+<b>DevEscape</b> that specifies the DEVESC_ENDDOC escape. If the print job is more
+than one page, the application calls DevEscape and specifies the
+DEVESC_NEWFRAME escape between each page. (An application need not specify
+DEVESC_NEWFRAME before the first page of a document or after the last
+page.)
+ 
+HDC hdcPrinter;
+ 
+DevEscape(hdcPrinter,            /* handle of printer device context */
+    DEVESC_STARTDOC,             /* start the document               */
+    13L,                         /* number of bytes in input data    */
+    (PBYTE) "Test Document",     /* input data                       */
+    (PLONG) NULL,                /* output data                      */
+    (PBYTE) NULL);               /* output data                      */
+    .
+    . /* Draw first page into presentation space.                    */
+    .
+DevEscape(hdcPrinter,            /* handle of printer device context */
+    DEVESC_NEWFRAME,             /* end page, begin new page         */
+    0L,                          /* other parameters not used        */
+    (PBYTE) NULL,
+    (PLONG) NULL,
+    (PBYTE) NULL);
+    .
+    . /* Draw new pages, calling DEVESC_NEWFRAME before each.        */
+    .
+DevEscape(hdcPrinter,            /* handle of printer device context */
+    DEVESC_ENDDOC,               /* end the document                 */
+    13L,                         /* number of bytes in input data    */
+    (PBYTE) "Test Document",     /* input data                       */
+    (PLONG) NULL,                /* output data                      */
+    (PBYTE) NULL);               /* output data                      */
+ 
+The third parameter of the DevEscape function is a string that is displayed
+by the queue manager as the name of the print job. Typically, the
+application supplies a filename for this parameter. If an application
+specifies a string in this parameter, it should not specify a string in the
+fifth field of the DEVOPENSTRUC structure.
+ 
+If a document is larger than one page, the application must divide it on
+page boundaries and translate each page to the origin of the device page.
+The following code fragment demonstrates how to translate a page left by the
+width of one page. (The SIZEL structure in this code fragment contains the
+width and height of the device page.) The call to the
+<b>GpiQueryDefaultViewMatrix function fills a MATRIXLF structure with the</b>
+current transformation values. GpiTranslate changes the values in the
+matrix, and GpiSetDefaultViewMatrix makes the changed matrix the new default
+matrix for the presentation space.
+ 
+MATRIXLF matlf;
+SIZEL sizl;
+POINTL ptlTrans;
+ 
+GpiQueryDefaultViewMatrix(
+    hpsPrinter,                     /* handle of presentation space  */
+    9L,                             /* number of items in matrix     */
+    &amp;matlf);                        /* pointer to MATRIXLF structure */
+ 
+ptlTrans.x = -sizl.cx;              /* translate left one page width */
+ptlTrans.y = 0L;                    /* no vertical translation       */
+ 
+GpiTranslate(hpsPrinter,            /* handle of presentation space  */
+    &amp;matlf,                         /* pointer to MATRIXLF structure */
+    TRANSFORM_REPLACE,              /* replace previous matrix       */
+    &amp;ptlTrans);                     /* pointer to POINTL structure   */
+ 
+GpiSetDefaultViewMatrix(
+    hpsPrinter,                     /* handle of presentation space  */
+    9L,                             /* number of items in matrix     */
+    &amp;matlf,                         /* pointer to MATRIXLF structure */
+    TRANSFORM_REPLACE);             /* replace previous matrix       */
+ 
+<b>Printing a Bitmap</b>
+ 
+To print a bitmap, you must create it in or load it into a printer memory
+presentation space and then use the GpiBitBlt function to copy it to the
+printer presentation space.
+ 
+When you open the printer's memory device context, you must specify the
+printer device context as the last parameter of the DevOpenDC function. This
+ensures that the printer's memory device context is fully compatible with
+the printer device context.
+ 
+The following code fragment shows how to print a bitmap that was created
+outside the application. The bitmap resource, identified by the IDD_BITMAP
+identifier, is loaded by using the GpiLoadBitmap function.
+ 
+POINTL aptl[4];
+HBITMAP hbm;
+HDC hdcScreenMem, hdcPrintMem;
+HPS hpsScreenMem, hpsPrintMem;
+SIZEL sizl;
+ 
+PSZ apszData[4] = { "DISPLAY", NULL, NULL, NULL };
+ 
+sizl.cx = sizl.cy = 0L;            /* zero because GPI_ASSOC is used */
+ 
+/* Create a DC and PS for the printer.                               */
+ 
+dop.pszLogAddress = npszQueueName;  /* logical address (queue name)  */
+dop.pszDriverName = npszDriverName; /* driver name                   */
+dop.pdriv         = pdriv;          /* pointer to DRIVDATA structure */
+dop.pszDataType   = "PM_Q_STD";     /* stores data as metafile       */
+ 
+hdcPrinter = DevOpenDC(hab, OD_QUEUED, "*", 4L, (PDEVOPENDATA) &amp;dop,
+    (HDC) NULL);
+ 
+hpsPrinter = GpiCreatePS(hab, hdcPrinter, &amp;sizl,
+    PU_PELS | GPIT_NORMAL | GPIA_ASSOC);
+ 
+/* Create a memory DC and PS for the printer.                        */
+ 
+hdcPrintMem = DevOpenDC(hab, OD_MEMORY, "*", 0L, (PDEVOPENDATA) NULL,
+    hdcPrinter);
+ 
+hpsPrintMem = GpiCreatePS(hab, hdcPrintMem, &amp;sizl,
+    PU_PELS | GPIT_NORMAL | GPIA_ASSOC);
+ 
+/* Load the bitmap from the resource into the printer memory PS.     */
+ 
+hbm = GpiLoadBitmap(hpsPrintMem, (HMODULE) NULL, IDD_BITMAP, 100L, 100L);
+ 
+/* Set the bitmap for the printer's memory PS.                       */
+ 
+GpiSetBitmap(hpsPrintMem, hbm);
+ 
+/* Send the bitmap from the printer memory PS to the printer PS.     */
+ 
+DevEscape(hdcPrinter, DEVESC_STARTDOC, 13L, /* start document        */
+    (PBYTE) "Test Document", (PLONG) NULL, (PBYTE) NULL);
+ 
+aptl[0].x = aptl[0].y = 100L;     /* lower-left corner target rect.  */
+aptl[1].x = aptl[1].y = 400L;     /* upper-right corner target rect. */
+aptl[2].x = aptl[2].y = 0L;       /* lower-left corner source rect.  */
+aptl[3].x = aptl[3].y = 100L;     /* upper-right corner source rect. */
+ 
+GpiBitBlt(hpsPrinter,             /* destination is printer PS       */
+    hpsPrintMem,                  /* source is printer memory PS     */
+    4L,                           /* no. of points for bitmap sizes  */
+    aptl,                         /* structures for bitmap sizes     */
+    ROP_SRCCOPY,                  /* copy to target                  */
+    BBO_OR);                      /* compression mode                */
+ 
+DevEscape(hdcPrinter, DEVESC_ENDDOC, 13L, /* end document            */
+    (PBYTE) "Test Document", (PLONG) NULL, (PBYTE) NULL);
+ 
+/* Clean up. */
+ 
+GpiSetBitmap(hpsPrintMem, (HBITMAP) NULL);
+GpiDeleteBitmap(hbm);
+GpiAssociate(hpsPrinter, (HDC) NULL);
+GpiDestroyPS(hpsPrinter);
+GpiAssociate(hpsPrintMem, (HDC) NULL);
+GpiDestroyPS(hpsPrintMem);
+DevCloseDC(hdcPrinter);
+DevCloseDC(hdcPrintMem);
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

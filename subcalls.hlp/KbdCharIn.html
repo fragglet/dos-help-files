@@ -1,0 +1,125 @@
+<html>
+
+<head>
+<title>KbdCharIn (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> KbdCharIn (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Keyboard 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L8017.html'>Changes</a><span class='grhilite'>►</span>                </i>                 <span class='grhilite'>◄</span><a href='kbd.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='KbdClose.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_KBD
+ 
+USHORT KbdCharIn(pkbci, fWait, hkbd)
+PKBDKEYINFO pkbci;    /* pointer to structure for keystroke info. */
+USHORT fWait;         /* wait/no-wait flag                        */
+HKBD hkbd;            /* keyboard handle                          */
+ 
+The KbdCharIn function retrieves character and scan-code information from a
+logical keyboard. The function copies the information to a specified
+structure. Keystroke information includes the character value of a given
+key, the scan code, the keystroke status, the state of the shift keys, and
+the system time (in milliseconds) when the keystroke occurred.
+ 
+The KbdCharIn function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pkbci      Poin</i>ts to the KBDKEYINFO structure that receives the keystroke
+           information.
+ 
+<i>fWait</i>      Specifies whether to wait for keystroke information if none is
+           available. If this parameter is IO_WAIT, the function waits for a
+           keystroke if one is not available. If this parameter is
+           IO_NOWAIT, the function returns immediately whether or not it
+           retrieved any keystroke information. The fbStatus field in the
+           KBDKEYINFO structure specifies whether a keystroke is received.
+           The fbStatus field is nonzero if a keystroke is received or zero
+           if not.
+ 
+<i>hkbd</i>       Identifies the logical keyboard. The handle must have been
+           created by using the KbdOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_KBD_FOCUS_REQUIRED
+     ERROR_KBD_INVALID_IOWAIT
+     ERROR_KBD_INVALID_HANDLE
+ 
+<b>Comments</b>
+ 
+The KbdCharIn function copies and removes keystroke information from the
+input buffer of the specified logical keyboard. Although echo mode for the
+logical keyboard may be turned on, KbdCharIn does not echo the characters it
+reads. If the keyboard is in ASCII mode, KbdCharIn retrieves keystroke
+information for each key pressed except shift keys. If the keyboard is in
+binary mode, KbdCharIn retrieves keystroke information for any key pressed
+except shift keys. In most cases, a shift key is pressed in combination with
+other keys to create a single keystroke. In binary mode with shift reporting
+turned on, a shift key by itself creates a keystroke this function can
+retrieve. For more information on binary mode and shift-reporting mode, see
+the KbdSetStatus function.
+ 
+The KbdCharIn function retrieves extended ASCII codes, such as when the ALT
+key and another key, called the primary key, are pressed simultaneously.
+When the function retrieves an extended code, it sets the chChar field of
+the KBDKEYINFO structure to 0x0000 or 0x00E0. It also sets the fbStatus
+field to EXTENDED_CODE and copies the extended code to the chScan field.
+Note that both fields need to be examined to determine whether an extended
+code has been received. The extended code is usually the scan code of the
+primary key. In ASCII mode, the function retrieves only complete extended
+codes, which means that if both bytes of the extended code do not fit in the
+buffer, neither byte is retrieved.
+ 
+This function must be called twice to retrieve a code for a double-byte
+character set (DBCS). If the code retrieved is the first byte of a
+double-byte character, the fbStatus field of the KBDKEYINFO structure is set
+to 0x0080.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restrictions apply to the KbdCharIn function:
+ 
+♦  It does not copy the system time to the KBDKEYINFO structure and there is
+   no interim character support.
+ 
+♦  It retrieves characters only from the default logical keyboard (handle
+   0).
+ 
+♦  The fbStatus field can be 0x0000 or SHIFT_KEY_IN.
+ 
+♦  The hkbd parameter is ignored.
+ 
+<b>Example</b>
+ 
+This example calls the KbdCharIn function to retrieve a character, and then
+displays the character on the screen.
+ 
+KBDKEYINFO kbci;
+KbdCharIn(&amp;kbci,                  /* structure for data */
+    IO_WAIT,                      /* waits for key      */
+    0);                           /* keyboard handle    */
+VioWrtTTY(&amp;kbci.chChar, 1, 0);
+ 
+<b>See Also</b>
+ 
+<b>KbdGetStatus, KbdOpen, KbdPeek, KbdSetStatus, KbdStringIn, KBDKEYINFO</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

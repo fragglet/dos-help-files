@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<title>GpiPaintRegion (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiPaintRegion (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Region_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Regions 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiPartialArc.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIREGIONS
+ 
+LONG GpiPaintRegion(hps, hrgn)
+HPS hps;      /* presentation-space handle */
+HRGN hrgn;    /* region handle             */
+ 
+The GpiPaintRegion function paints the region specified by the hrgn
+parameter. The function paints a region by filling it with the current fill
+pattern, applying the current area colors and mix modes as it fills the
+region.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>hrgn</i>       Identifies the region.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK or GPI_HITS if the function is successful (it is
+GPI_HITS if the detectable attribute is set for the presentation space and a
+correlation hit occurs). The return value is GPI_ERROR if an error occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_HRGN
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiPaintRegion function to fill a complex region
+consisting of three, intersecting rectangles. The region is filled with a
+red, diagonal pattern.
+ 
+HRGN hrgn;                               /* handle for region */
+RECTL arcl[3] = { 100, 100, 200, 200,    /* 1st rectangle     */
+    150, 150, 250, 250,                  /* 2nd rectangle     */
+    200, 200, 300, 300 };                /* 3rd rectangle     */
+ 
+hrgn = GpiCreateRegion(hps, 3L, arcl);
+GpiSetColor(hps, CLR_RED);
+GpiSetPattern(hps, PATSYM_DIAG1);
+GpiPaintRegion(hps, hrgn);
+ 
+<b>See Also</b>
+ 
+<b>GpiCreateRegion, GpiSetAttrs, GpiSetColor, GpiSetPattern,</b>
+<b>GpiSetPatternRefPoint, GpiSetPatternSet</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

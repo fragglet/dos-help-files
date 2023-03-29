@@ -1,0 +1,114 @@
+<html>
+
+<head>
+<title>GpiSetPS (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiSetPS (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='presentation_spaces.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Presentation Spaces and Device Contexts 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L810c.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> </i><span class='grhilite'>◄</span><a href='GpiSetRegion.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPICONTROL
+ 
+BOOL GpiSetPS(hps, psizl, flOptions)
+HPS hps;            /* presentation-space handle                        */
+PSIZEL psizl;       /* address of structure for presentation-space size */
+ULONG flOptions;    /* options                                          */
+ 
+The GpiSetPS function sets the page size and units for the presentation
+space. This function is often used to change the device transformation for
+the presentation space.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>psizl      Poin</i>ts to the SIZEL structure that contains the size of the
+           presentation space.
+ 
+<i>flOptions</i>  Specifies the presentation-space options. The options define the
+           page unit for the presentation space. Although the flOptions
+           parameter can include many other options (as specified by the
+           GpiCreatePS function), the GpiSetPS function ignores all but the
+           following options:
+ 
+           Option        Meaning
+           ─────────────────────────────────────────────────────────────────
+           PU_ARBITRARY  Sets the page units to pels, but permits the units
+                         to be modified later by using the
+                         GpiSetPageViewport function.
+ 
+           PU_HIENGLISH  Sets the units to 0.001 inch.
+ 
+           PU_HIMETRIC   Sets the units to 0.01 millimeter.
+ 
+           PU_LOENGLISH  Sets the units to 0.01 inch.
+ 
+           PU_LOMETRIC   Sets the units to 0.1 millimeter.
+ 
+           PU_PELS       Sets the units to pels.
+ 
+           PU_TWIPS      Sets the units to 1/1440 inch (1/20 point).
+ 
+           GPIF_DEFAULT  Specifies that coordinates are stored as 4-byte
+                         integers (LONG). This value is the same as
+                         GPIF_LONG.
+ 
+           GPIF_SHORT    Specifies that coordinates are stored as 2-byte
+                         integers.
+ 
+           GPIF_LONG     Specifies that coordinates are stored as 4-byte
+                         integers.
+ 
+           PS_NORESET    Specifies that the presentation space cannot be
+                         fully reset, and that a reset equivalent to
+                         GRES_SEGMENTS is performed. (Otherwise, a full
+                         reset, equivalent to GRES_ALL, is performed.)
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HDC
+     PMERR_INV_HPS
+     PMERR_INV_OR_INCOMPAT_OPTIONS
+     PMERR_INV_PS
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+The GpiSetPS function does not affect the device context associated with the
+presentation space. This means the device context already associated remains
+associated. Also, the function does not change the type of presentation
+space. (Presentation-space types include the micro-presentation space and
+the normal presentation space.)
+ 
+When this function is called, it resets the presentation space to a state
+that is equivalent to setting the value GRES_ALL in the GpiResetPS
+function.
+ 
+<b>See Also</b>
+ 
+<b>GpiCreatePS, GpiResetPS, SIZEL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

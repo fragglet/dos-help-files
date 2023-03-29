@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>DosSetNmPipeSem (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosSetNmPipeSem (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='named_pipes.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Interprocess Communication 1.2'>Overview</a><span class='grhilite'>►</span>                  </i>        <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosSetPathInfo.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSNMPIPES
+ 
+USHORT DosSetNmPipeSem(hp, hsem, usKeyVal)
+HPIPE hp;           /* pipe handle            */
+HSEM hsem;          /* semaphore handle       */
+USHORT usKeyVal;    /* key value to associate */
+ 
+The DosSetNmPipeSem function associates a semaphore with a named pipe.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hp</i>         Identifies the named pipe.
+ 
+<i>hsem</i>       Identifies the semaphore to associate with the pipe.
+ 
+<i>usKeyVal</i>   Specifies a key identifier to associate with the named pipe.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_INVALID_FUNCTION
+     ERROR_PIPE_NOT_CONNECTED
+     ERROR_SEM_NOT_FOUND
+ 
+<b>Comments</b>
+ 
+Up to two semaphores can be attached to a named pipe; one for the serving
+end of the pipe and one for the client end of the pipe. If a semaphore is
+already attached to one end of the named pipe, the old semaphore will be
+overwritten.
+ 
+The DosSetNmPipeSem function only returns successfully for local named
+pipes. If the DosSetNmPipeSem function attempts to associate a semaphore
+with a remote named pipe, an ERROR_INVALID_FUNCTION error value is returned
+by the DosSetNmPipeSem function.
+ 
+The DosSetNmPipeSem function allows a serving application that needs to
+handle a large number of incoming named pipes to avoid dedicating a thread
+for each named pipe and avoid polling the pipes. An application can instead
+call the DosSemWait or DosMuxSemWait function to determine when I/O can be
+performed on the pipe semaphore(s). This allows a large number of named
+pipes to be handled in an event-driven way, using only a small number of
+threads. The DosQNmPipeSemState function can be used to provide additional
+information about what I/O can be performed on the set of pipes.
+ 
+<b>See Also</b>
+ 
+<b>DosMuxSemWait, DosQNmPipeSemState, DosSemWait</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

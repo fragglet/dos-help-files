@@ -1,0 +1,206 @@
+<html>
+
+<head>
+<title>Using Area Primitives (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Area Primitives (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='areas.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#area functions 1.2'>Function Group</a><span class='grhilite'>►</span>       </i>              <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Bitmaps.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                      Using Areas and Area Primitives
+ 
+You can use area functions to perform the following tasks:
+ 
+♦  Draw a single closed figure.
+ 
+♦  Draw multiple intersecting closed figures.
+ 
+♦  Draw multiple disjoint closed figures.
+ 
+♦  Draw any combination of the three.
+ 
+♦  Create a custom fill pattern from a bitmap.
+ 
+♦  Create a custom fill pattern from a font character.
+ 
+<b>Drawing a Single Closed Figure</b>
+ 
+The following code fragment shows how to use area functions to draw a single
+closed figure that is filled using the alternate mode. The closed figure in
+this example is a five-pointed star.
+ 
+/* Initialize the array of points for the 5-pointed star. */
+ 
+aptl[0].x = 37; aptl[0].y = 82;
+aptl[1].x = 400; aptl[1].y = 195;
+aptl[2].x = 40; aptl[2].y = 320;
+aptl[3].x = 260; aptl[3].y = 10;
+aptl[4].x = 260; aptl[4].y = 390;
+aptl[5].x = 37; aptl[5].y = 82;
+ 
+/* Draw the star. */
+ 
+GpiBeginArea(hps, BA_ALTERNATE);
+GpiMove(hps, aptl);
+GpiPolyLine(hps, 6L, aptl);
+GpiEndArea(hps);
+ 
+<b>Drawing Multiple Intersecting Closed Figures</b>
+ 
+The following code fragment shows how to use area functions to draw two
+intersecting boxes that are filled using the winding mode:
+ 
+GpiBeginArea(hps, BA_WINDING);
+ptl.x = 500; ptl.y = 300;
+GpiMove(hps, &amp;ptl);
+ptl.x = 700; ptl.y = 500;
+GpiBox(hps, DRO_OUTLINE, &amp;ptl, 0L, 0L);
+ptl.x = 580; ptl.y = 370;
+GpiMove(hps, &amp;ptl);
+ptl.x = 780; ptl.y = 570;
+GpiBox(hps, DRO_OUTLINE, &amp;ptl, 0L, 0L);
+GpiEndArea(hps);
+ 
+<b>Drawing Multiple Disjoint Closed Figures</b>
+ 
+The following code fragment shows how to use area functions to draw two
+disjoint boxes that are filled using the winding mode:
+ 
+GpiBeginArea(hps, BA_WINDING);
+ptl.x = 100; ptl.y = 200;
+GpiMove(hps, &amp;ptl);
+ptl.x = 200; ptl.y = 400;
+GpiBox(hps, DRO_OUTLINE, &amp;ptl, 0L, 0L);
+ptl.x = 580; ptl.y = 470;
+GpiMove(hps, &amp;ptl);
+ptl.x = 780; ptl.y = 570;
+GpiBox(hps, DRO_OUTLINE, &amp;ptl, 0L, 0L);
+GpiEndArea(hps);
+ 
+<b>Creating a Custom Fill Pattern from a Bitmap</b>
+ 
+The following code fragment shows how to create a custom fill pattern by
+using a hard-coded bitmap, which in this example creates a cross-hatch
+pattern:
+ 
+CreatePattern();
+GpiSetPatternSet(hps, lcidCustom);
+    .
+    .
+    .
+CreatePattern()
+{
+ 
+    /* Bitmap information */
+ 
+    HBITMAP hbm;             /* bitmap handle                    */
+    BITMAPINFOHEADER bmp;    /* structure for bitmap information */
+    PBITMAPINFO pbmi;        /* pointer to structure for data    */
+    CHAR cBuffer[80];        /* structure template               */
+ 
+    bmp.cbFix = 12;        /* length of structure */
+    bmp.cx = 8;            /* 8 pels wide         */
+    bmp.cy = 8;            /* 8 pels high         */
+    bmp.cPlanes = 1;       /* 1 plane             */
+    bmp.cBitCount = 1;     /* 1 bit per pel       */
+ 
+    /*
+     * Initialize the bitmap data by loading "cBuffer" with the bitmap
+     * information.
+     */
+ 
+    pbmi = (PBITMAPINFO) cBuffer;
+    pbmi-&gt;cbFix = 12;       /* length of structure */
+    pbmi-&gt;cx = 8;           /* 8 bits wide         */
+    pbmi-&gt;cy = 8;           /* 8 bits high         */
+    pbmi-&gt;cPlanes = 1;      /* 1 plane             */
+    pbmi-&gt;cBitCount = 1;    /* 1 bit per pel       */
+ 
+    /* Initialize first two color-table entries to black and white. */
+ 
+    pbmi-&gt;argbColor[0].bRed = 0;       /* Color[0] = black */
+    pbmi-&gt;argbColor[0].bGreen = 0;     /* Color[0] = black */
+    pbmi-&gt;argbColor[0].bBlue = 0;      /* Color[0] = black */
+    pbmi-&gt;argbColor[1].bRed = 255;     /* Color[1] = white */
+    pbmi-&gt;argbColor[1].bGreen = 255;   /* Color[1] = white */
+    pbmi-&gt;argbColor[1].bBlue = 255;    /* Color[1] = white */
+ 
+    /* Create a bitmap and retrieve its handle. */
+ 
+    hbm = GpiCreateBitmap(hps,
+        &amp;bmp,
+        CBM_INIT,
+        (PBYTE) abPattern5,   /* array of bits */
+        pbmi);
+ 
+    /* Tag the bitmap just created with a custom identifier (lcid). */
+ 
+    GpiSetBitmapId(hps, hbm, lcidCustom);
+}
+ 
+<b>Creating a Custom Fill Pattern from a Font Character</b>
+ 
+The following code fragment shows how to create a custom fill pattern by
+using a character from a font:
+ 
+LoadFont();
+GpiSetPatternSet(hps, lcidCustom);
+GpiSetPattern(hps, lCodePoint);
+    .
+    .
+    .
+LoadFont()
+{
+ 
+    /* Determine the number of loaded public fonts. */
+ 
+    cFonts = GpiQueryFonts(hps, QF_PUBLIC, NULL, &amp;lCount,
+        (LONG) (sizeof(fm)), (PFONTMETRICS) afm);
+ 
+    /* Load the metrics for all public fonts into afm. */
+ 
+    cFonts = GpiQueryFonts(hps, QF_PUBLIC, NULL, &amp;lCount,
+        (LONG) (sizeof(fm)), (PFONTMETRICS) afm);
+ 
+    /* Grab the first image font with a point size larger than 8. */
+ 
+    for(i = 1;
+        (afm[i].fsDefn % 2 != 0) &amp;&amp;
+        (afm[i].sNominalPointSize / 10 &gt;= 8);
+        i++);
+ 
+    /* Load the FATTRS structure with corresponding metrics. */
+ 
+    fat.usRecordLength = sizeof(fat);
+    fat.fsSelection = afm[i].fsSelection;
+    fat.lMatch = afm[i].lMatch;
+    strcpy(fat.szFacename, afm[i].szFacename);
+    fat.idRegistry = afm[i].idRegistry;
+    fat.usCodePage = afm[i].usCodePage;
+    fat.lMaxBaselineExt = afm[i].lMaxBaselineExt;
+    fat.lAveCharWidth = afm[i].lAveCharWidth;
+    fat.fsType = afm[i].fsType;
+    fat.fsFontUse = 0;
+ 
+    /* Ask MS OS/2 to select this font and assign it a custom lcid. */
+ 
+    GpiCreateLogFont(hps, (PSTR8) cBuffer, lcidCustom, (PFATTRS) &amp;fat);
+    GpiSetCharSet(hps, lcidCustom);
+}
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,367 @@
+<html>
+
+<head>
+<title>Using Help Manager (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Help Manager (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Help_Manager.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#help functions 1.2'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#help messages 1.2'>Message Group</a><span class='grhilite'>►</span>    </i><span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Installable_File_Systems.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                             Using Help Manager
+ 
+When using an application, a user should have three ways to access help: by
+pressing the F1 key, by choosing commands from the Help menu, and by
+clicking a Help button. Help Manager provides support for all three methods.
+The following sections explain how to enable this support for your
+application.
+ 
+<b>Creating a Help Instance</b>
+ 
+An application can create an instance of Help Manager by using the
+<b>WinCreateHelpInstance</b> function. This function installs a help hook,
+initializes Help Manager for help processing, and returns a help-instance
+window handle. The application uses the help-instance window handle to
+direct Help Manager to carry out requests for help.
+ 
+To create a help instance, the application first fills a HELPINIT structure
+with information about the help table, the title of the help window, and the
+help library for the help instance. In the following example, the hinit
+parameter is the HELPINIT structure. The hab parameter is the anchor-block
+handle of the application, returned by the WinInitialize function.
+ 
+HAB hab;
+HWND hwndHelp;
+HELPINIT hinit = {
+    sizeof(HELPINIT),                /* count of bytes in structure    */
+    0L,                              /* return value from Help Manager */
+    NULL,                            /* pointer to tutorial name       */
+    MAKELONG(MY_RESOURCES, 0xFFFF)   /* resource ID for help table     */
+    NULL,                            /* handle to help table           */
+    NULL,                            /* handle to replacement menu     */
+    0,                               /* replacement accelerator ID     */
+    0,                               /* replacement menu ID            */
+    "My Help!",                      /* help-window title              */
+    CMIC_HIDE_PANEL_ID,              /* display help title only        */
+    "c:\\os2\\help\\myhelp.hlp"      /* path to help library           */
+    };
+ 
+hwndHelp = WinCreateHelpInstance(hab, &amp;hinit);
+ 
+The application must associate the help instance with a window by using the
+<b>WinAssociateHelpInstance</b> function. This association tells Help Manager which
+help instance to use when the user requests help in the window or in any of
+that window's child or owned windows. A help instance can be associated with
+any frame window (that is, any window created with the WC_FRAME class). The
+application always can retrieve the handle of the associated window for a
+help instance by using the WinQueryHelpInstance function.
+ 
+The user requests help by pressing the F1 key, by choosing a command from
+the Help menu, or by clicking a Help button. These actions cause MS OS/2 to
+send a WM_HELP message to an application window procedure. To enable Help
+Manager to process the message and display help, the window procedure should
+pass the WM_HELP message to the WinDefWindowProc or WinDefDlgProc function.
+Although most window procedures immediately pass the WM_HELP message to the
+<b>WinDefWindowProc or WinDefDlgProc function, a wi</b>ndow procedure can carry out
+some processing of the WM_HELP message before it passes the message, as
+shown in the following example. In all cases, however, the window procedure
+must return the value returned by WinDefWindowProc or WinDefDlgProc.
+ 
+case WM_HELP:
+    /* Preprocess the message here. */
+    return (WinDefWindowProc(hwnd, msg, mp1, mp2));
+ 
+<b>Creating a Help Table</b>
+ 
+A help table is a list of window IDs and corresponding help-panel IDs. For
+each help request, Help Manager uses a help table to translate into a panel
+ID the window ID given with the request for help. Every help instance must
+have a help table.
+ 
+The application must create the help table and associate the help table with
+the help instance. An application creates a help table by defining it in a
+resource script file or by initializing a <a href='unknown#PHELPTABLE'>HELPTABLE</a> structure. Most
+applications define the help table in the resource script file, using the
+<b>HELPTABLE and HELPSUBTABLE </b>statements as follows:
+ 
+HELPSUBTABLE MY_MAIN_WINDOW_HELP
+BEGIN
+    HELPSUBITEM  IDM_HELPFORHELP,  IDH_FORHELP
+    HELPSUBITEM  IDM_EXTENDEDHELP, IDH_FOREXTENDED
+    HELPSUBITEM  IDM_KEYSHELP,     IDH_KEYS
+    HELPSUBITEM  IDM_HELPINDEX,    IDH_INDEX
+    HELPSUBITEM  IDM_ABOUT,        IDH_ABOUT
+END
+ 
+HELPSUBTABLE MY_DIALOG_HELP
+BEGIN
+    HELPSUBITEM  MY_DIALOG,      IDH_DLG_EXTENDED
+    HELPSUBITEM  MY_DIALOG_EDIT, IDH_DLG_EDIT
+END
+ 
+HELPTABLE MY_MAIN_WINDOW
+BEGIN
+    HELPITEM MY_MAIN_WINDOW, MY_MAIN_WINDOW_HELP, IDH_EXTENDED
+    HELPITEM MY_DIALOG,      MY_DIALOG_HELP,      IDH_DLG_EXTENDED
+END
+ 
+In the preceding example, the HELPTABLE statement defines the help table. It
+specifies help for two windows: the main window and a dialog window. (The
+MY_MAIN_WINDOW and MY_DIALOG constants, defined elsewhere, must be unique
+and must be equal to the window IDs for these given windows.)
+ 
+The HELPITEM statements within the HELPTABLE statement identify the main and
+dialog windows and the help subtables that apply to them. A help subtable
+specifies the help-panel ID that corresponds to a window ID. The HELPITEM
+statements also specify the help-panel ID for the extended help associated
+with each window. For example, the dialog window has the help subtable
+MY_DIALOG_HELP and the extended help panel IDH_DLG_EXTENDED (the
+MY_DIALOG_HELP and IDH_DLG_EXTENDED constants must be defined elsewhere).
+ 
+The HELPSUBTABLE statements define the window IDs and corresponding
+help-panel IDs for each child window of the specified main or dialog
+window.
+ 
+After receiving a help request, Help Manager determines which window is
+active and uses the ID of the active window to select a help subtable. Help
+Manager then determines the ID of the window that has the input focus (if
+any) and uses the ID of the focus window with the selected help subtable to
+identify the help panel. After Help Manager identifies the help panel, it
+displays the help panel in the help window. Help Manager positions the help
+window next to the "relative" window (the relative window is the window next
+to which the system displays the help window). The relative window is
+usually the active window, but it can be set to another window by using the
+<b>HM_SET_ACTIVE_WINDOW</b> message.
+ 
+<b>Creating a Help Library</b>
+ 
+You create a help library by using a text editor to create a help text file
+and then compiling the help text file with the Information Presentation
+Facility Compiler (IPFC). The help library must contain one or more help
+panels, each with a unique panel ID or name. In the help text file, each
+help panel must start with the :h1 tag. The help text file itself must start
+with the :userdoc. tag and end with the :euserdoc. tag. The following help
+text file contains two help panels:
+ 
+    :userdoc.
+    :h1 res=1.Extended Help
+    Display this help when the user requests extended help.
+    :h1 res=2.Other Help.
+    Display this help when the user requests any other help.
+ 
+    :euserdoc.
+ 
+The res= option with the :h1 tag identifies the panel ID for the help panel.
+The text immediately following the :h1 tag specifies the title of the panel.
+For example, "Extended Help" is the title of the first panel, and "Other
+Help" is the title of the second. All subsequent text, up to the next :h1
+tag, belongs to that help panel.
+ 
+<b>Using the F1 Key</b>
+ 
+The F1 key is the system Help key. Help Manager automatically enables this
+key for a window whenever an application creates a help instance and
+associates it with the frame window. The user can display help for specific
+items in the window, such as menu commands, by selecting the item and
+pressing the F1 key. Whenever the user presses the F1 key, Help Manager
+retrieves the ID of the selected item and uses the ID to locate the
+corresponding help-panel ID. If Help Manager finds a help-panel ID, it
+displays that help panel. Otherwise, it displays the extended help panel.
+ 
+Although Help Manager carries out all processing for the F1 key, the
+application must provide appropriate help-table entries for each item that
+can be selected. If the active window is not directly associated with a help
+instance, Help Manager checks the window's parent and owner windows until it
+finds an associated help instance. It first checks the parent window, the
+parent window of the parent window, and so on, until it finds a window that
+has an associated help instance. Help Manager checks the owner window only
+if the parent-window check ended at the desktop and no help instance was
+found.
+ 
+<b>Using the Help Menu</b>
+ 
+The Help menu lets the user view general help for an application. The menu
+appears as the last (rightmost) menu in the menu bar and contains the
+following commands:
+ 
+<b>Command        Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Help for Help</i>  Displays general information about help and how to access
+               help.
+ 
+<i>Extended Help</i>  Displays information about the application window. This help
+               information can explain the fields in the window, the
+               window's purpose, and how the user should interact with the
+               window.
+ 
+<i>Keys Help</i>      Displays a list of the function keys used by the
+               application.
+ 
+<i>Help index</i>     Displays an alphabetic list of all the help-index entries for
+               the application. The author of the help-text source file
+               creates the help index by including index tags within the
+               help file.
+ 
+<i>About</i>          Displays copyright information for the application. The About
+               command is used only in the Help menu for the application
+               window.
+ 
+The application must create the Help menu, add it to the menu bar, and
+process the menu commands. The most convenient way to create the Help menu
+and add it to the menu bar is to place the following statements in the
+application's MENU statement in the resource script file:
+ 
+SUBMENU "~Help", 1
+BEGIN
+    MENUITEM "~Help for Help...",    IDM_HELPFORHELP
+    MENUITEM "~Extended Help...",    IDM_EXTENDEDHELP
+    MENUITEM "~Keys Help...",        IDM_KEYSHELP
+    MENUITEM "Help ~index...",       IDM_HELPINDEX
+    MENUITEM SEPARATOR
+    MENUITEM "A~bout...",            IDM_ABOUT
+END
+ 
+You can assign any values for the IDM_ constants (IDM_HELPFORHELP and
+IDM_EXTENDEDHELP, for example) as long as the values are unique within the
+menu.
+ 
+To process the menu commands, the window procedure for the application must
+process the WM_COMMAND message. The application receives a WM_COMMAND
+message whenever the user chooses one of the menu commands. For each
+Help-menu command, the application must send an appropriate help message to
+the help instance for the application, as shown in the following
+statements:
+ 
+case WM_COMMAND:
+    switch (SHORT1FROMMP(mp1)) {
+    case IDM_HELPFORHELP:           /* display help for help panel */
+        WinSendMsg(hwndHelp, HM_DISPLAY_HELP,
+                             MPFROMSHORT(IDH_HELPFORHELP),
+                             MPFROMSHORT(HM_RESOURCEID));
+        break;
+    case IDM_EXTENDEDHELP:          /* display extended help       */
+        WinSendMsg(hwndHelp, HM_EXT_HELP, 0L, 0L);
+        break;
+    case IDM_KEYSHELP:              /* display keys help panel     */
+        WinSendMsg(hwndHelp, HM_KEYS_HELP, 0L, 0L);
+        break;
+    case IDM_HELPINDEX:             /* display help index          */
+        WinSendMsg(hwndHelp, HM_HELP_INDEX, 0L, 0L);
+        break;
+    case IDM_ABOUT:                 /* create about dialog box     */
+        WinDlgBox(HWND_DESKTOP, hwnd, MyAboutProc,
+            NULL, MY_ABOUTBOX, NULL); break;
+    }
+    return (0L);
+ 
+In the preceding statements, the HM_DISPLAY_HELP message directs Help
+Manager to display the specific help panel. You can identify the panel by
+using a panel ID or by using a panel name. In this example, the constant
+<b>HM_RESOURCEID</b> directs Help Manager to locate the panel by using the
+IDH_HELPFORHELP panel ID.
+ 
+The HM_EXT_HELP message directs Help Manager to display extended help for
+the help instance. The panel ID for extended help is specified in the help
+table of the help instance. When Help Manager receives HM_EXT_HELP, it uses
+the extended help-panel ID to locate and display extended help.
+ 
+The HM_KEYS_HELP message directs Help Manager to display the help panel that
+contains a description of the application keys. Although the application
+must supply the panel ID for keys help, the HM_KEYS_HELP message does not
+take parameters. Instead, whenever Help Manager receives this message, it
+sends the HM_QUERY_KEYS_HELP message back to the application. The
+application must return the keys-help panel ID as shown in the following
+statements:
+ 
+case HM_QUERY_KEYS_HELP:
+    return (IDH_KEYSHELP);
+ 
+The HM_HELP_INDEX message directs Help Manager to display the help index for
+the help instance. Because the help index has no explicit panel ID, this is
+the only way to display the help index from the application.
+ 
+Although the About command is usually placed in the Help menu, Help Manager
+does not support the About command. The application can use the WinDlgBox
+function to display a dialog box that contains copyright information in
+response to the user's choosing the About command. A corresponding dialog
+template must be defined in the resource script file.
+ 
+<b>Using Help Buttons</b>
+ 
+Help buttons provide an alternative way to display contextual help for
+fields in dialog boxes. A Help button is a push button that displays help
+information when the user clicks it by using the mouse. It usually appears
+in the lower-right part of a dialog box. Clicking a Help button has the same
+effect as pressing the F1 key (that is, it displays information about the
+selected field).
+ 
+The application must add Help buttons to dialog boxes, but Help Manager
+carries out the processing. The most convenient way to add a Help button to
+a dialog box is to use a PUSHBUTTON statement in the dialog template in the
+resource script file. The following statements define a very simple dialog
+box with a Help button:
+ 
+DLGTEMPLATE MY_DIALOG
+BEGIN
+    DIALOG "My Dialog!", MY_DIALOG, 0,0, 200,85,,FCF_TITLEBAR
+    BEGIN
+        LTEXT "Enter name:", MY_LABEL, 10,40, 60,15
+        ENTRYFIELD "", MY_DIALOG_EDIT, 70,40, 120,15, ES_MARGIN
+        DEFPUSHBUTTON "OK", MY_OK, 10,10, 60,15
+        PUSHBUTTON "~Help", MY_HELP, 110,10, 60,15,
+            BS_NOPOINTERFOCUS | BS_HELP
+    END
+END
+ 
+The Help button must have the BS_HELP and BS_NOPOINTERFOCUS styles. When the
+button has the BS_HELP style, the system interprets a button click as a
+request for help. When the button has the BS_NOPOINTERFOCUS style, the input
+focus does not move from the Help button when it is clicked; this allows
+Help Manager to determine which field in the dialog box is selected.
+ 
+<b>Destroying a Help Instance</b>
+ 
+When a help instance is no longer needed, you can destroy it by using the
+<b>WinDestroyHelpInstance</b> function. This function closes the help-instance
+window and removes the corresponding help hook. Before destroying the help
+instance, you should disassociate the help instance from the window by using
+the WinAssociateHelpInstance function and specifying a NULL window handle.
+After a help instance is disassociated, it can be destroyed.
+ 
+<b>Handling Errors</b>
+ 
+Help Manager functions typically indicate errors by returning FALSE. If a
+function is unsuccessful, the application can use the WinGetLastError
+function to retrieve the value of the error.
+ 
+If the user is viewing a help panel when an error occurs, Help Manager sends
+the HM_ERROR message to the active application window to notify the
+application of the error. Help Manager does not display error messages to
+the user; the application must display its own messages.
+ 
+<b>Help Hooks and Help Manager</b>
+ 
+Help Manager installs a help hook when the application creates the Help
+Manager instance. This hook enables Help Manager to trap user requests for
+help. When using Help Manager for your application, it is recommended that
+you do not install your own help hooks. If you choose to do so, however, you
+must install the help hook prior to creating the help instance, because the
+Help Manager help-hook procedure always returns TRUE, preventing all
+subsequent hook procedures from being called. If you do install a help hook,
+it must return FALSE so that Help Manager can process requests for help.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

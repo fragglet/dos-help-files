@@ -1,0 +1,562 @@
+<html>
+
+<head>
+<title>About Frame Windows (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Frame Windows (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Frame_Windows.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#frame window functions 1.2'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#frame window messages'>Message Group</a><span class='grhilite'>►</span>    <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Heaps.html'></i>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                            About Frame Windows
+ 
+This topic describes creating and using frame windows in Presentation
+Manager applications. You should also be familiar with the following
+topics:
+ 
+    <span class='grhilite'>◄</span><a href='Windows.html'>Windows</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Control_Windows.html'>Control windows</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Messages_and_Message_Queues.html'>Messages and message queues</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='unknown#rc.exe'>MS OS/2 Resource Compiler</a><span class='grhilite'>►</span>
+ 
+A frame window is the basic window used by most Presentation Manager
+applications. A frame window provides a base for the application's main
+window, dialog windows, and message boxes. Although applications rarely use
+frame windows alone, applications nearly always start with a frame window to
+create a composite window that consists of the frame window, several frame
+controls, and a client window. The frame window coordinates the actions of
+the other windows, allowing the composite window to act as if it were a
+single unit.
+ 
+A frame window is a window of the preregistered, public-window class
+WC_FRAME. The frame-window class, like the preregistered control classes,
+defines the appearance and behavior of the frame window. The appearance and
+behavior of a frame window are designed to match the standard user-interface
+guidelines for MS OS/2 Presentation Manager applications, including
+applications that use the multiple-document interface. This means that
+applications that use frame windows have a quick and efficient way to create
+the "standard" windows recommended by the user-interface guidelines.
+ 
+Although frame windows are an important part of dialog windows, dialog
+windows are not described in this topic. For a complete description of
+dialog windows, see the topic, <span class='grhilite'>◄</span><a href='Dialog_Windows.html'>Dialog Windows</a><span class='grhilite'>►</span>.
+ 
+<b>Main Window</b>
+ 
+An application's main window is typically made up of a frame window with
+control windows such as a title bar, System menu, menu bar, and scroll bar.
+The main window also typically includes a client window.
+ 
+The frame window is sometimes under other windows. Although it is not
+visible, it provides the standard services the user expects from the
+window──for example, moving, sizing, minimizing, and maximizing. The frame
+window receives input from the control windows (called frame controls). It
+sends messages to the frame controls and to the client window to tell what
+action is needed next.
+ 
+<b>Frame Controls</b>
+ 
+When an application creates a frame window, it can specify that one or more
+control windows be created as child windows of the frame window. A frame
+window can have a title-bar, System-menu, menu, and scroll-bar controls.
+Each is a unique window created from a preregistered control-window class.
+ 
+These frame controls provide a particular aspect of the user interface for a
+"standard" application window. A title bar appears at the top of the window
+and displays the application and/or window title. A System menu appears at
+the left end of the title bar. It contains the commands used to move, size,
+and close the window. A menu appears below the title bar and contains the
+commands the user can choose to carry out work with the application. The
+scroll bars appear at the right edge and bottom of the frame window. These
+let the user scroll the contents of the client window.
+ 
+Although all frame controls are optional, most, if not all, application main
+windows use the title-bar and System-menu controls. These provide the
+minimum functionality for a window that meets the user-interface
+guidelines.
+ 
+Each frame control is a child window of the frame window. Each frame control
+is owned by the frame window. That is, the frame window is the owner as well
+as the parent window for each frame control. Because the main role of a
+frame window is to coordinate the activities of other windows, ownership of
+the frame controls is very important. Ownership gives the frame controls a
+way to send notification messages to the frame window. Notification messages
+tell the frame window what the user does with the frame control.
+ 
+For example, a user can move a window by clicking the title bar and then
+dragging the window to a new position using a mouse. The title bar responds
+to the click by sending a message to the frame window notifying it of the
+user's request to move the window. The frame window can then track the mouse
+motion and move the frame window and all its child windows to the new
+position.
+ 
+An application can add frame controls to a frame window by using the
+FCF_TITLEBAR, FCF_SYSMENU, FCF_MENU, FCF_VERTSCROLL, and FCF_HORZSCROLL
+styles. For a general discussion of control windows, see the topic,
+<i><span class='grhilite'>◄</span><a href='Control_Windows.html'>Contr</i>ol windows</a><span class='grhilite'>►</span>.
+ 
+<b>Client Window</b>
+ 
+Every main window has a client window. The client window is the part of the
+main window where the application displays output and receives mouse and
+keyboard input. What an application displays in the client window, how it
+displays it, and how it interprets input to the window is controlled
+entirely by the application.
+ 
+An application creates the client window when it creates the frame window.
+The client window is specific to the application; it is nearly always
+created by using a private window class (a class registered by the
+application). Like frame controls, the client window is a child window and
+an owned window of the frame window. This means, for example, that the
+client window moves when the frame window moves, that the client window is
+clipped to the frame-window size, and that the client window is destroyed
+when the frame window is destroyed.
+ 
+The relationship between the frame window and the client window allows the
+frame window to pass messages from other frame controls to the client window
+and vice versa. For example, a scroll-bar control notifies the frame window
+when the user requests scrolling; the frame window then sends a message to
+the client window. The client window requests that the frame window change
+the window title; the frame window sends a message to the title-bar
+control.
+ 
+<b>Sizing Border and Minimize and Maximize Buttons</b>
+ 
+Although the sizing border and minimize and maximize buttons are not frame
+controls, they act very much like controls for the frame window. However,
+they are different than frame controls because the frame window draws and
+maintains these items; frame controls draw and maintain themselves.
+ 
+The sizing border, enclosing the frame window, lets the user change the size
+of the window by using a mouse. The minimize button, at the right end of the
+title bar, lets the user shrink the frame window to an icon. The maximize
+button, next to the minimize button, lets the user enlarge the window so
+that it fills the screen. An application can add these items to a frame
+window by using the FCF_SIZEBORDER, FCF_MAXBUTTON, and FCF_MINBUTTON (or the
+FCF_MINMAX) styles. (The FCF_MINMAX style adds both a maximize and a
+minimize button.)
+ 
+<b>Frame-Control Identifiers</b>
+ 
+A frame window uses a set of standard constants to identify the frame
+controls and the client window. The frame-control identifiers all begin with
+the prefix FID_ and can be used in functions such as WinWindowFromID to
+uniquely identify a given control or the client window. The frame controls
+also use these identifiers in notification messages they send to the frame
+window. The following are the frame-control identifiers:
+ 
+♦  FID_CLIENT
+♦  FID_HORZSCROLL
+♦  FID_MENU
+♦  FID_MINMAX
+♦  FID_SYSMENU
+♦  FID_TITLEBAR
+♦  FID_VERTSCROLL
+ 
+<b>Frame-Window Creation</b>
+ 
+An application can create a frame window by using the WinCreateWindow
+function and specifying the WC_FRAME window class. This creates the frame
+window but does not add the frame controls and client window that accompany
+most frame windows in applications. To add these additional windows, the
+application can continue to call the WinCreateWindow function, specifying
+the original frame window as the parent and owner window for each frame
+control and for the client window. Or the application can call the
+<b>WinCreateStdWindow</b> function which automatically carries out the individual
+calls to WinCreateWindow.
+ 
+Frame windows are also used to create dialog windows. In this case, the
+frame window contains control windows but no client window. An application
+can create a dialog window by using the WinLoadDlg or WinCreateDlg function.
+These functions require an appropriate dialog template from the
+application's resources on disk or from memory. The dialog template
+specifies the styles and dimensions for the frame window and the control
+windows that make up the dialog window.
+ 
+<b>Frame-Control Flags</b>
+ 
+An application can specify both the frame-window style and the frame
+controls for a frame window by using the frame-control flags with the
+<b>WinCreateStdWindow</b> function. The following are the frame-control flags:
+ 
+<b>Flag                 Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>FCF_TITLEBAR</i>         Creates a title bar.
+ 
+<i>FCF_SYSMENU</i>          Creates a System menu.
+ 
+<i>FCF_MENU</i>             Creates a menu. This flag loads a menu from the
+                     application's resources on disk.
+ 
+<i>FCF_MINBUTTON</i>        Creates a minimize button.
+ 
+<i>FCF_MAXBUTTON</i>        Creates a maximize button.
+ 
+<i>FCF_MINMAX</i>           Creates both a minimize and a maximize button.
+ 
+<i>FCF_VERTSCROLL</i>       Creates a vertical scroll bar.
+ 
+<i>FCF_HORZSCROLL</i>       Creates a horizontal scroll bar.
+ 
+<i>FCF_SIZEBORDER</i>       Creates a sizing border. A sizing border lets the user
+                     adjust the size of the window.
+ 
+<i>FCF_BORDER</i>           Creates a border. Use this flag for windows that must
+                     not change size.
+ 
+<i>FCF_DLGBORDER</i>        Creates a dialog border. Use this flag for dialog
+                     windows.
+ 
+<i>FCF_SHELLPOSITION</i>    Directs the frame window to request an initial size and
+                     position from Start Programs.
+ 
+<i>FCF_TASKLIST</i>         Adds the window title to the switch list of Task
+                     Manager. If the process creating a frame window already
+                     has an entry in the switch list, the window title is
+                     appended to the previous entry.
+ 
+<i>FCF_NOBYTEALIGN</i>      Enables the frame window to be moved to any position on
+                     the screen. If this flag is not given, a frame window
+                     always adjusts its position so that the x-coordinate of
+                     its left edge is a multiple of 8. Using this flag
+                     affects how quickly the system can draw the frame
+                     window.
+ 
+<i>FCF_NOMOVEWITHOWNER</i>  Enables the frame window to maintain its position even
+                     if its owner window moves. This applies only to frame
+                     windows that are not child windows of the owner. If
+                     this flag is not given, the frame window moves when the
+                     owner window moves.
+ 
+<i>FCF_ICON</i>             Loads an icon from the application's resources on disk.
+                     The icon is used whenever the frame window is
+                     minimized.
+ 
+<i>FCF_ACCELTABLE</i>       Loads an accelerator table from the application's
+                     resources on disk. The accelerator table is used for
+                     all keyboard input to the frame window.
+ 
+<i>FCF_SYSMODAL</i>         Creates a system-modal frame window. Setting this flag
+                     is the same as using the WinSetSysModalWindow
+                     function.
+ 
+<i>FCF_SCREENALIGN</i>      Aligns the initial position of the frame window
+                     relative to the screen origin instead of to the parent
+                     window.
+ 
+<i>FCF_MOUSEALIGN</i>       Aligns the initial position of the frame window
+                     relative to the mouse position instead of to the parent
+                     window. An application can use this flag to position
+                     the default button in a dialog window under the mouse
+                     pointer.
+ 
+<i>FCF_STANDARD</i>         Combines the FCF_TITLEBAR, FCF_SYSMENU, FCF_MENU,
+                     FCF_SIZEBORDER, FCF_MINMAX, FCF_ICON, FCF_ACCELTABLE,
+                     FCF_SHELLPOSITION, and FCF_TASKLIST styles.
+ 
+When the WinCreateStdWindow function is called without any of these flags
+set, the standard window is created invisible, behind all its sibling
+windows, in Z order, with a width and height of zero, positioned at the
+lower-left of its parent window. When WinCreateStdWindow returns, you can
+call WinSetWindowPos to change the window's size, x- and y-positions,
+Z-order position, and visibility.
+ 
+When WinCreateStdWindow is called with the FCF_SHELLPOSITION frame-control
+flag, the window is created in front of its sibling windows, in Z order,
+with a standard size and x- and y-positions obtained from the shell
+program.
+ 
+<b>Frame-Window Styles</b>
+ 
+The frame-window class, like other preregistered window classes, provides
+many class-specific window styles that applications can use to adapt the
+appearance and behavior of a frame window. The frame-window styles,
+specified as constants starting with the FS_ prefix, can be combined with
+the standard window styles when creating a frame window. For a list of
+frame-window styles, see the topic <span class='grhilite'>◄</span><a href='unknown#frame styles'>Frame styles</a><span class='grhilite'>►</span>.
+ 
+<b>Frame-Window Resources</b>
+ 
+If the FCF_MENU, FCF_ICON, FCF_ACCELTABLE, FCF_STANDARD, FS_ICON,
+FS_ACCELTABLE, or FS_STANDARD style is specified when creating the frame
+window, the application must provide the appropriate resources to support
+these styles. Depending on the style, a frame window may attempt to load one
+or more resources from the application's resources on disk.
+ 
+You can use Resource Compiler to add icon and accelerator-table resources to
+the application's executable file. Each resource must have a resource
+identifier that matches the resource identifier specified in the FRAMECDATA
+structure passed to the WinCreateWindow function or in the idResources
+parameter of the WinCreateStdWindow function.
+ 
+The following list gives the frame-control flags and styles that require
+resources and describes what the resource should be:
+ 
+<b>Style                            Resource</b>
+────────────────────────────────────────────────────────────────────────────
+<i>FCF_MENU</i>                         Requires a menu-template resource. A frame
+                                 window uses the menu template to create a
+                                 menu containing the commands and menus
+                                 specified by the resource.
+ 
+<i>FCF_ICON or FS_ICON</i>              Requires an icon resource. The frame window
+                                 draws the icon whenever the window is
+                                 minimized.
+ 
+<i>FCF_ACCELTABLE or FS_ACCELTABLE</i>  Requires an accelerator-table resource. The
+                                 frame window uses the accelerator table to
+                                 translate WM_CHAR messages to WM_COMMAND,
+                                 WM_SYSCOMMAND, or WM_HELP messages.
+ 
+<i>FCF_STANDARD or FS_STANDARD</i>      Requires a menu template, an accelerator
+                                 table, and an icon resource.
+ 
+The application must specify the module containing the resources (typically
+the application's executable file) when it creates the frame window. The
+resources must have the same resource identifier and the application must
+supply this identifier when creating the window.
+ 
+<b>Frame-Window Class Data</b>
+ 
+An application can specify class-specific data for a frame window by passing
+a FRAMECDATA structure to the WinCreateWindow function. The class-specific
+data contains the frame-control flags, resource-module handle, and resource
+identifier to be used when creating the frame window.
+ 
+Frame-control flags specify what controls to create for the frame window and
+what window styles to apply to the frame window. The frame-control flags are
+the same flags (FCF_) used in the WinCreateStdWindow function. The
+resource-module handle and the resource identifier specify where to find
+resources for the frame window.
+ 
+Supplying class-specific data with WinCreateWindow is similar to using the
+<b>WinCreateStdWindow</b> function without creating a client window.
+ 
+<b>Frame-Window Data</b>
+ 
+Frame-window data specifies the state of the frame window at a given time.
+An application can retrieve the frame-window data by calling the
+<b>WinQueryWindowUShort</b> function. A frame window has the following state
+flags:
+ 
+<b>Flag                Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>FF_ACTIVE</i>           The frame window is activated.
+ 
+<i>FF_DLGDISMISSED</i>     A frame window that is a dialog window has been
+                    dismissed by a call to the WinDismissDlg function.
+ 
+<i>FF_FLASHHILITE</i>      The frame window is flashing and its flash state is
+                    TRUE.
+ 
+<i>FF_FLASHWINDOW</i>      The frame window flashes as the result of a call to the
+                    WinFlashWindow function or a WM_FLASHWINDOW message.
+ 
+<i>FF_NOACTIVATESWP</i>    The system should do no Z ordering on this frame
+                    window.
+ 
+<i>FF_OWNERHIDDEN</i>      The frame window's owner window is hidden or minimized
+                    so the frame window is also hidden.
+ 
+<i>FF_OWNERDISABLED</i>    For a frame window that is a dialog window, this flag
+                    indicates whether the owner window was enabled or
+                    disabled when the dialog window was loaded.
+ 
+<i>FF_SELECTED</i>         The frame window has selection turned on.
+ 
+<i>FI_FRAME</i>            The window is a frame window.
+ 
+<i>FI_OWNERHIDE</i>        The frame window should be hidden or shown as a result
+                    of its owner window being hidden, shown, minimized, or
+                    maximized.
+ 
+<i>FI_ACTIVATEOK</i>       The window can be activated.
+ 
+<i>FI_NOMOVEWITHOWNER</i>  The window should move when its owner window moves.
+ 
+<b>Frame-Window Operation</b>
+ 
+The frame window maintains the size, position, and visibility of itself, its
+frame controls, and its client window. It responds to user requests to move,
+size, minimize, maximize, and redraw the window. It also responds to
+requests to close (destroy) the window and to change the focus and
+activation.
+ 
+When moving or sizing a frame window, all owned windows maintain their
+position relative to the owner window's upper-left corner.
+ 
+Whenever the frame window redraws itself (for example, after moving or
+sizing), it draws the frame controls first, then lets the application draw
+the client window. This order ensures that the rapidly drawn frame controls
+are drawn before the relatively slowly drawn client window.
+ 
+The order in which the frame controls are drawn depends on the Z-order
+position of the controls. Because the frame controls are sibling windows,
+the Z-order position of one is relative to the others. The following list
+specifies the Z-order position of the frame controls (from top to bottom):
+ 
+     FID_SYSMENU
+     FID_TITLEBAR
+     FID_MENU
+     FID_VERTSCROLL
+     FID_HORZSCROLL
+     FID_CLIENT
+ 
+Although an application can change the Z-order position of any window,
+changing the relative positions of frame controls is not recommended.
+ 
+When a frame window receives a request to minimize the window, it locates an
+available icon space in the lower part of the screen, hides all frame
+controls and the client window, and draws its icon. If the frame window has
+no icon (that is, the window was created without the FCF_ICON style), the
+frame window hides all but the client window. The client window must then
+draw the minimized window. An application can determine the size of a
+minimized frame window by calling the WinQueryWindowUShort function and
+specifying the QWS_XMINIMIZE and QWS_YMINIMIZE indexes.
+ 
+When a frame window is maximized, it grows to the size of its parent window,
+plus an additional amount on each of its four sides equal to the width of
+its sizing border. Because a window is always clipped to its parent window,
+a maximized standard frame window does not show its sizing border.
+ 
+Frame controls owned by a frame window or windows owned by child windows of
+a frame window are automatically destroyed when the frame window processes
+the WM_DESTROY message.
+ 
+<b>Nonstandard Frame Windows</b>
+ 
+Although most applications use frame windows to create main window and
+dialog windows, they are not limited to frame windows. Applications can
+create nonstandard frame windows and still use the standard frame controls,
+such as the title bar and System menu, within the nonstandard windows. One
+reason for creating nonstandard frame windows is to expand the capability of
+the frame window to support special features such as the multiple-document
+interface.
+ 
+There are two ways to create nonstandard frame windows: subclass a frame
+window or create a private frame-window class. An application that
+subclasses a frame window can intercept the messages sent to the window and
+process them in new ways. An application that creates private frame-window
+classes essentially rewrites the frame-window procedure. In either case, the
+application gains much more control over the placement of frame controls in
+the frame window by creating nonstandard frame windows.
+ 
+The WM_FORMATFRAME, WM_UPDATEFRAME, and WM_CALCVALIDRECTS messages control
+the arrangement of frame controls for applications that subclass. By
+intercepting these messages, an application can rearrange the placement of
+frame controls in a frame window.
+ 
+For applications that create private frame-window classes, the
+<b>WinCreateFrameControls, WinCalcFrameRect, and WinFormatFrame functions</b>
+provide much the same capability as frame windows to maintain the size and
+position of frame controls.
+ 
+<b>Default Frame-Window Behavior</b>
+ 
+This section describes all the messages specifically handled by the
+predefined frame-window class.
+ 
+<b>Message             Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>WM_ACTIVATE</i>         Sent to a title bar or sizing border so its highlight
+                    state matches the frame window's activation state.
+ 
+<i>WM_BUTTON1DOWN</i>      If the frame window is minimized, captures the mouse. If
+                    the window is not minimized, activates the window.
+ 
+<i>WM_BUTTON2DOWN</i>      Activates the frame window.
+ 
+<i>WM_BUTTON3DOWN</i>      Activates the frame window.
+ 
+<i>WM_BUTTON1UP</i>        Processes messages from minimized window frames.
+ 
+<i>WM_BUTTON2UP</i>        Not processed.
+ 
+<i>WM_BUTTON3UP</i>        Not processed.
+ 
+<i>WM_BUTTON1DBLCLIK   If the frame window is minimize</i>d, posts a WM_SYSCOMMAND
+                    message to itself. Otherwise, activates the frame window
+                    and any control clicked.
+ 
+<i>WM_BUTTON2DBLCLIK</i>   Not processed.
+ 
+<i>WM_BUTTON3DBLCLIK</i>   Not processed.
+ 
+<i>WM_HITTEST</i>          If the frame control is minimized this message returns
+                    HT_ERROR if disabled; otherwise, it returns TF_MOVE.
+ 
+<i>WM_CALCVALIDRECTS</i>   If there is no client window or the client window has
+                    CS_SIZEREDRAW style, this message returns CVR_REDRAW to
+                    invalidate the entire window.
+ 
+<i>WM_CLOSE</i>            If there is a client window, this message passes to it;
+                    otherwise, returns WinDefWindowProc.
+ 
+<i>WM_CONTROLHEAP</i>      Attempts to allocate a heap for the frame controls.
+                    Returns a handle if successful or NULL if not.
+ 
+<i>WM_CREATE</i>           Creates specified frame controls by calling
+                    WinCreateFrameControls. Also creates any accelerator
+                    tables, loads icons, and adds itself to the switch list
+                    in Task Manager. These actions depend on the frame
+                    window and frame-control styles specified for the
+                    window.
+ 
+<i>WM_DESTROY</i>          If the focus is held by a child window of the frame
+                    window, sets the focus to the frame window's parent.
+                    Destroys any windows owned by the frame window. Destroys
+                    any child windows. Frees any control heaps. Destroy any
+                    icon created using the FS_ICON style. Destroy any
+                    accelerator table created using the FS_ACCELTABLE
+                    style.
+ 
+<i>WM_ENABLE           Returns</i> WinDefWindowProc.
+ 
+<i>WM_ERASEBACKGROUND  Sent by the frame window to itself</i> during WM_PAINT
+                    processing. Returns TRUE, signaling that the window
+                    should erase the client-window area.
+ 
+<i>WM_FORMATFRAME      Calls WinFormatFrame and WinSetMultWindowPos to fo</i>rmat
+                    and position the frame controls.
+ 
+<i>WM_MINMAXFRAME</i>      If there is a client window, passes message to it;
+                    otherwise, passes a message via the WinDefWindowProc
+                    function.
+ 
+<i>WM_MOUSEMOVE</i>        Determines the correct mouse pointer to use and returns
+                    WinDefWindowProc.
+ 
+<i>WM_PAINT            If t</i>he frame window is minimized, sends WM_QUERYICON and
+                    WM_ERASEBACKGROUND to itself and draws the icon.
+                    Otherwise, paints all its controls, sends a
+                    WM_ERASEBACKGROUND to the client, and paints the client
+                    window.
+ 
+<i>WM_QUERYTRACKINFO</i>   Obtains the default tracking information.
+ 
+<i>WM_SHOW             R</i>eturns WinDefWindowProc.
+ 
+<i>WM_SIZE             S</i>ends a WM_FORMATFRAME message to itself.
+ 
+<i>WM_SYSCOMMAND</i>       If the mouse is captured, ignores the system command.
+                    Otherwise, uses one of the following commands:
+                    SC_RESTORE, SC_SIZE, SC_MOVE, SC_CLOSE, SC_TASKMANAGER,
+                    SC_NEXT, SC_NEXTFRAME, SC_SYSMENU, SC_APPMENU.
+ 
+<i>WM_UPDATEFRAME      Calls WinFormatFrame t</i>o format the frame controls.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

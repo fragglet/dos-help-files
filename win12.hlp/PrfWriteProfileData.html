@@ -1,0 +1,105 @@
+<html>
+
+<head>
+<title>PrfWriteProfileData (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> PrfWriteProfileData (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Initialization_file_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Profile Manager 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='prf.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='PrfWriteProfileString.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINSHELLDATA
+ 
+BOOL PrfWriteProfileData(hini, pszAppName, pszKeyName, pchBinaryData,
+    cchData)
+HINI hini;              /* initialization-file handle      */
+PSZ pszAppName;         /* pointer to application name     */
+PSZ pszKeyName;         /* pointer to keyname              */
+PVOID pchBinaryData;    /* pointer to data in profile file */
+ULONG cchData;          /* data length                     */
+ 
+The PrfWriteProfileData function places binary data in the specified profile
+file. The location of the data is determined by the application name and
+keyname passed to the function. This data can then be retrieved by using the
+<b>PrfQueryProfileData</b> function, with the application name and keyname
+specified in the pszAppName and pszKeyName parameters of the
+<b>PrfWriteProfileData</b> function.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hini</i>           Identifies the file in which to place the binary data. This
+               parameter can be a file handle or one of the following
+               values:
+ 
+               Value               Meaning
+               ─────────────────────────────────────────────────────────────
+               HINI_USERPROFILE    Specifies the user profile.
+ 
+               HINI_SYSTEMPROFILE  Specifies the system profile.
+ 
+<i>pszAppName</i>     Points to the null-terminated string that contains the
+               application name. The string, including the terminating null
+               character, must be less than 1024 bytes long. The application
+               name is case-sensitive. If no application field in the
+               profile file matches pszAppName, a new application field is
+               created.
+ 
+<i>pszKeyName</i>     Points to the null-terminated string that contains the
+               keyname. The string must be less than 1024 bytes long,
+               including the terminating null character. If this parameter
+               is NULL, all keynames and their data are deleted. The keyname
+               is case-sensitive. If no keyname matches pszKeyName, a new
+               keyname field is created. If the keyname already exists, the
+               existing value is overwritten.
+ 
+<i>pchBinaryData</i>  Points to the binary data placed in the profile file. There
+               is no explicit terminating character. If this parameter is
+               NULL, the previous value associated with the pszKeyName
+               parameter is deleted; otherwise, the data string becomes the
+               value, even if its length is zero. The data should not exceed
+               64K.
+ 
+<i>cchData        Specif</i>ies the size (in bytes) of the pchBinaryData
+               parameter.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful or FALSE if an error
+occurs. If the profile file exists but is somehow corrupted, this function
+returns FALSE.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INVALID_PARM
+     PMERR_MEMORY_ALLOC
+     PMERR_MEMORY_ALLOCATION_ERR
+     PMERR_MEMORY_DEALLOCATION_ERR
+ 
+<b>Comments</b>
+ 
+The application must know the size of the stored data when it calls
+<b>PrfQueryProfileData</b> to retrieve the data. It can retrieve the size of the
+stored data by calling the PrfQueryProfileSize function.
+ 
+<b>See Also</b>
+ 
+<b>PrfQueryProfileData, PrfQueryProfileSize, WinWriteProfileData</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

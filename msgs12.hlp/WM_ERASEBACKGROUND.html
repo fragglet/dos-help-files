@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<title>WM_ERASEBACKGROUND (1.2) - msgs12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msgs12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WM_ERASEBACKGROUND (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Frame_window_messages.html'>Message Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Frame Windows 1.2'>Overview</a><span class='grhilite'>►</span>                           <span class='grhilite'>◄</span><a href='messages.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WM_ERROR.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINFRAMEMGR
+ 
+<b>WM_ERASEBACKGROUND</b>
+hps = (HPS) LONGFROMMP(mp1);           /* presentation-space handle  */
+prectl = (PRECTL) PVOIDFROMMP(mp2);    /* address of RECTL structure */
+ 
+The WM_ERASEBACKGROUND message is sent by the frame window to a client
+window when the background is to be redrawn. Usually, an application ignores
+this message and erases and redraws the window when the WM_PAINT message is
+received. However, the WM_ERASEBACKGROUND message can be valuable in
+improving the speed of window rearrangement operations by making the window
+images consistent on the screen as soon as the rearrangement takes place.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps      </i>  Low and high word of mp1. Identifies a presentation space for the
+           frame window (not the client window).
+ 
+<i>prectl     Low and high word o</i>f mp2. Points to a RECTL structure that
+           contains the rectangle to be painted.
+ 
+<b>Return Value</b>
+ 
+If an application returns TRUE, the frame-window procedure erases the
+rectangle of the frame window covered by the client window by filling it
+with the system color SYSCLR_WINDOW. An application should return FALSE to
+prevent the frame window from erasing the background.
+ 
+<b>Comments</b>
+ 
+The client window may use the presentation-space handle to selectively erase
+portions of its window, and then return FALSE so that the frame window
+procedure does not erase the background.
+ 
+Note that the presentation-space handle is to the frame window, not to the
+client window. The rectangle to be erased may include areas outside the
+client window.
+ 
+An application should not rely on the WM_ERASEBACKGROUND message for
+notification as to when to repaint an invalidated client window. The
+<b>WM_ERASEBACKGROUND</b> message is sent by the frame-window procedure as part of
+processing the WM_PAINT message. However, if only the client window has been
+invalidated, the client window does not receive a WM_ERASEBACKGROUND message
+and the frame window does not receive the WM_PAINT message. An application
+can monitor successive WM_ERASEBACKGROUND and WM_PAINT messages by using a
+flag, and then only erase the background when processing WM_PAINT messages
+if there is not an immediately preceding WM_ERASEBACKGROUND message.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

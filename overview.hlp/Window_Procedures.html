@@ -1,0 +1,148 @@
+<html>
+
+<head>
+<title>About Window Procedures (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Window Procedures (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Window_Procedures.html'>Using Section</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Window_Timers.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                          About Window Procedures
+ 
+This topic describes window procedures and the default window procedure. You
+should also be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='Window_Classes.html'>Window classes</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Messages_and_Message_Queues.html'>Messages and message queues</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Dialog_Windows.html'>Dialog windows</a><span class='grhilite'>►</span>
+ 
+Every window in MS OS/2 is associated with a window procedure that controls
+all aspects of the window: its appearance, how it responds to state changes,
+and how it processes user input.
+ 
+Each window class has an associated window procedure, and all windows of
+that class use the same window procedure. For example, the system defines a
+window procedure for the frame window class, and all frame windows use that
+window procedure.
+ 
+Applications typically define at least one new window class and an
+associated window procedure. The application can then create many instances
+of windows with that class, all of which use the same window procedure. Note
+that this means that the same piece of code may be called from several
+sources simultaneously. Therefore, care must be used when modifying shared
+resources from a window procedure.
+ 
+Dialog procedures have the same structure and function as window procedures.
+All material referring to window procedures in this topic also applies to
+dialog procedures. The only real difference between a dialog procedure and a
+window procedure is the recommended default procedure and what messages are
+handled.
+ 
+The rest of this topic shows how to write a window procedure and associate
+it with a window class.
+ 
+<b>Structure of a Window Procedure</b>
+ 
+All window procedures share a common syntax and structure. Because all
+messages must use the same calling syntax, the arguments and return value
+for window procedures are interpreted differently depending on the message
+being handled. The following sections describe the syntax and structure of a
+window procedure.
+ 
+<b>Calling Convention</b>
+ 
+From a programmer's point of view, a window procedure is a function that
+takes four arguments and returns a long word. The function must use Pascal
+calling conventions; that is, the arguments are pushed on the stack from
+left to right in the function definition and the function must clear the
+arguments from the stack before returning. This is different from the normal
+C-language calling convention, so the Microsoft C Optimizing Compiler
+provides the pascal keyword for defining functions that use the Pascal
+calling convention.
+ 
+You should use the EXPENTRY macro when defining window procedures to ensure
+that the functions are declared appropriately.
+ 
+Finally, you must ensure that the data-segment register is properly set up
+on entry to the window procedure. When the system calls the window
+procedure, it passes the proper data segment in the ax register. If you are
+programming in Microsoft C, use the _loadds keyword in your window-procedure
+definitions. This causes the compiler to insert the proper prolog and epilog
+code in your window procedures so that the data segment is initialized and
+restored properly. If you are programming in assembly language, you should
+load the ds register from ax on entry and restore the ds register on exit.
+If you are using another development environment, consult the relevant
+documentation for the appropriate compiler switch.
+ 
+Because a window procedure can be called recursively, it is probably best to
+minimize the number of local variables used in the window procedure. To
+avoid overusing local variables and possible stack overflow in deep
+recursion, you should call other functions outside your window procedure to
+process individual messages.
+ 
+<b>Arguments</b>
+ 
+A window procedure takes four arguments: The first is a window handle; the
+second is a USHORT message designator, and the last two arguments are
+declared with the MPARAM data type, which is defined in the include files as
+a far pointer to the VOID data type (a generic pointer). The message
+arguments often contain information in both the low and high words of the
+long word. There are several macros defined in the pmwin.h include file that
+make it easier to extract bytes or integers from the MPARAM value. These
+macros include SHORT1FROMMP, which extracts the low-order word from an
+<b>MPARAM</b> value.
+ 
+The window-procedure arguments are described in the following list:
+ 
+<b>Argument  Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>hwnd</i>      Window handle of the window receiving the message.
+ 
+<i>msg</i>       Message identifier. The message will generally correspond to one
+          of the predefined constants (for example, WM_CREATE) defined in
+          the system include files. This argument can also be equal to an
+          application-defined message identifier. Application-defined
+          messages must be greater than WM_USER. If a window procedure does
+          not process a message, it is strongly recommended that it pass the
+          message to the WinDefWindowProc function. This allows the default
+          processing for the message to occur.
+ 
+<i>mp1</i>       Message parameter. Its interpretation depends on the particular
+          message.
+ 
+<i>mp2</i>       Message parameter. Its interpretation depends on the particular
+          message.
+ 
+<b>Return Value</b>
+ 
+The return value of a window procedure is defined as an MRESULT type. This
+is defined in the include files as a far pointer to a VOID data type. The
+actual interpretation of the return value depends on the particular message.
+Consult the description of each message to determine the appropriate return
+value.
+ 
+<b>Default Window Procedure</b>
+ 
+All windows in MS OS/2 share certain fundamental behavior. This basic
+behavior is encapsulated in the WinDefWindowProc function, the default
+window procedure. The default window procedure is provided so you can get
+the minimal functionality for a window by calling WinDefWindowProc. Control
+windows defined by the system can also call WinDefWindowProc for default
+processing.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

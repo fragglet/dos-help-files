@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>KbdGetStatus (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> KbdGetStatus (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Keyboard 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='kbd.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='KbdOpen.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_KBD
+ 
+USHORT KbdGetStatus(pkbstKbdInfo, hkbd)
+PKBDINFO pkbstKbdInfo;    /* pointer to structure for keyboard status */
+HKBD hkbd;                /* keyboard handle                          */
+ 
+The KbdGetStatus function retrieves the status of the specified logical
+keyboard. The keyboard status specifies the state of the keyboard echo mode,
+input mode, turnaround character, interim character flags, and shift state.
+ 
+The KbdGetStatus function is a family API function.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pkbstKbdInfo  Points to the KBDINFO </i>structure that receives the keyboard
+              status.
+ 
+<i>hkbd</i>          Identifies the logical keyboard. The handle must have been
+              created previously by using the KbdOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_KBD_INVALID_LENGTH
+     ERROR_KBD_INVALID_HANDLE
+ 
+<b>Comments</b>
+ 
+Although the initial status of a logical keyboard depends on the system, the
+logical keyboard typically has echo and ASCII modes turned on, and has a
+single-byte turnaround character whose value corresponds to the ENTER key.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restrictions apply to the KbdGetStatus
+function:
+ 
+♦  The hkbd parameter is ignored.
+ 
+♦  Interim and turnaround characters are not supported.
+ 
+<b>Example</b>
+ 
+This example calls the KbdGetStatus function to retrieve the status of the
+default keyboard. It then checks to see if echo mode is turned on:
+ 
+KBDINFO kbstInfo;
+kbstInfo.cb = sizeof(kbstInfo);        /* length of status buffer */
+KbdGetStatus(&amp;kbstInfo, 0);
+if (kbstInfo.fsMask &amp; KEYBOARD_ECHO_ON) {
+    VioWrtTTY("Echo is on\n\r", 12, 0);
+ 
+<b>See Also</b>
+ 
+<b>KbdSetStatus, KbdOpen, KBDINFO</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+<html>
+
+<head>
+<title>DosAllocShrSeg (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosAllocShrSeg (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='memory.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#memory management 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80bb.html'>Changes</a><span class='grhilite'>►</span>         </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosBeep.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMEMMGR
+ 
+USHORT DosAllocShrSeg(usSize, pszSegName, psel)
+USHORT usSize;     /* number of bytes requested                  */
+PSZ pszSegName;    /* pointer to segment name                    */
+PSEL psel;         /* pointer to variable for selector allocated */
+ 
+The DosAllocShrSeg function allocates a shared-memory segment and copies the
+segment selector to the specified variable.
+ 
+A shared-memory segment can be accessed by any process that can identify the
+segment name. A process can retrieve a selector for the segment by
+specifying the name in a call to the DosGetShrSeg function. (Shared segments
+allocated by using the DosAllocSeg function must be explicitly given or
+retrieved by using the DosGiveSeg and DosGetSeg functions.)
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>usSize</i>      Specifies the number of bytes to be allocated. This number can
+            be any value in the range 0 through 65,535. If this value is
+            zero, the function allocates 65,536 bytes.
+ 
+<i>pszSegName</i>  Points to a null-terminated string that identifies the shared
+            memory segment. The string must have the following form:
+ 
+            \sharemem\name
+ 
+            The segment name (name) must have the same format as an MS OS/2
+            filename and must be unique. For example, the name
+            \sharemem\public.dat is acceptable.
+ 
+<i>psel</i>        Points to the variable that receives the segment selector.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_ALREADY_EXISTS
+     ERROR_INVALID_NAME
+     ERROR_NOT_ENOUGH_MEMORY
+ 
+<b>Comments</b>
+ 
+The DosFreeSeg function frees the segment. The segment will not be discarded
+from memory until the last process using it calls DosFreeSeg.
+ 
+<b>DosAllocShrSeg</b> can be issued from ring 2, but the shared-memory segment will
+be allocated as a ring-3 segment.
+ 
+<b>Example</b>
+ 
+This example calls the DosAllocShrSeg function to allocate 26,953 bytes. It
+gives the memory the name "\sharemem\abc.mem" so that other processes can
+use the memory if they know the name.
+ 
+SEL sel;
+ 
+DosAllocShrSeg(26953,            /* bytes to allocate   */
+    "\\sharemem\\abc.mem",       /* memory name         */
+    &amp;sel);                       /* selector address    */
+ 
+<b>See Also</b>
+ 
+<b>DosAllocHuge, DosAllocSeg, DosFreeSeg, DosGetSeg, DosGetShrSeg, DosGiveSeg</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

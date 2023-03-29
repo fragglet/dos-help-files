@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>WinGetDlgMsg (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinGetDlgMsg (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinGetErrorInfo.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINDIALOGS
+ 
+BOOL WinGetDlgMsg(hwnd, pqmsg);
+HWND hwnd;      /* dialog-window handle              */
+PQMSG pqmsg;    /* pointer to structure with message */
+ 
+The WinGetDlgMsg function retrieves a message intended for a dialog box.
+This function is used by an application written in a language (for example,
+COBOL, or FORTRAN) that does not allow the system to call the application's
+window procedure (this is called a non-reentrant window procedure).
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwnd</i>       Identifies the dialog window.
+ 
+<i>pqmsg      Poin</i>ts to the QMSG structure that contains a message.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if there is a message for the dialog box, or it is
+FALSE if the dialog is complete or an error occurs.
+ 
+<b>Comments</b>
+ 
+The WinGetDlgMsg function allows a language that cannot support window
+procedures to provide the function of a modal dialog window. The application
+creates a modeless box dialog by using the WinCreateDlg or WinLoadDlg
+functions and then calls WinGetDlgMsg to process messages associated with
+the dialog box. The application should call this function in a loop until it
+receives a WM_QUIT message. The application should call WinDefDlgProc for
+the messages it does not want rather than dispatching the messages it
+receives.
+ 
+To create a window that uses a non-reentrant window procedure, use NULL for
+the pfnWndProc parameter of the WinRegisterClass function.
+ 
+The first time this function is called, the owner of the window specified by
+<i>hwnd</i> is disabled, thereby preventing input into windows other than the
+dialog box. The owner of the window specified by hwnd is enabled when the
+<b>WinDismissDlg</b> function is issued by the application or by the default dialog
+procedure.
+ 
+Synchronous messages that would normally go directly to the window procedure
+will be converted to one of the following messages and retrieved by the
+<b>WinGetDlgMsg</b> function:
+ 
+     WM_PPAINT
+     WM_PSETFOCUS
+     WM_PSYSCOLORCHANGE
+     WM_PSIZE
+     WM_PACTIVATE
+     WM_PCONTROL
+ 
+<b>See Also</b>
+ 
+<b>WinCreateDlg, WinDefDlgProc, WinDismissDlg, WinLoadDlg, WinRegisterClass,</b>
+<b>QMSG</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

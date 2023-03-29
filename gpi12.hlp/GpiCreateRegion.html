@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<title>GpiCreateRegion (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiCreateRegion (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Region_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Regions 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiDeleteBitmap.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIREGIONS
+ 
+HRGN GpiCreateRegion(hps, crcl, prcl)
+HPS hps;        /* presentation-space handle           */
+LONG crcl;      /* number of rectangles                */
+PRECTL prcl;    /* address of structure for rectangles */
+ 
+The GpiCreateRegion function creates a region for the device associated with
+the specified presentation space. The region is the union of the rectangles
+specified by the prcl parameter.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>crcl       S</i>pecifies the number of rectangles specified in the prcl
+           parameter. If the crcl parameter is equal to zero, an empty
+           region is created, and prcl is ignored.
+ 
+<i>prcl       P</i>oints to an array of RECTL structures.
+ 
+<b>Return Value</b>
+ 
+The return value is a handle to the region if the function is successful or
+zero if an error occurred. It is an error if this function is issued when
+there is no device context associated with the presentation space.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_COORDINATE
+     PMERR_INV_HPS
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_INV_RECT
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiCreateRegion function to create a region consisting
+of the union of three rectangles:
+ 
+HRGN hrgn;                                      /* handle for region */
+RECTL arcl[3] = { 100, 100, 200, 200,           /* 1st rectangle     */
+                  150, 150, 250, 250,           /* 2nd rectangle     */
+                  200, 200, 300, 300 };         /* 3rd rectangle     */
+ 
+hrgn = GpiCreateRegion(hps,                    /* presentation space */
+                       3L,                     /* three rectangles   */
+                       arcl);      /* address of array of rectangles */
+ 
+<b>See Also</b>
+ 
+<b>GpiCombineRegion, GpiDestroyRegion, RECTL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

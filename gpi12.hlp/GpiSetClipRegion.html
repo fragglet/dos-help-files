@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>GpiSetClipRegion (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiSetClipRegion (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Region_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Regions 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiSetColor.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIREGIONS
+ 
+LONG GpiSetClipRegion(hps, hrgn, phrgn)
+HPS hps;        /* presentation-space handle                      */
+HRGN hrgn;      /* region handle                                  */
+PHRGN phrgn;    /* address of variable for previous region handle */
+ 
+The GpiSetClipRegion function sets the clip region. The clip region
+specifies a region in device space that the system uses to clip output. The
+clip region includes all points inside and on the boundary of the region
+specified by hrgn. Since the region coordinates are assumed to be device
+coordinates, no conversion is applied.
+ 
+The function creates the clip region by releasing the previous clip region,
+copying the handle of this region to the variable pointed to by phrgn, and
+setting the specified region as the clip region. Once a region is set as the
+clip region, it cannot be used in subsequent region operations. Once
+released from the clipping region, a region can be used again to restore the
+previous clip region.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space. The presentation space must be
+           currently associated with the device context for which the
+           specified regions were created.
+ 
+<i>hrgn       I</i>dentifies the region. If the hrgn parameter is NULL, the
+           function releases any previous clip region and sets no clip
+           region.
+ 
+<i>phrgn</i>      Points to the variable that receives the handle of the previous
+           region. If no previous clip region exists, the function copies
+           NULL to the variable.
+ 
+<b>Return Value</b>
+ 
+The return value is RGN_NULL, RGN_RECT, or RGN_COMPLEX if the function is
+successful, or RGN_ERROR if an error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_HRGN
+     PMERR_PS_BUSY
+ 
+<b>See Also</b>
+ 
+<b>GpiCreateRegion, GpiOffsetClipRegion</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

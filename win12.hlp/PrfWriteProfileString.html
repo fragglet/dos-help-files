@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<title>PrfWriteProfileString (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> PrfWriteProfileString (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Initialization_file_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Profile Manager 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='prf.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='PrfAddProgram.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINSHELLDATA
+ 
+BOOL PrfWriteProfileString(hini, pszAppName, pszKeyName, pszString)
+HINI hini;         /* initialization-file handle  */
+PSZ pszAppName;    /* pointer to application name */
+PSZ pszKeyName;    /* pointer to keyname         */
+PSZ pszString;     /* pointer to string to write */
+ 
+The PrfWriteProfileString function places an ASCII string in the profile
+file. The location of the string is determined by the application name and
+keyname passed to the function. The string can then be retrieved by using
+the PrfQueryProfileString function, specifying the same application name and
+keyname given in the pszAppName and pszKeyName parameters of
+<b>PrfWriteProfileString</b>.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hini</i>        Identifies the file to query. This parameter can be a file
+            handle or one of the following values:
+ 
+            Value               Meaning
+            ────────────────────────────────────────────────────────────────
+            HINI_USERPROFILE    Specifies the user profile.
+ 
+            HINI_SYSTEMPROFILE  Specifies the system profile.
+ 
+<i>pszAppName</i>  Points to the null-terminated string that contains the
+            application name. The string must be less than 1024 bytes long,
+            including the terminating null character. The application name
+            is case-sensitive. If no application field in the profile file
+            matches pszAppName, a new application field is created.
+ 
+<i>pszKeyName</i>  Points to the null-terminated string that contains the keyname.
+            The string must be less than 1024 bytes long, including the
+            terminating null character. If pszKeyName is NULL, all keynames
+            and their data are deleted. The keyname is case-sensitive. If no
+            keyname matches pszKeyName, a new keyname field is created. If
+            the keyname already exists, the existing value is overwritten.
+ 
+<i>pszString</i>   Points to the null-terminated ASCII string placed in the profile
+            file. If pszString is NULL, the previous value associated with
+            pszKeyName is deleted; otherwise, the ASCII string becomes the
+            value, even if its length is zero. The string should not exceed
+            64K.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful or FALSE if an error
+occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INVALID_PARM
+     PMERR_MEMORY_ALLOC
+     PMERR_MEMORY_ALLOCATION_ERR
+     PMERR_MEMORY_DEALLOCATION_ERR
+ 
+<b>Comments</b>
+ 
+User application data should be stored in either the user profile or an
+application specific profile. The system profile should be used only for
+system data, such as spooler information.
+ 
+<b>See Also</b>
+ 
+<b>PrfQueryProfileString, WinWriteProfileString</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

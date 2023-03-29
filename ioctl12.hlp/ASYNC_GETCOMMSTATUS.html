@@ -1,0 +1,129 @@
+<html>
+
+<head>
+<title>ASYNC_GETCOMMSTATUS (1.2) - ioctl12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ioctl12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ASYNC_GETCOMMSTATUS (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='IOCtls.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ASYNC_GETDCBINFO.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVIOCTL
+ 
+USHORT DosDevIOCtl(pbStatus, 0L, 0x0064, 0x0001, hDevice)
+PBYTE pbStatus;    /* pointer to variable for status */
+HFILE hDevice;     /* device handle                  */
+ 
+The ASYNC_GETCOMMSTATUS  function retrieves the communication status of the
+specified device.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pbStatus</i>   Points to the variable that receives the communication status.
+           This variable can be a combination of the following values:
+ 
+           Value                      Meaning
+           ─────────────────────────────────────────────────────────────────
+           TX_WAITING_FOR_CTS         Transmission is waiting for the
+                                      clear-to-send (CTS) signal to be
+                                      turned on. For a full description, see
+                                      the ASYNC_SETDCBINFO function (0x0001,
+                                      0x0053).
+ 
+           TX_WAITING_FOR_DSR         Transmission is waiting for the
+                                      data-set-ready (DSR) signal to be
+                                      turned on. For a full description, see
+                                      the ASYNC_SETDCBINFO function (0x0001,
+                                      0x0053).
+ 
+           TX_WAITING_FOR_DCD         Transmission is waiting for the
+                                      data-carrier-detected (DCD) signal to
+                                      be turned on. For a full description,
+                                      see the ASYNC_SETDCBINFO function
+                                      (0x0001, 0x0053).
+ 
+           TX_WAITING_FOR_XON         Transmission is waiting because the
+                                      XOFF character is received. For a full
+                                      description, see the following
+                                      "Comments" section.
+ 
+           TX_WAITING_TO_SEND_XON     Transmission is waiting because the
+                                      XOFF character is transmitted. For a
+                                      full description, see the following
+                                      "Comments" section.
+ 
+           TX_WAITING_WHILE_BREAK_ON  Transmission is waiting because a
+                                      break is being transmitted. For a full
+                                      description, see the ASYNC_SETBREAKON
+                                      function (0x0001, 0x004B).
+ 
+           TX_WAITING_TO_SEND_IMM     Character is waiting to transmit
+                                      immediately. For a full description,
+                                      see the ASYNC_TRANSMITIMM function
+                                      (0x0001, 0x0044).
+ 
+           RX_WAITING_FOR_DSR         Receive state is waiting for the
+                                      data-set-ready (DSR) signal to be
+                                      turned on. For a full description, see
+                                      the ASYNC_SETDCBINFO function (0x0001,
+                                      0x0053).
+ 
+<i>hDevice</i>    Identifies the serial device that receives the device-control
+           function. The handle must have been created previously by using
+           the DosOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful or an error value if
+an error occurs.
+ 
+<b>Comments</b>
+ 
+Transmit status indicates why transmission is not occurring, regardless of
+whether or not there is data to transmit. However, the device driver must be
+enabled for the given condition (for example, enabled for output handshaking
+for the modem-control signal) for the status to reflect that the device
+driver is waiting for the given condition to transmit.
+ 
+For example, TX_WAITING_FOR_CTS means that the device driver puts receive
+characters in the device-driver receive queue, the device driver is not
+waiting to transmit a character immediately, and characters from the
+device-driver transmit queue are not transmitted because the clear-to-send
+(CTS) signal for output handshaking is used and CTS does not have the proper
+value.
+ 
+The communication status can include TX_WAITING_TO_SEND_XON if the device
+driver is enabled for automatic transmit flow control (XON/XOFF) or if the
+<b>ASYNC_STOPTRANSMIT</b> function (0x0001, 0x0047) has been used to tell the
+device driver to function as if an XOFF character is received. The
+<b>ASYNC_TRANSMITIMM</b> function (0x0001, 0x0044) can still be used to transmit
+characters immediately. The device driver can still automatically transmit
+XON and XOFF characters due to automatic receive flow control (XON/XOFF)
+when the device driver is in this state.
+ 
+The communication status can include TX_WAITING_FOR_XON if the device driver
+is enabled for automatic receive flow control. When in this state, the
+<b>ASYNC_TRANSMITIMM</b> function (0x0001, 0x0044) can still be used to transmit
+characters immediately, and the device driver can still automatically
+transmit XON characters.
+ 
+<b>See Also</b>
+ 
+<b>DosOpen, ASYNC_GETCOMMEVENT, ASYNC_GETLINESTATUS,</b> ASYNC_SETDCBINFO,
+<b>ASYNC_STARTTRANSMIT, ASYNC_STOPTRANSMIT, ASYNC_TRANSMITIMM</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

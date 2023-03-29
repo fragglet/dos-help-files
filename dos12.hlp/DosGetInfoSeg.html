@@ -1,0 +1,69 @@
+<html>
+
+<head>
+<title>DosGetInfoSeg (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosGetInfoSeg (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='system_information.html'>Function Group</a><span class='grhilite'>►</span>                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosGetMachineMode.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSINFOSEG
+ 
+USHORT DosGetInfoSeg(pselGlobalSeg, pselLocalSeg)
+PSEL pselGlobalSeg;    /* pointer to variable for global selector */
+PSEL pselLocalSeg;     /* pointer to variable for local selector  */
+ 
+The DosGetInfoSeg function retrieves segment selectors for the global and
+local information segments. These read-only information segments contain
+general information about the system and the process. The global information
+segment is accessible to all processes. The local information segment is
+accessible only to the current process.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pselGlobalSeg  Points to the GINFOSEG s</i>tructure that contains global
+               information.
+ 
+<i>pselLocalSeg   Points to the LINFOSE</i>G structure that contains local
+               information.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value.
+ 
+<b>Example</b>
+ 
+This example calls the DosGetInfoSeg function to retrieve the selector of a
+system global segment, converts the segment selector into a pointer to a
+structure, and determines whether the current day of the week is Monday:
+ 
+SEL selGlobalSeg, selLocalSeg;
+GINFOSEG FAR *pgis;
+DosGetInfoSeg(&amp;selGlobalSeg, &amp;selLocalSeg);
+pgis = MAKEPGINFOSEG(selGlobalSeg);
+if (pgis-&gt;weekday == 1) {
+    .
+    . /* This code is executed only on Mondays. */
+    .
+ 
+<b>See Also</b>
+ 
+<b>DosGetDateTime, GINFOSEG, LINFOSEG</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

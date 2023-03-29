@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>GpiRealizeColorTable (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiRealizeColorTable (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='mix_mode_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Color and Mix Modes 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiRectInRegion.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPILOGCOLORTABLE
+ 
+BOOL GpiRealizeColorTable(hps)
+HPS hps;    /* presentation-space handle */
+ 
+The GpiRealizeColorTable function realizes the logical color table. The
+function realizes the color table by replacing the colors in the physical
+palette. It replaces the physical palette colors with the device colors that
+most closely match the RGB color values given in the logical color table.
+ 
+To realize a logical color table, the application must create the table
+using the LCOL_REALIZABLE option of the GpiCreateLogColorTable function and
+the device must be capable of realizing logical color tables. The
+<b>DevQueryCaps</b> function and CAPS_COLOR option can be used to determine if
+logical color tables can be realized.
+ 
+If the presentation space is currently associated with a screen window
+device, this function should be used only when the associated window is
+maximized. Changing the physical palette colors for the screen affects
+output for all visible windows.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_COL_TABLE_NOT_REALIZABLE
+     PMERR_INV_HPS
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiRealizeColorTable function to realize the logical
+color table. The GpiUnrealizeColorTable function is used to restore the
+physical palette after the drawing is complete.
+ 
+RGB argb[16];      /* RGB color values for new logical color table */
+ 
+/* Create a realizable logical color table. */
+ 
+GpiCreateLogColorTable(hps, LCOL_REALIZABLE, LCOLF_CONSECRGB,
+    0L, 16L, argb);
+ 
+GpiRealizeColorTable(hps);     /* realizes the logical color table */
+    .
+    .
+    .
+GpiUnrealizeColorTable(hps);   /* restores the physical palette    */
+ 
+<b>See Also</b>
+ 
+<b>DevQueryCaps, GpiUnrealizeColorTable, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

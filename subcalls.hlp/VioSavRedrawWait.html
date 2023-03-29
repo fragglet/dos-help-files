@@ -1,0 +1,107 @@
+<html>
+
+<head>
+<title>VioSavRedrawWait (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioSavRedrawWait (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioScrLock.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioSavRedrawWait(fEvent, pfNotify, usReserved)
+USHORT fEvent;        /* event flag                          */
+PUSHORT pfNotify;     /* pointer to variable for notify flag */
+USHORT usReserved;    /* must be zero                        */
+ 
+The VioSavRedrawWait function waits for a screen switch to occur. When a
+switch occurs, MS OS/2 sets the variable pointed to by the pfNotify
+parameter to a value that indicates the type of changes. The thread may then
+save or restore the display depending on the value pointed to by the
+<i>pfNotify</i> parameter. The thread must also save or restore the complete video
+mode, the state information, the registers, and the contents of the physical
+video buffer.
+ 
+MS OS/2 permits only one process in a screen group to wait for a screen
+switch. The first process to make a request owns it.
+ 
+The VioSavRedrawWait function is used typically by graphics programs (or
+text-mode programs that change the video registers directly) to save and
+restore the screen before and after MS OS/2 switches from one screen group
+to another. Screen switching often changes the screen mode and video
+register values. A thread that calls the VioSavRedrawWait function waits
+until a screen switch occurs and is then given control so that it can save
+or restore the screen.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>fEvent</i>      Specifies the event flag of the event to wait for. If this flag
+            is VSRWI_SAVEANDREDRAW, the function returns when the screen
+            needs to be either saved or restored. If the flag is
+            VSRWI_REDRAW, the function returns only when the screen needs to
+            be restored.
+ 
+<i>pfNotify</i>    Points to the variable that receives the flag specifying the
+            action to carry out in response to the given event. If this flag
+            is VSWRN_SAVE, the thread saves the video buffer, the registers,
+            and the state information. If the flag is VSWRN_REDRAW, the
+            thread restores the video buffer, the registers, and the state
+            information.
+ 
+<i>usReserved</i>  Specifies a reserved value. This parameter must be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_VIO_FUNCTION_OWNED
+     ERROR_VIO_INVALID_PARMS
+     ERROR_VIO_RETURN
+ 
+<b>Comments</b>
+ 
+When an application is notified that it should save its screen image, it
+saves its physical video buffer, video mode, and any other information the
+application needs in order to redraw its screen.
+ 
+The thread that calls VioSavRedrawWait should carry out all tasks directly
+related to saving and restoring the screen information. Whenever a screen
+switch occurs, the thread should save or restore the screen and call
+<b>VioSavRedrawWait</b> as quickly as possible. The thread can access the physical
+video buffer, if necessary, but since the thread may not be the foreground
+process, it must not use the VioScrLock function to lock the screen. The
+thread should not call MS OS/2 functions (neither directly nor indirectly
+through other functions) that may generate pop-up screens or error pop-up
+screens. Doing so may cause MS OS/2 to lock up (that is, each call of the
+thread generates a pop-up screen, which in turn calls the thread and
+generates another pop-up screen, and so on). You can use the
+<b>VioSavRedrawUndo</b> function to end the thread when it is no longer needed.
+ 
+In some cases, a thread may receive a request to restore the screen before
+receiving a request to save the screen. For such requests, the thread must
+determine whether the given request is valid.
+ 
+Programs that need to save and restore the screen after a pop-up screen
+should use the VioModeWait function.
+ 
+<b>See Also</b>
+ 
+<b>VioGetPhysBuf, VioModeWait, VioSavRedrawUndo, VioScrLock</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

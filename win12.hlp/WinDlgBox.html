@@ -1,0 +1,89 @@
+<html>
+
+<head>
+<title>WinDlgBox (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinDlgBox (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='message_box_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Dialog Windows 1.2'>Overview</a><span class='grhilite'>►</span>            </i>              <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinDrawBitmap.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINDIALOGS
+ 
+USHORT WinDlgBox(hwndParent, hwndOwner, pfnDlgProc, hmod, idDlg,
+    pCreateParams)
+HWND hwndParent;        /* handle of the parent window          */
+HWND hwndOwner;         /* handle of the owner window           */
+PFNWP pfnDlgProc;       /* dialog procedure address             */
+HMODULE hmod;           /* handle of the resource module        */
+USHORT idDlg;           /* identifies the dialog                */
+PVOID pCreateParams;    /* address of application-specific data */
+ 
+The WinDlgBox function loads and processes a modal dialog box and returns
+the usResult value passed to the WinDismissDlg function. It is equivalent to
+calling WinLoadDlg, WinProcessDlg, and WinDestroyWindow.
+ 
+This function does not return until the dialog procedure calls the
+<b>WinDismissDlg</b> function.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwndParent</i>     Identifies the parent window.
+ 
+<i>hwndOwner</i>      Identifies the owner window. This window must be a descendant
+               of hwndParent.
+ 
+<i>pfnDlgProc</i>     Points to the dialog procedure.
+ 
+<i>hmod</i>           Identifies the module that contains the dialog template. This
+               parameter can be either the module handle returned by the
+               DosLoadModule function or NULL for the application's module.
+ 
+<i>idDlg</i>          Identifies the dialog window.
+ 
+<i>pCreateParams</i>  Points to application-specific data that is passed to the
+               dialog procedure as part of the WM_INITDLG message.
+ 
+<b>Return Value</b>
+ 
+The return value is the value specified in the usResult parameter of the
+<b>WinDismissDlg</b> function, or it is DID_ERROR if an error occurred while trying
+to load the dialog box.
+ 
+<b>Example</b>
+ 
+This example processes an application-defined message (IDM_OPEN) and calls
+<b>WinDlgBox</b> to load a dialog box.
+ 
+case IDM_OPEN:
+    if (WinDlgBox(HWND_DESKTOP,
+            hwndFrame,         /* handle of the owner         */
+            OpenDlg,           /* dialog procedure address    */
+            (HMODULE) NULL,    /* location of dialog resource */
+            IDD_OPEN,          /* resource identifier         */
+            (PVOID) NULL)) {   /* application-specific data   */
+       .
+       . /* code executed if dialog box returns TRUE */
+       .
+    }
+ 
+<b>See Also</b>
+ 
+<b>DosLoadModule, WinDismissDlg, WinLoadDlg, WinProcessDlg, DLGTEMPLATE,</b>
+<b>WM_INITDLG</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

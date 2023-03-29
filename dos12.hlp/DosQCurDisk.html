@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>DosQCurDisk (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosQCurDisk (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosQFHandState.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosQCurDisk(pusDriveNumber, pulLogicalDrives)
+PUSHORT pusDriveNumber;     /* pointer to variable receiving drive number */
+PULONG pulLogicalDrives;    /* pointer to variable receiving drive map    */
+ 
+The DosQCurDisk function retrieves the current drive number and a map of the
+logical drives.
+ 
+The DosQCurDisk function is a family API function.
+ 
+<b>Parameter         Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pusDriveNumber</i>    Points to the variable that receives the number of the
+                  default drive. For example, drive A is 1, drive B is 2,
+                  and so on.
+ 
+<i>pulLogicalDrives</i>  Points to the variable that receives the map of the
+                  logical drive.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value.
+ 
+<b>Comments</b>
+ 
+The current drive number identifies the disk drive to be searched for a
+given file if no explicit drive name is given when the filename is
+specified. The current drive number is used by functions such as DosOpen and
+<b>DosFindFirst</b>. Each process has its own current drive and may change this
+drive, by using the DosChDir function, without affecting other processes.
+The default current drive for a process is the drive on which the process is
+called.
+ 
+The map of the logical drives identifies which of the 26 possible disk
+drives exist. The map is a 32-bit value in which each bit of the low-order
+26 bits represents a single drive. For example, bit 0 represents drive A,
+bit 1 represents drive B, and so on. If a bit is set to 1, the drive exists;
+if it is cleared to 0, the drive does not exist.
+ 
+<b>Example</b>
+ 
+This example calls the DosQCurDisk function to determine the current default
+drive and how many logical drives exist. The example then displays the
+letter of every logical drive after checking whether its bit is set in the
+<i>ulDrives</i> variable.
+ 
+CHAR chDrives;
+USHORT usDisk;
+ULONG ulDrives;
+DosQCurDisk(&amp;usDisk, &amp;ulDrives);        /* gets current drive        */
+for (chDrives = 'A'; chDrives &lt;= 'Z'; chDrives++) {
+    if (ulDrives &amp; 1)                   /* if the drive bit is set,  */
+        VioWrtTTY(&amp;chDrives, 1, 0);     /* displays the drive letter */
+    ulDrives &gt;&gt;= 1;
+}
+ 
+<b>See Also</b>
+ 
+<b>DosChDir, DosFindFirst, DosOpen, DosQCurDir, DosSelectDisk</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

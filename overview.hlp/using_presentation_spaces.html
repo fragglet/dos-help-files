@@ -1,0 +1,122 @@
+<html>
+
+<head>
+<title>Using Presentation Spaces and Device Contexts (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Presentation Spaces and Device Contexts (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='device_contexts.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#presentation space functions 1.2'>Function Group</a><span class='grhilite'>►</span>              </i>       <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Regions.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+               Using Presentation Spaces and Device Contexts
+ 
+You can use presentation-space and device-context functions to perform the
+following tasks:
+ 
+♦  Create a normal, micro, or cached-micro presentation space.
+ 
+♦  Delete, save, or restore a presentation space.
+ 
+♦  Create a standard or cached device context.
+ 
+♦  Associate a presentation space or device context.
+ 
+♦  Destroy a device context.
+ 
+♦  Retrieve information about a device's capabilities.
+ 
+<b>Creating a Normal Presentation Space</b>
+ 
+The following code fragment shows how to create a presentation space with
+page units of 0.01 inches and associate it with a printer device context:
+ 
+HAB hab;          /* anchor-block handle       */
+HPS hpsNormal;    /* presentation-space handle */
+HDC hdcPrinter;   /* device-context handle     */
+SIZEL sizlPage;   /* page structure            */
+    .
+    .
+    .
+hpsNormal = GpiCreatePS(hab, hdcPrinter, &amp;sizlPage,
+   PU_LOENGLISH | GPIA_ASSOC);
+ 
+<b>Creating a Standard Device Context for a Printer</b>
+ 
+The following code fragment shows how to create a printer device context:
+ 
+HDC hdcPrinter;              /* handle of printer device context */
+HAB hab;                     /* anchor-block handle              */
+DEVOPENSTRUC dop;            /* device information               */
+ 
+dop.pszLogAddress = "lpt1";      /* logical-device address */
+dop.pszDriverName = "PSCRIPT";   /* device-driver name     */
+dop.pdriv = NULL;                /* pointer to driver data */
+dop.pszDataType = "PM_Q_STD";    /* standard queued data   */
+ 
+hdcPrinter = DevOpenDC(hab,
+    OD_DIRECT,                      /* direct device type */
+    "*",                            /* no data in os2.ini */
+    4L,
+    (PDEVOPENDATA) &amp;dop,
+    (HDC) NULL);
+ 
+<b>Creating a Standard Device Context for a Metafile</b>
+ 
+The following code fragment shows how to create a standard device context:
+HDC hdcMeta, hdcWin; /* handles of metafile and window DC */
+HAB hab;             /* anchor-block handle               */
+DEVOPENSTRUC dop;    /* device information                */
+ 
+dop.pszLogAddress = NULL;          /* logical-device address */
+dop.pszDriverName = "DISPLAY";     /* device-driver name     */
+dop.pdriv = NULL;                  /* pointer to driver data */
+dop.pszDataType = NULL;            /* no queued data         */
+ 
+hdcMeta = DevOpenDC(hab,
+    OD_METAFILE,           /* metafile DC                */
+    "*",                   /* ignores os2.ini            */
+    4L,                    /* uses first 4 fields in dop */
+    (PDEVOPENDATA) &amp;dop,   /* structure for system info  */
+    NULL);                 /* compatible with screen     */
+ 
+<b>Reassociating a Normal Presentation Space</b>
+ 
+The following code fragment shows how to break the link between a normal
+presentation space and a device context and reassociate the presentation
+space with a metafile device context:
+ 
+if (!GpiAssociate(hps, NULL))    /* breaks link between PS and DC   */
+    ReportError(...);
+if (!GpiAssociate(hps, hdcMeta)) /* reassociates PS and metafile DC */
+    ReportError(...);
+ 
+<b>Associating a Device Context with a Presentation Space</b>
+ 
+The following code fragment shows how to open a cached device context and
+associate it with a normal presentation space:
+ 
+HDC hdcWin;         /* cached-device-context handle     */
+HPS hpsWin;         /* normal-presentation-space handle */
+HWND hwndClient;    /* client-window handle             */
+HAB hab;            /* anchor-block handle              */
+SIZEL sizlPage;     /* presentation page                */
+ 
+hdcWin = WinOpenWindowDC(hwndClient);
+hpsWin = GpiCreatePS(hab, hdcWin, &amp;sizlPage,
+    PU_LOENGLISH | GPIA_ASSOC);
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

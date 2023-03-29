@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<title>WinInitialize (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinInitialize (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinInSendMsg.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINWINDOWMGR
+ 
+HAB WinInitialize(fsOptions)
+USHORT fsOptions;    /* initialization options */
+ 
+The WinInitialize function initializes a thread for making Presentation
+Manager function calls. This must be the first Presentation Manager function
+called by any thread that will be calling Presentation Manager functions.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>fsOptions</i>  Specifies the initialization options. Currently this parameter
+           must be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is the handle of an anchor block, or NULL if an error
+occurred.
+ 
+<b>Example</b>
+ 
+This example calls WinInitialize so that the thread can use Presentation
+Manager functions, processes the message loop, and calls WinTerminate when
+it is finished calling Presentation Manager functions.
+ 
+HAB hab;                /* handle to the anchor block  */
+ 
+VOID cdecl main() {
+    hab = WinInitialize(0);
+    .
+    . /* any other initialization */
+    .
+    while (WinGetMsg(hab, &amp;qmsg, (HWND) NULL, 0, 0))
+        WinDispatchMsg(hab, &amp;qmsg);
+    WinTerminate(hab);
+ 
+<b>See Also</b>
+ 
+<b>WinCreateMsgQueue, WinTerminate</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>GpiDestroyPS (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiDestroyPS (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='presentation_spaces.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Presentation Spaces and Device Contexts 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80ff.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> </i><span class='grhilite'>◄</span><a href='GpiDestroyRegion.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPICONTROL
+ 
+BOOL GpiDestroyPS(hps)
+HPS hps;    /* presentation-space handle */
+ 
+The GpiDestroyPS function destroys the presentation space and releases all
+resources owned by the presentation space. This function should only be used
+to destroy presentation spaces created by the GpiCreatePS function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_PS_BUSY
+     PMERR_PS_IS_ASSOCIATED
+ 
+<b>Example</b>
+ 
+This example uses the GpiDestroyPS function to destroy the presentation
+space associated with a memory device context.
+ 
+HDC hdc;
+HPS hps;
+SIZEL page = { 0, 0 };
+ 
+/* Create the memory device context and presentation space. */
+ 
+hdc = DevOpenDC(hab, OD_MEMORY, "*", 0L, (PDEVOPENDATA) NULL, (HDC) NULL);
+hps = GpiCreatePS(hab, hdc, &amp;page, PU_PELS | GPIT_MICRO | GPIA_ASSOC);
+    .
+    .
+    .
+GpiAssociate(hps, (HDC) NULL);
+GpiDestroyPS(hps);    /* destroys presentation space */
+DevCloseDC(hdc);      /* closes device context       */
+ 
+<b>See Also</b>
+ 
+<b>GpiCreatePS</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,443 @@
+<html>
+
+<head>
+<title>DevEscape (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DevEscape (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='x_at_L8119.html'>Changes</a><span class='grhilite'>►</span>                                             <span class='grhilite'>◄</span><a href='dev.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DevOpenDC.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DEV
+ 
+LONG DevEscape(hdc, cmdCode, cbInData, pbInData, pcbOutData, pbOutData)
+HDC hdc;             /* device-context handle                          */
+LONG cmdCode;        /* escape function to perform                     */
+LONG cbInData;       /* size of input buffer                           */
+PBYTE pbInData;      /* pointer to input buffer                        */
+PLONG pcbOutData;    /* pointer to variable for bytes in output buffer */
+PBYTE pbOutData;     /* pointer to output-data buffer                  */
+ 
+The DevEscape function allows applications to access facilities of a device
+not otherwise available through the API. Because calls to escape functions
+are generally sent to the device driver, the device driver must be able to
+use them.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hdc</i>         Identifies the device context.
+ 
+<i>cmdCode</i>     Specifies the escape function to perform. The following escape
+            functions are currently defined:
+ 
+                 DEVESC_ABORTDOC
+                 DEVESC_BREAK_EXTRA
+                 DEVESC_CHAR_EXTRA
+                 DEVESC_DRAFTMODE
+                 DEVESC_ENDDOC
+                 DEVESC_FLUSHOUTPUT
+                 DEVESC_GETSCALINGFACTOR
+                 DEVESC_NEWFRAME
+                 DEVESC_NEXTBAND
+                 DEVESC_QUERYESCSUPPORT
+                 DEVESC_QUERYVIOCELLSIZES
+                 DEVESC_RAWDATA
+                 DEVESC_STARTDOC
+ 
+            Devices can define additional escape functions by using other
+            cmdCode values in the following ranges:
+ 
+            Range        Meaning
+            ────────────────────────────────────────────────────────────────
+            32768-40959  Not stored in a metafile and not recorded.
+ 
+            40960-49151  Stored in a metafile only.
+ 
+            49152-57343  Stored in a metafile and recorded.
+ 
+            57344-65535  Recorded only.
+ 
+<i>cbInData</i>    Specifies the number of bytes of data in the buffer pointed to
+            by the pbInData parameter.
+ 
+<i>pbInData</i>    Points to the buffer that contains the input data required for
+            the escape function.
+ 
+<i>pcbOutData</i>  Points to a variable. When this function is called, the variable
+            specifies the number of bytes of data in the buffer pointed to
+            by the pbOutData parameter. If data is returned in the
+            pbOutData parameter, this variable is updated to the number of
+            bytes of data returned.
+ 
+<i>pbOutData</i>   Points to the buffer that receives the output from the escape
+            function. If this parameter is NULL, no data is returned.
+ 
+<b>Return Value</b>
+ 
+The return value is DEV_OK if the function is successful, DEVESC_ERROR if an
+error occurs, or DEVESC_NOTIMPLEMENTED if the escape function is not
+implemented for the specified code.
+ 
+<b>Errors</b>
+ 
+You can use the WinGetLastError function to retrieve the error value, which
+may be one of the following values:
+ 
+     PMERR_ESC_CODE_NOT_SUPPORTED
+     PMERR_INV_ESCAPE_DATA
+     PMERR_INV_HDC
+     PMERR_INV_LENGTH_OR_COUNT
+ 
+<b>Comments</b>
+ 
+The standard escape functions and the corresponding DevEscape parameters are
+listed in the following paragraphs.
+ 
+<b>Escape                    Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>DEVESC_BREAK_EXTRA</i>        Defines extra width to add to the break character
+                          when that character is transmitted to the device
+                          specified by the hdc parameter. The extra width is
+                          used in aligning text. The GpiQueryFonts function
+                          can be used to determine the break character used
+                          in a specific font.
+ 
+                          For DEVESC_BREAK_EXTRA, the DevEscape parameters
+                          contain the following information:
+ 
+                          Parameter   Description
+                          ──────────────────────────────────────────────────
+                          cbInData    Specifies the number of bytes pointed
+                                      to by the pbInData parameter. This
+                                      parameter must be either zero (for no
+                                      extra spacing) or 4 (for extra
+                                      spacing).
+ 
+                          pbInData    Points to the fixed-point number
+                                      (FIXED) that specifies the amount of
+                                      extra width (in world coordinate
+                                      units) to add to the break character.
+ 
+                          pcbOutData  Not used; can be NULL.
+ 
+                          pbOutData   Not used; can be zero.
+ 
+                          Extra spacing is initialized to zero whenever a
+                          display context is opened. Any change made to the
+                          extra spacing remains in effect until either the
+                          display context is closed or a new change to the
+                          extra spacing is made.
+ 
+<i>DEVESC_CHAR_EXTRA</i>         Defines extra width to add to all characters when
+                          they are transmitted to the device specified by
+                          the hdc parameter. The extra width is used in
+                          aligning text.
+ 
+                          For DEVESC_CHAR_EXTRA, the DevEscape parameters
+                          contain the following information:
+ 
+                          Parameter   Description
+                          ──────────────────────────────────────────────────
+                          cbInData    Specifies the number of bytes pointed
+                                      to by the pbInData parameter. This
+                                      parameter must be either zero (for no
+                                      extra spacing) or 4 (for extra
+                                      spacing).
+ 
+                          pbInData    Points to the fixed-point number
+                                      (FIXED) that specifies the amount of
+                                      extra width to be added.
+ 
+                          pcbOutData  Not used; can be NULL.
+ 
+                          pbOutData   Not used; can be zero.
+ 
+                          Extra spacing is initialized to zero whenever a
+                          display context is opened. Any change made to the
+                          extra spacing remains in effect until either the
+                          display context is closed or a new change to the
+                          extra spacing is made.
+ 
+                          The extra width added to the break character is
+                          the sum of the break-extra and character-extra
+                          amounts. Providing a width vector to
+                          GpiCharStringPos or GpiQueryCharStringPosAt
+                          operates in addition to the extra spacing feature.
+                          Extra spacing does not override kerning; extra
+                          spacing adjustments and kerning adjustments simply
+                          sum.
+ 
+                          Text drawn in a path is not affected by the extra
+                          spacing. This means that outlined text and text
+                          used for a clipping region are displayed as if the
+                          extra spacing fields were set to zero.
+ 
+<i>DEVESC_QUERYESCSUPPORT</i>    Determines whether the device driver has
+                          implemented a particular escape. The return value
+                          gives the result. This escape is not stored in a
+                          metafile or recorded.
+ 
+                          For DEVESC_QUERYESCSUPPORT, the DevEscape
+                          parameters contain the following information:
+ 
+                          Parameter   Description
+                          ──────────────────────────────────────────────────
+                          cbInData    Specifies the number of bytes pointed
+                                      to by the pbInData parameter.
+ 
+                          pbInData    Specifies the escape-code value of the
+                                      escape function to be checked.
+ 
+                          pcbOutData  Not used; can be NULL.
+ 
+                          pbOutData   Not used; can be zero.
+ 
+<i>DEVESC_QUERYVIOCELLSIZES</i>  Returns the cell sizes supported by the device
+                          identified by the hdc parameter.
+ 
+                          For DEVESC_QUERYVIOCELLSIZES, the DevEscape
+                          parameters contain the following information:
+ 
+                          Parameter   Description
+                          ──────────────────────────────────────────────────
+                          cbInData    Not used; can be zero.
+ 
+                          pbInData    Not used; can be NULL.
+ 
+                          pcbOutData  Points to the number of bytes of data
+                                      pointed to by the pbOutData parameter.
+                                      Upon return, this parameter contains
+                                      the number of bytes placed in the
+                                      buffer pointed to by the pbOutData
+                                      parameter.
+ 
+                          pbOutData   Points to the buffer that receives the
+                                      output from this escape function. The
+                                      output is returned in a VIOSIZECOUNT
+                                      structure and an array of
+                                      VIOFONTCELLSIZE structures.
+ 
+<i>DEVESC_GETSCALINGFACTOR   Returns the scaling factors for the x and y axes</i>
+                          of a printing device. For each scaling factor, an
+                          exponent of two is put in the pbOutData parameter.
+                          For example, the value 3 is used if the scaling
+                          factor is 8. Scaling factors are used by devices
+                          that cannot support graphics at the same
+                          resolution as the device resolution.
+ 
+                          For DEVESC_GETSCALINGFACTOR, the DevEscape
+                          parameters contain the following information:
+ 
+                          Parameter   Description
+                          ──────────────────────────────────────────────────
+                          cbInData    Not used; can be zero.
+ 
+                          pbInData    Not used; can be NULL.
+ 
+                          pcbOutData  Points to the number of bytes of data
+                                      pointed to by the pbOutData parameter.
+                                      Upon return, this parameter contains
+                                      the number of bytes placed in the
+                                      buffer pointed to by the pbOutData
+                                      parameter.
+ 
+                          pbOutData   Points to the buffer that receives the
+                                      output from this escape. A structure
+                                      is returned that specifies the scaling
+                                      factors for the x and y axes.
+ 
+<i>DEVESC_STARTDOC</i>           Indicates the start of a new print job. All
+                          subsequent output to the device context, up to the
+                          next DEVESC_ENDDOC escape, is spooled under the
+                          same job.
+ 
+                          For DEVESC_STARTDOC, the DevEscape parameters
+                          contain the following information:
+ 
+                          Parameter   Description
+                          ──────────────────────────────────────────────────
+                          cbInData    Specifies the number of bytes pointed
+                                      to by the pbInData parameter.
+ 
+                          pbInData    Points to the null-terminated string
+                                      that specifies the name of the
+                                      document.
+ 
+                          pcbOutData  Not used; can be NULL.
+ 
+                          pbOutData   Not used; can be NULL.
+ 
+<i>DEVESC_ENDDOC</i>             Ends a print job started by the DEVESC_STARTDOC
+                          escape.
+ 
+                          For DEVESC_ENDDOC, the DevEscape parameters
+                          contain the following information:
+ 
+                          Parameter   Description
+                          ──────────────────────────────────────────────────
+                          cbInData    Not used; can be zero.
+ 
+                          pbInData    Not used; can be NULL.
+ 
+                          pcbOutData  Points to the buffer that specifies
+                                      the number of characters in the string
+                                      pointed to by the pbOutData parameter.
+                                      This parameter should be NULL if the
+                                      number of characters is zero.
+ 
+                          pbOutData   Points to the unsigned 16-bit integer
+                                      that specifies the job identifier if a
+                                      spooler print job was created.
+ 
+<i>DEVESC_NEXTBAND</i>           Allows an application to signal that it has
+                          finished writing to a "band," or rectangle. The
+                          coordinates of the next band are returned. This
+                          escape is used by applications that perform handle
+                          banding ("forprinting") themselves.
+ 
+                          For DEVESC_NEXTBAND, the DevEscape parameters
+                          contain the following information:
+ 
+                          Parameter   Description
+                          ──────────────────────────────────────────────────
+                          cbInData    Not used; can be zero.
+ 
+                          pbInData    Not used; can be NULL.
+ 
+                          pcbOutData  Points to the number of bytes of data
+                                      pointed to by the pbOutData parameter.
+                                      Upon return, this parameter contains
+                                      the number of bytes placed in the
+                                      buffer pointed to by the pbOutData
+                                      parameter.
+ 
+                          pbOutData   Points to the address of the buffer
+                                      that receives the output from this
+                                      escape. A structure is returned that
+                                      specifies the device coordinates of
+                                      the next band.
+ 
+<i>DEVESC_ABORTDOC</i>           Stops the current job, erasing everything written
+                          by the application to the device since the last
+                          call to the DEVESC_ENDDOC escape function.
+ 
+                          For DEVESC_ABORTDOC, the DevEscape parameters
+                          contain the following information:
+ 
+                          Parameter   Description
+                          ──────────────────────────────────────────────────
+                          cbInData    Not used; can be zero.
+ 
+                          pbInData    Not used; can be NULL.
+ 
+                          pcbOutData  Not used; can be NULL.
+ 
+                          pbOutData   Not used; can be NULL.
+ 
+<i>DEVESC_NEWFRAME</i>           Allows an application to signal when it has
+                          finished writing to a page. This escape is
+                          typically used with a printer device to advance to
+                          a new page. Using this escape is similar to
+                          processing the GpiErase function for a screen
+                          device context.
+ 
+                          For DEVESC_NEWFRAME, the DevEscape parameters
+                          contain the following information:
+ 
+                          Parameter   Description
+                          ──────────────────────────────────────────────────
+                          cbInData    Not used; can be zero.
+ 
+                          pbInData    Not used; can be NULL.
+ 
+                          pcbOutData  Not used; can be NULL.
+ 
+                          pbOutData   Not used; can be NULL.
+ 
+<i>DEVESC_DRAFTMODE</i>          Turns draft mode on or off. Turning draft mode on
+                          instructs the device driver to print faster and,
+                          if necessary, with lower quality. You can change
+                          the draft mode only at page boundaries──for
+                          example, after a DEVESC_NEWFRAME escape.
+ 
+                          For DEVESC_DRAFTMODE, the DevEscape parameters
+                          contain the following information:
+ 
+                          Parameter   Description
+                          ──────────────────────────────────────────────────
+                          cbInData    Specifies the number of bytes pointed
+                                      to by the pbInData parameter.
+ 
+                          pbInData    Points to the signed 16-bit integer
+                                      that specifies the draft mode. This
+                                      value is 1 if draft mode is on and
+                                      zero if draft mode is off.
+ 
+                          pcbOutData  Not used; can be NULL.
+ 
+                          pbOutData   Not used; can be NULL.
+ 
+<i>DEVESC_FLUSHOUTPUT</i>        Removes any output from the device buffer.
+ 
+                          For DEVESC_FLUSHOUTPUT, the DevEscape parameters
+                          contain the following information:
+ 
+                          Parameter   Description
+                          ──────────────────────────────────────────────────
+                          cbInData    Not used; can be zero.
+ 
+                          pbInData    Not used; can be NULL.
+ 
+                          pcbOutData  Not used; can be NULL.
+ 
+                          pbOutData   Not used; can be NULL.
+ 
+<i>DEVESC_RAWDATA</i>            Allows an application to send data directly to a
+                          device driver. For example, in the case of a
+                          printer device driver, the data could be a printer
+                          data stream.
+ 
+                          If raw data is mixed with other data──for example,
+                          Gpi data──being sent to the same page of a device
+                          context, the results are unpredictable and depend
+                          upon the action taken by the Presentation Manager
+                          device driver, which, in this case, might ignore
+                          the GPI data completely. In general, you should
+                          send raw data either to a separate page, using the
+                          DEVESC_NEWFRAME escape to obtain a new page, or to
+                          a separate document, using the DEVESC_STARTDOC and
+                          DEVESC_ENDDOC escapes to create a new document.
+ 
+                          For DEVESC_RAWDATA, the DevEscape parameters
+                          contain the following information:
+ 
+                          Parameter   Description
+                          ──────────────────────────────────────────────────
+                          cbInData    Specifies the number of bytes pointed
+                                      to by the pbInData parameter.
+ 
+                          pbInData    Points to the raw data.
+ 
+                          pcbOutData  Not used; can be NULL.
+ 
+                          pbOutData   Not used; can be NULL.
+ 
+<b>See Also</b>
+ 
+<b>GpiErase</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,67 @@
+<html>
+
+<head>
+<title>ASYNC_GETOUTQUECOUNT (1.2) - ioctl12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ioctl12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ASYNC_GETOUTQUECOUNT (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='IOCtls.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ASYNC_SETBAUDRATE.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVIOCTL
+ 
+USHORT DosDevIOCtl(pcTransmitQue, 0L, 0x0069, 0x0001, hDevice)
+PUSHORT pcTransmitQue;    /* pointer to structure for character count */
+HFILE hDevice;            /* device handle                            */
+ 
+The ASYNC_GETOUTQUECOUNT function retrieves a count of characters in the
+transmit queue.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pcTransmitQue  Points to the RXQUEUE st</i>ructure that receives the count of
+               characters in the transmit queue.
+ 
+<i>hDevice</i>        Identifies the serial device that receives the device-control
+               function. The handle must have been created previously by
+               using the DosOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful or an error value if
+an error occurs.
+ 
+<b>Comments</b>
+ 
+The device-driver transmit queue is a memory buffer between the memory
+pointed to by the write-request packet and the transmit hardware for this
+serial device. If the transmit queue is empty, the program may not assume
+that all write requests are completed or that no write requests are
+outstanding. The behavior of data movement between the write request and the
+transmit queue may change from release to release of the device driver.
+Programs should not be written to have a dependency on this information.
+ 
+Programs should be written to be independent of the transmit queue being a
+fixed size. The information in this field allows the application to get the
+size of the transmit queue. The current size of the transmit queue is
+approximately 128 bytes but is subject to change.
+ 
+<b>See Also</b>
+ 
+<b>DosOpen, ASYNC_GETINQUECOUNT, RXQUE</b>UE
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

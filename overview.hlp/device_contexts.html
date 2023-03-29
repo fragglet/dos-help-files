@@ -1,0 +1,301 @@
+<html>
+
+<head>
+<title>About Presentation Spaces and Device Contexts (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Presentation Spaces and Device Contexts (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='using_presentation_spaces.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#presentation space functions 1.2'>Function Group</a><span class='grhilite'>►</span>              </i>       <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Regions.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+               About Presentation Spaces and Device Contexts
+ 
+This topic describes presentation spaces and device contexts. You should
+also be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='coordinate_spaces.html'>Coordinate spaces and transformations</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='segments.html'>Segments and retained graphics</a><span class='grhilite'>►</span>
+ 
+A presentation space is a data structure maintained by MS OS/2 that
+describes an application's device-independent drawing environment. A device
+context links a presentation space to a device and gives an application
+access to important device information.
+ 
+<b>Presentation Spaces</b>
+ 
+There are two kinds of presentation spaces: normal and micro. You must use a
+normal presentation space to display and print output on multiple devices (a
+video display and a printer, for instance) or if your application uses the
+segment and retained-drawing functions to generate complex drawings. You
+should use a micro presentation space only to display and print output on a
+single device or if your application's output is a simple drawing.
+ 
+There are two kinds of micro presentation spaces: standard and cached. Use a
+standard micro presentation space to send output to a printer, a plotter, or
+any device; use a cached-micro presentation space to send output to a window
+on the display device.
+ 
+<b>Normal Presentation Spaces</b>
+ 
+Because normal presentation spaces use more memory than micro presentation
+spaces, you should use them only when they are required. To create a normal
+presentation space, use the GpiCreatePS function. You can then associate the
+normal presentation space with a device and reassociate it later with a new
+device when you need to direct output to that second device. To associate a
+normal presentation space with a device when you create the presentation
+space, use the GPIA_ASSOC flag when you call GpiCreatePS. To associate a
+normal presentation space with a second or a third device later while your
+application is running, call the GpiAssociate function.
+ 
+<b>Micro Presentation Spaces</b>
+ 
+You can create a standard micro presentation space by calling the
+<b>GpiCreatePS</b> function and specifying the GPIT_MICRO flag. You must associate
+a standard micro presentation space with a device when you create the
+presentation space by specifying the GPIA_ASSOC flag as one of the options
+to GpiCreatePS and by supplying a handle that identifies a device context.
+You cannot reassociate a micro presentation space with another device.
+ 
+The window manager maintains a cache of micro presentation spaces for
+windows on a video display. You can access a cached-micro presentation space
+by calling the WinGetPS or WinBeginPaint function. You need not associate a
+cached-micro presentation space with the display; the window manager takes
+care of this for you.
+ 
+The following functions are not allowed in a micro presentation space:
+ 
+    GpiAssociate                          GpiQueryDrawingMode
+    GpiBeginElement                       GpiQueryEditMode
+    GpiCallSegmentMatrix                  GpiQueryElement
+    GpiCloseSegment                       GpiQueryElementPointer
+    GpiCorrelateChain                     GpiQueryElementType
+    GpiCorrelateFrom                      GpiQueryInitialSegmentAttrs
+    GpiCorrelateSegment                   GpiQuerySegmentAttrs
+    GpiDeleteElement                      GpiQuerySegmentNames
+    GpiDeleteElementRange                 GpiQuerySegmentPriority
+    GpiDeleteElementsBetweenLabels        GpiQuerySegmentTransformMatrix
+    GpiDeleteSegment                      GpiQueryStopDraw
+    GpiDeleteSegments                     GpiQueryTag
+    GpiDrawChain                          GpiQueryViewingTransformMatrix
+    GpiDrawDynamics                       GpiRemoveDynamics
+    GpiDrawFrom                           GpiResetBoundaryData
+    GpiDrawSegment                        GpiSetAttrMode
+    GpiElement                            GpiSetDefaultTag
+    GpiEndElement                         GpiSetDrawControl
+    GpiErrorSegmentData                   GpiSetDrawingMode
+    GpiGetData                            GpiSetEditMode
+    GpiLabel                              GpiSetElementPointer
+    GpiOffsetElementPointer               GpiSetElementPointerAtLabel
+    GpiOpenSegment                        GpiSetInitialSegmentAttrs
+    GpiPop                                GpiSetSegmentAttrs
+    GpiPutData                            GpiSetSegmentPriority
+    GpiQueryAttrMode                      GpiSetSegmentTransformMatrix
+    GpiQueryBoundaryData                  GpiSetStopDraw
+    GpiQueryDefaultTag                    GpiSetTag
+    GpiQueryDrawControl                   GpiSetViewingTransformMatrix
+ 
+<b>Saving and Restoring Presentation Spaces</b>
+ 
+You can save the contents of a presentation space, modify its fields, draw
+in the modified presentation space, and then restore it to its original
+state. The GpiSavePS function saves the contents of a presentation space and
+the GpiRestorePS function restores them. When you call GpiSavePS, MS OS/2
+copies the following items from the current presentation space onto a
+special stack:
+ 
+♦  Primitive attributes
+ 
+♦  Transformation matrices
+ 
+♦  Viewing limit
+ 
+♦  Clip path
+ 
+♦  Clip region
+ 
+♦  Current position
+ 
+♦  Loaded logical color table
+ 
+♦  Loaded logical font
+ 
+You can push the contents of a presentation space on the stack, and you can
+do so as many times as is necessary. The GpiRestorePS function pops the
+contents of a presentation space off the stack.
+ 
+<b>Destroying Presentation Spaces</b>
+ 
+Because presentation spaces consume a considerable amount of memory, you
+should destroy them whenever your application no longer needs them. To
+destroy a normal or micro presentation space, call the GpiDestroyPS
+function. Once you finish using a cached-micro presentation space that was
+accessed by using the WinGetPS function, you can release it by calling the
+<b>WinReleasePS</b> function. You need not destroy a presentation space that you
+accessed by using the WinBeginPaint function; MS OS/2 does this for you when
+you call the WinEndPaint function.
+ 
+<b>Device Contexts</b>
+ 
+Device contexts link presentation spaces to devices by converting
+device-independent presentation-space information into device-dependent
+information. (This conversion occurs in the device driver, a low-level
+program that is transparent at the API level.) Device contexts also give
+applications access to important device information such as screen
+dimensions or printer capabilities.
+ 
+There are two kinds of device contexts: normal and cached. A normal device
+context links a presentation space with any type of device. A cached device
+context can link a presentation space only with a window on a video
+display.
+ 
+<b>Normal Device Contexts</b>
+ 
+There are five types of normal device contexts:
+ 
+1  Queued
+ 
+2  Direct
+ 
+3  Information
+ 
+4  Memory
+ 
+5  Metafile
+ 
+Each of these device contexts serves a specific purpose. A queued device
+context links a presentation space with a printer or plotter shared by
+multiple users. Queued devices store print jobs by using a program called a
+print spooler that keeps track of the order in which jobs arrive at the
+printer and the order in which they are printed. A direct device context
+links a presentation space with a printer or a plotter controlled by a
+single user and does not queue print jobs or other output. An information
+device context is a special device context that forms a one-way link to a
+device. An application can use an information device context to query a
+device but cannot send output to the device. A memory device links a
+presentation space with system memory. Memory device contexts are useful in
+applications that keep a "shadow" bitmap of the client area in a window. A
+metafile device context links a presentation space with a metafile.
+Applications that create complex drawings use metafiles to store the
+drawings.
+ 
+You can create a normal device context by calling the DevOpenDC function.
+This function requires you to specify one of the five types. It also
+requires that you pass important device-initialization data, including a
+logical address, the device-driver name, device-driver data, a description
+of the device type, and information about the queue (if the device is a
+queued device). The device-initialization data is passed in a DEVOPENSTRUC
+structure.
+ 
+The last six fields in this structure apply only to queued devices.
+ 
+<b>Cached Device Contexts</b>
+ 
+You can obtain a handle to one of the cached device contexts by calling the
+<b>WinOpenWindowDC</b> function. A cached device context is a direct device context
+that links a presentation space with a window in a video display. You should
+use a cached device context whenever a task will send output only to a
+window.
+ 
+<b>Closing Device Contexts</b>
+ 
+To close a device context that your application opened by calling the
+<b>DevOpenDC function, you can</b> call the DevCloseDC function. However, you
+should not try to close a device context that you opened by using the
+<b>WinOpenWindowDC</b> function; MS OS/2 will do this for you automatically when
+you destroy the associated window.
+ 
+<b>Linking Presentation Spaces with Devices</b>
+ 
+When you call the GpiCreatePS function and pass it the GPIA_ASSOC flag or
+when you call the GpiAssociate function, MS OS/2 requires that you pass the
+device-context handle returned by the DevOpenDC or WinOpenWindowDC function.
+This handle identifies the device context that links a presentation space to
+a device. Once you have established this link, any drawing operations
+performed using the presentation-space handle will also be performed on the
+associated device. Once an application is through using a particular device,
+it should disassociate the presentation space and the device by calling
+<b>GpiAssociate</b> and passing NULL as the second argument. A presentation space
+can be associated with a new device only after it has been disassociated
+from the original device, since it is not possible to associate a
+presentation space with more than one device at a time.
+ 
+<b>The Presentation Page</b>
+ 
+One of the arguments to the GpiCreatePS function is a SIZEL structure that
+specifies the dimensions of the presentation space's presentation page. A
+presentation page is a representation of a page on a printer or a plotter or
+a representation of a maximized window on a video display. MS OS/2 uses
+presentation pages to scale and position output on a device. For more
+information about presentation pages, see the topic
+<i><span class='grhilite'>◄</span><a href='coordinate_spaces.html'>Coord</i>inate spaces and transformations</a><span class='grhilite'>►</span>.
+ 
+The page-unit constant PS_UNITS, which is another argument to GpiCreatePS,
+is related to the SIZEL structure. This constant can be one of seven
+values:
+ 
+♦  PU_ARBITRARY
+ 
+♦  PU_PELS
+ 
+♦  PU_LOMETRIC
+ 
+♦  PU_HIMETRIC
+ 
+♦  PU_LOENGLISH
+ 
+♦  PU_HIENGLISH
+ 
+♦  PU_TWIPS
+ 
+The page-unit constant defines the dimensions of each unit on the
+presentation page. For example, if you specify PU_PELS, the length of each
+page unit in the x-direction will be identical to the width of a pel, and
+the length of each page unit in the y-direction will be identical to the
+height of a pel on the selected output device. If you specify PU_LOENGLISH,
+each page unit will measure 0.01 inches in the x- and y-directions.
+ 
+If you link a presentation space to a device when you call GpiCreatePS, MS
+OS/2 automatically assigns page dimensions to your presentation page. If you
+do not link a presentation space to a device when you call GpiCreatePS, you
+must assign the page dimensions.
+ 
+<b>Determining Device Capabilities</b>
+ 
+Once you have created a device context for a particular output device, you
+can determine the capabilities of that device by calling the DevQueryCaps
+function. This function retrieves the following information:
+ 
+♦  Device technology (whether the device is a raster or vector device)
+ 
+♦  Maximized window dimensions (if the device is a video display)
+ 
+♦  Page dimensions (if the device is a printer or plotter)
+ 
+♦  Character-box dimensions
+ 
+♦  Marker-box dimensions
+ 
+♦  Pel resolution
+ 
+♦  Color capabilities
+ 
+♦  Mix-mode capabilities
+ 
+You can use this information to, for example, select fonts, set up the
+presentation page, or create a new logical color table.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

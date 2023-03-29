@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<title>KBD_READCHAR (1.2) - ioctl12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ioctl12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> KBD_READCHAR (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='IOCtls.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='KBD_SETFGNDSCREENGRP.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVIOCTL
+ 
+USHORT DosDevIOCtl(pkkiBuffer, pcRecords, 0x0074, 0x0004, hDevice)
+PKBDKEYINFO pkkiBuffer;    /* pointer to structure for keystrokes     */
+PUSHORT pcRecords;         /* pointer to variable for record count    */
+HFILE hDevice;             /* device handle                           */
+ 
+The KBD_READCHAR function retrieves one or more character data records from
+the keyboard-input buffer for the screen group of the active process.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pkkiBuffer</i>  Points to the structure that receives the character data
+            records. The structure must be at least as large as the size of
+            an individual record multiplied by the requested number of
+            records to be read.
+ 
+<i>pcRecords</i>   Points to the variable that contains the number of records to be
+            read. When the function returns, it copies the actual number of
+            records retrieved to the variable.
+ 
+<i>hDevice</i>     Identifies the keyboard that receives the device-control
+            function. The handle must have been created previously by using
+            the DosOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful or an error value if
+an error occurs.
+ 
+<b>Comments</b>
+ 
+This function copies the records to the buffer pointed to by the pkkiBuffer
+parameter. The variable pointed to by the pcRecords parameter specifies the
+number of records to copy. The function can copy up to 16 characters.
+ 
+If the variable pointed to by pcRecords is KBD_READ_WAIT, the function waits
+for the requested number of keystrokes; it blocks the calling process until
+all records have been read. If the variable is KBD_READ_NOWAIT, the function
+retrieves any available records (up to the specified number) and returns
+immediately. When the function returns, it copies the actual number of
+records retrieved to the variable. It sets the sign bit to 0 if the input
+mode is ASCII; it sets the sign bit to 1 (0x8000) if the input mode is
+binary.
+ 
+<b>See Also</b>
+ 
+<b>DosOpen, KbdCharIn, KBD_PEEKCHAR, KBDKEYINFO</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

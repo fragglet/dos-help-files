@@ -1,0 +1,123 @@
+<html>
+
+<head>
+<title>Using Mouse Pointers and Icons (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Mouse Pointers and Icons (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='icons.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#pointer functions 1.2'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#predefined mouse pointers'>System Pointers</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='online_help.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                       Using Mouse Pointers and Icons
+ 
+Applications typically use mouse-pointer resources to control the appearance
+of the mouse pointer and to draw icons in windows. The following sections
+show how to use mouse pointers in applications.
+ 
+<b>Creating or Loading a Mouse Pointer</b>
+ 
+Before an application can use a mouse pointer, it must first receive a
+handle to the pointer. Most applications load mouse pointers from the system
+or their own resource file. MS OS/2 maintains many predefined mouse pointers
+that an application can use by calling the WinQuerySysPointer function.
+System mouse pointers include all the standard mouse-pointer shapes and
+message-box icons.
+ 
+You can also load mouse pointers that are defined in the resource file for
+your application. Typically, you define the mouse-pointer resource using
+Icon Editor or a similar program. The resulting mouse pointer or icon can
+then be included in your resource file. This is done by pulling the Icon
+Editor data file into your resource file using the key word POINTER, a
+resource ID number, and a filename for the mouse-pointer data created by the
+Icon Editor. When the mouse-pointer resource is included in the resource
+file, you can use it by calling the WinLoadPointer function, specifying the
+pointer-resource ID and a resource-module handle. Typically, the resource
+resides in the executable file of the application, so you can supply NULL
+for the module handle to indicate the current application resource file.
+ 
+Finally, you can create mouse pointers at run time by constructing a bitmap
+for the pointer and calling the WinCreatePointer function. The bitmap must
+be twice as tall as it is wide, with the first half defining the AND mask
+and the second half defining the XOR mask. You also must specify the hot
+spot when you create a mouse pointer. The handle returned can be used to set
+or draw the mouse pointer.
+ 
+<b>Changing the Mouse Pointer</b>
+ 
+Once you create or load a mouse pointer, you can change its shape by calling
+the WinSetPointer function. The following are three main situations where an
+application typically changes the shape of the mouse pointer:
+ 
+♦  When an application receives a WM_MOUSEMOVE message, there is an
+   opportunity to change the mouse pointer based on its location the window.
+   If you want the standard arrow pointer, pass this message on to the
+   WinDefWindowProc function.
+ 
+♦  When an application is about to start a time-consuming process during
+   which it will not accept user input, the application should display the
+   "system-wait" mouse pointer. This pointer is shaped like an hourglass,
+   indicating that the user must wait. Once this process is complete, the
+   application should reset the mouse pointer to its former shape.
+ 
+♦  The following code fragment shows how to save the current mouse pointer,
+   set the hourglass pointer, and then restore the original mouse pointer.
+   Notice that the hourglass pointer is also saved in a global variable so
+   that the application can return it when responding to a WM_MOUSEMOVE
+   message during a time-consuming process.
+ 
+   /* Get current pointer. */
+ 
+   hptrOld = WinQueryPointer(HWND_DESKTOP);
+ 
+   /* Get wait mouse pointer. */
+ 
+   hptrWait = WinQuerySysPointer(HWND_DESKTOP, SPTR_WAIT, FALSE);
+ 
+   /* Save wait pointer to use in WM_MOUSEMOVE processing. */
+ 
+   hptrCurrent = hptrWait;
+ 
+   /* Set mouse pointer to wait pointer. */
+ 
+   WinSetPointer(HWND_DESKTOP, hptrWait);
+ 
+   /* Do time-consuming operation; restore original mouse pointer. */
+ 
+   WinSetPointer(HWND_DESKTOP, hptrOld);
+ 
+♦  The mouse pointer can be used to indicate the current operational mode of
+   an application. For example, a paint program with a palette of drawing
+   tools should change the mouse pointer shape to indicate which drawing
+   tool is currently in use.
+ 
+<b>Drawing an Icon</b>
+ 
+You can use mouse-pointer resources to draw icons. The WinDrawPointer
+function draws a specified mouse pointer in a specified presentation space.
+Many of the predefined system mouse pointers are standard icons displayed in
+message boxes.
+ 
+<b>System Bitmaps</b>
+ 
+In addition to mouse pointers and icons defined by the system, you can use
+standard system bitmaps by calling the WinGetSysBitmap function. This
+function returns a bitmap handle that is passed to the WinDrawBitmap
+function or one of the Gpi bitmap calls. The system uses standard bitmaps to
+draw portions of control windows such as the system menu, the
+minimize/maximize box, and scroll-bar arrows.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

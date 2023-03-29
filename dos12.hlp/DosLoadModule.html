@@ -1,0 +1,106 @@
+<html>
+
+<head>
+<title>DosLoadModule (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosLoadModule (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='dll.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#dynamic link libraries 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80c9.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosLockSeg.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMODULEMGR
+ 
+USHORT DosLoadModule(pszFailName, cbFileName, pszModName, phmod)
+PSZ pszFailName;      /* pointer to buffer for name if failure */
+USHORT cbFileName;    /* length of buffer for name if failure  */
+PSZ pszModName;       /* pointer to module name                */
+PHMODULE phmod;       /* pointer to variable for module handle */
+ 
+The DosLoadModule function loads a dynamic-link module and returns a handle
+for the module. You can use the module handle to retrieve the entry
+addresses of procedures in the module and to retrieve information about the
+module.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pszFailName</i>  Points to the buffer that receives a null-terminated string.
+             The DosLoadModule function copies a string to the buffer only
+             if the function fails to load the module. The string identifies
+             the dynamic-link module responsible for the failure. This
+             module may be other than the one specified in the pszModName
+             parameter if the specified module links to other dynamic-link
+             modules.
+ 
+<i>cbFileName</i>   Specifies the length (in bytes) of the buffer pointed to by the
+             pszFailName parameter.
+ 
+<i>pszModName</i>   Points to the null-terminated string that specifies the module
+             name. This string must be a valid MS OS/2 filename. If it does
+             not specify a path and the filename extension, the function
+             appends the default extension (.dll) and searches for the
+             dynamic-link module in the directories specified by the
+             libpath command in the config.sys file.
+ 
+<i>phmod</i>        Points to the variable that receives the handle of the
+             dynamic-link module.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_BAD_FORMAT
+     ERROR_FILE_NOT_FOUND
+     ERROR_INTERRUPT
+     ERROR_INVALID_MINALLOCSIZE
+     ERROR_INVALID_NAME
+     ERROR_NOT_ENOUGH_MEMORY
+ 
+<b>Comments</b>
+ 
+The DosLoadModule function loads only MS OS/2 dynamic-link modules. Attempts
+to load other executable files (such as MS-DOS executable files) result in
+an error.
+ 
+<b>Example</b>
+ 
+This example calls the DosLoadModule function to load the dynamic-link
+module qhdll.dll. This example then calls the DosGetProcAddr function to
+retrieve the address of the BOXMESSAGE function that is defined in the
+module. After calling the BOXMESSAGE function, the example calls
+<b>DosFreeModule</b> to free the dynamic-link module. (This example is accurate if
+<i>qhdll.dll exists in a direc</i>tory defined by the libpath command of the
+<i>config.sys file, and if qhdll.</i>dll contains the BOXMESSAGE function that uses
+the Pascal calling convention.)
+ 
+UCHAR szFailName[CCHMAXPATH];
+HMODULE hmod;
+VOID (PASCAL FAR *pfnBoxMsg)(PSZ, BYTE, BYTE, SHANDLE, SHANDLE, BOOL);
+ 
+DosLoadModule(szFailName,        /* failure name buffer         */
+    sizeof(szFailName),          /* size of failure name buffer */
+    "qhdll",                     /* module name                 */
+    &amp;hmod);                      /* address of handle           */
+DosGetProcAddr(hmod, "BOXMESSAGE", &amp;pfnBoxMsg);
+pfnBoxMsg("Hello World", 0x30, 1, 0, 0, FALSE);
+DosFreeModule(hmod);
+ 
+<b>See Also</b>
+ 
+<b>DosExecPgm, DosFreeModule, DosGetModName, DosGetProcAddr</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

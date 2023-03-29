@@ -1,0 +1,117 @@
+<html>
+
+<head>
+<title>WM_VIOCHAR (1.2) - msgs12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msgs12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WM_VIOCHAR (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='messages.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WM_VSCROLL.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WININPUT
+ 
+<b>WM_VIOCHAR</b>
+fsKeyFlags = (USHORT) SHORT1FROMMP(mp1);    /* key flags    */
+uchRepeat = (UCHAR) CHAR3FROMMP(mp1);       /* repeat count */
+uchScanCode = (UCHAR) CHAR4FROMMP(mp1);     /* scan code    */
+uchChr = (UCHAR) CHAR1FROMMP(mp2);          /* character    */
+uchKbdScan = (UCHAR) CHAR2FROMMP(mp2);      /* virtual key  */
+ 
+The WM_VIOCHAR message is sent whenever the user presses a key. This message
+is placed in the queue associated with the window that has the focus.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>fsKeyFlags   Low word of mp1. </i>Specifies the keyboard control codes. This
+             parameter may be one or more of the following values:
+ 
+             Value           Meaning
+             ───────────────────────────────────────────────────────────────
+             KC_CHAR         Indicates that the uchChr parameter contains a
+                             valid character. This bit will be set only on a
+                             down stroke. KC_CHAR is not set if either the
+                             KC_ALT or the KC_CTRL flag is set, even if
+                             uchChr contains a valid character.
+ 
+             KC_SCANCODE     Indicates the uchScanCode value is valid;
+                             otherwise, uchScanCode contains zero.
+                             Generally, all WM_CHAR messages generated from
+                             actual user input have the KC_SCANCODE flag
+                             set. However, if the message has been generated
+                             by an application that has issued the
+                             WinSetHook function to filter keystrokes, or
+                             been posted to the application queue, this code
+                             may not be set.
+ 
+             KC_VIRTUALKEY   Indicates the usVKey value is valid; otherwise,
+                             usVKey contains zero.
+ 
+             KC_KEYUP        The event was a key-up transition; otherwise,
+                             it was a key-down transition.
+ 
+             KC_PREVDOWN     The key was previously down; otherwise, it was
+                             previously up.
+ 
+             KC_DEADKEY      The character code is a dead key. The
+                             application displays the glyph for the dead key
+                             without advancing the cursor.
+ 
+             KC_COMPOSITE    The character code was formed by combining the
+                             current key with the previous dead key.
+ 
+             KC_INVALIDCOMP  The character code was not a valid combination
+                             with the preceding dead key. The application
+                             advances the cursor past the dead-key glyph and
+                             then, if the current character is not a space,
+                             it beeps the speaker and displays the new
+                             character code.
+ 
+             KC_LONEKEY      This bit is set if the key was pressed and
+                             released without any other keys being pressed
+                             or released between the time the key went down
+                             and went up.
+ 
+             KC_SHIFT        The SHIFT state was active when the key was
+                             pressed or released.
+ 
+             KC_ALT          The ALT state was active when the key was
+                             pressed or released.
+ 
+             KC_CTRL         The CONTROL state was active when the key was
+                             pressed or released.
+ 
+<i>uchRepeat    Low byte of th</i>e high word of mp1. Specifies the repeat count of
+             the key.
+ 
+<i>uchScanCode  High byte of the hig</i>h word of mp1. Specifies the scan code of
+             the character.
+ 
+<i>uchChr       Low w</i>ord of mp2. Specifies the ASCII character.
+ 
+<i>uchKbdScan   High byte of low </i>word of mp2. Specifies the keyboard scan
+             code.
+ 
+<b>Return Value</b>
+ 
+The application should return TRUE if it processes the message. Otherwise,
+it should return FALSE.
+ 
+<b>See Also</b>
+ 
+<b>WinSetHook, CHARMSG, WM_CHAR</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

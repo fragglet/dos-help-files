@@ -1,0 +1,129 @@
+<html>
+
+<head>
+<title>DosMakeNmPipe (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosMakeNmPipe (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='named_pipes.html'>Function Group</a><span class='grhilite'>►</span>                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosMakePipe.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSNMPIPES
+ 
+USHORT DosMakeNmPipe(pszName, php, fsOpenMode, fsPipeMode, cbOutBuf,
+    cbInBuf, ulTimeOut)
+PSZ pszName;          /* pipe name                        */
+PHPIPE php;           /* pointer to pipe handle           */
+USHORT fsOpenMode;    /* open mode of pipe                */
+USHORT fsPipeMode;    /* pipe-specific modes              */
+USHORT cbOutBuf;      /* number of bytes in output buffer */
+USHORT cbInBuf;       /* number of bytes in input buffer  */
+ULONG ulTimeOut;      /* time-out value                   */
+ 
+The DosMakeNmPipe function creates a named pipe and retrieves a handle that
+can be used in subsequent pipe operations.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pszName</i>     Points to the null-terminated string that identifies the pipe.
+            The string must have the following form:
+ 
+            \pipe\name
+ 
+            The pipe name (name) must have the same format as an MS OS/2
+            filename and must be unique.
+ 
+<i>php</i>         Points to the variable that receives the handle of the named
+            pipe.
+ 
+<i>fsOpenMode</i>  Specifies the modes with which to open the pipe. This parameter
+            is a combination of an access-mode flag, an inheritance flag,
+            and a write-behind flag. The possible values are as follows:
+ 
+            Value               Meaning
+            ────────────────────────────────────────────────────────────────
+            NP_ACCESS_DUPLEX    Pipe is full duplex──going to and from
+                                server and client.
+ 
+            NP_ACCESS_INBOUND   Pipe is inbound──going from client to
+                                server.
+ 
+            NP_ACCESS_OUTBOUND  Pipe is outbound──going from server to
+                                client.
+ 
+            NP_INHERIT          Pipe is inherited by any child processes
+                                created by using the DosExecPgm function.
+ 
+            NP_NOINHERIT        Pipe is private to the current process and
+                                cannot be inherited.
+ 
+            NP_NOWRITEBEHIND    Write-behind to remote pipes is not
+                                allowed.
+ 
+            NP_WRITEBEHIND      Write-behind to remote pipes is allowed.
+ 
+<i>fsPipeMode</i>  Specifies the pipe-specific modes of the pipe. This parameter is
+            a combination of an instance count, a read-mode flag, a type
+            flag, and a wait flag. The possible values are as follows:
+ 
+            Value                   Meaning
+            ────────────────────────────────────────────────────────────────
+            NP_WAIT                 Functions that read from and write to
+                                    the pipe wait if no data is available.
+ 
+            NP_NOWAIT               Functions that read from and write to
+                                    the pipe return immediately if no data
+                                    is available.
+ 
+            NP_READMODE_BYTE        Read pipe as a byte stream.
+ 
+            NP_READMODE_MESSAGE     Read pipe as a message stream.
+ 
+            NP_TYPE_BYTE            Pipe is a byte-stream pipe.
+ 
+            NP_TYPE_MESSAGE         Pipe is a message-stream pipe.
+ 
+            NP_UNLIMITED_INSTANCES  Unlimited instances of the pipe can be
+                                    created. If this value is not specified,
+                                    a value in the range 1 through 254 can
+                                    be used for the number of instances.
+ 
+<i>cbOutBuf</i>    Specifies the number of bytes to reserve for the outgoing
+            buffer.
+ 
+<i>cbInBuf</i>     Specifies the number of bytes to reserve for the incoming
+            buffer.
+ 
+<i>ulTimeOut</i>   Specifies the default value (in milliseconds) of the time-out
+            parameter of the DosWaitNmPipe function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_INVALID_PARAMETER
+     ERROR_NOT_ENOUGH_MEMORY
+     ERROR_OUT_OF_STRUCTURES
+     ERROR_PATH_NOT_FOUND
+     ERROR_PIPE_BUSY
+ 
+<b>See Also</b>
+ 
+<b>DosClose, DosExecPgm, DosWaitNmPipe</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

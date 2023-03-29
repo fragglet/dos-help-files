@@ -1,0 +1,85 @@
+<html>
+
+<head>
+<title>DosFreeSeg (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosFreeSeg (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='memory.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#memory management 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosFSAttach.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMEMMGR
+ 
+USHORT DosFreeSeg(sel)
+SEL sel;    /* segment selector */
+ 
+The DosFreeSeg function frees the specified memory segment. This function
+accepts selectors for memory segments, shared-memory segments, huge-memory
+segments, aliased code segments, and resource segments allocated by
+<b>DosGetResource. DosFreeSeg frees a shared-</b>memory segment after the segment
+is freed by the last process accessing it. DosFreeSeg frees the code-segment
+selector for aliased code segments, but the corresponding data-segment
+selector remains valid until it is freed.
+ 
+The DosFreeSeg function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>sel</i>        Specifies the segment to free.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_ACCESS_DENIED
+ 
+<b>Comments</b>
+ 
+<b>DosFreeSeg</b> can be issued from ring 2, but the segment to free must be a
+ring-3 segment.
+ 
+<b>DosFreeSeg</b> should not be used to free resource segments allocated by the
+<b>DosGetResource2 function. To free those segme</b>nts, use the DosFreeResource
+function.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restriction applies to the DosFreeSeg function:
+ 
+♦  A code-segment selector (created by using the DosCreateCSAlias function)
+   and the corresponding data-segment selector are the same. Freeing one
+   frees both.
+ 
+<b>Example</b>
+ 
+This example allocates three segments of memory, then calls the DosFreeSeg
+function to free the memory:
+ 
+SEL sel;
+DosAllocHuge(3, 200, &amp;sel, 5, SEG_NONSHARED);
+    .
+    .
+    .
+DosFreeSeg(sel);
+ 
+<b>See Also</b>
+ 
+<b>DosAllocHuge, DosAllocSeg, DosAllocShrSeg, DosCreateCSAlias,</b>
+<b>DosFreeResource, DosGetResource, DosGetResource2</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,300 @@
+<html>
+
+<head>
+<title>Using Initialization Files (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Initialization Files (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Initialization_Files.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Prf'>Function Group</a><span class='grhilite'>►</span>                     <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Keyboard_Accelerators.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                         Using Initialization Files
+ 
+The following sections describe some specific ways to use MS OS/2 functions
+in your applications to change or retrieve system information.
+ 
+<b>The MS OS/2 Initialization File</b>
+ 
+You can read and write integers, strings, and binary data from the os2.ini
+file. You can also create new sections and keys and delete existing sections
+and keys. Since writing to the file can affect other applications, you
+should use care when changing and deleting values.
+ 
+You can determine the size of a specific value by using the
+<b>WinQueryProfileSize</b> function. The function returns the size, in bytes, of
+the value corresponding to the given key name. This information is useful
+for allocating a buffer large enough to read in a key value. Once you know
+the size of the key value, you can read it by using the WinQueryProfileData
+function. The following code fragment reads the Window color value from the
+PM_Color section of the os2.ini file:
+ 
+USHORT cb;
+NPBYTE npb;
+ 
+WinQueryProfileSize(hab, "PM_Color", "Window", &amp;cb);
+npb = WinAllocMem(hOurHeap, cb);
+WinQueryProfileData (hab, "PM_Color", "Window", npb, &amp;cb);
+ 
+You can retrieve an integer from the initialization file by using the
+<b>WinQueryProfileInt</b> function, as shown in the following code fragment. The
+function assumes that the key-value data is a null-terminated character
+string representing an integer value in the range -32,768 through 32,767
+(for example, strings like "12367" and "-5438").
+ 
+sValue = WinQueryProfileInt(hab, "MySection", "MyKey", 0);
+ 
+You can retrieve a null-terminated string from the initialization file by
+using the WinQueryProfileString function, as shown in the following code
+fragment:
+ 
+CHAR ach[80];
+ 
+WinQueryProfileString(hab, "MySection", "MyKey", NULL, ach, 80);
+ 
+You can also retrieve a list of the section names in the os2.ini file by
+using the WinQueryProfileString function, specifying NULL for the section
+and key names. The function copies all the section names to the specified
+buffer. Each section name is null-terminated, and there is an extra null
+character at the end of the list. The following code fragment retrieves a
+list of section names:
+ 
+CHAR achSectionNames[1024];
+ 
+WinQueryProfileString(hab, NULL, NULL, NULL, achSectionNames, 1024);
+ 
+Once you have a list of section names, you can use the names to generate a
+list of keys for a section name. To list the key names, you choose the
+section name and set the key name to NULL, as shown in the following code
+fragment:
+ 
+CHAR achKeyNames[1024];
+ 
+WinQueryProfileString(hab, "MySection", NULL, NULL, achKeyNames, 1024);
+ 
+You can write values to an existing key name by using the
+<b>WinWriteProfileString or WinWriteProfileData function. The foll</b>owing code
+fragment stores an integer as a null-terminated string:
+ 
+WinWriteProfileString(hab, "MySection", "MyKey", "123");
+ 
+<b>Note:  Some use</b>rs may change the file attribute of the os2.ini file to
+       read-only. If so, you will need to change the attribute before
+       writing to the file.
+ 
+You can create a new key or a new section and key by using the
+<b>WinWriteProfileString or WinWriteProfileData function. If the k</b>ey you
+specify is not in the given section, or if the section does not exist, these
+functions create new entries. For example, the following code fragment
+creates a new key entry in MySection:
+ 
+WinWriteProfileString(hab, "MySection", "MyNewKey", "123");
+ 
+You can also delete an existing key by using the WinWriteProfileString or
+<b>WinWriteProfileData</b> function. In this case, you specify NULL for the key
+value, as shown in the following code fragment. The function deletes the
+existing key value, effectively deleting the entry.
+ 
+WinWriteProfileString(hab, "MySection", "MyKey", NULL);
+ 
+Note that this is different from setting the key value to a single zero
+byte, as would happen if an application called WinWriteProfileString with a
+pointer to an empty string.
+ 
+You can delete all keys in a particular os2.ini section by invoking the
+<b>WinWriteProfileString or WinWriteProfileData function with the </b>key name set
+to NULL, as shown in the following code fragment:
+ 
+WinWriteProfileString(hab, "MySection", NULL, NULL);
+ 
+<b>The Shell</b>
+ 
+Most applications use the FCF_TASKLIST style when creating their main
+windows. This style automatically adds the application to the switch list.
+For those applications that do not use the FCF_TASKLIST style, you can use
+the shell functions to add the application to the list.
+ 
+You can add a program to the switch list by using the WinAddSwitchEntry
+function. Before calling the function, you must fill the fields of a
+<b>SWCNTRL</b> structure. The following code fragment adds the program named My
+Application to the switch list:
+ 
+SWCNTRL swctl;
+PID     pid;
+TID     tid;
+HSWITCH hsw;
+ 
+/* Obtain the process and thread identifiers. */
+ 
+WinQueryWindowProcess(hwnd, &amp;pid, &amp;tid);
+ 
+/* Fill in the switch-control data structure. */
+ 
+swctl.hwnd = hwnd;
+swctl.hwndIcon = (HWND) WinSendMsg(hwnd, WM_QUERYICON, NULL, NULL);
+swctl.hprog = (HPROGRAM) NULL;
+swctl.idProcess = pid;
+swctl.idSession = NULL;
+swctl.uchVisibility = SWL_VISIBLE;
+swctl.fbJump = SWL_JUMPABLE;
+strcpy(swctl.szSwtitle, "My Application");
+ 
+hsw = WinAddSwitchEntry(&amp;swctl);
+ 
+You can use the switch-list handle returned by WinAddSwitchEntry to change
+the switch-list entry. For example, you can add the name of the file your
+application currently has open by using the WinChangeSwitchEntry function
+and specifying the switch-list handle, as shown in the following code
+fragment. You must fill a SWCNTRL structure or use the structure you used to
+create the switch-list entry.
+ 
+CHAR szCurrentFile[CCHMAXPATH]; /* buffer for current filename */
+SWCNTRL swctl;                  /* switch-control structure    */
+HSWITCH hsw;                    /* switch-list handle          */
+ 
+strcpy(swctl.szSwtitle, "My Application: ");
+strcat(swctl.szSwtitle, szCurrentFile);
+ 
+WinChangeSwitchEntry(hsw, &amp;swctl);
+ 
+You can remove the switch-list entry for your application by using the
+<b>WinRemoveSwitchEntry</b> function.
+ 
+<b>System Colors</b>
+ 
+You can use a system color for elements of your own client window. For
+example, many applications use the application workspace color as the color
+for the client-window background. To use this color, you simply use the
+SYSCLR_APPWORKSPACE index when filling the client window. The following code
+fragment shows how this is done:
+ 
+LONG iAWSColor = SYSCLR_APPWORKSPACE;
+RECTL rcl;
+ 
+case WM_PAINT:
+    hps = WinBeginPaint(hwnd, NULL, &amp;rcl);
+    WinFillRect(hps, &amp;rcl, iAWSColor);
+    WinEndPaint(hps);
+    return (0L);
+ 
+You can use the WinQuerySysColor function to retrieve the RGB color value
+for a system color, as shown in the following code fragment. This
+information is useful if you want to apply the color to another color index
+or change the color in some way.
+ 
+COLOR clr;
+ 
+clr = WinQuerySysColor(HWND_DESKTOP, SYSCLR_APPWORKSPACE, 0L);
+ 
+You can use the WinSetSysColors function to set a system color. The
+following code fragment inverts the application workspace color for all
+applications in the system:
+ 
+COLOR clr;
+ 
+clr = ~WinQuerySysColor(HWND_DESKTOP, SYSCLR_APPWORKSPACE, 0L)
+    &amp; 0x00FFFFFF;
+ 
+WinSetSysColors(HWND_DESKTOP, 0L, LCOLF_CONSECRGB,
+    SYSCLR_APPWORKSPACE, 1L, &amp;clr);
+ 
+You can also use the WinSetSysColors function to set several system color,
+at once. As with the GpiCreateLogColorTable function, there are two ways to
+specify the RGB values: as an array of consecutive RGB values, or as an
+array of system-color and index RGB-value pairs. The first method is useful
+when you want to set the entire group of system colors or any consecutive
+subset. The second method is useful when you want to set nonconsecutive
+subsets of the system colors. The following code fragment sets the system
+colors using a consecutive array of RGB values:
+ 
+COLOR aclr[SYSCLR_CSYSCOLORS];
+ 
+aclr[0] = 0x00FF0020L;
+aclr[1] = 0x00767676L;
+aclr[2] = 0x001A1A1AL;
+aclr[3] = 0x003ABA3AL;
+aclr[4] = 0x00FFFFFFL;
+aclr[5] = 0x0000FFFFL;
+ 
+WinSetSysColors(
+    HWND_DESKTOP,               /* desktop window                */
+    0L,                         /* color options                 */
+    LCOLF_CONSECRGB,            /* consecutive RGB values        */
+    SYSCLR_WINDOWSTATICTEXT,    /* start with window static text */
+    6L,                         /* six elements in the array     */
+    aclr);                      /* array of color values         */
+ 
+The following code fragment inverts the colors for the background, active
+border, and active title bar. It sets the colors using index-RGB pairs. Note
+that the WinSetSysColors cclr parameter is set to count the number of values
+passed using the pclr parameter, which is exactly twice the number of system
+colors being set. Note also that the high byte of an RGB color value must be
+cleared to zero.
+ 
+SHORT i;
+COLOR aclrIndexRgb[6] = { SYSCLR_BACKGROUND, 0, SYSCLR_ACTIVEBORDER, 0,
+                       SYSCLR_ACTIVETITLE, 0 };
+ 
+for (i = 0; i &lt; 6; i += 2)
+    aclrIndexRgb[i + 1] = ~WinQuerySysColor(HWND_DESKTOP,
+        aclrIndexRgb[i], 0L) &amp; 0x00FFFFFF;
+ 
+WinSetSysColors(HWND_DESKTOP, 0L, LCOLF_INDRGB, 0L, 6L, aclrIndexRgb);
+ 
+You can reset the system colors to their default values by calling the
+<b>WinSetSysColors function with the flOptions p</b>arameter set to LCOL_RESET, as
+shown in the following code fragment:
+ 
+WinSetSysColors(HWND_DESKTOP, LCOL_RESET, 0L, 0L, 0L, NULL);
+ 
+<b>System Values</b>
+ 
+You can retrieve a system value by using the WinQuerySysValue function. The
+function always returns a 32-bit value, even if the system value is smaller.
+You can cast the function result to a more appropriate type. The following
+code fragment shows two examples of the WinQuerySysValue function:
+ 
+SHORT cxSizeBorder;
+BOOL  fRightButton;
+ 
+/* Retrieve the width of a sizing-border vertical element. */
+ 
+cxSizeBorder = (SHORT) WinQuerySysValue(HWND_DESKTOP, SV_CXSIZEBORDER);
+ 
+/* Are the mouse buttons switched? */
+ 
+fRightButton = (BOOL) WinQuerySysValue(HWND_DESKTOP, SV_SWAPBUTTON);
+ 
+You can set a system value by using the WinSetSysValue function, as shown in
+the following code fragment. The value is passed as a long integer.
+ 
+/* Play with the sizing border. */
+ 
+WinSetSysValue (HWND_DESKTOP, SV_CXSIZEBORDER, lNewWidth);
+WinSetSysValue (HWND_DESKTOP, SV_CYSIZEBORDER, lNewWidth);
+ 
+You will usually follow such a call by sending the WM_SYSVALUECHANGED
+message to the frame windows in the system. You can use the WinBroadcastMsg
+function to send the message, as shown in the following code fragment:
+ 
+WinBroadcastMsg(
+    HWND_DESKTOP,                   /* desktop window        */
+    WM_SYSVALUECHANGED,             /* system value changed  */
+    MPFROMSHORT(SV_CXSIZEBORDER),   /* first system value    */
+    MPFROMSHORT(SV_CYSIZEBORDER),   /* last system value     */
+    BMSG_FRAMEONLY | BMSG_SEND);    /* send to frame windows */
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

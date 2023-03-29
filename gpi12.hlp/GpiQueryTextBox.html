@@ -1,0 +1,130 @@
+<html>
+
+<head>
+<title>GpiQueryTextBox (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiQueryTextBox (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='text_output.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Fonts and Character Primitives 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiQueryViewingLimits.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+BOOL GpiQueryTextBox(hps, cchString, pchString, cptl, aptl)
+HPS hps;           /* presentation-space handle            */
+LONG cchString;    /* number of characters                 */
+PCH pchString;     /* address of string                    */
+LONG cptl;         /* number of points                     */
+PPOINTL aptl;      /* address of array of point structures */
+ 
+The GpiQueryTextBox function retrieves the text box and concatenation point
+for the string pointed to by the pchString parameter. The text box is four
+points specifying the parallelogram that, if drawn, encloses the given
+string when the string is displayed on the device. The concatenation point
+is the point the current position advances to after the string is drawn. All
+coordinates are relative to the start point of the string──that is, the text
+box and concatenation point are given as if the string were drawn at the
+world-space origin.
+ 
+The GpiQueryTextBox function computes the text box and concatenation point
+using the current character attributes. It then copies the computed points
+to the array pointed to by the aptl parameter. In most cases, the function
+copies the upper-left, lower-left, upper-right, and lower-right corners of
+the text box first, followed by the concatenation point, but not all points
+need to be copied at all times. The function uses the cptl parameter to
+determine how many of these points to retrieve and copies only that number.
+ 
+Depending on the character attributes, the "upper-left" corner of the text
+box may not seem so when the text box is actually drawn. For this reason,
+the function copies the coordinates of the text box to the array prior to
+applying character attributes, such as base-line angle, that affect the
+orientation of the points.
+ 
+The function cannot be used in an open segment when the drawing mode is
+DM_RETAIN.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>cchString</i>  Specifies the number of characters in the string pointed to by
+           pchString.
+ 
+<i>pchString</i>  Points to the character string.
+ 
+<i>cptl</i>       Specifies the number of points to retrieve. If it is
+           TXTBOX_COUNT, the function retrieves the maximum number of points
+           for the text box.
+ 
+<i>aptl       P</i>oints to the array of POINTL structures that receives a list of
+           points. The list of points contains the relative coordinates of
+           the character box. The elements of the array are defined as
+           follows:
+ 
+           Value               Meaning
+           ─────────────────────────────────────────────────────────────────
+           TXTBOX_TOPLEFT      Upper-left corner
+ 
+           TXTBOX_BOTTOMLEFT   Lower-left corner
+ 
+           TXTBOX_TOPRIGHT     Upper-right corner
+ 
+           TXTBOX_BOTTOMRIGHT  Lower-right corner
+ 
+           TXTBOX_CONCAT       Concatenation point
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_IN_RETAIN_MODE
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiQueryTextBox function to draw a line under the
+string. The GpiCharString function draws the string at the point (100,100).
+Since the points retrieved by GpiQueryTextBox are relative to the start of
+the string, the starting point needs to be added to the points that are used
+to draw the underline.
+ 
+POINTL aptl[TXTBOX_COUNT];
+POINTL ptl = { 100, 100 };
+ 
+GpiQueryTextBox(hps, 11L, "This string", TXTBOX_COUNT, aptl);
+aptl[1].x += ptl.x;
+aptl[1].y += ptl.y;
+GpiMove(hps, &amp;aptl[1]);
+aptl[3].x += ptl.x;
+aptl[3].y += ptl.y;
+GpiLine(hps, &amp;aptl[3]);
+GpiMove(hps, &amp;ptl);
+GpiCharString(hps, 11L, "This string");
+ 
+<b>See Also</b>
+ 
+<b>GpiCharStringAt, GpiSetDrawingMode, WinGetLastError, POINTL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

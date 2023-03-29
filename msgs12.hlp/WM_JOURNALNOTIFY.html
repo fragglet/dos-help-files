@@ -1,0 +1,100 @@
+<html>
+
+<head>
+<title>WM_JOURNALNOTIFY (1.2) - msgs12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msgs12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WM_JOURNALNOTIFY (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='messages.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WM_MATCHMNEMONIC.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WININPUT
+ 
+Form 1 (Journaling WinQueryQueueStatus)
+ 
+<b>WM_JOURNALNOTIFY</b>
+ulCmd = LONGFROMMP(mp1);          /* calling function */
+ulQueStatus = LONGFROMMP(mp2);    /* queue status     */
+ 
+Form 2 (Journaling WinGetPhysKeyState)
+ 
+WM_JOURNALNOTIFY
+ulCmd = LONGFROMMP(mp1);               /* calling function   */
+sc = SHORT1FROMMP(mp2);                /* virtual key        */
+fsPhysKeyState = SHORT2FROMMP(mp2);    /* physical-key state */
+ 
+A WM_JOURNALNOTIFY message allows the WinQueryQueueStatus and
+<b>WinGetPhysKeyState</b> functions to work properly in journaling situations.
+ 
+<b>Parameter       Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>ulCmd          </i> Low and high word of mp1. Specifies the function that was
+                called. This value is JRN_QUEUESTATUS for the
+                WinQueryQueueStatus function and JRN_PHYSKEYSTATE for the
+                WinGetPhysKeyState function.
+ 
+<i>ulQueStatus     Low and high word</i> of mp2. This parameter is used when the
+                ulCmd parameter is JRN_QUEUESTATUS. This parameter contains
+                the queue status returned by the WinQueryQueueStatus
+                function.
+ 
+<i>sc        </i>      Low word of mp2. This parameter is used when the ulCmd
+                parameter is JRN_PHYSKEYSTATE. This parameter specifies the
+                virtual-key value in the low byte and contains zero in the
+                high byte.
+ 
+<i>fsPhysKeyState  High word of mp2. This parameter is used when the ulCm</i>d
+                parameter is JRN_PHYSKEYSTATE. This parameter specifies the
+                physical-key state, returned by a call to
+                WinGetPhysKeyState. The 0x8000 bit is set (less than zero)
+                if the key is down; it is clear if the key is up. The 0x0001
+                bit is set if the key has been pressed since the last time
+                WinGetPhysKeyState was called; it is clear if the key has
+                not been pressed. This 0x0001 bit is cleared by a call to
+                WinGetPhysKeyState.
+ 
+<b>Return Value</b>
+ 
+An application should return zero if it processes this message.
+ 
+<b>Comments</b>
+ 
+Both of these functions depend on scanning a complete message queue, but
+journal playback effectively uses a queue that is just one message long.
+ 
+To fix these journal-related problems, calls to WinQueryQueueStatus and
+<b>WinGetPhysKeyState</b> must be recorded along with appropriate state
+information. This is done using WM_JOURNALNOTIFY messages. If the functions
+have new information to return since the last time they were called, and
+there is a journal-record hook installed, the system sends a
+<b>WM_JOURNALNOTIFY</b> message, carrying a function indicator and the new state
+information. During journal playback, the system interprets the
+<b>WM_JOURNALNOTIFY</b> message and changes the appropriate physical-key state
+entry or queue status to reflect the state of the system at the time the
+message was recorded.
+ 
+Because the WinQueryQueueStatus and WinGetPhysKeyState functions can be
+called by applications other than the one currently processing input, it is
+possible that the journal-record hook will be called by two threads
+simultaneously. For this reason, it is important that the journal library
+use semaphores when accessing global variables.
+ 
+<b>See Also</b>
+ 
+<b>WinGetPhysKeyState, WinQueryQueueStatus</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

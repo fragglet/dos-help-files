@@ -1,0 +1,276 @@
+<html>
+
+<head>
+<title>About Area Primitives (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Area Primitives (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Area_Primitives.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#area functions 1.2'>Function Group</a><span class='grhilite'>►</span>       </i>              <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Bitmaps.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                           About Area Primitives
+ 
+This topic describes areas and area primitives. You should also be familiar
+with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='device_contexts.html'>Presentation spaces and device contexts</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='mix_modes.html'>Color and mix modes</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Paths.html'>Paths</a><span class='grhilite'>►</span>
+ 
+An area primitive is one or more closed figures that are filled or filled
+<i>and</i> outlined. You can define an area primitive as a distinct closed figure,
+as multiple intersecting or disjoint closed figures, or as some combination
+of these. An area primitive is the result of a collection of functions that
+define and draw the area.
+ 
+<b>Creating Areas</b>
+ 
+An area bracket contains the functions that define an area primitive. A
+<b>GpiBeginArea</b> function defines the beginning of an area bracket; a
+<b>GpiEndArea</b> function defines the end of the area bracket and tells MS OS/2 to
+draw the area. An area bracket has the following form:
+ 
+GpiBeginArea();                /* start of area bracket           */
+    .
+    .                          /* line and arc functions          */
+    .
+GpiEndArea();                  /* end of area bracket, draws area */
+ 
+Once you define the beginning of an area bracket, you can define its shape
+and its location in your application's world space by using line and arc
+functions. These area functions are described in the following list:
+ 
+<b>Area functions      Description</b>
+────────────────────────────────────────────────────────────────────────────
+<b>GpiBox</b>              Draws a rectangle.
+ 
+<b>GpiFullArc</b>          Draws an ellipse.
+ 
+<b>GpiLine</b>             Draws a straight line.
+ 
+<b>GpiPartialArc</b>       Draws part of an ellipse defined by an angle.
+ 
+<b>GpiPointArc</b>         Draws part of an ellipse defined by three points.
+ 
+<b>GpiPolyFillet</b>       Draws a series of connected fillets.
+ 
+<b>GpiPolyFilletSharp</b>  Draws a series of fillets, with each curve approximating
+                    an ellipse, a hyperbola, or a parabola.
+ 
+<b>GpiPolyLine</b>         Draws a series of connected straight lines.
+ 
+<b>GpiPolySpline</b>       Draws a series of connected splines.
+ 
+Always use the DRO_OUTLINE constant if you call either the GpiBox or
+<b>GpiFullArc</b> function to define the shape of an area; if you use the DRO_FILL
+or DRO_OUTLINEFILL constant, MS OS/2 returns an error message.
+ 
+If you do not close a figure before calling GpiEndArea, MS OS/2
+automatically closes it for you by drawing a line from the end point of the
+last line or curve drawn to the starting point of the first line or curve
+drawn. The current position is always updated to the end point of the last
+line drawn.
+ 
+In addition to using line and arc functions in an area bracket, you can also
+use the following functions:
+ 
+♦  GpiBeginElement
+♦  GpiBox
+♦  GpiCallSegmentMatrix
+♦  GpiComment
+♦  GpiDeleteElement (retain mode only)
+♦  GpiDeleteElementRange (retain mode only)
+♦  GpiDeleteElementsBetweenLabels (retain mode only)
+♦  GpiElement
+♦  GpiEndArea
+♦  GpiEndElement
+♦  GpiFullArc
+♦  GpiGetData
+♦  GpiLabel
+♦  GpiLine
+♦  GpiMove
+♦  GpiOffsetElementPointer
+♦  GpiPartialArc
+♦  GpiPointArc
+♦  GpiPolyFillet
+♦  GpiPolyFilletSharp
+♦  GpiPolyLine
+♦  GpiPolySpline
+♦  GpiPop
+♦  GpiPutData
+♦  GpiQueryArcParams (not valid in retain mode)
+♦  GpiQueryAttrMode
+♦  GpiQueryAttrs (not valid in retain mode)
+♦  GpiQueryBackColor (not valid in retain mode)
+♦  GpiQueryBackMix
+♦  GpiQueryBoundaryData
+♦  GpiQueryCharAngle (not valid in retain mode)
+♦  GpiQueryCharBox (not valid in retain mode)
+♦  GpiQueryCharDirection (not valid in retain mode)
+♦  GpiQueryCharMode (not valid in retain mode)
+♦  GpiQueryCharSet (not valid in retain mode)
+♦  GpiQueryCharShear (not valid in retain mode)
+♦  GpiQueryCharStringPos (not valid in retain mode)
+♦  GpiQueryCharStringPosAt (not valid in retain mode)
+♦  GpiQueryClipBox
+♦  GpiQueryClipRegion
+♦  GpiQueryColor (not valid in retain mode)
+♦  GpiQueryColorData
+♦  GpiQueryColorIndex
+♦  GpiQueryCp
+♦  GpiQueryCurrentPosition (not valid in retain mode)
+♦  GpiQueryDefaultViewMatrix
+♦  GpiQueryDefCharBox
+♦  GpiQueryDevice
+♦  GpiQueryDeviceBitmapFormats
+♦  GpiQueryEditMode
+♦  GpiQueryElement (valid only in retain mode)
+♦  GpiQueryElementPointer (valid only in retain mode)
+♦  GpiQueryElementType (valid only in retain mode)
+♦  GpiQueryFontFileDescriptions
+♦  GpiQueryFontMetrics
+♦  GpiQueryFonts
+♦  GpiQueryGraphicsField
+♦  GpiQueryInitialSegmentAttrs
+♦  GpiQueryKerningPairs
+♦  GpiQueryLineEnd (not valid in retain mode)
+♦  GpiQueryLineJoin (not valid in retain mode)
+♦  GpiQueryLineType (not valid in retain mode)
+♦  GpiQueryLineWidth (not valid in retain mode)
+♦  GpiQueryLineWidthGeom (not valid in retain mode)
+♦  GpiQueryLogColorTable
+♦  GpiQueryMarker (not valid in retain mode)
+♦  GpiQueryMarkerBox (not valid in retain mode)
+♦  GpiQueryMarkerSet (not valid in retain mode)
+♦  GpiQueryMix (not valid in retain mode)
+♦  GpiQueryModelTransformMatrix (not valid in retain mode)
+♦  GpiQueryNearestColor
+♦  GpiQueryNumberSetIds
+♦  GpiQueryPageViewport
+♦  GpiQueryPattern (not valid in retain mode)
+♦  GpiQueryPatternRefPoint (not valid in retain mode)
+♦  GpiQueryPatternSet (not valid in retain mode)
+♦  GpiQueryPel
+♦  GpiQueryPickAperturePosition
+♦  GpiQueryPickApertureSize
+♦  GpiQueryRealColors
+♦  GpiQueryRegionBox
+♦  GpiQueryRegionRects
+♦  GpiQueryRGBColor
+♦  GpiQuerySegmentAttrs
+♦  GpiQuerySegmentNames
+♦  GpiQuerySegmentPriority
+♦  GpiQuerySegmentTransformMatrix
+♦  GpiQuerySetIds
+♦  GpiQueryStopDraw
+♦  GpiQueryTag (not valid in retain mode)
+♦  GpiQueryViewingLimits (not valid in retain mode)
+♦  GpiQueryViewingTransformMatrix
+♦  GpiQueryWidth
+♦  GpiSetArcParams
+♦  GpiSetAttrMode
+♦  GpiSetAttrs
+♦  GpiSetColor
+♦  GpiSetCurrentPosition
+♦  GpiSetEditMode
+♦  GpiSetElementPointer (not valid in retain mode)
+♦  GpiSetElementPointerAtLabel (not valid in retain mode)
+♦  GpiSetLineEnd
+♦  GpiSetLineJoin
+♦  GpiSetLineType
+♦  GpiSetLineWidth
+♦  GpiSetMix
+♦  GpiSetModelTransformMatrix
+♦  GpiSetSegmentTransformMatrix
+ 
+<b>Outlining Areas</b>
+ 
+If you want MS OS/2 to outline an area, use the BA_BOUNDARY flag when you
+call the GpiBeginArea function. MS OS/2 then draws the outline, using a
+narrow line that is 1 pel wide. The default outline color is black
+(CLR_NEUTRAL) on most displays and printers and the default line style is
+solid (LINETYPE_SOLID). You can change the line color and line styles by
+calling the GpiSetAttrs function, or to determine the current line color and
+line styles, you can call the GpiQueryAttrs function. For more information
+about lines and line primitives, see the topic <span class='grhilite'>◄</span><a href='lines.html'>Line and arc primitives</a><span class='grhilite'>►</span>.
+ 
+If you do not want MS OS/2 to outline an area, use the BA_NOBOUNDARY flag
+when you call GpiBeginArea.
+ 
+<b>Filling Areas</b>
+ 
+MS OS/2 fills an area by repeatedly drawing an eight-by-eight bitmap called
+a fill pattern. The default fill pattern is solid (PATSYM_DENSE1), and the
+default fill-pattern color is black (CLR_NEUTRAL). MS OS/2 provides 15
+predefined fill patterns, in addition to the default pattern. To determine
+which of the 16 patterns is currently selected, you can call the
+<b>GpiQueryPattern</b> function, or to select a new pattern, you can call the
+<b>GpiSetPattern</b> function. You can also create custom patterns by using bitmaps
+or characters and symbols from an image font. If you do create a custom
+pattern, remember that MS OS/2 uses only the first eight bits in the first
+eight rows of the bitmap, starting in the lower-left corner.
+ 
+You can change the foreground and background colors and mix modes for the
+fill pattern by calling the GpiSetAttrs function. The foreground color
+corresponds to the color of the bits that are set in the fill-pattern
+bitmap. The background color corresponds to the color of the bits that are
+not set in the fill-pattern bitmap. The foreground mix mode specifies how MS
+OS/2 should combine the foreground color with the color on the drawing
+surface; the background mix mode specifies how MS OS/2 should combine the
+background color with the color on the drawing surface. You can determine
+the current foreground and background color and mix-mode settings by calling
+the GpiQueryAttrs function. For more information about color and mix modes,
+see the topic <span class='grhilite'>◄</span><a href='mix_modes.html'>Color and mix modes</a><span class='grhilite'>►</span>.
+ 
+To create a custom pattern from a hard-coded bitmap, you can call the
+<b>GpiSetPatternSet function, passing it the local </b>identifier (lcid) for the
+bitmap. This is the identifier you assigned when you called the
+<b>GpiSetBitmapId</b> function. For more information about creating bitmaps, see
+the topic <span class='grhilite'>◄</span><a href='Bitmaps.html'>Bitmaps</a><span class='grhilite'>►</span>.
+ 
+To create a custom pattern from a character or a symbol in a font, you can
+call the GpiSetPatternSet function, passing it the local identifier for the
+font. This is the same identifier that you passed to the GpiCreateLogFont
+function when you created the font. You then need to specify the code point
+for a character or symbol in that font by calling the GpiSetPattern function
+and passing the value of the code point. For more information about
+selecting and using fonts, the topic <span class='grhilite'>◄</span><a href='fonts.html'>Fonts and character primitives</a><span class='grhilite'>►</span>.
+ 
+You can alter the alignment of the fill pattern in an area by altering the
+pattern reference point. The default pattern reference point is (0,0). When
+the default reference point is set, MS OS/2 aligns the lower-left corner of
+the fill pattern with the point (0,0) in the application's world space and
+begins filling the area. If you adjust the pattern reference point to (3,2),
+MS OS/2 aligns the lower-left corner of the fill pattern with the point
+(3,2) in the application's world space and begins filling the area. By
+moving the reference point from (0,0) to (3,2), the fill pattern appears
+shifted up 2 pels and to the right 3 pels.
+ 
+A special structure called the AREABUNDLE structure contains seven fields
+that specify the current fill-pattern colors and mix modes, the local
+identifier for the bitmap or font, the character code point, and the pattern
+reference point.
+ 
+To determine the current values in these fields, you can call the
+<b>GpiQueryAttrs function, or to change th</b>e values, call the GpiSetAttrs
+function.
+ 
+When filling an area, MS OS/2 uses not only a fill pattern but a fill mode,
+as well. The two fill modes, alternate and winding, affect how the area is
+filled. For more information about fill modes, see the topic <span class='grhilite'>◄</span><a href='Paths.html'>Paths</a><span class='grhilite'>►</span>.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

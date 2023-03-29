@@ -1,0 +1,99 @@
+<html>
+
+<head>
+<title>GpiSetClipPath (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiSetClipPath (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Clipping_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Clipping 1.2'>Overview</a><span class='grhilite'>►</span>         </i>                 <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiSetClipRegion.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPATHS
+ 
+BOOL GpiSetClipPath(hps, idPath, cmdOptions)
+HPS hps;            /* presentation-space handle */
+LONG idPath;        /* clip path identifier      */
+LONG cmdOptions;    /* options                   */
+ 
+The GpiSetClipPath function sets the clip path. The clip path specifies a
+path in device space that the system uses to clip output. The clip path
+includes all points inside and on the boundary of the path specified by
+<i>idPath</i>. Since the path coordinates are assumed to be device coordinates, no
+conversion is applied.
+ 
+The function creates the clip path by closing any open figures. It then
+releases any existing clip path (deleting the previous path, if any), and
+sets the specified path as the clip path. After a path is set as the clip
+path, it cannot be used again. However, its identifier is free to use for
+another path.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>         Identifies the presentation space.
+ 
+<i>idPath</i>      Specifies the identifier of the path to set to the clip path. It
+            can be 1 to specify a path or zero to specify no clip path.
+ 
+<i>cmdOptions</i>  Specifies the filling and combining modes. It can be one or two
+            of the following values:
+ 
+            Value          Meaning
+            ────────────────────────────────────────────────────────────────
+            SCP_ALTERNATE  Computes the interior of the clip path, using
+                           alternate mode. This is the default if neither
+                           SCP_ALTERNATE nor SCP_WINDING is given.
+ 
+            SCP_AND        Intersects the specified path with the current
+                           clip path. This value must be specified if the
+                           idPath parameter is 1.
+ 
+            SCP_RESET      Resets the clip path, releasing the current clip
+                           path if any. This value must be specified if the
+                           idPath parameter is 0. This is the default if
+                           neither SCP_AND nor SCP_RESET is given.
+ 
+            SCP_WINDING    Computes the interior of the clip path, using
+                           winding mode.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_CLIP_PATH_OPTIONS
+     PMERR_INV_HPS
+     PMERR_INV_PATH_ID
+     PMERR_INV_PATH_MODE
+     PMERR_PATH_UNKNOWN
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+Unless the segments in the picture chain have the fast-chaining attribute,
+the system releases the clip path when it draws each segment. Also, the
+<b>GpiResetPS</b> function releases the current clip path.
+ 
+<b>See Also</b>
+ 
+<b>GpiBeginArea, GpiQueryClipBox, GpiResetPS, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

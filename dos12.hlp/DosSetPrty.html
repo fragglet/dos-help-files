@@ -1,0 +1,108 @@
+<html>
+
+<head>
+<title>DosSetPrty (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosSetPrty (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Multitasking_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#multitasking 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80dc.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosSetSession.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSPROCESS
+ 
+USHORT DosSetPrty(fScope, fPrtyClass, sChange, id)
+USHORT fScope;        /* scope of change               */
+USHORT fPrtyClass;    /* priority class to set         */
+SHORT sChange;        /* change in priority level      */
+USHORT id;            /* process or thread identifier  */
+ 
+The DosSetPrty function sets the scheduling priority of the specified
+process or thread by changing the priority class and/or the priority level.
+ 
+Within each class, a thread's priority level may vary──either through system
+action or through the DosSetPrty function. The system changes a thread's
+priority level based on that thread's actions and the overall system
+activity.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>fScope</i>      Specifies the scope of the request. This parameter can be one of
+            the following values:
+ 
+            Value              Meaning
+            ────────────────────────────────────────────────────────────────
+            PRTYS_PROCESS      Priority for the process and all its
+                               threads.
+ 
+            PRTYS_PROCESSTREE  Priority for the process and all its child
+                               processes.
+ 
+            PRTYS_THREAD       Priority for one thread in the current
+                               process.
+ 
+<i>fPrtyClass</i>  Specifies the priority class of a process or thread. This
+            parameter can be one of the following values:
+ 
+            Value               Meaning
+            ────────────────────────────────────────────────────────────────
+            PRTYC_IDLETIME      Idle time.
+ 
+            PRTYC_NOCHANGE      No change; leave as is.
+ 
+            PRTYC_REGULAR       Regular.
+ 
+            PRTYC_FOREGROUND    Foreground server.
+ 
+            PRTYC_TIMECRITICAL  Time-critical.
+ 
+<i>sChange</i>     Specifies the relative change in the current priority level of
+            the process or thread. This parameter can be any value from -31
+            through +31, or the constants PRTYD_MINIMUM or PRTYD_MAXIMUM,
+            which specify the minimum and maximum change allowed.
+ 
+<i>id</i>          Specifies the process or thread identifier, depending on the
+            value of the fScope parameter. If the value is a process
+            identifier, it must be for the calling process or a child of the
+            calling process. A value of zero can be used to specify the
+            current thread or process.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_INVALID_PCLASS
+     ERROR_INVALID_PDELTA
+     ERROR_INVALID_PROCID
+     ERROR_INVALID_SCOPE
+     ERROR_INVALID_THREADID
+     ERROR_NOT_DESCENDANT
+ 
+<b>Comments</b>
+ 
+The PRTYC_FOREGROUND priority is higher than PRTYC_REGULAR, but lower than
+PRTYC_TIMECRITICAL. PRTYC_FOREGROUND is a static priority that is not
+changed by the system. This allows a thread or process in a background
+screen group to service requests of a foreground process in a timely manner.
+Because the priority level is static, this priority should be used only when
+absolutely necessary. Indiscriminate use degrades system performance.
+ 
+<b>See Also</b>
+ 
+<b>DosEnterCritSec, DosGetInfoSeg, DosGetPrty</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

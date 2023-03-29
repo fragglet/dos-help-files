@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<title>GpiSetArcParams (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiSetArcParams (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='arcs.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Line and Arc Primitives 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiSetAttrMode.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+BOOL GpiSetArcParams(hps, parcp)
+HPS hps;             /* presentation-space handle               */
+PARCPARAMS parcp;    /* address of structure for arc parameters */
+ 
+The GpiSetArcParams function sets the current arc parameters. The arc
+parameters define the shape and orientation of the ellipse used by the
+<b>GpiPointArc, GpiFullArc, and GpiPartialArc functions to</b> construct arcs.
+ 
+The arc parameters define a four-element transformation that maps the unit
+circle to the ellipse. The transformation has the form:
+ 
+          x' = lP * x + lR * y
+          y' = lS * x + lQ * y
+ 
+In the transformation, lP, lR, lS, and lQ are the fields of the structure
+pointed to by the parcp parameter. The lP and lQ fields determine the width
+and height of ellipse, and the lS and lR fields determine the shear of the
+ellipse.
+ 
+The fields also determine the direction of drawing for arcs drawn using the
+<b>GpiFullArc and GpiPartialArc functions. If lP * lQ is greater than lR * lS,</b>
+the direction is counterclockwise. If lP * lQ is less than lR * lS, the
+direction is clockwise. If lP * lQ is equal to lR * lS, a straight line is
+drawn.
+ 
+If the attribute mode is AM_PRESERVE, the function saves the previous arc
+parameters on the attribute stack when it sets the new parameters. The
+previous arc parameters can be retrieved by using the GpiPop function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>parcp      Poin</i>ts to an ARCPARAMS structure that contains the arc
+           parameters.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_COORDINATE
+     PMERR_INV_HPS
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+Although the arc parameters define the shape and orientation of arcs drawn
+by the GpiPointArc, GpiFullArc, and GpiPartialArc functions, the functions
+define the center point and the size of each arc. The GpiFullArc and
+<b>GpiPartialArc</b> functions use an explicit center point and a multiplier to
+scale the ellipse to a desired size. The GpiPointArc function computes the
+center point and size of the final ellipse so that it fits the given
+points.
+ 
+Orthogonal transformation provides the most accurate arcs. A transformation
+is orthogonal if lP * lR plus lS * lQ equals zero. By default, the arc
+parameters are as follows:
+ 
+          lP = 1     lR = 0
+          lS = 0     lQ = 1
+ 
+These values produce a unit circle.
+ 
+Arc-parameter transformation takes place in world coordinates. Any other
+transformations in force will change the shape of the figure accordingly.
+ 
+<b>See Also</b>
+ 
+<b>GpiFullArc, GpiPartialArc, GpiPointArc, GpiQueryArcParams, WinGetLastError,</b>
+<b>ARCPARAMS</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

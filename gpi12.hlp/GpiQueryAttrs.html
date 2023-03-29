@@ -1,0 +1,150 @@
+<html>
+
+<head>
+<title>GpiQueryAttrs (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiQueryAttrs (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='markers.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Marker Primitives 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiQueryBackColor.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+LONG GpiQueryAttrs(hps, lPrimType, flAttrsMask, pbunAttrs)
+HPS hps;              /* presentation-space handle                   */
+LONG lPrimType;       /* primitive type                              */
+ULONG flAttrsMask;    /* attribute mask                              */
+PBUNDLE pbunAttrs;    /* address of buffer for nondefault attributes */
+ 
+The GpiQueryAttrs function retrieves the current attributes for the
+specified primitive type. The function copies the attribute values specified
+by the flAttrsMask parameter to the buffer pointed to by the pbunAttrs
+parameter, then returns a mask that specifies which attributes have the
+default values. The function sets the bit in the mask if the corresponding
+attribute has its default value.
+ 
+The GpiQueryAttrs function cannot be used in an open segment when the
+drawing mode is DM_RETAIN.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>          Identifies the presentation space.
+ 
+<i>lPrimType</i>    Specifies which primitive type to retrieve attributes for. It
+             can be one of the following values:
+ 
+             Value        Meaning
+             ───────────────────────────────────────────────────────────────
+             PRIM_AREA    Area primitives
+ 
+             PRIM_CHAR    Character primitives
+ 
+             PRIM_IMAGE   Image primitives
+ 
+             PRIM_LINE    Line and arc primitives
+ 
+             PRIM_MARKER  Marker primitives
+ 
+<i>flAttrsMask</i>  Specifies which attributes to retrieve. The values for this
+             parameter depend on the primitive type specified by the
+             lPrimType parameter. This parameter can be any combination of
+             the following values for a specific type:
+ 
+             Type         Values
+             ───────────────────────────────────────────────────────────────
+             PRIM_AREA    ABB_COLOR, ABB_BACK_COLOR, ABB_MIX_MODE,
+                          ABB_BACK_MIX_MODE, ABB_SET, ABB_SYMBOL,
+                          ABB_REF_POINT
+ 
+             PRIM_CHAR    CBB_COLOR, CBB_BACK_COLOR, CBB_MIX_MODE,
+                          CBB_BACK_MIX_MODE, CBB_SET, CBB_MODE, CBB_BOX,
+                          CBB_ANGLE, CBB_SHEAR, CBB_DIRECTION
+ 
+             PRIM_IMAGE   IBB_COLOR, IBB_BACK_COLOR, IBB_MIX_MODE,
+                          IBB_BACK_MIX_MODE
+ 
+             PRIM_LINE    LBB_COLOR, LBB_MIX_MODE, LBB_WIDTH,
+                          LBB_GEOM_WIDTH, LBB_TYPE, LBB_END, LBB_JOIN
+ 
+             PRIM_MARKER  MBB_COLOR, MBB_BACK_COLOR, MBB_MIX_MODE,
+                          MBB_BACK_MIX_MODE, MBB_SET, MBB_SYMBOL, MBB_BOX
+ 
+             If this parameter is zero, the function does not retrieve
+             attributes but still returns a mask specifying the attributes
+             with default values.
+ 
+<i>pbunAttrs</i>    Points to the buffer that receives the attribute values
+             specified by the flAttrsMask parameter. The buffer format
+             depends on the primitive type specified by the lPrimType
+             parameter. The following structures can be used for the
+             specified primitive types:
+ 
+             Type         Structure
+             ───────────────────────────────────────────────────────────────
+             PRIM_AREA    AREABUNDLE
+ 
+             PRIM_CHAR    CHARBUNDLE
+ 
+             PRIM_IMAGE   IMAGEBUNDLE
+ 
+             PRIM_LINE    LINEBUNDLE
+ 
+             PRIM_MARKER  MARKERBUNDLE
+ 
+<b>Return Value</b>
+ 
+The return value is the default mask if the function is successful or
+GPI_ALTERROR if an error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_PRIMITIVE_TYPE
+     PMERR_PS_BUSY
+     PMERR_UNSUPPORTED_ATTRIBUTE
+ 
+<b>Example</b>
+ 
+This example uses the GpiQueryAttrs function to retrieve the current
+attributes for the line primitive:
+ 
+LINEBUNDLE lbnd;
+LONG flDefMask;
+ 
+flDefMask = GpiQueryAttrs(hps,  /* presentation-space handle */
+    PRIM_LINE,                  /* line primitive            */
+    LBB_COLOR |                 /* line color                */
+    LBB_MIX_MODE |              /* color-mix mode            */
+    LBB_WIDTH |                 /* line width                */
+    LBB_GEOM_WIDTH |            /* geometric-line width      */
+    LBB_TYPE |                  /* line style                */
+    LBB_END |                   /* line-end style            */
+    LBB_JOIN,                   /* line-join style           */
+    &amp;lbnd);                     /* buffer for attributes     */
+ 
+if (flDefMask &amp; LBB_COLOR)
+ 
+    /* The line color has the default value. */
+ 
+<b>See Also</b>
+ 
+<b>GpiSetAttrs, GpiSetDrawingMode, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

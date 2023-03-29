@@ -1,0 +1,183 @@
+<html>
+
+<head>
+<title>GpiCreatePS (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiCreatePS (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='presentation_spaces.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Presentation Spaces and Device Contexts 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiCreateRegion.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPICONTROL
+ 
+HPS GpiCreatePS(hab, hdc, psizl, flOptions)
+HAB hab;            /* anchor-block handle                */
+HDC hdc;            /* device-context handle              */
+PSIZEL psizl;       /* address of structure for page size */
+ULONG flOptions;    /* presentation-space options         */
+ 
+The GpiCreatePS function creates a presentation space. The presentation
+space has the presentation type, page size, page unit, and storage format
+specified by psizl and flOptions. The function also associates the device
+context specified by hdc with the presentation space if a device context is
+given. The presentation space, identified by the handle returned by
+<b>GpiCreatePS, can be used in subse</b>quent Gpi functions to draw to the
+associated device.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hab</i>        Identifies the anchor block.
+ 
+<i>hdc</i>        Identifies a device context. It is required only if the
+           GPIA_ASSOC option is given in flOptions. It must be a handle to a
+           device context if the GPIT_MICRO option is given. Otherwise, it
+           can be NULL.
+ 
+<i>psizl      Poin</i>ts to a SIZEL structure that contains the width and height of
+           the presentation page. The width and height can be zero if the
+           GPIA_ASSOC option is given. The width and height must be non-zero
+           if the PU_ARBITRARY option is given.
+ 
+<i>flOptions</i>  Specifies the presentation-space options. The options define the
+           page unit, storage format, and presentation type for the
+           presentation space, as well as specifying whether to associate a
+           device context with the new presentation space. The flOptions
+           parameter must include exactly one of the following page unit
+           options combined with no more than one each of the following
+           storage format, presentation type, and association options:
+ 
+           Page unit     Meaning
+           ─────────────────────────────────────────────────────────────────
+           PU_ARBITRARY  Sets units initially to pels but permits the units
+                         to be modified later using the GpiSetPageViewport
+                         function.
+ 
+           PU_HIENGLISH  Sets units to 0.001 inch.
+ 
+           PU_HIMETRIC   Sets units to 0.01 millimeter.
+ 
+           PU_LOENGLISH  Sets units to 0.01 inch.
+ 
+           PU_LOMETRIC   Sets units to 0.1 millimeter.
+ 
+           PU_PELS       Sets units to pels.
+ 
+           PU_TWIPS      Sets units to 1/1440 inch (1/20 point).
+ 
+           Storage format  Meaning
+           ─────────────────────────────────────────────────────────────────
+           GPIF_DEFAULT    Stores coordinates as 2-byte integers.
+                           GPIF_DEFAULT is the default if no storage format
+                           is given.
+ 
+           GPIF_LONG       Stores coordinates as 4-byte integers.
+ 
+           GPIF_SHORT      Stores coordinates as 2-byte integers.
+ 
+           Presentation type  Meaning
+           ─────────────────────────────────────────────────────────────────
+           GPIT_MICRO         Creates a micro presentation space. The
+                              presentation space must be associated with a
+                              screen device context. The GPIA_ASSOC option
+                              and a device context must also be given.
+ 
+           GPIT_NORMAL        Creates a normal presentation space. The
+                              presentation space can be associated with any
+                              device context and used with retained
+                              graphics. If a presentation-space type is not
+                              given, the default is GPIT_NORMAL.
+ 
+           Association   Meaning
+           ─────────────────────────────────────────────────────────────────
+           GPIA_ASSOC    Associates the device context specified by hdc with
+                         the new presentation space.
+ 
+           GPIA_NOASSOC  Creates presentation space without associating a
+                         device context. GPIA_NOASSOC is the default if an
+                         association option is not given.
+ 
+<b>Return Value</b>
+ 
+The return value is the handle of the presentation space if the function is
+successful or GPI_ERROR if an error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_DC_IS_ASSOCIATED
+     PMERR_INV_HDC
+     PMERR_INV_OR_INCOMPAT_OPTIONS
+     PMERR_INV_PS_SIZE
+ 
+<b>Comments</b>
+ 
+The presentation type can be normal or micro. Normal presentation spaces can
+be associated with any device context and can be used for retained graphics.
+Micro presentation spaces can be associated with any device, but only when
+they are created. They can never be reassociated. The GPIA_ASSOC and
+GPIA_NOASSOC options specify whether the new presentation space is to be
+associated with the device context identified by hdc. If not associated, the
+<b>GpiAssociate</b> function must be used to associate a device context. A
+presentation space can not be used without an associated device.
+ 
+The page unit specifies the unit of measure used to draw to the device. For
+example, if the page unit is pels, a line 100 units long in world space
+coordinates is 100 pels long on the device.
+ 
+The presentation page size specifies the width and height of the
+presentation page. The presentation page and page viewport define how points
+in the presentation page space are mapped to the pels in the device space.
+This is important for programs that need to change the page unit without
+recreating the presentation space.
+ 
+The storage format specifies the internal format for coordinate values
+stored in the segments. This is important for applications that edit
+segments.
+ 
+<b>Example</b>
+ 
+This example uses the GpiCreatePS function to create a micro presentation
+space for a memory device context. The function associates the presentation
+space with the device context and sets the page units to pels. By default,
+the presentation space is a normal presentation space that uses local
+storage format.
+ 
+HDC hdc;
+HPS hps;
+SIZEL sizl = { 0, 0 };    /* use same page size as device */
+DEVOPENSTRUC dop;
+ 
+dop.pszLogAddress = (PSZ) NULL;
+dop.pszDriverName = (PSZ) "DISPLAY";
+dop.pdriv = (PDRIVDATA) NULL;
+dop.pszDataType = (PSZ) NULL;
+ 
+/* Create the memory device context. */
+ 
+hdc = DevOpenDC(hab, OD_MEMORY, "*", 4L, &amp;dop, (HDC) NULL);
+ 
+/* Create the presentation and associate the memory device context. */
+ 
+hps = GpiCreatePS(hab, hdc, &amp;sizl, PU_PELS | GPIT_MICRO | GPIA_ASSOC);
+ 
+<b>See Also</b>
+ 
+<b>GpiDestroyPS, GpiSetPageViewport, WinGetLastError, SIZEL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

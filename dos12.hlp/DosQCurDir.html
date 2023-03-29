@@ -1,0 +1,100 @@
+<html>
+
+<head>
+<title>DosQCurDir (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosQCurDir (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosQCurDisk.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosQCurDir(usDriveNumber, pszPathBuf, pcbPathBuf)
+USHORT usDriveNumber;    /* drive number                                 */
+PBYTE pszPathBuf;        /* pointer to buffer receiving directory path   */
+PUSHORT pcbPathBuf;      /* pointer to variable receiving length of path */
+ 
+The DosQCurDir function retrieves the path of the current directory on the
+specified drive. DosQCurDir copies a null-terminated string identifying the
+current directory to the buffer pointed to by the pszPathBuf parameter. The
+string consists of one or more directory names, starting with a backslash
+(\), separated by backslashes (\). The drive letter is not part of the
+returned string.
+ 
+The DosQCurDir function is a family API function.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>usDriveNumber</i>  Specifies the drive number. The default drive is 0, drive A
+               is 1, drive B is 2, and so on.
+ 
+<i>pszPathBuf</i>     Points to a buffer that receives the path of the current
+               directory. The path of the current directory is copied to
+               this buffer only if the buffer is large enough to contain the
+               complete directory.
+ 
+<i>pcbPathBuf</i>     Points to the variable that contains the size (in bytes) of
+               the pszPathBuf buffer. If the buffer is too small to contain
+               the current path, the error value ERROR_BUFFER_OVERFLOW is
+               returned and this variable receives the size of the buffer
+               required to contain the complete pathname.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_BUFFER_OVERFLOW
+     ERROR_DRIVE_LOCKED
+     ERROR_INVALID_DRIVE
+     ERROR_NOT_DOS_DISK
+     ERROR_NOT_READY
+ 
+<b>Example</b>
+ 
+This example calls the DosQCurDisk function to retrieve the current drive
+number, sets the buffer length to zero, and calls DosQCurDir. Since the
+buffer is too small to contain a path of any size, DosQCurDir returns the
+size needed in the cbPath variable. The DosAllocSeg function is called to
+allocate the memory needed for the buffer, and DosQCurDir is called again to
+retrieve the path name. This method of setting the buffer length will be
+successful in any version of MS OS/2, including future versions, in which
+the maximum path length may be longer.
+ 
+PSZ pszPath;
+USHORT cbPath, usDisk;
+ULONG ulDrives;
+SEL selPath;
+ 
+cbPath = 0;
+DosQCurDisk(&amp;usDisk, &amp;ulDrives);     /* gets current drive          */
+ 
+/* First call DosQCurDir to find out the size of the buffer needed. */
+ 
+DosQCurDir(usDisk, (PBYTE) NULL, &amp;cbPath);
+DosAllocSeg(cbPath, &amp;selPath, SEG_NONSHARED);   /* allocates memory */
+pszPath = MAKEP(selPath, 0);         /* assigns it to a far pointer */
+DosQCurDir(usDisk,                   /* drive number                */
+    pszPath,                         /* buffer for directory path   */
+    &amp;cbPath);                        /* length of directory buffer  */
+ 
+<b>See Also</b>
+ 
+<b>DosAllocSeg, DosChDir, DosQCurDisk, DosSelectDisk</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,136 @@
+<html>
+
+<head>
+<title>DosEnumAttribute (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosEnumAttribute (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosErrClass.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosEnumAttribute(usRefType, pvFile, ulEntry, pvBuf, cbBuf,
+    pulCount, ulInfoLevel, ulReserved);
+USHORT usRefType;     /* reference type              */
+PVOID pvFile;         /* filename/handle             */
+ULONG ulEntry;        /* starting entry in list      */
+PVOID pvBuf;          /* data buffer                 */
+ULONG cbBuf;          /* buffer size                 */
+PULONG pulCount;      /* number of entries to return */
+ULONG ulInfoLevel;    /* info level                  */
+ULONG ulReserved;     /* reserved                    */
+ 
+The DosEnumAttribute function enumerates extended attributes for a specified
+file or subdirectory.
+ 
+The DosEnumAttribute function is a family API function.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>usRefType    Specifies whet</i>her the pvFile parameter points to a file handle
+             or to a string that contains a file or directory name. This
+             parameter can be one of the following values:
+ 
+             Value                   Meaning
+             ───────────────────────────────────────────────────────────────
+             ENUMEA_REFTYPE_FHANDLE  A handle
+ 
+             ENUMEA_REFTYPE_PATH     File or directory name
+ 
+<i>pvFile       Points to the han</i>dle obtained from the DosOpen or DosOpen2
+             function or to a null-terminated string that contains a file or
+             directory name.
+ 
+<i>ulEntry</i>      Specifies where to start enumerating extended attributes. A
+             value of 1 specifies the first attribute for the file.
+ 
+<i>pvBuf</i>        Points to the buffer that receives the extended attributes. For
+             a ENUMEA_LEVEL_NO_VALUE-level request, the buffer is in the
+             form of a DENA1 structure that contains only the names of the
+             extended attributes.
+ 
+<i>cbBuf</i>        Specifies the length (in bytes) of the buffer pointed to by the
+             pvBuf parameter.
+ 
+<i>pulCount</i>     Points to the variable that specifies the number of extended
+             attributes requested and, on return, contains the number
+             retrieved. A value of 0xFFFFFFFF returns as many extended
+             attributes as will fit in the supplied buffer.
+ 
+<i>ulInfoLevel</i>  Specifies the information level requested. For MS OS/2 version
+             1.2, the only possible value is ENUMEA_LEVEL_NO_VALUE.
+ 
+<i>ulReserved</i>   Specifies a reserved value; must be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_FILENAME_EXCED_RANGE
+     ERROR_INVALID_HANDLE
+     ERROR_ACCESS_DENIED
+     ERROR_PATH_NOT_FOUND
+     ERROR_NOT_ENOUGH_MEMORY
+     ERROR_INVALID_LEVEL
+     ERROR_INVALID_PARAMETER
+     ERROR_BUFFER_OVERFLOW
+ 
+<b>Comments</b>
+ 
+The order in which attributes are returned may not be the same if the
+<b>DosEnumAttribute</b> function is called a second time, because other threads or
+processes may have changed the order.
+ 
+<b>Example</b>
+ 
+This example allocates 1K of memory for the extended-attribute names, calls
+<b>DosEnumAttribute</b> to retrieve the extended-attribute names for the file
+<i>eafile</i>, and then displays the names one at a time:
+ 
+#define BUFSIZE 1024
+ 
+SEL sel;
+PDENA1 pdena1;
+ULONG ulCount;
+USHORT offset = 0;
+ 
+DosAllocSeg(BUFSIZE, &amp;sel, SEG_NONSHARED); /* allocates buffer        */
+pdena1 = MAKEP(sel, 0);              /* initializes pointer to buffer */
+ulCount = 0xFFFFFFFF;
+if (!DosEnumAttribute(ENUMEA_REFTYPE_PATH,           /* path supplied */
+        "eafile",                                    /* filename      */
+        1L,                     /* starts enum. with first attr.      */
+        pdena1,                 /* buffer address                     */
+        BUFSIZE,                /* buffer size                        */
+        &amp;ulCount,               /* number of attributes to retrieve   */
+        ENUMEA_LEVEL_NO_VALUE,  /* type of request                    */
+        0L)) {                  /* reserved                           */
+    while (ulCount--) {         /* while there are attribute names    */
+        VioWrtTTY(pdena1-&gt;szName, (USHORT) pdena1-&gt;cbName, 0L);
+        VioWrtTTY("\r\n", 2, 0L);
+        offset += sizeof(DENA1) + pdena1-&gt;cbName;
+        pdena1 = MAKEP(sel, offset);           /* points to next name */
+    }
+}
+ 
+<b>See Also</b>
+ 
+<b>DENA1</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

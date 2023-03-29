@@ -1,0 +1,135 @@
+<html>
+
+<head>
+<title>DosFSCtl (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosFSCtl (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosFSRamSemClear.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosFSCtl(pbData, cbData, pcbData, pbParms, cbParm, pcbParm,
+    usFunct, pszRoute, hf, usRouteMethod, ulReserved);
+PBYTE pbData;            /* pointer to data buffer              */
+USHORT cbData;           /* buffer length                       */
+PUSHORT pcbData;         /* pointer to buffer for actual length */
+PBYTE pbParms;           /* pointer to parameter list           */
+USHORT cbParm;           /* size of parameter list              */
+PUSHORT pcbParm;         /* pointer to buffer for actual length */
+USHORT usFunct;          /* function code                       */
+PSZ pszRoute;            /* pointer to file-system name         */
+HFILE hf;                /* file or device handle               */
+USHORT usRouteMethod;    /* routing method                      */
+ULONG ulReserved;        /* must be zero                        */
+ 
+The DosFSCtl function is used to call functions provided in a file system
+that are not part of the standard set of I/O functions.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pbData</i>         Points to the buffer that receives data from the nonstandard
+               function.
+ 
+<i>cbData</i>         Specifies the length (in bytes) of the buffer pointed to by
+               the pbData parameter. If this value is not at least as large
+               as the value pointed to by the pcbData parameter, the system
+               returns the ERROR_BUFFER_OVERFLOW error value and the value
+               pointed to by pcbData will contain the correct length.
+ 
+<i>pcbData</i>        Points to the variable that receives the actual length of
+               data returned.
+ 
+<i>pbParms</i>        Points to a list of command-specific parameters.
+ 
+<i>cbParm         Spe</i>cifies the length (in bytes) of the pbParms parameter. If
+               the buffer size is insufficient, the error value
+               ERROR_BUFFER_OVERFLOW will is returned and pcbParm will
+               contain the size of buffer needed.
+ 
+<i>pcbParm</i>        Points to the variable that contains the length of the
+               commands passed to the function and, on return, contains the
+               length of the commands returned by the function.
+ 
+<i>usFunct</i>        Specifies a function code specific to the file system. This
+               parameter can be one of the following values:
+ 
+               Value           Meaning
+               ─────────────────────────────────────────────────────────────
+               0x0000──0x7FFF  Reserved for MS OS/2.
+ 
+               0x8000──0xBFFF  Functions to be handled by local file
+                               systems.
+ 
+               0xC000──0xFFFF  Functions to be handled by remote file
+                               systems.
+ 
+<i>pszRoute</i>       Points to the string that contains the name of the file
+               system or the path of a file or directory that the operation
+               applies to.
+ 
+<i>hf</i>             Identifies the file or device.
+ 
+<i>usRouteMethod</i>  Specifies how the request will be routed. This parameter can
+               be one of the following values:
+ 
+               Value           Meaning
+               ─────────────────────────────────────────────────────────────
+               FSCTL_HANDLE    Route via the file handle. The pszRoute
+                               parameter must be NULL, and the hf parameter
+                               must be a valid file or device handle.
+ 
+               FSCTL_PATHNAME  Route via a path. The hf parameter must be
+                               -1, and the pszRoute parameter must be a
+                               valid MS OS/2 path.
+ 
+               FSCTL_FSDNAME   Route via a file-system name. The hf
+                               parameter must be -1 and the pszRoute
+                               parameter must point to the name of a valid
+                               file system.
+ 
+<i>ulReserved</i>     Specifies a reserved value; must be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_BUFFER_OVERFLOW
+     ERROR_INTERRUPT
+     ERROR_INVALID_CATEGORY
+     ERROR_INVALID_FSD_NAME
+     ERROR_INVALID_FUNCTION
+     ERROR_INVALID_HANDLE
+     ERROR_INVALID_LEVEL
+     ERROR_INVALID_PARAMETER
+     ERROR_NOT_SUPPORTED
+ 
+<b>Comments</b>
+ 
+A usFunct value of 0x0001 returns new error code information from the file
+system value of 0x0002 returns the maximum size of individual extended
+attributes in the first word of the buffer pointed to by pbData and the
+maximum size of the full extended-attribute list in the second word of the
+buffer.
+ 
+<b>See Also</b>
+ 
+<b>DosFSAttach</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

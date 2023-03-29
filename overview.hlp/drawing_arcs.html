@@ -1,0 +1,290 @@
+<html>
+
+<head>
+<title>Using Line and Arc Primitives (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Line and Arc Primitives (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='lines.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#line and arc functions 1.2'>Function Group</a><span class='grhilite'>►</span>           </i>          <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='markers.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                       Using Line and Arc Primitives
+ 
+You can use the line and the arc functions to perform the following tasks:
+ 
+♦  Draw a straight line.
+ 
+♦  Create a "rubber-banding" effect with straight lines or arcs.
+ 
+♦  Draw a circle, ellipse, fillet, or spline.
+ 
+<b>Drawing a Straight Line</b>
+ 
+To draw a straight line, you must first set the current position by calling
+the GpiMove or GpiSetCurrentPosition function, then draw the line by calling
+the GpiLine function. The following code fragment shows how to draw straight
+lines:
+ 
+LONG DrawLine(hps, pptlStart, pptlEnd)
+HPS hps;            /* presentation-space handle            */
+PPOINTL pptlStart;  /* pointer to coordinates of line start */
+PPOINTL pptlEnd;    /* pointer to coordinates of line end   */
+{
+    POINTL ptl_start, ptl_end;   /* point structures            */
+ 
+    ptl_start.x = pptlStart-&gt;x;  /* loads starting x-coordinate */
+    ptl_start.y = pptlStart-&gt;y;  /* loads starting y-coordinate */
+    ptl_end.x = pptlEnd-&gt;x;      /* loads ending x-coordinate   */
+    ptl_end.y = pptlEnd-&gt;y;      /* loads ending y-coordinate   */
+    GpiMove(hps, &amp;ptl_start);    /* sets current position       */
+    if (GpiLine(hps, &amp;ptl_end))  /* draws line                  */
+        return (1L);
+    else
+        return (0L);
+}
+ 
+The second argument to the GpiMove function is the address of a structure
+that contains coordinates of the line's starting point; the second argument
+to the GpiLine function is the address of a structure that contains the
+coordinates of the last point on the line.
+ 
+<b>Creating a Rubber-Banding Effect with a Straight Line</b>
+ 
+When lines are drawn with a rubber-banding effect, two things happen: The
+original line (if one exists) is erased, and a new line is drawn in its
+place. This process takes place each time the mouse is dragged and continues
+until the mouse button is released. The quickest way to erase the original
+line is to set the foreground mix mode to FM_XOR and redraw the line. The
+following code fragment demonstrates how you can create this effect:
+ 
+HPS hps;          /* presentation-space handle  */
+POINTL ptlStart;  /* starting point of line     */
+POINTL ptlNew;    /* ending point of line       */
+POINTL ptlPrev;   /* previous end point of line */
+BOOL fDraw;       /* line-drawing flag          */
+    .
+    .
+    .
+GpiSetColor(hps, CLR_GREEN); /* sets line-drawing color to green */
+    .
+    .
+    .
+MRESULT FAR PASCAL GenericWndProc(hwnd, usMessage, mp1, mp2)
+HWND hwnd;
+USHORT usMessage;
+MPARAM mp1;
+MPARAM mp2;
+{
+    .
+    .
+    .
+    case WM_BUTTON1DOWN: /* user begins drawing */
+        ptlStart.x = (LONG) (LOUSHORT(mp1));
+        ptlStart.y = (LONG) (HIUSHORT(mp1));
+        GpiConvert(hps, CVTC_DEVICE, CVTC_WORLD, 1L, &amp;ptlStart);
+        ptlPrev.x = ptlStart.x;
+        ptlPrev.y = ptlStart.y;
+        GpiMove (hps, &amp;ptlStart);
+        fDraw = TRUE;
+    return TRUE;
+ 
+    case WM_MOUSEMOVE: /* user draws line */
+    if (fDraw) {
+        ptlNew.x = (LONG) (LOUSHORT(mp1));
+        ptlNew.y = (LONG) (HIUSHORT(mp1));
+        GpiConvert(hps, CVTC_DEVICE, CVTC_WORLD, 1L, &amp;ptlNew);
+        GpiSetMix(hps, FM_XOR);
+        if ((ptlStart.x != ptlPrev.x) || (ptlStart.y != ptlPrev.y)) {
+            GpiMove(hps, &amp;ptlStart);
+            GpiLine(hps, &amp;ptlPrev);
+        }
+        if ((ptlStart.x != ptlNew.x) || (ptlStart.y != ptlNew.y)) {
+            GpiMove(hps, &amp;ptlStart);
+            GpiLine(hps, &amp;ptlNew);
+            ptlPrev.x = ptlNew.x; ptlPrev.y = ptlNew.y;
+        }
+        GpiSetMix(hps, FM_OVERPAINT);
+    return TRUE;
+    }
+ 
+    case WM_BUTTON1UP: /* user stops drawing */
+        fDraw = FALSE;
+        return TRUE;
+    .
+    .
+    .
+}
+ 
+<b>Drawing a Circle</b>
+ 
+To draw a circle, all of the transformations between the world, model, page,
+and device spaces must maintain square units. This means that instead of
+pels for page units, the application should select metric or English page
+units. (On most devices, a pel is rectangular, not square.) This also means
+that the x-values and y-values for any scaling transformations should be
+equal. If the transformations maintain square units, the default arc
+parameters will transform an ellipse drawn by the GpiFullArc function into a
+circle.
+ 
+If the page units are Low English and the default transformations are set,
+the following code fragment draws a circle with a diameter of 1 inch:
+ 
+ARCPARAMS arcp;           /* structure for arc parameters   */
+HPS hps;                  /* presentation-space handle      */
+POINTL ptlPos;            /* structure for current position */
+FIXED fxMult;             /* multiplier for circle          */
+    .
+    .
+    .
+    arcp.lP = 1L; arcp.lQ = 1L;
+    arcp.lR = 0L; arcp.lS = 0L;
+    GpiSetArcParams(hps,
+        &amp;arcp);                     /* sets parameters to default */
+    ptlPos.x = 100;                 /* loads x-coordinate         */
+    ptlPos.y = 100;                 /* loads y-coordinate         */
+    GpiMove(hps, &amp;ptlPos);          /* sets current position      */
+    fxMult = (50 * 65536);          /* sets multiplier            */
+    GpiFullArc(hps, DRO_OUTLINE,    /* draws circle               */
+        fxMult);
+The second argument to the GpiFullArc function, DRO_OUTLINE, specifies that
+MS OS/2 should draw only the outline of the circle (rather than filling the
+interior with the current fill pattern). The third argument, fxMult,
+specifies that MS OS/2 should multiply the size of the circle by 50 units.
+Since the page units are PU_LOENGLISH and the default transformations are
+set, 50 units are equivalent to ½ inch. The circle will have a ½-inch radius
+and a 1-inch diameter.
+ 
+<b>Drawing an Ellipse</b>
+ 
+If the world, model, page, and device transformations are set so that they
+maintain square units, you can use the arc parameters to transform the shape
+of the ellipse drawn by the GpiFullArc function. The following code fragment
+alters the arc parameter p by doubling its value, making the ellipse twice
+as wide horizontally as it is vertically.
+ 
+If the page units are PU_LOENGLISH and the default transformations are set,
+the following code fragment draws an ellipse with a 2-inch major axis
+(parallel to the x-axis) and a 1-inch minor axis (parallel to the y-axis).
+The ellipse is centered over a point in the lower-left corner of a maximized
+window.
+ 
+ARCPARAMS arcp;      /* structure for arc parameters   */
+HPS hps;             /* presentation-space handle      */
+POINTL ptlPos;       /* structure for current position */
+LONG fxMult;         /* multiplier for ellipse         */
+    .
+    .
+    .
+    arcp.lP = 2L; arcp.lQ = 1L;
+    arcp.lR = 0L; arcp.lS = 0L;
+    GpiSetArcParams(hps,
+        &amp;arcp);                    /* sets parameters to default */
+    ptlPos.x = 200;                /* loads x-coordinate         */
+    ptlPos.y = 100;                /* loads y-coordinate         */
+    GpiMove(hps, &amp;ptlPos);         /* sets current position      */
+    fxMult = (50 * 65536);         /* sets multiplier            */
+    GpiFullArc(hps, DRO_OUTLINE,   /* draws circle               */
+        fxMult);
+    .
+    .
+    .
+ 
+The arc-parameter field lP is set to 2, and the arc-parameter field lQ is
+set to 1. From these parameters, MS OS/2 creates an ellipse with a major
+axis that is twice as long as the minor axis.
+ 
+<b>Drawing a Fillet</b>
+ 
+When you draw a fillet, each curve is tangent to two lines. The curve of the
+first fillet is always tangent to a line drawn between the current position
+and the first control point and a line drawn between the current position
+and the second control point.
+ 
+The following code fragment shows how to draw a single curve using the
+current position and two control points:
+ 
+POINTL aptl[2];  /* structure for control points */
+HPS hps;         /* presentation-space handle    */
+    .
+    .
+    .
+    aptl[0].x = 50;       /* loads x-coord. of first control point  */
+    aptl[0].y = 50;       /* loads y-coord. of first control point  */
+    GpiMove(hps, aptl);   /* sets current position                  */
+    aptl[0].x = 75;       /* loads x-coord. of second control point */
+    aptl[0].y = 75;       /* loads y-coord. of second control point */
+    aptl[1].x = 100;      /* loads x-coord. of third control point  */
+    aptl[1].y = 50;       /* loads y-coord. of third control point  */
+    GpiPolyFillet(hps,    /* draws fillet                           */
+        2L, aptl);
+    .
+    .
+    .
+ 
+When you draw a sharp fillet, the sharpness value controls the shape of the
+curve: If the value is greater than 1, a hyperbola is drawn; if the value is
+1, a parabola is drawn; and if the value is less than 1, an ellipse is
+drawn. The following code fragment uses a sharpness value greater than 1,
+which creates a hyperbolic curve:
+ 
+POINTL aptl[2];        /* structure for control points */
+FIXED fxSharpness[1];  /* array with sharpness value   */
+HPS hps;               /* presentation-space handle    */
+    .
+    .
+    .
+    aptl[0].x = 50;     /* loads x-coord. of first control point  */
+    aptl[0].y = 50;     /* loads y-coord. of first control point  */
+    GpiMove(hps, aptl); /* sets current position                  */
+    aptl[0].x = 75;     /* loads x-coord. of second control point */
+    aptl[0].y = 75;     /* loads y-coord. of second control point */
+    aptl[1].x = 100;    /* loads x-coord. of third control point  */
+    aptl[1].y = 50;     /* loads y-coord. of third control point  */
+    fxSharpness[0] = 1; /* sets sharpness value                   */
+    GpiPolyFilletSharp(hps, /* draws fillet                       */
+        2L, aptl, fxSharpness);
+    .
+    .
+    .
+ 
+<b>Drawing a Spline</b>
+ 
+When you use the GpiPolySpline function to draw a spline, each curve is
+tangent to the first and last lines of three intersecting lines. The
+following code fragment shows how to draw a spline:
+ 
+POINTL aptl[3];  /* structure for control points */
+HPS hps;         /* presentation-space handle    */
+    .
+    .
+    .
+    aptl[0].x = 50;      /* loads x-coord. of first control point  */
+    aptl[0].y = 50;      /* loads y-coord. of first control point  */
+    GpiMove(hps, aptl);  /* sets current position                  */
+    aptl[0].x = 75;      /* loads x-coord. of second control point */
+    aptl[0].y = 75;      /* loads y-coord. of second control point */
+    aptl[1].x = 100;     /* loads x-coord. of third control point  */
+    aptl[1].y = 75;      /* loads y-coord. of third control point  */
+    aptl[2].x = 125;     /* loads x-coord. of fourth control point */
+    aptl[2].y = 50;      /* loads y-coord. of fourth control point */
+    GpiPolySpline(hps,   /* draws spline                           */
+        3L, aptl);
+    .
+    .
+    .
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

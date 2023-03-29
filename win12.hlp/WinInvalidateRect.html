@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<title>WinInvalidateRect (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinInvalidateRect (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='rectangles.html'>Function Group</a><span class='grhilite'>►</span>                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinInvalidateRegion.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMESSAGEMGR
+ 
+BOOL WinInvalidateRect(hwnd, prcl, fIncludeChildren)
+HWND hwnd;                /* handle of window with changed update region */
+PRECTL prcl;              /* address of structure with rectangle         */
+BOOL fIncludeChildren;    /* invalidation-scope flag                     */
+ 
+The WinInvalidateRect function adds a rectangle to a window's update region.
+The update region represents the area of the window that must be redrawn.
+ 
+<b>Parameter         Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwnd</i>              Identifies the window whose update region has changed. If
+                  this parameter is HWND_DESKTOP, this function updates the
+                  entire screen.
+ 
+<i>prcl        </i>      Points to the RECTL structure that contains the
+                  coordinates of the rectangle to add to the window's update
+                  region. If this parameter is NULL, the entire window is
+                  put into the update region.
+ 
+<i>fIncludeChildren  Specifies whether child window</i>s of hwnd are included in
+                  the invalid rectangle. If TRUE, child windows are
+                  included. If FALSE, they are not.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful or FALSE if an error
+occurs.
+ 
+<b>Comments</b>
+ 
+If the window style is WS_SYNCPAINT, the window is redrawn before returning
+from the WinInvalidateRect function.
+ 
+If the window style is WS_CLIPCHILDREN and part of the window's update
+region overlaps child windows that have the style WS_SYNCPAINT, those child
+windows are updated before WinInvalidateRect returns.
+ 
+<b>Example</b>
+ 
+This example gets the dimensions of the window and calls WinInvalidateRect
+to invalidate the window. The application will be sent a WM_PAINT message
+with the entire window as the update rectangle.
+ 
+WinQueryWindowRect(hwnd, &amp;rcl);
+WinInvalidateRect(hwnd,   /* window to invalidate    */
+    &amp;rcl,                 /* invalid rectangle       */
+    FALSE);               /* do not include children */
+ 
+<b>See Also</b>
+ 
+<b>WinInvalidateRegion, RECTL, WM_PAINT</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

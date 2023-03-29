@@ -1,0 +1,111 @@
+<html>
+
+<head>
+<title>DosFSAttach (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosFSAttach (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosFSCtl.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosFSAttach(pszDevName, pszFSD, pData, cbData, fsOp,
+    ulReserved);
+PSZ pszDevName;      /* pointer to the device name                      */
+PSZ pszFSD;          /* pointer to the file system                      */
+PBYTE pData;         /* pointer to the buffer for file-system arguments */
+USHORT cbData;       /* length of the argument buffer                   */
+USHORT fsOp;         /* attach or the detach connection                 */
+ULONG ulReserved;    /* must be zero                                    */
+ 
+The DosFSAttach function attaches or detaches a drive or pseudo-character
+device from a remote file system.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pszDevName</i>  Points to a null-terminated string that specifies the drive
+            letter followed by a colon or a pseudo-character device name. If
+            this parameter is a pseudo-character device name, the format of
+            the string is \device\filename, where filename is a valid MS
+            OS/2 filename.
+ 
+<i>pszFSD</i>      Points to a null-terminated string that specifies the name of
+            the remote file system to attach to or detach from the device
+            specified by the pszDevName parameter.
+ 
+<i>pData</i>       Points to a buffer that contains the file-system arguments. The
+            meaning of the arguments is specific to the file system. The
+            first word of the buffer specifies the number of strings it
+            contains; the rest of the buffer contains contiguous strings.
+ 
+<i>cbData</i>      Specifies the length (in bytes) of the data pointed to by the
+            pData parameter.
+ 
+<i>fsOp</i>        Specifies the type of operation to perform. A value of FS_ATTACH
+            attaches a file-system connection. A value of FS_DETACH detaches
+            a file-system connection.
+ 
+<i>ulReserved</i>  Specifies a reserved value; must be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_ALREADY_ASSIGNED
+     ERROR_INVALID_DRIVE
+     ERROR_INVALID_FSD_NAME
+     ERROR_INVALID_LEVEL
+     ERROR_INVALID_PATH
+     ERROR_NOT_ENOUGH_MEMORY
+ 
+<b>Comments</b>
+ 
+Drive letters that represent local drives cannot be redirected.
+ 
+When a drive is attached to a file system, all requests to that drive are
+routed to the file system. When a drive is detached from a file system, the
+drive name can no longer be used.
+ 
+When a pseudo-character device name is attached to a file system, all
+requests to that name are routed to the file system. When a pseudo-character
+device is detached from a file system, the device name can no longer be used
+unless it overlaid the name of an existing device; in this case, the
+previous device regains control.
+ 
+<b>Example</b>
+ 
+This example calls DosFSAttach to attach a LAN server to drive X, then calls
+<b>DosFSAttach</b> again to detach the LAN server:
+ 
+CHAR szShareName[] = { 1, 0,        /* number of strings              */
+    "\\SERVER\SHARE" };             /* name of server and share point */
+ 
+DosFSAttach("X:", "LAN", szShareName, sizeof(szShareName),
+        FS_ATTACH, 0L);
+    .
+    .
+    .
+DosFSAttach("X:", "LAN", szShareName, sizeof(szShareName),
+        FS_DETACH, 0L);
+ 
+<b>See Also</b>
+ 
+<b>DosFSCtl, DosQFSAttach</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

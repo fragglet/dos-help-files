@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>DosMonRead (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosMonRead (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='monitors.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Device Monitors 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosMonReg.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMONITORS
+ 
+USHORT DosMonRead(pbInBuffer, fWait, pbDataBuf, pcbDataBuf)
+PBYTE pbInBuffer;      /* pointer to buffer for monitor input     */
+USHORT fWait;          /* wait/no-wait flag                       */
+PBYTE pbDataBuf;       /* pointer to buffer for data records      */
+PUSHORT pcbDataBuf;    /* pointer to variable with size of buffer */
+ 
+The DosMonRead function reads data records from the device associated with
+the specified monitor and copies the records to a buffer.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pbInBuffer</i>  Points to the buffer for monitor input. This handle must have
+            been registered previously by using the DosMonReg function.
+ 
+<i>fWait</i>       Specifies whether the function should wait for input. If this
+            parameter is DCWW_WAIT, the function waits until input is ready.
+            If this parameter is DCWW_NOWAIT, no input is ready, and the
+            function returns immediately.
+ 
+<i>pbDataBuf</i>   Points to the buffer that receives the data records.
+ 
+<i>pcbDataBuf</i>  Points to a variable. When this function is called, the variable
+            specifies the size (in bytes) of the buffer that receives the
+            data records. When the function returns, this variable contains
+            the number of bytes copied from the data record to the buffer.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_MON_BUFFER_EMPTY
+     ERROR_MON_BUFFER_TOO_SMALL
+     ERROR_MON_INVALID_PARMS
+ 
+<b>Comments</b>
+ 
+Device monitors must respond rapidly to avoid delaying input and output
+(I/O). (This rapid response is especially important for keyboard monitors.)
+A monitor process should be written so that any threads that read and write
+the monitor data run at a high priority. These threads should never perform
+operations that might delay them, such as waiting for I/O or a semaphore.
+The monitor process can have other threads running at normal priority to
+handle such operations.
+ 
+<b>See Also</b>
+ 
+<b>DosMonClose, DosMonOpen, DosMonReg, DosMonWrite</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

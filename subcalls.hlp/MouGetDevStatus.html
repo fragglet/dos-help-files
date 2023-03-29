@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>MouGetDevStatus (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MouGetDevStatus (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Mouse 1.2'>Overview</a><span class='grhilite'>►</span>                   </i>                         <span class='grhilite'>◄</span><a href='mou.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MouGetEventMask.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_MOU
+ 
+USHORT MouGetDevStatus(pfsDevStatus, hmou)
+PUSHORT pfsDevStatus;    /* address of buffer for status */
+HMOU hmou;               /* mouse handle                 */
+ 
+The MouGetDevStatus function retrieves the device status for the specified
+mouse.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pfsDevStatus</i>  Points to the variable that receives the device status. It can
+              be any combination of the following values:
+ 
+              Value                   Meaning
+              ──────────────────────────────────────────────────────────────
+              MOUSE_QUEUEBUSY         Event queue is busy with input/output
+                                      (I/O).
+ 
+              MOUSE_BLOCKREAD         Block read is in progress.
+ 
+              MOUSE_FLUSH             Flush buffer is in progress.
+ 
+              MOUSE_UNSUPPORTED_MODE  Mouse device driver is disabled
+                                      because of unsupported mode.
+ 
+              MOUSE_DISABLED          Mouse device driver is disabled.
+ 
+              MOUSE_MICKEYS           Mouse motion is given in mickeys, not
+                                      in pels.
+ 
+<i>hmou</i>          Identifies the mouse. The handle must have been created
+              previously by using the MouOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_MOUSE_NO_DEVICE
+ 
+<b>Example</b>
+ 
+This example creates a mouse handle then calls the MouGetDevStatus function
+to retrieve the status for the mouse identified by the handle:
+ 
+USHORT fsDevStatus;
+HMOU hmou;
+MouOpen(0L, &amp;hmou);
+MouGetDevStatus(&amp;fsDevStatus, hmou);
+if (fsDevStatus &amp; MOUSE_DISABLED ||
+        fsDevStatus &amp; MOUSE_UNSUPPORTED_MODE)
+    VioWrtTTY("mouse is disabled\r\n", 19, 0);
+ 
+<b>See Also</b>
+ 
+<b>MouOpen, MouSetDevSta</b>tus
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>WM_DRAWITEM (1.2) - msgs12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msgs12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WM_DRAWITEM (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='x_at_L810c.html'>Changes</a><span class='grhilite'>►</span>                                             <span class='grhilite'>◄</span><a href='messages.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WM_ENABLE.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMESSAGEMGR
+ 
+<b>WM_DRAWITEM</b>
+id = (USHORT) SHORT1FROMMP(mp1);        /* window ID             */
+poi = (POWNERITEM) PVOIDFROMMP(mp2);    /* pointer to OWNERITEM  */
+ 
+The WM_DRAWITEM message is sent to the owner of a list box when an item in
+an owner-drawn list needs to be drawn or highlighted. The list box must have
+the LS_OWNERDRAW style. The WM_DRAWITEM message is also sent to the owner of
+a menu when an item in the owner-drawn menu needs to be drawn or
+highlighted. The menu must have the MIS_OWNERDRAW style.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>id    </i>     Low word of mp1. Identifies the window of the list-box or menu
+           control sending this message.
+ 
+<i>poi        Low </i>and high word of mp2. Points to an OWNERITEM structure.
+ 
+<b>Return Value</b>
+ 
+The application should return TRUE if it draws the list-box item; it should
+return FALSE if the list box should draw the item. If the WM_DRAWITEM
+message is sent to a menu, the return value is ignored.
+ 
+<b>Comments</b>
+ 
+When an item is to be drawn, the fsState field and the fsStateOld field of
+the OWNERITEM structure will be equal. The application should draw the item
+and return TRUE, or it should return FALSE to let the list box draw the
+item. The list box can draw only text items, so the application must handle
+the drawing of other types of objects.
+ 
+When an item is to be highlighted, the fsState field is TRUE and the
+<b>fsStateOld</b> field is FALSE. In this case, the application should carry out
+the highlighting and set fsState and fsStateOld equal to FALSE before
+returning TRUE, or it should return FALSE so the list box can perform
+default highlighting of the item.
+ 
+When highlighting is to be removed from an item, the fsState field is FALSE
+and the fsStateOld field is TRUE. An application can remove the
+highlighting, set the fsState and fsStateOld equal to FALSE and return TRUE,
+or it can return FALSE to let the list box remove the highlighting.
+ 
+<b>See Also</b>
+ 
+<b>LM_QUERYITEMTEXT, OWNERITEM</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

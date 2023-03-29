@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>GpiDeleteElementsBetweenLabels (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiDeleteElementsBetweenLabels (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='retained_graphics.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiDeleteMetaFile.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPISEGEDITING
+ 
+BOOL GpiDeleteElementsBetweenLabels(hps, idFirstLabel, idLastLabel)
+HPS hps;              /* presentation-space handle */
+LONG idFirstLabel;    /* label of first element    */
+LONG idLastLabel;     /* label of last element     */
+ 
+The GpiDeleteElementsBetweenLabels function deletes one or more elements
+from the currently open segment. The function deletes all elements between
+but not including the elements having the labels specified by the
+<i>idFirstLabel and idLastLabel paramet</i>ers, then moves the element pointer to
+the element preceding the deleted elements (if any). If either label cannot
+be found between the current element-pointer position and the end of the
+segment, the function deletes no elements and returns an error value. The
+segment containing the element must be open and the drawing mode must be
+DM_RETAIN.
+ 
+<b>GpiDeleteElementBetweenLabels</b> cannot be used in an element bracket.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>           Identifies the presentation space.
+ 
+<i>idFirstLabel</i>  Specifies the label that marks the start of the elements to
+              delete.
+ 
+<i>idLastLabel</i>   Specifies the label that marks the end of the elements to
+              delete.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_IN_ELEMENT
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_LABEL_NOT_FOUND
+     PMERR_NO_CURRENT_GRAPHICS_SEG
+     PMERR_NOT_IN_RETAIN_MODE
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiDeleteElementsBetweenLabels function to delete the
+elements between but not including the elements having the labels 1 and 2:
+ 
+GpiOpenSegment(hps, 2L);            /* open segment #2   */
+ 
+/* delete elements between 1 and 2 */
+ 
+GpiDeleteElementsBetweenLabels(hps, 1L, 2L);
+GpiCloseSegment(hps);               /* close the segment */
+ 
+<b>See Also</b>
+ 
+<b>GpiLabel, GpiSetElementPointerAtLabel, W</b>inGetLastError
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

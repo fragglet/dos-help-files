@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>DosGetModHandle (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosGetModHandle (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='dll.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#dynamic link libraries 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80c5.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosGetModName.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMODULEMGR
+ 
+USHORT DosGetModHandle(pszModName, phMod)
+PSZ pszModName;    /* pointer to module name                      */
+PHMODULE phMod;    /* pointer to variable receiving module handle */
+ 
+The DosGetModHandle function retrieves the handle of a dynamic-link module.
+The DosGetModHandle function is typically used to make sure that a module
+has been loaded into memory. If the module has not been loaded, the function
+returns ERROR_MOD_NOT_FOUND, and the DosLoadModule function must be used to
+load the module.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pszModName</i>  Points to the null-terminated string that specifies the module
+            name. This string must be a valid MS OS/2 filename. If it does
+            not specify a path and the filename extension, the function
+            appends the default extension (.dll) and searches for the
+            dynamic-link module in the directories specified by the libpath
+            command in the config.sys file.
+ 
+<i>phMod</i>       Points to the variable that receives the module handle.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_INTERRUPT
+     ERROR_MOD_NOT_FOUND
+ 
+<b>Example</b>
+ 
+This example calls DosGetModHandle to determine whether the dynamic-link
+module mydll.dll is currently in memory. If mydll.dll is not in memory,
+<b>DosGetModHandle calls DosLoadModule to load it. It then calls DosGetModName</b>
+to get the full path of the module. (This example is accurate if mydll.dll
+exists in a directory defined by the libpath command in the config.sys
+file.)
+ 
+USHORT usError;
+HMODULE hmod;
+UCHAR szFailName[CCHMAXPATH], szModName[CCHMAXPATH];
+ 
+if (usError = DosGetModHandle("mydll", &amp;hmod)) {
+    if (usError == ERROR_MOD_NOT_FOUND)
+        DosLoadModule(szFailName, sizeof(szFailName),
+            "mydll", &amp;hmod);
+}
+DosGetModName(hmod, sizeof(szModName), szModName);
+ 
+<b>See Also</b>
+ 
+<b>DosFreeModule, DosGetModName, DosLoadModule</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

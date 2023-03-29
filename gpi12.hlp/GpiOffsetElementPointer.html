@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<title>GpiOffsetElementPointer (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiOffsetElementPointer (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='retained_graphics.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiOffsetRegion.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPISEGEDITING
+ 
+BOOL GpiOffsetElementPointer(hps, off)
+HPS hps;     /* presentation-space handle        */
+LONG off;    /* offset to add to element pointer */
+ 
+The GpiOffsetElementPointer function moves the element pointer by the number
+of elements specified by the off parameter. The function starts the move at
+the current element-pointer position, and moves the element pointer either
+toward the beginning or end of the segment, depending on whether off is
+negative or positive. If off specifies more elements than actually exist
+between the current position and the beginning or end, the function sets the
+element pointer to zero or to the last element in the segment, depending on
+the direction of the move.
+ 
+The GpiOffsetElementPointer function affects the current open segment. If no
+segment is open, the function is ignored. Also, the function cannot be used
+in an element bracket.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>off</i>        Specifies the offset to be added to the element pointer.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_IN_ELEMENT
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_NO_CURRENT_GRAPHICS_SEG
+     PMERR_NOT_IN_RETAIN_MODE
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiOffsetElementPointer function to move to the
+element associated with a label element. Combining the
+<b>GpiSetElementPointerAtLabel and GpiOffsetElementPointer functions is a</b>
+convenient way to locate elements in segments that have been edited.
+ 
+POINTL ptlStart = { 0, 0 };
+POINTL ptlTriangle[] = { 100, 100, 200, 0, 0, 0 };
+ 
+GpiOpenSegment(hps, 4L);         /* creates a segment with labels */
+GpiLabel(hps, 5L);   GpiMove(hps, &amp;ptlStart);
+GpiLabel(hps, 10L);  GpiPolyLine(hps, 3L, ptlTriangle);
+GpiCloseSegment(hps);
+    .
+    .
+    .
+GpiOpenSegment(hps, 4L);
+GpiSetElementPointerAtLabel(hps, 10L) /* move to label 10         */
+GpiOffsetElementPointer(hps, 1L);     /* move to polyline element */
+ 
+<b>See Also</b>
+ 
+<b>GpiSetEditMode, GpiSetElementPointer, GpiSetElementPointerAtLabel,</b>
+<b>WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

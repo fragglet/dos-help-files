@@ -1,0 +1,92 @@
+<html>
+
+<head>
+<title>GpiBeginArea (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiBeginArea (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='areas.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Area Primitives 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiBeginElement.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+BOOL GpiBeginArea(hps, flOptions)
+HPS hps;            /* presentation-space handle */
+ULONG flOptions;    /* area-option flag          */
+ 
+The GpiBeginArea function starts an area bracket, that is, it starts a
+sequence of functions that define the shape of an area. All subsequent
+drawing functions, up to the next GpiEndArea function, apply to the new
+area. The flOptions parameter specifies whether the figures in the area have
+boundary lines and which filling mode to use for constructing the interior
+of the area.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>flOptions</i>  Specifies the area options. It can be any combination of the
+           following values:
+ 
+           Value          Meaning
+           ─────────────────────────────────────────────────────────────────
+           BA_ALTERNATE   Constructs the interior in alternate mode
+                          (default).
+ 
+           BA_BOUNDARY    Boundary lines are drawn.
+ 
+           BA_NOBOUNDARY  Boundary lines are not drawn (default).
+ 
+           BA_WINDING     Constructs the interior in winding mode.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK or GPI_ERROR if an error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_ALREADY_IN_AREA
+     PMERR_INV_AREA_CONTROL
+     PMERR_INV_HPS
+     PMERR_INV_IN_PATH
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiBeginArea function to draw an area. The area, an
+isosceles triangle, is drawn with boundary lines and filled using the
+alternate filling mode.
+ 
+HPS hps;
+POINTL ptlStart = { 0, 0 };
+POINTL ptlTriangle[] = { 100, 100, 200, 0, 0, 0 };
+GpiMove(hps, &amp;ptlStart);    /* move to starting point (0, 0)     */
+GpiBeginArea(hps,           /* start the area bracket            */
+    BA_BOUNDARY |           /* draw boundary lines               */
+    BA_ALTERNATE);          /* fill interior with alternate mode */
+GpiPolyLine(hps, 3L, ptlTriangle);       /* draw the triangle    */
+GpiEndArea(hps);                         /* end the area bracket */
+                                         /* and fill the area    */
+ 
+<b>See Also</b>
+ 
+<b>GpiEndArea, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

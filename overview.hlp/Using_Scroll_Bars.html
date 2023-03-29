@@ -1,0 +1,161 @@
+<html>
+
+<head>
+<title>Using Scroll-Bar Controls (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Scroll-Bar Controls (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='scroll_bar_controls.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#scroll bar messages'>Message Group</a><span class='grhilite'>►</span>                      <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Static_Controls.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                         Using Scroll-Bar Controls
+ 
+This section explains how to create and use scroll bars in an application.
+Scroll bars are most often used in frame windows to let the user scroll data
+in the corresponding client window.
+ 
+<b>Creating Scroll Bars</b>
+ 
+You can add scroll bars to a frame window by using the FCF_HORZSCROLL flag,
+the FCF_VERTSCROLL flag, or both flags when creating the frame window with
+the WinCreateStdWindow function. This adds a horizontal and/or a vertical
+scroll bar to the frame window. Because the frame window owns the scroll
+bars, it passes notification messages from these controls to the client
+window.
+ 
+The following code fragment adds scroll bars to a frame window:
+ 
+/* Set flags for a main window with scroll bars. */
+ 
+ULONG ulFrameControlFlags =
+    FCF_STANDARD | FCF_HORZSCROLL | FCF_VERTSCROLL;
+ 
+/* Create the window. */
+ 
+hwndFrame = WinCreateStdWindow(HWND_DESKTOP, WS_VISIBLE,
+    &amp;ulFrameControlFlags, szClientClass, szFrameTitle,
+    0L, NULL, 0L, &amp;hwndClient);
+ 
+Scroll bars created this way have the FID_HORZSCROLL or FID_VERTSCROLL
+window identifier. The frame window determines the size and position of the
+scroll bars. A frame window uses the standard size specified by the system
+values SV_CXVSCROLL and SV_CYHSCROLL. The position is always the right and
+bottom edges of the frame window.
+ 
+Another way to create scroll bars is by using the WinCreateWindow function.
+This is most common for stand-alone scroll bars. Creating scroll bars in
+this way lets you set the size and position of the scroll bars. You can also
+specify the window to receive notification messages.
+ 
+The following code fragment creates a stand-alone scroll bar:
+ 
+HWND hwndScroll;             /* scroll-bar handle              */
+ 
+hwndScroll = WinCreateWindow(
+    hwndClient               /* scroll-bar parent              */
+    WC_SCROLLBAR,            /* preregistered scroll-bar class */
+    NULL,                    /* no window title                */
+    SBS_VERT | WS_VISIBLE,   /* vertical style and visible     */
+    10, 10,                  /* position                       */
+    20, 100,                 /* size                           */
+    hwndClient,              /* owner                          */
+    HWND_TOP,                /* Z order position               */
+    1,                       /* scroll-bar ID                  */
+    NULL,                    /* no class-specific data         */
+    NULL);                   /* no presentation parameters     */
+ 
+<b>Retrieving a Scroll-Bar Handle</b>
+ 
+If you create a scroll bar as a child window of the frame window by using
+the WinCreateStdWindow function, you need a way to retrieve the scroll-bar
+handle. One way is to use the WinWindowFromID function, the frame-window
+handle, and a predefined identifier (such as FID_HORZSCROLL or
+FID_VERTSCROLL) to retrieve the scroll-bar handle.
+ 
+hwndHorzScroll = WinWindowFromID(hwndFrame, FID_HORZSCROLL);
+hwndVertScroll = WinWindowFromID(hwndFrame, FID_VERTSCROLL);
+ 
+If the standard frame window includes a client window, you can use that
+handle to access the scroll bars. The idea is to get the frame-window handle
+first, then the scroll-bar handle.
+ 
+/* Get a handle to the horizontal scroll bar. */
+ 
+hwndScroll = WinWindowFromID(
+    WinQueryWindow(hwndClient, QW_PARENT, FALSE),
+    FID_HORZSCROLL);
+ 
+<b>Using the Scroll-Bar Range and Position</b>
+ 
+You can initialize a scroll bar's current value and range to nondefault
+values by sending the SBCDATA structure with class-specific data for a call
+to the WinCreateWindow function:
+ 
+SBCDATA sbcd;
+ 
+/* Set up scroll-bar control data. */
+ 
+sbcd.posFirst = 200;
+sbcd.posLast = 400;
+sbcd.posThumb = 300;
+ 
+/* Create the scroll bar. */
+ 
+hwndScroll = WinCreateWindow(hwndClient, WC_SCROLLBAR, NULL,
+    SBS_VERT | WS_VISIBLE,
+    10, 10, 20, 100,
+    hwndClient, HWND_TOP, 1,
+    &amp;sbcd,       /* class-specific data */
+    NULL);
+ 
+You can adjust a scroll-bar value and range by sending it an
+<b>SBM_SETSCROLLBAR</b> message:
+ 
+/* Set the scroll-bar value and range. */
+ 
+WinSendMsg(hwndScroll, SBM_SETSCROLLBAR,
+    MPFROM2SHORT(300, 0),
+    MPFROM2SHORT(200, 400));
+ 
+You can read a scroll-bar value by sending it an SBM_QUERYPOS message:
+ 
+USHORT usSliderPos;
+ 
+/* Read the scroll-bar value. */
+ 
+usSliderPos = (USHORT) WinSendMsg(hwndScroll,
+    SBM_QUERYPOS, NULL, NULL);
+ 
+Similarly, you can set a scroll-bar value by sending an SBM_SETPOS message:
+ 
+/* Set the vertical scroll-bar value. */
+ 
+WinSendMsg(hwndScroll, SBM_QUERYPOS, MPFROM2SHORT(300, 0), NULL);
+ 
+You can read a scroll-bar range by sending it an SBM_QUERYRANGE message:
+ 
+MRESULT mr;
+USHORT iMinimum, iMaximum;
+ 
+/* Read the vertical scroll-bar range. */
+ 
+mr = WinSendMsg(hwndScroll, SBM_QUERYRANGE, NULL, NULL);
+ 
+iMinimum = SHORT1FROMMR(mr);  /* minimum in the low word  */
+iMaximum = SHORT2FROMMR(mr);  /* maximum in the high word */
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

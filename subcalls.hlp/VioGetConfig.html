@@ -1,0 +1,90 @@
+<html>
+
+<head>
+<title>VioGetConfig (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioGetConfig (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L8070.html'>Changes</a><span class='grhilite'>►</span>                       </i>          <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioGetCp.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioGetConfig(usConfigId, pvioin, hvio)
+USHORT usConfigId;        /* configuration ID                       */
+PVIOCONFIGINFO pvioin;    /* pointer to structure for configuration */
+HVIO hvio;                /* video handle                           */
+ 
+The VioGetConfig function retrieves the video-display configuration, which
+defines the type of display adapter, the type of display, and the amount of
+video memory available in the current, primary, or secondary display.
+ 
+The VioGetConfig function is a family API function.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>usConfigId</i>  Specifies the display adapter to retrieve the configuration for.
+            This parameter can be one of the following values:
+ 
+            Value                 Meaning
+            ────────────────────────────────────────────────────────────────
+            VIO_CONFIG_CURRENT    The current display adapter
+ 
+            VIO_CONFIG_PRIMARY    The primary display adapter
+ 
+            VIO_CONFIG_SECONDARY  The secondary display adapter
+ 
+<i>pvioin      Points</i> to the VIOCONFIGINFO structure that receives the display
+            configuration for the primary display adapter.
+ 
+<i>hvio</i>        Identifies an advanced video-input-and-output (AVIO)
+            presentation space. For AVIO programs, this handle must have
+            been created using the VioCreatePS function. For other programs,
+            hvio must be NULL.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_VIO_INVALID_LENGTH
+     ERROR_VIO_INVALID_PARMS
+ 
+<b>Comments</b>
+ 
+MS OS/2 derives the values for the adapter and display fields of the
+<b>VIOCONFIGINFO</b> structure for the display configuration by using various
+tests, including checking the switch settings on the card.
+ 
+<b>Example</b>
+ 
+This example calls VioGetConfig to determine whether the primary display
+type is an enhanced color display.
+ 
+VIOCONFIGINFO vioinConfig;
+vioinConfig.cb = sizeof(vioinConfig);     /* structure length   */
+VioGetConfig(VIO_CONFIG_PRIMARY,
+    &amp;vioinConfig,                         /* configuration data */
+    0);                                   /* video handle       */
+if (vioinConfig.display == DISPLAY_EGA)
+    VioWrtTTY("Enhanced color display\n\r", 24, 0);
+ 
+<b>See Also</b>
+ 
+<b>VioGetMode, VioGetState, VioCreatePS, VIOCONFIGINFO</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

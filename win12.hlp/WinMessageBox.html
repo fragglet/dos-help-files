@@ -1,0 +1,194 @@
+<html>
+
+<head>
+<title>WinMessageBox (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinMessageBox (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='message_box_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Dialog Windows 1.2'>Overview</a><span class='grhilite'>►</span>            </i>              <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinMsgMuxSemWait.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINDIALOGS
+ 
+USHORT WinMessageBox(hwndParent, hwndOwner, pszText, pszCaption,
+    idWindow, flStyle)
+HWND hwndParent;    /* handle of the parent window     */
+HWND hwndOwner;     /* handle of the owner window      */
+PSZ pszText;        /* address of text in message box  */
+PSZ pszCaption;     /* address of title of message box */
+USHORT idWindow;    /* message-box identifier          */
+USHORT flStyle;     /* type of message box             */
+ 
+The WinMessageBox function creates, displays, and operates a message-box
+window. The message-box window consists of a message and a simple dialog
+with the user.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwndParent</i>  Identifies the parent window of the newly created message-box
+            window. This parameter is the desktop-window handle,
+            HWND_DESKTOP, or NULL if the message box is a main window.
+ 
+<i>hwndOwner</i>   Identifies the owner window of the message-box window. The owner
+            window is activated when WinMessageBox returns.
+ 
+<i>pszText</i>     Points to the text displayed as the message within the
+            message-box window. The text will be automatically wrapped as
+            necessary to fit within the message box. The "\n" character can
+            be used to force a line break, however this is not recommended
+            except between paragraphs, as different fonts could change the
+            appearance of the text.
+ 
+<i>pszCaption</i>  Points to the title of the message-box window. If this parameter
+            is NULL, "Error" (the default title) is displayed. The maximum
+            length of the text is device-dependent. If the text is too long,
+            it will be clipped.
+ 
+<i>idWindow</i>    Identifies the identifier of the message-box window. This value
+            is passed to the HK_HELP hook if the WM_HELP message is received
+            by the message-box window.
+ 
+<i>flStyle</i>     Specifies the type of message-box window created. This parameter
+            consists of a button flag, an icon flag, a default button flag,
+            and any number of special flags. The following four lists
+            describe the available flags which can be combined using the OR
+            operator together for this parameter:
+ 
+            Buttons              Meaning
+            ────────────────────────────────────────────────────────────────
+            MB_ABORTRETRYIGNORE  Message box contains Abort, Retry, and
+                                 Ignore push buttons.
+ 
+            MB_ENTER             Message box contains an Enter push button.
+ 
+            MB_ENTERCANCEL       Message box contains Enter and Cancel push
+                                 buttons.
+ 
+            MB_OK                Message box contains an OK push button.
+ 
+            MB_OKCANCEL          Message box contains OK and Cancel push
+                                 buttons.
+ 
+            MB_RETRYCANCEL       Message box contains Retry and Cancel push
+                                 buttons.
+ 
+            MB_YESNO             Message box contains Yes and No push
+                                 buttons.
+ 
+            MB_YESNOCANCEL       Message box contains Yes, No, and Cancel
+                                 push buttons.
+ 
+            Icon                Meaning
+            ────────────────────────────────────────────────────────────────
+            MB_ICONASTERISK     Message box contains asterisk icon.
+ 
+            MB_ICONEXCLAMATION  Message box contains exclamation-point
+                                icon.
+ 
+            MB_ICONHAND         Message box contains hand icon.
+ 
+            MB_ICONQUESTION     Message box contains question-mark icon.
+ 
+            MB_NOICON           Message box does not contain an icon.
+ 
+            Default button  Meaning
+            ────────────────────────────────────────────────────────────────
+            MB_DEFBUTTON1   First button is the default (first button is
+                            always the default unless MB_DEFBUTTON2 or
+                            MB_DEFBUTTON3 is specified).
+ 
+            MB_DEFBUTTON2   Second button is the default.
+ 
+            MB_DEFBUTTON3   Third button is the default.
+ 
+            Special flags   Meaning
+            ────────────────────────────────────────────────────────────────
+            MB_APPLMODAL    Message box is application modal.
+ 
+            MB_SYSTEMMODAL  Message box is system modal.
+ 
+            MB_HELP         Message box contains Help push button.
+ 
+            MB_MOVEABLE     Message box is movable.
+ 
+<b>Return Value</b>
+ 
+The return value indicates the user's response to the message. It can be one
+of the following vlaues:
+ 
+<b>Value        Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>MBID_ABORT</i>   Abort button was selected.
+ 
+<i>MBID_CANCEL</i>  Cancel button was selected.
+ 
+<i>MBID_ENTER</i>   Enter button was selected.
+ 
+<i>MBID_IGNORE</i>  Ignore button was selected.
+ 
+<i>MBID_NO</i>      No button was selected.
+ 
+<i>MBID_OK</i>      OK button was selected.
+ 
+<i>MBID_RETRY</i>   Retry button was selected.
+ 
+<i>MBID_YES</i>     Yes button was selected.
+ 
+<i>MDID_ERROR   The WinMessageBox</i> function failed──an error occurred.
+ 
+If a message box has a Cancel button, MBID_CANCEL is returned if the ESC key
+is pressed or if the Cancel button is selected. If the message box has no
+Cancel button, pressing the ESC key has no effect.
+ 
+<b>Comments</b>
+ 
+If a message-box window is created as part of the processing of a dialog
+window, the dialog window should be made the owner of the message-box
+window.
+ 
+If a system modal message-box window is created to tell the user that the
+system is running out of memory, the strings passed into this function
+should not be taken from a resource file because an attempt to load the
+resource file may fail due to lack of memory. Such a message-box window can
+safely use the hand icon (MB_ICONHAND), however, because this icon is always
+memory-resident.
+ 
+<b>Example</b>
+ 
+This example shows a typical use of the WinMessageBox function when
+debugging an application. The C run-time function sprintf is used to format
+the body of the message. In this case, it converts the coordinates of the
+mouse pointer (retrieved with the WinQueryPointerPos function) into a
+string. The string is then displayed by calling WinMessageBox.
+ 
+CHAR szMsg[100];
+POINTL ptl;
+ 
+WinQueryPointerPos(HWND_DESKTOP, &amp;ptl);
+sprintf(szMsg, "x = %ld   y = %ld", ptl.x, ptl.y);
+WinMessageBox(HWND_DESKTOP,
+    hwndClient,                /* client-window handle  */
+    szMsg,                     /* body of the message   */
+    "Debugging information",   /* title of the message  */
+    0,                         /* message box id        */
+    MB_NOICON | MB_OK);        /* icon and button flags */
+ 
+<b>See Also</b>
+ 
+<b>WinFlashWindow, WM_HELP</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

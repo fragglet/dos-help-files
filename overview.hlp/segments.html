@@ -1,0 +1,313 @@
+<html>
+
+<head>
+<title>About Segments and Retained Graphics (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Segments and Retained Graphics (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Segments_and_Retained_Graphics.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#retained graphics functions 1.2'>Function Group</a><span class='grhilite'>►</span>                     <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='avio.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                    About Segments and Retained Graphics
+ 
+This topic describes retained graphics and graphics segments. You should
+also be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='device_contexts.html'>Presentation spaces and device contexts</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='coordinate_spaces.html'>Coordinate spaces and transformations</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='lines.html'>Line and arc primitives</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='mix_modes.html'>Color and mix modes</a><span class='grhilite'>►</span>
+ 
+There are two kinds of graphics output in MS OS/2: retained and nonretained.
+Most developers are familiar with the latter. When an application draws
+non-retained output by calling a graphics function, the output appears
+immediately on a video display. If part of the picture in the display is
+erased, or if part of the picture is repeated in another location on the
+display, the application calls the same graphics functions a second time.
+The fundamental drawback of non-retained graphics in drawing or
+computer-aided design (CAD) applications is obvious: These applications
+frequently draw pictures and parts of pictures repeatedly, so it is
+important that they be able to store the primitives used to draw the
+pictures. Using retained graphics, however, the developer can store graphics
+primitives and redraw their associated output as necessary. Rather than
+calling the individual graphics functions each time it is necessary to
+redraw the picture, the application can make a single call to display the
+retained graphics. In MS OS/2, applications store retained graphics in
+segments.
+ 
+<b>Segments, Elements, and Graphics Orders</b>
+ 
+A segment is a collection of elements, each element containing one or more
+graphics orders. A presentation space can have no more than 16,378 segments.
+A graphics order is a low-level graphics command that corresponds to a
+graphics function or an attribute function. There are four graphics-order
+sizes in MS OS/2:
+ 
+♦  1-byte orders
+♦  2-byte orders
+♦  Long orders (maximum length of 256 bytes)
+♦  Very long orders (maximum length of 64K bytes)
+ 
+A 1-byte order contains a hexadecimal identifier corresponding to a graphics
+function or an attribute function. A 2-byte order contains a hexadecimal
+identifier in the first byte and data in the second byte. The long and very
+long orders each contain a hexadecimal identifier that corresponds to a
+graphics-drawing or attribute function, a length value that specifies how
+many bytes are used by the graphics-order arguments, and the actual
+arguments. The following example shows a long graphics order that
+corresponds to the GpiLine function:
+ 
+81 8 100 0 0 0 100 0 0 0
+ 
+The first number, 81, is the hexadecimal identifier that corresponds to
+<b>GpiLine</b>. The second number, 8, is the length value that specifies how many
+bytes are used by the graphics-order arguments. The next eight bytes contain
+the arguments for GpiLine. In this case, these arguments specify the line's
+end point at (100,100).
+ 
+<b>Segments and Subpictures</b>
+ 
+In most cases, graphics orders in a segment correspond to a subpicture,
+which is part of a complete, more complex picture. For example, an
+architectural drafting application that draws the layout of a room could
+store the graphics orders for a desk in one segment, the graphics orders for
+a chair in another segment, the graphics orders for a plant in a third
+segment, and so on. Each of these segments contains a subpicture, which the
+application combines with other subpictures to form the complete room
+diagram.
+ 
+<b>Types of Segments</b>
+ 
+There are two types of segments: chained segments and called segments.
+ 
+MS OS/2 links chained segments together in a segment chain. Chained segments
+are sometimes called root segments. Each presentation space can contain only
+one segment chain. Applications use chains to generate complete pictures
+from subpictures. When MS OS/2 draws subpictures in a chain, it draws the
+subpicture for the first segment in the chain, followed by the subpicture
+for the second segment in the chain, and so on. Sometimes, it is necessary
+to alter the order in which the subpictures are drawn. You can do this by
+calling the GpiSetSegmentPriority function. You can also draw the entire
+chain, part of the chain, or a single segment in the chain by calling,
+respectively, the GpiDrawChain, GpiDrawFrom, or GpiDrawSegment function.
+ 
+A dynamic segment is a chained segment that possesses special properties.
+When MS OS/2 draws subpictures associated with dynamic segments, the XOR
+raster operation is set. An application can move the subpicture associated
+with a dynamic segment without destroying other subpictures in nondynamic
+segments. Applications draw dynamic segments by calling the GpiDrawDynamics
+function. Applications can remove the subpictures associated with dynamic
+segments by calling the GpiRemoveDynamics function.
+ 
+Called segments are not linked to the chain. Instead, applications draw them
+by calling the GpiCallSegmentMatrix function from within a chained segment
+or another called segment.
+ 
+<b>Segment Attributes</b>
+ 
+Segments, whether chained or called, have characteristics, called
+attributes, that you can set and change according to what your application
+needs. There are seven segment attributes, each described in the following
+list:
+ 
+<b>Attribute             Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Detectable</i>            If the detectable and visible attributes are set, your
+                      application can perform correlation operations on
+                      segments created in its presentation space.
+ 
+<i>Visible              </i> If the visible attribute is set, the GpiDrawChain,
+                      GpiDrawFrom, and GpiDrawSegment functions will
+                      generate output on a device.
+ 
+<i>Chained</i>               If the chained attribute is set, MS OS/2 adds each new
+                      segment in your application's presentation space to
+                      the segment chain.
+ 
+<i>Dynamic</i>               If the dynamic attribute is set, MS OS/2 draws segment
+                      output using the XOR raster operation.
+ 
+<i>Fast chain</i>            If the fast-chain attribute is set, MS OS/2 does not
+                      reset the primitive attributes to their default values
+                      before drawing the segment.
+ 
+<i>Propagate detectable</i>  If the propagate-detectable attribute is set, MS OS/2
+                      treats any called segments as though the detectable
+                      attribute were set for those segments.
+ 
+<i>Propagate visible</i>     If the propagate-visible attribute is set, MS OS/2
+                      treats any called segments as though the visible
+                      attribute were set for those segments.
+ 
+When an application creates a segment in a presentation space, MS OS/2
+assigns initial attributes to it. If you haven't altered the initial
+attributes with the GpiSetInitialSegmentAttrs function, five of the
+attributes will be set and two of the attributes will not be set. The
+following list describes which attributes are set and which are not:
+ 
+<b>Attribute             Default setting</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Detectable</i>            OFF
+<i>Visible</i>               ON
+<i>Chained</i>               ON
+<i>Dynamic</i>               OFF
+<i>Fast chain</i>            ON
+<i>Propagate detectable</i>  ON
+<i>Propagate visible</i>     ON
+ 
+You can retrieve the values of the current initial attributes by calling the
+<b>GpiQueryInitialSegmentAttrs</b> function.
+ 
+After you create a segment, you may need to alter its attributes. For
+example, if you created a segment using the default attributes and you want
+to perform a correlation operation on the subpicture in that segment, you'll
+need to set the detectable attribute by calling the GpiSetSegmentAttrs
+function. You can retrieve the values of the attributes for any segment by
+calling the GpiQuerySegmentAttrs function.
+ 
+<b>Storing Graphics Orders in Segments</b>
+ 
+There are three drawing modes that affect how MS OS/2 stores graphics orders
+in segments. These modes are described in the following list:
+ 
+<b>Drawing mode     Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Draw</i>             When the draw mode is set, it is not possible to store
+                 graphics orders in a chained segment.
+ 
+<i>Retain</i>           When the retain mode is set, your application can store
+                 graphics orders in chained and unchained segments.
+ 
+<i>Draw-and-retain</i>  When the draw-and-retain mode is set, your application can
+                 store graphics orders in chained and unchained segments. In
+                 this mode, output intended for a chained segment is both
+                 drawn on the device and stored in a segment.
+ 
+When you create a presentation space, the drawing mode is set to draw. You
+can set the drawing mode to retain or draw-and-retain by calling the
+<b>GpiSetDrawingMode</b> function. You can determine which drawing mode is set by
+calling the GpiQueryDrawingMode function.
+ 
+<b>Creating Segments</b>
+ 
+In MS OS/2, applications identify segments with long integer values greater
+than zero. You can determine which values have already been assigned to
+segments by calling the GpiQuerySegmentNames function. This function
+retrieves the current segment identifiers that your application is using.
+Once you determine which values are assigned, you can choose a new value for
+the segment you are about to create. The first function you should call
+after you choose a segment identifier is GpiOpenSegment, which defines the
+beginning of a segment bracket. A segment bracket is a collection of
+graphics-drawing and attribute functions that MS OS/2 converts into graphics
+orders and stores in the segment. The graphics orders in a segment are
+organized into elements, each containing one or more graphics orders. Once
+you have called the necessary primitives and attribute functions, you should
+close the segment bracket by calling the GpiCloseSegment function.
+ 
+<b>Destroying Segments</b>
+ 
+Once you are through drawing the subpicture associated with a segment, you
+should delete the segment by calling the GpiDeleteSegment function. If you
+are through drawing a number of subpictures in the segment chain, you can
+delete an entire range of segments by calling the GpiDeleteSegments
+function. In both cases, you use the segment identifiers to identify the
+segment or range of segments that are no longer useful.
+ 
+<b>Correlation</b>
+ 
+Correlation is the process of determining whether graphic output appears in
+a particular region, called a pick aperture, in your application's page
+space. The pick aperture is a rectangular region that you can use to isolate
+part or all of a subpicture or group of subpictures. To perform correlation
+operations, you must set the segment attributes to detectable and visible by
+calling the GpiSetSegmentAttrs function.
+ 
+If the drawing mode is retain or draw-and-retain, you can set the
+pick-aperture position by calling the GpiCorrelateSegment, GpiCorrelateFrom,
+or GpiCorrelateChain function. If the drawing mode is nonretained, you can
+set the pick-aperture position by calling the GpiSetPickAperturePosition
+function, retrieve the page-space coordinates of the center of the aperture
+by calling the GpiQueryPickAperturePosition function, increase or reduce the
+pick-aperture dimensions by calling the GpiSetPickApertureSize function, and
+determine the current pick-aperture dimensions by calling the
+<b>GpiQueryPickApertureSize</b> function. When you perform a correlation operation,
+MS OS/2 returns an array of long-integer pairs. The first value in the
+long-integer pair identifies a segment containing a subpicture that
+intersects the pick aperture. The second value in this pair identifies a
+tag. A tag identifies the specific primitives and associated graphics orders
+that intersect the pick aperture.
+ 
+If your application will perform correlation operations, you must assign
+tags by calling the GpiSetTag function. Typically, applications assign tags
+only to elements that correspond to primitives. You can determine the value
+of the last tag assigned to an element by calling the GpiQueryTag function.
+ 
+You can perform a correlation operation on the entire segment chain, part of
+the chain, or a single segment in the chain by calling, respectively, the
+<b>GpiCorrelateChain, GpiCorrelateFrom, or GpiCorrelateSegment function.</b>
+ 
+<b>Editing Segments</b>
+ 
+MS OS/2 provides segment-editing functions you can use to write applications
+that allow users to edit segments or elements in a segment. After performing
+a correlation operation using your application, a user may need to alter the
+elements that intersected the pick aperture. If your application takes
+advantage of the segment-editing capabilities, it should assign a label (in
+addition to a tag) to each element that corresponds to a graphics primitive
+in the segment. You assign a label, which is a long integer value, by
+calling the GpiLabel function. You can access elements in a segment with the
+element pointer by setting the element pointer so that it points to an
+element identified by a label. You can set the element pointer so that it
+points to an element identified by a label by calling the
+<b>GpiSetElementPointerAtLabel</b> function. You can also set the element pointer
+by adding or subtracting an offset from its current location by calling the
+<b>GpiOffsetElementPointer</b> function. Or you can set the element pointer by
+specifying an element number in the segment and calling the
+<b>GpiSetElementPointer</b> function. You can determine the current location of the
+element pointer by calling the GpiQueryElementPointer function.
+ 
+There are two edit modes in MS OS/2: insert mode and replace mode. You can
+set the edit modes by calling the GpiSetEditMode function, or you can
+determine which mode is currently set by calling the GpiQueryEditMode
+function. If the edit mode is set to insert, you can insert an element at
+the current location of the element pointer. MS OS/2 shifts the element that
+was previously at that location into the next slot, and so on, until the
+last element is shifted into a new, final slot.
+ 
+If replace mode is set, you can replace the element at the current pointer
+location with a new element.
+ 
+In addition to inserting and replacing elements in a segment, you can delete
+elements from a segment. You can delete a single element at the current
+element-pointer location by calling the GpiDeleteElement function. You can
+delete a range of elements in a segment by calling the
+<b>GpiDeleteElementRange</b> function, and you can delete a series of elements
+between two labels by calling the GpiDeleteElementsBetweenLabels function.
+ 
+You can copy elements from one segment to another or from one position in a
+segment to another position in the same segment by calling the GpiGetData
+and the GpiPutData functions. GpiGetData copies one or more graphics orders
+from one or more elements in a segment into a buffer of bytes. You can then
+copy the order from the buffer to a new location in a segment by calling
+<b>GpiPutData</b>. In addition to copying multiple elements from one segment to
+another, or from one segment to another location in the same segment, you
+can copy the graphics orders from a single element by calling the
+<b>GpiQueryElement and GpiElement functions. GpiQueryElement copies the</b>
+graphics orders from an element into an array of bytes. GpiElement copies
+the orders from the array back into a segment.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

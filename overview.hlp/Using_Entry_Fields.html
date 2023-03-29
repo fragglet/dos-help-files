@@ -1,0 +1,302 @@
+<html>
+
+<head>
+<title>Using Entry-Field Controls (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Entry-Field Controls (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Entry_Field_Controls.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Entry field messages'>Message Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#entry field styles'>Styles</a><span class='grhilite'>►</span>            <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Frame_Windows.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                         Using Entry-Field Controls
+ 
+Entry-field controls can be used in dialog windows and regular client
+windows. As part of a dialog window, the entry-field control is defined as
+part of the dialog template in the application resource file. In a client
+window, the application creates a window with the window class
+WC_ENTRYFIELD.
+ 
+Once created, the contents, font, and selection range of the entry-field
+control can be changed by sending appropriate messages to the entry-field
+control window. Entry-field controls hold up to 32 characters by default,
+but applications can expand or reduce this limit, depending on memory
+limits, once the control is created. Applications can query the current
+contents or the current selection in an entry-field control.
+ 
+Applications can also transfer text and data between the entry-field control
+and the system clipboard by using cut, copy, clear, and paste operations.
+This facility is useful for moving text from an entry-field control to
+another window or process.
+ 
+<b>Entry-Field Controls in a Dialog Window</b>
+ 
+Entry-field controls are typically used in dialog windows. The dialog window
+serves as the parent and owner window for the entry-field control. The
+application dialog procedure receives notification messages from entry-field
+controls. Generally, a dialog window includes a button that signals that the
+user wants to carry out an operation. The application ignores most
+notification messages from an entry-field control, allowing default text
+editing to occur. When the user selects the button that indicates an
+operation should begin, the application queries the contents of the
+entry-field control and proceeds with the operation.
+ 
+To include an entry-field control in a dialog window, include a definition
+for an entry-field control item in the dialog-template definition in the
+resource file. The definition sets up the initial text, window ID, size,
+position, and style of the entry-field control. The following is a sample
+dialog template containing an entry-field control:
+ 
+DLGTEMPLATE IDD_SAMPLE
+{
+DIALOG "Sample Dialog", 50, 7, 7, 253, 145, FS_DLGBORDER,0
+    {
+        DEFPUSHBUTTON "~Ok", DID_OK, 8, 151, 50, 23, WS_GROUP
+        ENTRYFIELD "Here is some text", ID_ED1, 42, 46, 68, 15,
+            ES_MARGIN | ES_AUTOSCROLL
+    }
+}
+ 
+Once created as part of a dialog window, the entry-field control sends
+notification messages to the dialog window. An application handles these
+messages in its dialog-window procedure.
+ 
+An application communicates with an entry-field control in a dialog window
+by sending messages to the entry-field control window. The handle of the
+entry-field control window is obtained by calling the WinWindowFromID
+function (using the dialog window as the parent window and the window ID for
+the entry-field control as defined in the dialog template).
+ 
+<b>Entry-Field Controls in a Client Window</b>
+ 
+To have an entry-field control in a non-dialog window, an application calls
+the WinCreateWindow function with the window class WC_ENTRYFIELD. An
+application client window owns the entry-field control. The client-window
+procedure receives notification messages from the entry-field control. The
+following code fragment shows how to create an entry-field control window in
+a client window:
+ 
+hwndEntryField = WinCreateWindow(hwndClient,   /* parent   */
+   WC_ENTRYFIELD,                              /* class    */
+   "initial text contents",                    /* text     */
+   WS_VISIBLE | ES_AUTOSCROLL | ES_MARGIN,     /* style    */
+   xPos, yPos,                                 /* x, y     */
+   xSize, ySize,                               /* cx, cy   */
+   hwndClient,                                 /* owner    */
+   HWND_TOP,                                   /* behind   */
+   hwndEntryField,                             /* win ID   */
+   pCtlData,                                   /* ctl data */
+   (PVOID) NULL);                              /* reserved */
+ 
+The entry-field control created in the preceding example has a 32-character
+default limit. An application can change this limit by sending an
+<b>EM_SETTEXTLIMIT</b> message to the control window. The limit can be set to a
+non-default value at creation by supplying a pointer to an ENTRYFDATA
+structure as the pCtlData parameter to the WinCreateWindow function.
+ 
+The chPictureMask field in ENTRYFDATA can be used to specify an edit mask
+for entered data.  If the ES_PICTUREMASK style is set, then this field will
+contain an edit mask consisting of the characters 'L' or space.  An 'L' in a
+specific character position in the edit mask means that the corresponding
+character position in the entry field is "locked".  Locked characters are
+displayed, but may not be changed or deleted. The cursor will skip over any
+locked characters. For example:
+ 
+editmask     'L   LL   L    '
+initial text '(   )    -    '
+user input   '1234567890'
+result       '(123) 456-7890'
+ 
+The other fields of the ENTRYFDATA structure can be set to specify the
+selection length and the first visible character at the left edge of the
+control window. Entry-field control attributes can also be changed by
+sending messages to the control after it is created. It is not necessary to
+provide this information in the ENTRYFDATA structure for creation to occur.
+ 
+<b>Responding to a Message from an Entry-Field Control</b>
+ 
+An entry-field control communicates with its owner by sending WM_CONTROL
+messages. These messages contain notification codes that specify the exact
+nature of the message. Typically, an application does not respond to
+notification messages from an entry-field control for default text-editing.
+For more specialized uses, an application uses notification messages to
+perform input filtering.
+ 
+For example, if an application has an entry-field control that is intended
+for entering a number, it can use the WM_CONTROL message with the EN_CHANGE
+notification code to check the contents after each new character is entered.
+This tells a user that an inappropriate character has been entered.
+ 
+On a deeper level, an application can use EN_SETFOCUS and EN_KILLFOCUS
+notification codes with the WM_CONTROL message to toggle the input filtering
+that occurs before the character messages are sent to the entry-field
+control. An application can use conditional code in its main-event loop to
+filter incoming WM_CHAR messages whenever the entry-field control has the
+focus. By intercepting WM_CHAR messages before they are dispatched using the
+<b>WinDispatchMsg</b> function, an application can prevent inappropriate characters
+from reaching the entry-field control. You might also want to apply special
+interpretation to certain keystrokes, such as the ENTER key, as long as the
+entry-field control has the focus.
+ 
+The application can also use the EM_SETREADONLY and EM_QUERYREADONLY
+messages to set or determine the read-only state of a field.  If the field
+is read-only, it may not be modified.
+ 
+The EM_SETINSERTMODE message can be used to toggle the insertion mode
+between overstrike and insert.
+ 
+<b>Changing the State of an Entry-Field Control</b>
+ 
+You can set or retrieve text in an entry-field control window by calling the
+<b>WinSetWindowText or WinQueryWindowText function.</b> To retrieve the text for
+the current selection, an application first calls the WinQueryWindowText
+function to retrieve the contents, and then sends an EM_QUERYSEL message to
+retrieve the offsets to the first and last character of the text selection.
+These offsets are used to retrieve selected text from the entire text.
+ 
+Edit fields containing numerical values can be set or queried by calling the
+<b>WinSetDlgItemShort or WinQueryDlgItemShort function an</b>d passing the
+entry-field ID and the parent window. The WinSetDlgItemShort function
+converts a signed or unsigned integer into a text string and sets the field
+text with it. The WinQueryDlgItemShort function converts the entry-field
+text to a signed or unsigned integer and returns the value in a specified
+variable.
+ 
+An application can set or query the selection range, although the
+entry-field control automatically handles selection changes in response to
+user input in keeping with the standard user-interface guidelines. However,
+it can be useful to have an application select the entire text prior to
+cutting or pasting to the system clipboard.
+ 
+<b>Communicating with the System Clipboard</b>
+ 
+Entry-field controls respond to messages designed to simplify transferring
+data to and from the system clipboard. These messages support the standard
+cut, copy, clear, and paste operations defined by the standard
+user-interface guidelines. All clipboard messages for entry-field controls
+use the CF_TEXT clipboard-data format. See the summary section at the end of
+this topic for a description of each message.
+ 
+<b>Default Entry-Field Behavior</b>
+ 
+This section describes all the messages specifically handled by the
+predefined entry-field control-window class.
+ 
+<b>Message               Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>WM_CREATE</i>             Validate the requested style and set the window text.
+ 
+<i>WM_DESTROY</i>            Free the memory used for the window text.
+ 
+<i>WM_BUTTON1DOWN</i>        Set the mouse capture and keyboard focus to the
+                      entry-field and prepare to track the mouse during
+                      WM_MOUSEMOVE messages.
+ 
+<i>WM_BUTTON1DBLCLK</i>      Set the mouse capture and keyboard focus to the
+                      entry-field and prepare to track the mouse during
+                      WM_MOUSEMOVE messages.
+ 
+<i>WM_BUTTON1UP</i>          Release the mouse capture.
+ 
+<i>WM_BUTTON2DOWN</i>        Return TRUE to prevent this message from being
+                      processed further.
+ 
+<i>WM_BUTTON3DOWN</i>        Return TRUE to prevent this message from being
+                      processed further.
+ 
+<i>WM_PAINT</i>              Draw the entry-field control and text.
+ 
+<i>WM_CHAR</i>               Handle key events according to the standard
+                      user-interface guidelines.
+ 
+<i>WM_SETSELECTION</i>       Invert the current selection range.
+ 
+<i>WM_SETFOCUS</i>           If gaining the focus, create a cursor and send to the
+                      owner window a WM_CONTROL message with the
+                      EN_SETFOCUS control code. If losing the focus, destroy
+                      the current cursor and send to the owner window a
+                      WM_CONTROL message with the EN_KILLFOCUS control
+                      code.
+ 
+<i>WM_QUERYDLGCODE</i>       Return the predefined DLGC_ENTRYFIELD constant.
+ 
+<i>WM_QUERYWINDOWPARAMS</i>  Return the requested window parameters.
+ 
+<i>WM_SETWINDOWPARAMS</i>    Set the specified window parameters, redraw the
+                      control, and send to the owner window a WM_CONTROL
+                      message with the EN_CHANGE control code.
+ 
+<i>WM_MOUSEMOVE</i>          If the mouse button is down, track the text selection.
+                      If the mouse button is up, set the mouse pointer to
+                      the default arrow shape.
+ 
+<i>WM_ENABLE</i>             Invalidate the entire entry-field control window,
+                      causing a WM_PAINT message to be sent to the control.
+ 
+<i>WM_TIMER</i>              Blink the insertion point if the control has the
+                      focus. Scroll the text, if necessary, while extending
+                      a selection to text not visible in the window.
+ 
+<i>WM_ADJUSTWINDOWPOS</i>    Change the rectangle for the control size to adjust
+                      for the margin if the control has the ES_MARGIN
+                      style.
+ 
+<i>EM_QUERYREADONLY</i>      Determine if an entry field is read-only
+ 
+<i>EM_SETREADONLY</i>        Set an entry field to read-only mode.
+ 
+<i>EM_SETINSERTMODE</i>      Toggle the insertion mode between insert and
+                      overstrike.
+ 
+<i>EM_QUERYFIRSTCHAR</i>     Return the offset to the first character visible at
+                      the left edge of the control window.
+ 
+<i>EM_SETFIRSTCHAR</i>       Scrolls the text so that the character at the
+                      specified offset is the first character visible at the
+                      left edge of the control window. Returns TRUE if
+                      successful, or FALSE if it is not.
+ 
+<i>EM_QUERYCHANGED</i>       Returns TRUE if the text has changed since the last
+                      EM_QUERYCHANGED message.
+ 
+<i>EM_QUERYSEL</i>           Returns a long word that contains the offsets for the
+                      first and last characters of the current selection in
+                      the control window.
+ 
+<i>EM_SETSEL</i>             Sets the current selection to the specified character
+                      offsets.
+ 
+<i>EM_SETTEXTLIMIT</i>       Allocates memory from the control heap for the
+                      specified maximum number of characters, returning TRUE
+                      if it is successful, FALSE if it is not. Failure
+                      causes a WM_CONTROL message with the EM_MEMERROR
+                      control code to be sent to the owner window.
+ 
+<i>EM_CUT</i>                Copies the current text selection to the system
+                      clipboard in CF_TEXT format and deletes the selection
+                      from the control window.
+ 
+<i>EM_COPY</i>               Copies the current text selection to the system
+                      clipboard in CF_TEXT format.
+ 
+<i>EM_CLEAR</i>              Deletes the current text selection from the control
+                      window.
+ 
+<i>EM_PASTE</i>              Copies the current contents of the system clipboard
+                      that have CF_TEXT format, replacing the current text
+                      selection in the control.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

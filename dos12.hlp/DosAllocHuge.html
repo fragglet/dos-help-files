@@ -1,0 +1,156 @@
+<html>
+
+<head>
+<title>DosAllocHuge (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosAllocHuge (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='memory.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#memory management 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80b9.html'>Changes</a><span class='grhilite'>►</span>         </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosAllocSeg.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMEMMGR
+ 
+USHORT DosAllocHuge(usNumSeg, usPartialSeg, psel, usMaxNumSeg, fsAttr)
+USHORT usNumSeg;        /* number of segments requested               */
+USHORT usPartialSeg;    /* number of bytes in last segment            */
+PSEL psel;              /* pointer to variable for selector allocated */
+USHORT usMaxNumSeg;     /* maximum number of segments to reallocate   */
+USHORT fsAttr;          /* shareable/discardable flags                */
+ 
+The DosAllocHuge function allocates a huge-memory block. This block consists
+of one or more 65,536-byte memory segments and one additional segment of a
+specified size.
+ 
+The DosAllocHuge function allocates the segments and copies the selector of
+the first segment to the variable pointed to by the psel parameter.
+Selectors for the remaining segments are consecutive and must be computed by
+using an offset from the first selector.
+ 
+The DosAllocHuge function can specify that segments can be shared by other
+processes. If the SEG_GETTABLE flag is used, other processes can gain access
+to the shared memory by calling the DosGetSeg function. If the SEG_GIVEABLE
+flag is used, the memory can be shared by other processes after the process
+allocating the memory has called the DosGiveSeg function. In both cases, the
+process allocating the memory must pass the selector to the process that
+will share the memory.
+ 
+The DosAllocHuge function is a family API function.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>usNumSeg</i>      Specifies the number of 65,536-byte segments to allocate.
+ 
+<i>usPartialSeg</i>  Specifies the number of bytes in the last segment. This number
+              can be any value in the range 0 through 65,535. If this value
+              is zero, no additional segment is allocated.
+ 
+<i>psel</i>          Points to the variable that receives the selector of the first
+              segment.
+ 
+<i>usMaxNumSeg</i>   Specifies the maximum number of segments that can be specified
+              in any subsequent call to the DosReallocHuge function. If this
+              number is zero, the memory cannot be reallocated to a size
+              greater than its original size, but it can be reallocated to a
+              smaller size.
+ 
+<i>fsAttr</i>        Specifies the segment attributes. This parameter can be one or
+              more of the following values:
+ 
+              Value            Meaning
+              ──────────────────────────────────────────────────────────────
+              SEG_DISCARDABLE  Creates a discardable, nonshareable segment.
+                               Once the segment is unlocked, it may be
+                               discarded to satisfy another
+                               memory-allocation request.
+ 
+              SEG_GETTABLE     Creates a shareable segment that other
+                               processes can retrieve by using the
+                               DosGetSeg function.
+ 
+              SEG_GIVEABLE     Creates a shareable segment that the owning
+                               process can give to other processes by using
+                               the DosGiveSeg function.
+ 
+              SEG_NONSHARED    Creates a nonshareable, nondiscardable
+                               segment. This value cannot be combined with
+                               any other value.
+ 
+              SEG_SIZEABLE     Specifies that a shared segment can be
+                               reduced in size by DosReallocSeg.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_NOT_ENOUGH_MEMORY
+ 
+<b>Comments</b>
+ 
+Each segment in the huge memory block has a unique selector. The selectors
+are consecutive. The psel parameter specifies the value of the first
+selector; the remaining selectors can be computed by adding an offset to the
+first selector one or more times──that is, once for the second selector,
+twice for the third, and so on. The selector offset is a multiple of 2, as
+specified by the shift count retrieved by using the DosGetHugeShift
+function. For example, if the shift count is 2, the selector offset is 4 (1
+&lt;&lt; 2). If the selector offset is 4 and the first selector is 6, then the
+second selector is 10, the third is 14, and so on.
+ 
+If necessary, the system will discard an unlocked discardable segment in
+order to satisfy another allocation request. The new allocation request can
+come from any process, including the process that allocated the segment
+being discarded.
+ 
+The DosFreeSeg function frees all segments when passed the first selector.
+If the segments were declared as shareable, they will not be discarded from
+memory until the last process using them calls DosFreeSeg.
+ 
+<b>DosAllocHuge</b> can be issued from ring 2, but the segments will be allocated
+as ring-3 segments.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restrictions apply to the DosAllocHuge
+function:
+ 
+♦  The usPartialSeg parameter is rounded up to the next paragraph (16-byte)
+   value.
+ 
+♦  The actual segment address is copied to the psel parameter.
+ 
+<b>Example</b>
+ 
+This example calls the DosAllocHuge function to allocate two segments with
+64K and one segment with 200 bytes. It then converts the first selector to a
+huge pointer that can access all the memory allocated.
+ 
+CHAR huge *pchBuffer;
+SEL sel;
+DosAllocHuge(2,               /* number of segments                */
+    200,                      /* size of last segment              */
+    &amp;sel,                     /* address of selector               */
+    5,                        /* maximum segments for reallocation */
+    SEG_NONSHARED);           /* sharing flag                      */
+pchBuffer = MAKEP(sel, 0);    /* converts selector to pointer      */
+ 
+<b>See Also</b>
+ 
+<b>DosAllocSeg, DosFreeSeg, DosGetHugeShift, DosGetSeg, DosGiveSeg, DosLockSeg,</b>
+<b>DosReallocHuge, DosUnlockSeg</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

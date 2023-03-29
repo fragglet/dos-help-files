@@ -1,0 +1,287 @@
+<html>
+
+<head>
+<title>About Color and Mix Modes (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Color and Mix Modes (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Color_and_Mix_Modes.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Color and Mix Mode functions 1.2'>Function Group</a><span class='grhilite'>►</span>              </i>       <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Using_Color_and_Mix_Modes.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                         About Color and Mix Modes
+ 
+This topic describes color and mix modes and their use in MS OS/2
+applications. You should also be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='device_contexts.html'>Presentation spaces and device contexts</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='lines.html'>Line and arc primitives</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='areas.html'>Area primitives</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='fonts.html'>Fonts and character primitives</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='markers.html'>Marker primitives</a><span class='grhilite'>►</span>
+ 
+Color and mix modes are two primitive attributes. The color attribute
+describes a line, arc, character, marker, area, or image color before it is
+combined with the color on the drawing surface. The mix-mode attribute
+describes how the system combines a primitive's color with the color of the
+drawing surface. Some primitives have foreground and background color
+attributes. For instance, the character primitive has a foreground color
+attribute that specifies the color of the character and a background color
+attribute that specifies the color surrounding the character. The primitives
+that have foreground and background attributes also have foreground and
+background mix modes.
+ 
+To understand color, it is important to understand several principles of
+color devices. Most color devices can generate three fundamental colors:
+red, green, and blue. On some devices, each of these three colors
+corresponds to a color plane──for example, a red pel is visible when a pel
+in the red plane is on and the corresponding pels in the green and blue
+planes are off. On other devices, there is only one color plane, and each
+pel contains a red, a green, and a blue section──for example, a red pel is
+visible when the red section of that pel is on and the green and blue
+sections are off. By combining the three fundamental colors, a device can
+obtain five additional colors, for a total of eight. These eight colors, and
+the combinations that produce them, are as follows:
+ 
+<b>Resulting color  Combined colors</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Black</i>            Red, green, and blue are off.
+<i>Red</i>              Red is on; green and blue are off.
+<i>Green</i>            Green is on; red and blue are off.
+<i>Blue</i>             Blue is on; red and green are off.
+<i>Pink</i>             Red and blue are on; green is off.
+<i>Cyan</i>             Blue and green are on; red is off.
+<i>Yellow</i>           Red and green are on; blue is off.
+<i>White</i>            Red, green, and blue are on.
+ 
+<b>Color and RGB Values</b>
+ 
+In MS OS/2, the red, green, and blue components of a color are either stored
+in an RGB structure or stored as a long integer (32-bit) value. The RGB
+structure has the following format:
+ 
+typedef struct _RGB {     /* rgb */
+    BYTE bBlue;
+    BYTE bGreen;
+    BYTE bRed;
+} RGB;
+ 
+The RGB value has the following format:
+ 
+0x00RRGGBB.
+ 
+Each field in the RGB structure and each of the last three bytes in the RGB
+value specify a color intensity, in the range 0 through 255, 0 being the
+lowest intensity, 255 the highest. If a field or byte contains 0, its
+corresponding color is not visible; if a field or byte contains 128, the
+color is pale; and if a field or byte contains 255, the color is as intense
+as the device allows. If all the fields or bytes are set to 0, the
+corresponding color is black. Similarly, if all the fields or bytes are set
+to 255, the corresponding color is white.
+ 
+The following list shows the RGB value associated with each of the eight
+fundamental colors:
+ 
+<b>Color   Associated RGB value</b>
+────────────────────────────────────────────────────────────────────────────
+<i>White</i>   0x00FFFFFF
+<i>Yellow</i>  0x00FFFF00
+<i>Pink</i>    0x00FF00FF
+<i>Cyan</i>    0x0000FFFF
+<i>Blue</i>    0x000000FF
+<i>Green</i>   0x0000FF00
+<i>Red</i>     0x00FF0000
+<i>Black</i>   0x00000000
+ 
+<b>Color Tables</b>
+ 
+A color table is an array of RGB values. There are two kinds of color
+tables: physical (used by device drivers) and logical (used by
+applications). The physical color table contains RGB values representing the
+available colors on a device. The logical color table contains RGB values
+representing the colors that an application would prefer to use. You can
+determine which colors are in the physical color table by calling the
+<b>GpiQueryRealColors</b> function. You can determine which colors are in the
+current logical color table by calling the GpiQueryLogColorTable function.
+ 
+The following list contains the index values and colors found in a logical
+color table:
+ 
+<b>Index  Color</b>
+────────────────────────────────────────────────────────────────────────────
+<i>0</i>      Device's background color (white)
+<i>1</i>      Blue
+<i>2</i>      Red
+<i>3</i>      Pink
+<i>4</i>      Green
+<i>5</i>      Cyan
+<i>6</i>      Yellow
+<i>7</i>      Neutral color (black)
+<i>8</i>      Dark gray
+<i>9</i>      Pale blue
+<i>10</i>     Pale red
+<i>11</i>     Pale pink
+<i>12</i>     Dark green
+<i>13</i>     Dark cyan
+<i>14</i>     Brown
+<i>15</i>     Pale gray
+ 
+The value you place in the color field of a primitive-attribute structure
+(by using GpiSetAttrs) is an index into the logical color table. When MS
+OS/2 draws the primitive, it searches the physical color table for a color
+that is the closest approximation to this color index. MS OS/2 then uses
+this approximate color to draw with.
+ 
+You can replace the default logical color table with a new color table by
+calling the GpiCreateLogColorTable function. You can also use this function
+to reset the logical color table to its original values. Either way, once
+you create a new logical color table (or reset it to its original values),
+it becomes part of the application's presentation space.
+ 
+For a given device, you can determine the maximum size of the logical color
+table by using the DevQueryCaps function. This function also returns the
+maximum number of distinct colors available on a particular device.
+ 
+<b>Color Output and Mix Modes</b>
+ 
+When an application draws a line, arc, character, marker, area, or image, MS
+OS/2 uses a mix mode to determine the color that appears on a video display,
+printer, or plotter. A mix mode is a bitwise operation on the color indices
+in a device's physical color table. For example, suppose an application has
+set the lColor field in the LINEBUNDLE structure to CLR_BLUE and the
+<b>usMixMode</b> field in the same structure to FM_OR. The current drawing-surface
+color is CLR_BACKGROUND. The CLR_BLUE entry corresponds to the color blue in
+both the presentation space's logical color table and the device's physical
+color table. The CLR_BACKGROUND entry corresponds to the color white in both
+the presentation space's logical color table and the device's physical color
+table. The index value for blue in the device's table is 0x0001, and the
+index value for white in the device's table is 0x0000. To determine the
+color of a line, MS OS/2 performs a bitwise OR operation on the two index
+values, as follows:
+ 
+      0x0001
+      0x0000
+      ------
+      0x0001  (Result of bitwise OR)
+ 
+In this case, the result is 0x0001, the index value for blue in the device's
+color table. This means that a blue line appears when the application calls
+the GpiLine or GpiPolyLine function.
+ 
+Some of the primitive bundles contain foreground and background colors and
+mix modes. For instance, the AREABUNDLE structure contains a foreground
+color that corresponds to the foreground color of the area fill pattern. The
+<b>AREABUNDLE</b> structure also contains a background color that corresponds to
+the background color that appears behind the area fill pattern. AREABUNDLE
+also contains foreground and background mix modes that specify bitwise
+operations on index values in the device's physical color table.
+ 
+There are 16 foreground mix modes. For each mix mode, the index value for
+the foreground and current drawing-surface colors (in the device's physical
+color table) are combined by using one of the bitwise operators. The
+different foreground mix modes are described in the following list:
+ 
+<b>Mix mode        Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>FM_AND</i>          Final color's index value is determined by a bitwise AND
+                operation on the foreground color's index value and the
+                drawing surface's index value.
+ 
+<i>FM_INVERT</i>       Final color's index value is always the inverse of the
+                drawing surface's index value.
+ 
+<i>FM_LEAVEALONE</i>   Final color's index value is that of the drawing-surface
+                color.
+ 
+<i>FM_MASKSRCNOT</i>   Final color's index value is determined by inverting the
+                drawing surface's index value and performing a bitwise AND
+                operation on this value and the foreground color's index
+                value.
+ 
+<i>FM_MERGENOTSRC</i>  Final color's index value is determined by performing a
+                bitwise AND operation on the drawing surface's index value
+                and the inverse of the foreground color's index value.
+ 
+<i>FM_MERGESRCNOT</i>  Final color's index value is determined by performing a
+                bitwise AND operation on the foreground color's index value
+                and the inverse of the drawing-surface color's index value.
+ 
+<i>FM_NOTCOPYSRC</i>   Final color's index value is the inverse of the foreground
+                color's index value.
+ 
+<i>FM_NOTMASKSRC</i>   Final color's index value is the inverse of the FM_AND
+                result.
+ 
+<i>FM_NOTMERGESRC</i>  Final color's index value is always the inverse of the FM_OR
+                result.
+ 
+<i>FM_NOTXORSRC</i>    Final color's index value is always the inverse of the
+                FM_XOR result.
+ 
+<i>FM_ONE</i>          Final color's index value is always 1.
+ 
+<i>FM_OR</i>           Final color's index value is determined by a bitwise OR
+                operation on the foreground color's index value and the
+                drawing surface's index value.
+ 
+<i>FM_OVERPAINT</i>    Final color's index value is that of the foreground color.
+ 
+<i>FM_SUBTRACT</i>     Final color's index value is determined by inverting the
+                foreground color's index value and performing a bitwise AND
+                operation on this value and the drawing surface's index
+                value.
+ 
+<i>FM_XOR</i>          Final color's index value is determined by a bitwise XOR
+                operation on the foreground color's index value and the
+                drawing surface's index value.
+ 
+<i>FM_ZERO</i>         Final color's index value is always zero.
+ 
+There are four background mix modes. For each mix mode, the index value for
+the background color and the current drawing-surface color (in the device's
+physical color table) are combined using one of the bitwise operators. The
+different background mix modes are described in the following list:
+ 
+<b>Mix mode       Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>BM_LEAVEALONE</i>  Final color's index value is that of the drawing-surface
+               color.
+ 
+<i>BM_OR</i>          Final color's index value is determined by a bitwise OR
+               operation on the background color's index value and the
+               drawing surface's index value.
+ 
+<i>BM_OVERPAINT</i>   Final color's index value is that of the background color.
+ 
+<i>BM_XOR</i>         Final color's index value is determined by a bitwise XOR
+               operation on the background color's index value and the
+               drawing surface's index value.
+ 
+<b>Dithering</b>
+ 
+If you request a color that isn't available in the physical color table, MS
+OS/2 obtains the closest match by a process called dithering. For example,
+if the physical color table does not contain a certain shade of gray, MS
+OS/2 can create what appears to be a gray by mixing black pels and white
+pels. Similarly, if the physical color table does not contain a light green
+color but does contain a yellow and a green, MS OS/2 can create what appears
+to be light green by mixing yellow pels and green pels.
+ 
+Dithering is especially important on monochrome devices. By combining
+various combinations of black pels with white pels, MS OS/2 can create
+numerous shades of gray.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

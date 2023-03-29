@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>GpiSetViewingLimits (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiSetViewingLimits (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Clipping_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Clipping 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L810d.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiSetViewingTransformMatrix.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPITRANSFORMS
+ 
+BOOL GpiSetViewingLimits(hps, prclLimits)
+HPS hps;              /* presentation-space handle                */
+PRECTL prclLimits;    /* address of structure with viewing limits */
+ 
+The GpiSetViewingLimits function sets the viewing limits. The viewing limits
+specify a rectangle in model space that the system uses to clip output. The
+viewing limits include all points inside the rectangle and all points on the
+left and bottom edges, but do not include points on the right and top edges.
+Points on these edges are clipped.
+ 
+The GpiSetViewingLimits function can be used in a segment to set the viewing
+limits for subsequent primitives in the segment. The viewing limits also
+apply to any called segments, unless the called segment itself sets the
+viewing limits.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>         Identifies the presentation space.
+ 
+<i>prclLimits  Points to the RECT</i>L structure that contains the coordinates of
+            the viewing limits.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_COORDINATE
+     PMERR_INV_HPS
+     PMERR_INV_VIEWING_LIMITS
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+Unless the segments in the picture chain have the fast-chaining attribute,
+the system resets the default viewing limits when each segment in the chain
+is drawn. The default viewing limits include all model space──that is,
+nothing is clipped.
+ 
+The segment and model transformations do not affect the viewing limits, but
+the viewing limits are affected by the current viewing and default viewing
+transformations.
+ 
+If either the left boundary is greater than the right or the bottom boundary
+is greater than the top, a null rectangle is defined, and all points are
+clipped.
+ 
+<b>See Also</b>
+ 
+<b>GpiQueryViewingLimits, GpiSetAttrMode, RECTL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

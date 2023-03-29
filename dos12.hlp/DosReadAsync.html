@@ -1,0 +1,155 @@
+<html>
+
+<head>
+<title>DosReadAsync (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosReadAsync (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80d3.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosReadQueue.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosReadAsync(hf, hsemRam, pusErrCode, pvBuf, cbBuf,
+    pcbBytesRead)
+HFILE hf;                /* file handle                                  */
+PULONG hsemRam;          /* pointer to RAM semaphore                     */
+PUSHORT pusErrCode;      /* pointer to variable for error return code    */
+PVOID pvBuf;             /* pointer to input buffer                      */
+USHORT cbBuf;            /* length of input buffer                       */
+PUSHORT pcbBytesRead;    /* pointer to variable for number of bytes read */
+ 
+The DosReadAsync function reads one or more bytes of data from the file
+identified by the hf parameter. The function reads the data asynchronously;
+that is, the function returns immediately to the process that called it but
+continues to copy data to the specified buffer while the process continues.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hf</i>            Identifies the file to be read. This handle must have been
+              previously opened by using the DosOpen function.
+ 
+<i>hsemRam</i>       Points to the RAM semaphore that indicates when the function
+              has finished reading the data.
+ 
+<i>pusErrCode</i>    Points to the variable that receives any error code the
+              function generates while reading data. The possible error
+              codes are identical to those returned by the DosRead
+              function.
+ 
+<i>pvBuf</i>         Points to the buffer that receives the data being read.
+ 
+<i>cbBuf</i>         Specifies the number of bytes to be read from the file
+              identified by the hf parameter.
+ 
+<i>pcbBytesRead</i>  Points to the variable that receives the number of bytes read
+              from the file.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_ACCESS_DENIED
+     ERROR_BROKEN_PIPE
+     ERROR_INVALID_HANDLE
+     ERROR_LOCK_VIOLATION
+     ERROR_NO_PROC_SLOTS
+     ERROR_NOT_DOS_DISK
+ 
+<b>Comments</b>
+ 
+The DosReadAsync function reads up to the number of bytes specified in the
+<i>cbBuf</i> parameter, but it may read fewer if it reaches the end of the file. In
+any case, the function copies the number of bytes read to the variable
+pointed to by the pcbBytesRead parameter. The pcbBytesRead parameter is zero
+if all the bytes in the file have been read (that is, the end of file has
+been reached).
+ 
+If the process intends to use the RAM semaphore pointed to by the hsemRam
+parameter to determine when data is available, it must set the semaphore by
+using the DosSemSet function before calling DosReadAsync. When DosReadAsync
+has read the data, it clears the RAM semaphore.
+ 
+The DosReadAsync function carries out the asynchronous operation by creating
+a new thread that reads from the specified file. The function terminates the
+thread when the operation is complete or when an error occurs.
+ 
+When DosReadAsync is used to read a byte pipe, the pipe must be in byte-read
+mode; an error is returned if the pipe is in message-read mode. All
+currently available data, up to the size requested, is returned.
+ 
+For a message pipe in message-read mode, a read operation that is larger
+than the next available message returns only that message; pcbBytesRead is
+set to indicate the size of the message returned. A read operation that is
+smaller than the next available message returns with the number of bytes
+requested and an ERROR_MORE_DATA error code. Subsequent DosReadAsync calls
+will continue reading the message. DosPeekNmPipe may be used to determine
+how many bytes are left in the message.
+ 
+For a message pipe in byte-read mode, DosReadAsync reads the pipe as if it
+were a byte stream, skipping over message headers. This is the same as
+reading a byte pipe in byte mode.
+ 
+When blocking mode is set, a read operation blocks until data is available.
+In this case, the read operation will not return with the pcbBytesRead
+parameter equal to zero except when it has read an end-of-file (EOF)
+character. Note that in message-read mode, messages are always read
+entirely, except in the case where the message is larger than the size
+specified for the read operation.
+ 
+When nonblocking mode is set, a read operation returns with pcbBytesRead
+equal to zero upon reading the EOF character. An error will be returned if
+there is no data available.
+ 
+When resuming reading a message after an ERROR_MORE_DATA message, the read
+operation always blocks until the next part of the message can be
+transferred. When nonblocking mode is set, the read operation can return
+with pcbByteRead equal to zero if, upon attempting to read at the start of a
+message, it determines that no message is available.
+ 
+<b>Example</b>
+ 
+This example opens the file abc, sets a RAM semaphore, and calls the
+<b>DosReadAsync</b> function to read part of the file. While the file is being
+read, program execution continues until the call to the DosSemWait function,
+which does not return until the DosReadAsync thread completes its work.
+ 
+BYTE abBuf[512];
+ULONG hReadSemaphore = 0;
+HFILE hf;
+USHORT usAction, cbBytesRead;
+USHORT usReadReturn;
+DosOpen("abc", &amp;hf, &amp;usAction, 0L, FILE_NORMAL, FILE_OPEN,
+    OPEN_ACCESS_READONLY | OPEN_SHARE_DENYNONE, 0L);
+DosSemSet(&amp;hReadSemaphore);     /* sets RAM semaphore           */
+DosReadAsync(hf,                /* handle to file               */
+    &amp;hReadSemaphore,            /* address of semaphore         */
+    &amp;usReadReturn,              /* address to store return code */
+    abBuf,                      /* address of buffer            */
+    sizeof(abBuf),              /* size of buffer               */
+    &amp;cbBytesRead);              /* number of bytes read         */
+    .
+    . /* Other processing occurs here. */
+    .
+DosSemWait(&amp;hReadSemaphore, -1L);
+ 
+<b>See Also</b>
+ 
+<b>DosOpen, DosPeekNmPipe, DosRead, DosSemSet, DosSemWait, DosWriteAsync</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

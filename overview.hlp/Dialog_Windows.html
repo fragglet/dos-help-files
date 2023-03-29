@@ -1,0 +1,240 @@
+<html>
+
+<head>
+<title>About Dialog Windows (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Dialog Windows (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Dialog_Windows.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Dialog and message box functions 1.2'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#dialog box messages'>Message Group</a><span class='grhilite'>►</span>    <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Drawing_in_Windows.html'>Next</a></i><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                            About Dialog Windows
+ 
+This topic describes creating and using dialog windows and message boxes in
+your applications. You should also be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='unknown#rc.exe'>MS OS/2 Resource Compiler</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Control_Windows.html'>Control windows</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Messages_and_Message_Queues.html'>Messages and message queues</a><span class='grhilite'>►</span>
+ 
+A dialog window (also called a dialog box or a dialog) is a window that
+contains one or more child control windows and is typically used to display
+messages to and gather input from the user. It is often a temporary window
+that an application creates to gather specific input, destroying the window
+immediately after use.
+ 
+Dialog windows provide a high-level method for applications to display and
+gather information. MS OS/2 contains many functions and messages that help
+manage the control windows that make up a dialog window, thus easing the
+burden of maintaining complex input and output systems.
+ 
+<b>Modal and Modeless Dialog Windows</b>
+ 
+Dialog windows can be modal or modeless. A modal dialog window requires that
+the dialog window be dismissed before the user can activate other windows in
+the same application. Generally, an application uses a modal dialog window
+to get essential information from the user before proceeding with an
+operation. A modeless dialog window allows the user to activate other
+windows without dismissing the dialog window.
+ 
+Both modal and modeless dialog windows allow the user to activate windows in
+another application before responding to the dialog window.
+ 
+Modal dialog windows are simpler for an application to manage because they
+are created, perform their task, and close, all in a single function call.
+ 
+Modeless dialog windows require more attention from the application because
+they exist until explicitly dismissed. Modeless dialog windows provide a
+more flexible interface, however, by allowing the user to move to other
+windows in the application before responding to the dialog window.
+ 
+<b>Dialog Items</b>
+ 
+A dialog item is a child window of the dialog window. The dialog window is
+usually a window of class WC_FRAME. MS OS/2 provides many predefined window
+classes, called control windows, that are used as dialog items. Predefined
+control windows include static display boxes, text-entry fields, buttons,
+and list boxes. Customized window classes can also be used as dialog items.
+ 
+Because dialog items are windows, they can be manipulated by all
+window-management functions relating to size, position, and visibility.
+Dialog items are always owned by the dialog frame window. Most predefined
+control-window classes send notification messages to their owners when the
+user interacts with their control windows. The dialog frame window receives
+these notification messages and passes them on to the application through
+the application-defined dialog procedure.
+ 
+<b>Dialog-Control Groups</b>
+ 
+Items within a dialog window can be organized into groups. When items are
+arranged in a group, the user can move from one item to another in the same
+group by using the ARROW keys. When the user presses an ARROW key, the focus
+moves from one item in a group to the next item of the same group, but not
+to items of other groups within the dialog window.
+ 
+Arranging items in groups is useful for radio buttons. Although other
+control types can also be displayed this way, entry-field controls cannot;
+they process ARROW keys themselves.
+ 
+The first item in a dialog-control group has the WS_GROUP window style. All
+subsequent items in the dialog template are considered part of that group
+until another item is given the WS_GROUP style, which begins a new group.
+ 
+The WS_TABSTOP style is often used along with the WS_GROUP style. This style
+marks the items that can receive the focus when the user presses the TAB
+key. Each time the user presses the TAB key, the focus moves to the next
+item that has the WS_TABSTOP style. Generally, the WS_GROUP and WS_TABSTOP
+styles are defined together for the first item of each group in the dialog
+template. This makes it possible for a user to press the TAB key to move
+<i>between</i> groups of items and to use the ARROW keys to move between items
+<i>within</i> a group.
+ 
+The WS_TABSTOP style should not be used for radio buttons because the system
+automatically maintains a tabstop on any selected item in a radio-button
+group; the focus will always be on the currently selected item when pressing
+the TAB key in a group of radio buttons.
+ 
+The WS_GROUP and WS_TABSTOP styles are also useful for preventing the user
+from moving to a particular button when using the keyboard. For example, if
+the dialog window has an OK and a Cancel button, you should put them in the
+same group, with the OK button as the first item in the group. The user can
+press the TAB key to select the OK button, but not the Cancel button. To
+move to the Cancel button by using the keyboard, the user must first press
+the TAB key to move to the OK button, and then press an ARROW key to move
+the focus to the Cancel button.
+ 
+<b>Message Boxes</b>
+ 
+Message boxes are dialog windows predefined by the system and used as a
+simple interface for applications without creating dialog-template resources
+or dialog procedures. An application can call the WinMessageBox function and
+specify the type of message box and message text. The system displays the
+message and waits for the user to dismiss the message box by selecting a
+button in the message box. The system then returns a result code to the
+application, indicating which button the user selected.
+ 
+Message boxes are best for short notification messages that require a simple
+acknowledgment or choice by the user. Applications do not specify a dialog
+procedure for message boxes, so they cannot readily change the action of a
+message box. There are many predefined message-box styles.
+ 
+Message boxes can be application-modal or system-modal. Application-modal
+means that the user cannot activate another window in the current
+application before responding to the message box, but can switch to another
+application before responding. System-modal means that the user cannot
+activate another window in any application while the message box is present.
+A system-modal message box should be used only to display urgent error
+messages (running out of memory, for example).
+ 
+<b>Dialog Data Structures</b>
+ 
+A dialog-window item is a control window that is owned by the dialog window.
+Each dialog-window item is described by a DLGTITEM data structure. The
+<b>DLGTITEM</b> structure is rarely accessed directly by an application. Most
+manipulation of dialog items is handled by system functions. Applications
+that create dialog items that are not defined as part of a dialog-template
+resource must create dialog-window-item structures in memory. The format of
+a DLGTITEM structure is as follows:
+ 
+typedef struct _DLGTITEM {
+    USHORT    fsItemStatus;
+    USHORT    cChildren;
+    USHORT    cchClassName;
+    USHORT    offClassName;
+    USHORT    cchText;
+    USHORT    offText;
+    ULONG     flStyle;
+    SHORT     x;
+    SHORT     y;
+    SHORT     cx;
+    SHORT     cy;
+    USHORT    id;
+    USHORT    offPresParams;
+    USHORT    offCtlData;
+} DLGTITEM;
+ 
+Because a dialog window can have many items, a DLGTEMPLATE data structure
+consists of header information followed by an array of dialog-window items.
+Applications that create dialog windows without using dialog resources must
+create a dialog template in memory and then call the WinCreateDlg function.
+The format of a DLGTEMPLATE structure is as follows:
+ 
+typedef struct _DLGTEMPLATE {
+    USHORT      cbTemplate;
+    USHORT      type;
+    USHORT      codepage;
+    USHORT      offadlgti;
+    USHORT      fsTemplateStatus;
+    USHORT      iItemFocus;
+    USHORT      coffPresParams;
+    DLGTITEM    adlgti[1];
+} DLGTEMPLATE;
+ 
+<b>Dialog Coordinates</b>
+ 
+Coordinates in a dialog template are specified in dialog coordinates and are
+based on the size of the system font. A horizontal unit is one-fourth of the
+system-font-character average width; a vertical unit is one-eighth of the
+system-font-character average height. The origin of the dialog template is
+the lower-left corner of the dialog window. MS OS/2 provides the
+<b>WinMapDlgPoints</b> function for converting dialog coordinates into window
+coordinates.
+ 
+<b>Dialog Resources</b>
+ 
+Most applications define dialog templates in resource files rather than
+constructing template data structures in memory at run time. The
+dialog-resource file defines the size and style of the dialog-window frame
+and specifies each control item.
+ 
+The following source-code fragment creates a dialog template. Notice that
+the WS_GROUP and WS_TABSTOP style designations are given for the first item
+in each group. The dimensions and position for each item are given in dialog
+coordinates rather than in window coordinates.
+ 
+DLGTEMPLATE IDD_ABOUT
+BEGIN
+  DIALOG "", IDD_ABOUT2, 10, 10, 150, 110, FS_DLGBORDER, 0
+  BEGIN
+    CONTROL "Attributes:",100,
+      10, 30, 100, 70,
+      WC_STATIC,
+      SS_GROUPBOX | WS_VISIBLE
+    CONTROL "Highlighted",101,
+      20, 80, 58, 12,
+      WC_BUTTON,
+      WS_GROUP | WS_TABSTOP | BS_AUTOCHECKBOX | WS_VISIBLE
+    CONTROL "Enabled",102,
+      20, 60, 58, 12,
+      WC_BUTTON,
+      BS_AUTOCHECKBOX | WS_VISIBLE
+    CONTROL "Checked",103,
+      20, 40, 58, 12,
+      WC_BUTTON,
+      BS_AUTOCHECKBOX | WS_VISIBLE
+    CONTROL "Okay", DID_OK,
+      10, 10, 50, 14,
+      WC_BUTTON,
+      WS_GROUP | WS_TABSTOP | BS_PUSHBUTTON | BS_DEFAULT | WS_VISIBLE
+    CONTROL "Cancel", DID_CANCEL,
+      80, 10, 50, 14,
+      WC_BUTTON,
+      BS_PUSHBUTTON | WS_VISIBLE
+  END
+END
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

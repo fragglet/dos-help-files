@@ -1,0 +1,198 @@
+<html>
+
+<head>
+<title>KbdRegister (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> KbdRegister (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Keyboard 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L8018.html'>Changes</a><span class='grhilite'>►</span>                </i>                 <span class='grhilite'>◄</span><a href='kbd.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='KbdSetCp.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_KBD
+ 
+USHORT KbdRegister(pszModuleName, pszEntryName, fFunctions)
+PSZ pszModuleName;    /* pointer to string for module name      */
+PSZ pszEntryName;     /* pointer to string for entry-point name */
+ULONG fFunctions;     /* function flags                         */
+ 
+The KbdRegister function registers a Kbd subsystem for the specified logical
+keyboard. The function temporarily replaces the specified default Kbd
+functions with the functions in the specified module. Once KbdRegister
+replaces a function, MS OS/2 passes any subsequent call to the replaced
+function to a function in the given module. If a function is not replaced,
+MS OS/2 continues to call the default Kbd function.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pszModuleName</i>  Points to the null-terminated string that contains the name
+               of the dynamic-link module that specifies the replacement
+               Kbd functions. The string must be a valid filename.
+ 
+<i>pszEntryName</i>   Points to the null-terminated string that contains the name
+               of the dynamic-link entry-point function. For a full
+               description, see the following "Comments" section.
+ 
+<i>fFunctions</i>     Specifies the flags for the functions to be replaced. This
+               parameter can be any combination of the following values:
+ 
+               Value              Meaning
+               ─────────────────────────────────────────────────────────────
+               KR_KBDCHARIN       Replace KbdCharIn.
+ 
+               KR_KBDPEEK         Replace KbdPeek.
+ 
+               KR_KBDFLUSHBUFFER  Replace KbdFlushBuffer.
+ 
+               KR_KBDGETSTATUS    Replace KbdGetStatus.
+ 
+               KR_KBDSETSTATUS    Replace KbdSetStatus.
+ 
+               KR_KBDSTRINGIN     Replace KbdStringIn.
+ 
+               KR_KBDOPEN         Replace KbdOpen.
+ 
+               KR_KBDCLOSE        Replace KbdClose.
+ 
+               KR_KBDGETFOCUS     Replace KbdGetFocus.
+ 
+               KR_KBDFREEFOCUS    Replace KbdFreeFocus.
+ 
+               KR_KBDGETCP        Replace KbdGetCp.
+ 
+               KR_KBDSETCP        Replace KbdSetCp.
+ 
+               KR_KBDXLATE        Replace KbdXlate.
+ 
+               KR_KBDSETCUSTXT    Replace KbdSetCustXt.
+ 
+               KR_KBDGETHWID      Replace KbdGetHWID.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_KBD_INVALID_ASCIIZ
+     ERROR_KBD_INVALID_MASK
+     ERROR_KBD_REGISTER
+ 
+<b>Comments</b>
+ 
+MS OS/2 passes a Kbd function to the given module by preparing the stack and
+calling the function pointed to by the pszEntryName parameter. The specified
+module must export the entry-point function name. The entry-point function
+must check the function code on the stack to determine which function is
+being requested and then pass control to the appropriate function in the
+module. The entry-point function can then access any additional parameters
+placed on the stack by the original call to KbdRegister.
+ 
+Only one process in a screen group can use the KbdRegister function at any
+given time. That is, only one process can replace Kbd functions at any given
+time. The process can restore the default Kbd functions by calling the
+<b>KbdDeRegister function. A process can r</b>eplace Kbd functions any number of
+times, but only by first restoring the default functions and then
+reregistering the new functions.
+ 
+The entry-point function (FuncName) must have the following form:
+ 
+<b>SHORT FAR FuncName(selDataSeg, usReserved1, fFunction,</b>
+    ulReserved2, usParam1, usParam2, usParam3, usParam4,
+    usParam5, usParam6)
+<b>SEL selDataS</b>eg;
+<b>USHORT usReserved1;</b>
+<b>USHORT fFunction;</b>
+<b>ULONG ulReserved2;</b>
+<b>USHORT usParam1;</b>
+<b>USHORT usParam2;</b>
+<b>USHORT usParam3;</b>
+<b>USHORT usParam4;</b>
+<b>USHORT usParam5;</b>
+<b>USHORT usParam6;</b>
+ 
+<b>Parameters         Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>selDataSeg</i>         Specifies the data-segment selector of the process that
+                   calls the specified Kbd function.
+ 
+<i>usReserved1</i>        Specifies a reserved value that must not be changed. This
+                   value represents a return address for the MS OS/2
+                   function that routes Kbd function calls.
+ 
+<i>fFunction</i>          Specifies the function code of the function request. This
+                   parameter can be one of the following values:
+ 
+                   Value   Meaning
+                   ─────────────────────────────────────────────────────────
+                   0x0000  KbdCharIn called.
+ 
+                   0x0001  KbdPeek called.
+ 
+                   0x0002  KbdFlushBuffer called.
+ 
+                   0x0003  KbdGetStatus called.
+ 
+                   0x0004  KbdSetStatus called.
+ 
+                   0x0005  KbdStringIn called.
+ 
+                   0x0006  KbdOpen called.
+ 
+                   0x0007  KbdClose called.
+ 
+                   0x0008  KbdGetFocus called.
+ 
+                   0x0009  KbdFreeFocus called.
+ 
+                   0x000A  KbdGetCp called.
+ 
+                   0x000B  KbdSetCp called.
+ 
+                   0x000C  KbdXlate called.
+ 
+                   0x000D  KbdSetCustXt called.
+ 
+                   0x000E  KbdGetHWID called.
+ 
+<i>ulReserved2</i>        Specifies a reserved value that must not be changed. This
+                   value represents the return address of the program that
+                   calls the specified Kbd function.
+ 
+<i>usParam1-usParam6</i>  Specify up to six unsigned values passed with the call to
+                   the Kbd function. The number and type of parameters used
+                   depend on the specific function.
+ 
+The entry-point function should determine which function is requested and
+then carry out an appropriate action by using the passed parameters. If
+necessary, the entry-point function can call a function within the same
+module to carry out the task. The entry-point or replacement function must
+leave the stack in the same state as it was received because the return
+addresses on the stack must be available in the correct order to return
+control to the program that originally called the KbdRegister function.
+ 
+The registered function should return -1 to call the original function, 0 if
+no error occurred, or an error value.
+ 
+In general, to access the keyboard the replacement function must use the
+input-and-output control functions for the keyboard.
+ 
+The KbdRegister function itself cannot be replaced.
+ 
+<b>See Also</b>
+ 
+<b>KbdDeRegister, KbdFlushBuffer</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

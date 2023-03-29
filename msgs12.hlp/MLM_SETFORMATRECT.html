@@ -1,0 +1,103 @@
+<html>
+
+<head>
+<title>MLM_SETFORMATRECT (1.2) - msgs12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msgs12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MLM_SETFORMATRECT (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='mle.html'>Message Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#MLE controls 1.2'>Overview</a><span class='grhilite'>►</span>            </i>               <span class='grhilite'>◄</span><a href='messages.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MLM_SETIMPORTEXPORT.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMLE
+ 
+<b>MLM_SETFORMATRECT</b>
+mp1 = MPFROMP((PMLEFORMATRECT) pmlefrmrcl); /* point to format rect. */
+mp2 = MPFROMLONG((ULONG) flOptions);        /* options               */
+ 
+An application sends an MLM_SETFORMATRECT message to set a format rectangle
+in a multiple-line entry field (MLE). The format rectangle can be used to
+limit the insertion of text within the MLE window.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<i>pmlefrmrcl  Low and high word of mp1. Points to th</i>e MLEFORMATRECT structure
+            that contains the format-rectangle dimensions. If this parameter
+            is NULL, the current MLE-window dimensions (minus the border or
+            scroll bars) is used.
+ 
+<i>flOptions   Low and high wo</i>rd of mp2. Specifies how the format rectangle is
+            to be used. A value of zero causes the MLE to remove any format
+            rectangle and to ignore the pmlefrmrcl parameter. Otherwise,
+            this parameter can be a combination of the following values:
+ 
+            Value                   Meaning
+            ────────────────────────────────────────────────────────────────
+            MLFFMTRECT_LIMITHORZ    Specifies that the text within the MLE
+                                    cannot exceed the horizontal dimension
+                                    specified by the pmlefrmrcl parameter.
+                                    If word-wrap mode is turned on before
+                                    the format rectangle is set, lines
+                                    automatically wrap to stay within the
+                                    horizontal limit of the format
+                                    rectangle. If word-wrap mode is turned
+                                    off before the format rectangle is set,
+                                    an MLN_PIXHORZOVERFLOW notification
+                                    message is sent to the application
+                                    whenever an operation would exceed the
+                                    horizontal limit specified in the format
+                                    rectangle.
+ 
+            MLFFMTRECT_LIMITVERT    Specifies that the text within the MLE
+                                    cannot exceed the vertical dimension
+                                    specified by the pmlefrmrcl parameter.
+                                    When an MLE operation would cause text
+                                    to exceed the vertical limit, an
+                                    MLN_PIXVERTOVERFLOW notification message
+                                    is sent to the application.
+ 
+            MLFFMTRECT_MATCHWINDOW  Specifies that the format rectangle is
+                                    to be kept the same size as the MLE
+                                    window (minus the border or scroll
+                                    bars).
+ 
+            MLFFMTRECT_FORMATRECT   Specifies that the format rectangle is
+                                    to be kept the same size as the MLE
+                                    window (minus the border or scroll bars)
+                                    and that text cannot exceed the size of
+                                    the window. This value is equivalent to
+                                    combining the MLFFMTRECT_LIMITHORZ,
+                                    MLFFMTRECT_LIMITVERT, and
+                                    MLFFMTRECT_MATCHWINDOW values.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the text fits within the new format-rectangle
+dimensions. Otherwise, it is FALSE, indicating that the text does not fit
+and that the format rectangle is not set.
+ 
+<b>Comments</b>
+ 
+Whenever an insertion would cause the text to be too long for the MLE, the
+<b>MLN_PIXVERTOVERFLOW or MLN_PIXHORZOVERFLOW notification m</b>essage is sent.
+ 
+<b>See Also</b>
+ 
+<b>MLM_QUERYFORMATRECT, MLN_PIXHORZOVERFLOW, MLN_PIXVERTOVERFLOW, WM_CONTROL,</b>
+<b>MLEFORMATRECT</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

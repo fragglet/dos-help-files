@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>DosOpenSem (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosOpenSem (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='semaphores.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Interprocess Communication 1.2'>Overview</a><span class='grhilite'>►</span>                  </i>        <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosPeekNmPipe.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSSEMAPHORES
+ 
+USHORT DosOpenSem(phsem, pszSemName)
+PHSEM phsem;       /* pointer to variable for semaphore handle */
+PSZ pszSemName;    /* pointer to semaphore name                */
+ 
+The DosOpenSem function opens a system semaphore of the specified name and
+returns a unique semaphore handle. The semaphore handle can then be used to
+set and clear the semaphore and to carry out other tasks that use the
+semaphore.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>phsem</i>       Points to the variable that receives the new semaphore handle.
+ 
+<i>pszSemName</i>  Points to the null-terminated string that identifies the
+            semaphore. The string must have the following form:
+ 
+            \sem\name
+ 
+            The string name, name, must have the same format as an MS OS/2
+            filename and must identify a semaphore that has been created
+            previously by using the DosCreateSem function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_INVALID_NAME
+     ERROR_SEM_NOT_FOUND
+     ERROR_TOO_MANY_SEMAPHORES
+ 
+<b>Comments</b>
+ 
+The DosOpenSem function only returns the handle of the semaphore; it does
+not test or change the value of the semaphore. The semaphore handle is the
+same as the semaphore handle returned by the DosCreateSem function that
+created the semaphore.
+ 
+If a process creates a child process by using the DosExecPgm function, the
+new process inherits any open semaphore handles.
+ 
+Under MS OS/2, system semaphores reside in a memory buffer rather than a
+disk file. When the last process with an open semaphore terminates, that
+semaphore is closed and is no longer available to any other process.
+ 
+<b>Example</b>
+ 
+This example calls the DosOpenSem function to open a system semaphore that
+had been created previously:
+ 
+HSEM hsem;                               /* handle to semaphore  */
+DosOpenSem(&amp;hsem, "\\sem\\abc.ext");     /* opens the semaphore  */
+    .
+    .
+    .
+DosCloseSem(hsem);                       /* closes the semaphore */
+ 
+<b>See Also</b>
+ 
+<b>DosCloseSem, DosCreateSem, DosExecPgm, DosSemClear, DosSemRequest</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

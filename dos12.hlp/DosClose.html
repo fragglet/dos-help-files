@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>DosClose (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosClose (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosCloseQueue.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosClose(hf)
+HFILE hf;    /* file handle */
+ 
+The DosClose function closes a specified file or pipe.
+ 
+The DosClose function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hf</i>         Identifies the file to close. This handle must have been created
+           by using the DosOpen, DosDupHandle, or DosMakePipe function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_ACCESS_DENIED
+     ERROR_FILE_NOT_FOUND
+     ERROR_INVALID_HANDLE
+ 
+<b>Comments</b>
+ 
+When all handles referencing one end of a pipe are closed, the pipe is
+considered "broken." If the client end closes, no other process can reopen
+the pipe until the server end issues a DosDisConnectNmPipe function followed
+by a DosConnectNmPipe function. If the server end closes, the pipe will be
+deallocated when the last client handle is closed, or it will be deallocated
+immediately if the pipe is already broken.
+ 
+If the file was opened with the OPEN_FLAGS_WRITE_THRU flag set, then
+<b>DosClose</b> will cause the system to write the contents of all the file's
+internal buffers to the device──for example, to the disk──and to update all
+directory information prior to returning.
+ 
+<b>Example</b>
+ 
+This example opens the file abc, reads from the file, and calls the
+<b>DosClose</b> function to close it:
+ 
+BYTE abBuf[512];
+HFILE hf;
+USHORT usAction, cbBytesRead;
+DosOpen("abc", &amp;hf, &amp;usAction, 0L, FILE_NORMAL, FILE_OPEN,
+    OPEN_ACCESS_READONLY | OPEN_SHARE_DENYNONE, 0L);
+DosRead(hf, abBuf, sizeof(abBuf), &amp;cbBytesRead);
+DosClose(hf);                           /* closes the file */
+ 
+<b>See Also</b>
+ 
+<b>DosBufReset, DosConnectNmPipe, DosDisConnectNmPipe, DosDupHandle,</b>
+<b>DosFindClose, DosMakePipe, DosOpen, DosRead</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,228 @@
+<html>
+
+<head>
+<title>About Advanced Video Input and Output (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Advanced Video Input and Output (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='using_avio.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Advanced Vio functions 1.2'>Function Group</a><span class='grhilite'>►</span>           </i>          <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Device_Monitors.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                   About Advanced Video Input and Output
+ 
+This topic describes the portions of MS OS/2 that let you create advanced
+video-input-and-output (AVIO) programs. You should also be familiar with the
+following topics:
+ 
+    <span class='grhilite'>◄</span><a href='Windows.html'>Windows</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='device_contexts.html'>Presentation spaces and device contexts</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Video_Input_and_Output.html'>Video input and output</a><span class='grhilite'>►</span>
+ 
+Advanced video input and output is a set of MS OS/2 system functions and
+features that allows you to use MS OS/2 video-input-and-output (Vio)
+functions in a Presentation Manager application. An AVIO presentation space
+is similar to a graphics programming interface (GPI) presentation space
+except that the Vio functions can be used to display text. The Gpi functions
+for graphics are also available.
+ 
+An AVIO program is any program that creates and uses an AVIO presentation
+space. AVIO programs are similar to Presentation Manager applications in
+that they create a message queue, use a message loop, and create windows.
+They differ from Presentation Manager applications in that they depend
+largely on the Vio functions to display output. Many AVIO programs are a
+hybrid of character-based programs and Presentation Manager applications.
+ 
+<b>AVIO Presentation Spaces</b>
+ 
+You create an AVIO presentation space by using the VioCreatePS function.
+This function returns a handle to the AVIO presentation space. As you would
+with a GPI presentation space, you must associate the AVIO handle with a
+device context──in this case, the device context of the program's window.
+The following code fragment creates an AVIO presentation space and
+associates its handle with the device context of a window:
+ 
+HVPS hvps;
+HDC  hdc;
+HWND hwnd;
+ 
+VioCreatePS(&amp;hvps, 25, 80, 0, FORMAT_CGA, 0);
+hdc = WinOpenWindowDC(hwnd);
+VioAssociate(hdc, hvps);
+ 
+The presentation space consists of a character-cell grid that is similar to
+the video-input-and-output grid used with full-screen programs. The
+dimensions of the grid (the width and height) are measured in character
+cells and are set by using the VioCreatePS function. Each character has a
+corresponding character cell. The width and height of the character cell is
+dependent on the given font, but a program can usually switch between the
+available sizes by using the VioSetDeviceCellSize function.
+ 
+The program sets the size of the AVIO presentation space when it creates it.
+If the presentation space is smaller than the window in either direction,
+the excess area is left unchanged; if the presentation space is larger, the
+excess data is not displayed. The size of the AVIO presentation space is
+typically smaller than the maximized window. Programs should restrict the
+size of their maximized window to the size of the AVIO presentation space.
+ 
+You can set the origin (that is, data to be displayed in the top left of the
+window) by using the VioSetOrg function. If an area of the window is
+"exposed" by the origin being altered such that the right or bottom edge of
+the presentation space moves leftward or upward in the window, then the
+"exposed" area is cleared. This would also remove any graphics present in
+the area.
+ 
+After directly writing to an AVIO presentation space, the program can update
+the screen by using the VioShowBuf or VioShowPS function. The VioShowPS
+function updates only within a specific rectangle, so it may improve
+performance by reducing the amount of drawing the system has to do for the
+update.
+ 
+Although the AVIO presentation space cannot be used with Gpi functions, any
+GPI presentation space associated with the same window can be used to draw
+graphics along with the VIO text.
+ 
+<b>Character Formats</b>
+ 
+Each character to be displayed is identified by a code point and one or more
+attributes. A code point is a unique number in the range 0 through 255 that
+identifies the character. An attribute is a value that specifies how the
+character is to be displayed. For example, an attribute may specify the
+color of the image, the color of the character cell not containing the
+image, whether the image has a high-intensity color, an underline, and so
+on.
+ 
+The number of attributes required to specify a character depends on the type
+of presentation space. In advanced video input and output, there are two
+presentation-space types: FORMAT_CGA and FORMAT_4BYTE. In a presentation
+space of the type FORMAT_CGA, each character consists of a code point, a
+foreground color, and a background color. The foreground and background
+colors are 4-bit fields that are combined to form an 8-bit attribute byte.
+ 
+In a presentation space of the type FORMAT_4BYTE, each character consists of
+a code point, foreground and background colors, an intensity flag, an
+underline flag, a reverse-video flag, a transparency flag, and a font
+identifier. There is also an additional 8-bit field (spare) for
+program-specific attribute data.
+ 
+If one attribute byte is present, MS OS/2 assumes suitable defaults (for
+example, no highlighting, opaque, default font). Presentation
+Manager-display device drivers do not support the blink or intensify
+attributes.
+ 
+The color attribute defines the background and foreground color of a
+character. The following list shows the bits that affect these colors:
+ 
+<b>Bit  Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>7-4</i>  Specifies the background color. It can be any value in the range 0
+     through 7.
+ 
+<i>3-0</i>  Specifies the foreground color. It can be any value in the range 0
+     through 7.
+ 
+The colors that appear on the screen depend on the current physical-color
+palette. The program must ensure that the colors displayed are the colors
+expected.
+ 
+The extended attribute provides more information about how the character is
+displayed, such as which font the character is drawn from, whether the
+character is underlined, displayed in reverse video, or has a transparent
+background. The following list specifies the bits that affect the extended
+attributes:
+ 
+<b>Bit  Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>7</i>    Underscore
+<i>6</i>    Reverse video
+<i>5</i>    Reserved
+<i>4</i>    Background transparency (1 for transparent, 0 for opaque)
+<i>3</i>    Reserved
+<i>2</i>    Reserved
+<i>1-0</i>  Font identifier (0, 1, 2, or 3)
+ 
+The font identifier specifies the font in which to display the character. A
+program can reference up to four fonts──the default font and three loadable
+fonts. The font to be used for a particular character is controlled by the
+font bits, where font 0 is the default font. The numbers 1, 2, and 3
+correspond to local identifiers created by using the VioCreateLogFont
+function. Unpredictable results occur if a loadable font identifier is used
+in a presentation space before being defined for the presentation space.
+ 
+The spare attribute is for use by the program.
+ 
+All valid Vio functions may access all AVIO presentation spaces. The program
+must ensure that data is in the correct format for a particular function.
+For example, a character cell for a FORMAT_4BYTE presentation space must be
+four bytes long.
+ 
+<b>Code Pages</b>
+ 
+MS OS/2 uses a code page to determine which character image to display on
+the screen for a given code point. A code page is a table of character
+values. Each character value represents the index to a specific character
+image in a given font. To retrieve a character image from a font for a given
+code point, MS OS/2 uses the code point to select a character value from the
+code page, then uses the character value to select the image from the font.
+Each code point corresponds to one character value in a code page.
+ 
+When an AVIO presentation space is created, MS OS/2 assigns a default code
+page to it. MS OS/2 uses this default code page as its primary code page.
+Typically, the system's primary code page is set during system
+initialization, but any program can change the code page by using the
+<b>DosSetCp function. The D</b>osGetCp function retrieves the identifier, a unique
+integer, of the current primary code page.
+ 
+<b>Device Cell Size</b>
+ 
+MS OS/2 allows a program to use any cell size that a particular device
+supports. A program sets the cell size by using the VioSetDeviceCellSize
+function. The device cell size is specified in pels. A given device has a
+default device cell size, so if a program does not set the size, the default
+is used.
+ 
+If a program requests a size that the device does not support, the system
+chooses a size that best fits the required size. The program can check the
+new size by using the VioGetDeviceCellSize function. In general, the actual
+size will be less than the requested size if there is not an exact match.
+ 
+An AVIO program can also vary the device cell size by using the VioSetMode
+function to alter the number of character rows. The number of rows requested
+must be supported by the particular device. When the device cell size is
+altered, the system switches to the default (lcid 0) font corresponding to
+the cell size. The program must ensure that the loaded fonts are valid. If a
+mismatch exists between the cell size specified in the system and the loaded
+font, all the characters in that font are drawn as blanks.
+ 
+To retrieve a list of available fonts that can be used in the presentation
+space, you use the VioQueryFonts function. The VioQuerySetIds function
+retrieves a list that describes the default font plus all loaded fonts for
+an AVIO presentation space.
+ 
+You use the DevQueryCaps function to find out whether windows used for
+advanced video input and output on a particular device must be
+character-aligned; whether they should be character-aligned for best
+performance; or whether they may be either character- or pel-aligned, with
+no significant impact on performance.
+ 
+<b>WM_SIZE Message Processing</b>
+ 
+An AVIO program must pass the WM_SIZE message to the WinDefAVioWindowProc
+function. This function updates and maintains size information stored for
+the AVIO presentation space. Programs should call WinDefAVioWindowProc from
+the window procedure for each WM_SIZE message.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

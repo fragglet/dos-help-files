@@ -1,0 +1,89 @@
+<html>
+
+<head>
+<title>DosSemWait (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosSemWait (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='semaphores.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Interprocess Communication 1.2'>Overview</a><span class='grhilite'>►</span>                  </i>        <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosSendSignal.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSSEMAPHORES
+ 
+USHORT DosSemWait(hsem, lTimeOut)
+HSEM hsem;        /* semaphore handle */
+LONG lTimeOut;    /* time-out         */
+ 
+The DosSemWait function waits for a specified semaphore to be cleared.
+<b>DosSemWait waits until a threa</b>d uses the DosSemClear function to clear the
+semaphore or until a time-out occurs. If no previous thread has set the
+semaphore, DosSemWait returns immediately.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hsem</i>       Identifies the semaphore to set. This value can be the handle of
+           a system semaphore that has been previously created or opened by
+           using the DosCreateSem or DosOpenSem function, or it can be the
+           address of a RAM semaphore.
+ 
+<i>lTimeOut</i>   Specifies how long to wait for the semaphore to clear. If the
+           value is greater then zero, this parameter specifies the number
+           of milliseconds to wait before returning. If the value is
+           SEM_IMMEDIATE_RETURN, the function returns immediately. If the
+           value is SEM_INDEFINITE_WAIT, the function waits indefinitely.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_EXCL_SEM_ALREADY_OWNED
+     ERROR_INTERRUPT
+     ERROR_SEM_TIMEOUT
+ 
+<b>Comments</b>
+ 
+The DosSemWait function cannot be used to wait for a system semaphore that
+is owned by another process unless the semaphore is nonexclusive.
+ 
+If more than one thread is setting and clearing the semaphore, the thread
+calling DosSemWait may have to wait through several changes of the semaphore
+before it continues (depending on which thread clears the semaphore and when
+the system scheduler passes control to the calling thread). The thread must
+wait for as long as the semaphore is set, even if the semaphore has been
+cleared and reset since the thread originally called the function.
+ 
+<b>Example</b>
+ 
+This example calls the DosSemWait function to wait for up to 5 seconds for a
+RAM semaphore. If a time-out occurs before the semaphore handle is
+retrieved, the function returns an ERROR_SEM_TIMEOUT error value.
+ 
+ULONG hsem = 0;
+if (DosSemWait(&amp;hsem, 5000L) == ERROR_SEM_TIMEOUT) {
+    .
+    . /* error processing */
+    .
+}
+else {
+ 
+<b>See Also</b>
+ 
+<b>DosCreateSem, DosMuxSemWait, DosOpenSem, DosSemClear, DosSemRequest,</b>
+<b>DosSemSetWait, WinMsgSemWait</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

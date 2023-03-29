@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<title>GpiRemoveDynamics (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiRemoveDynamics (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='retained_graphics.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiResetBoundaryData.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPISEGMENTS
+ 
+BOOL GpiRemoveDynamics(hps, idFirstSegment, idLastSegment)
+HPS hps;                /* presentation-space handle */
+LONG idFirstSegment;    /* first segment identifier  */
+LONG idLastSegment;     /* last segment identifier   */
+ 
+The GpiRemoveDynamics function removes from the display any images drawn
+using dynamic segments. The function removes the image for any dynamic
+segment that is in the current picture chain and whose segment identifier is
+in the range specified by the idFirstSegment and idLastSegment parameters.
+The function removes only the image drawn using the dynamic segment and by
+the dynamic segment's segment calls.
+ 
+The GpiRemoveDynamics function checks for the segments specified by
+<i>idFirstSegment and idLastSegment. If they </i>do not exist, or are not in the
+chain, or idLastSegment is less than idFirstSegment, the function returns
+without removing segments and without an error value.
+ 
+<b>Parameter       Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>             Identifies the presentation space.
+ 
+<i>idFirstSegment</i>  Specifies the name of the first segment in the section. It
+                must be greater than zero.
+ 
+<i>idLastSegment</i>   Specifies the last segment in the section. It must be
+                greater than zero.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_AREA_INCOMPLETE
+     PMERR_INV_FOR_THIS_DC_TYPE
+     PMERR_INV_HPS
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_INV_SEG_NAME
+     PMERR_PATH_INCOMPLETE
+     PMERR_PS_BUSY
+     PMERR_SEG_NOT_CHAINED
+ 
+<b>Comments</b>
+ 
+An application should remove dynamic segments before associating a new
+device context with the presentation space.
+ 
+<b>Example</b>
+ 
+This example uses the GpiRemoveDynamics function to remove the image drawn
+by the dynamic segment whose segment identifier is 4. It then edits the
+segment and redraws it, using the GpiDrawDynamics function.
+ 
+POINTL ptl = {30, 40};
+ 
+/* Remove the image for dynamic segment #4. */
+ 
+GpiRemoveDynamics(hps, 4L, 4L);
+ 
+/* Edit the segment. */
+ 
+GpiSetDrawingMode(DM_RETAIN);
+GpiOpenSegment(hps, 4L);
+GpiSetElementPointer(hps, 1L);
+GpiMove(hps, &amp;ptl);
+GpiCloseSegment(hps);
+ 
+GpiDrawDynamics(hps);    /* redraws the edited segment */
+ 
+<b>See Also</b>
+ 
+<b>GpiCloseSegment, GpiDrawDynamics, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

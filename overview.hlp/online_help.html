@@ -1,0 +1,94 @@
+<html>
+
+<head>
+<title>About On-Line Help (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About On-Line Help (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='using_ipf.html'>Using Section</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Painting_and_Drawing.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                             About On-Line Help
+ 
+This topic describes how to use the WM_HELP message in your applications.
+ 
+One of the key elements of user-friendly software is readily available
+on-line help. MS OS/2 provides functions and messages to support the
+implementation of a help system in your application. This topic discusses
+the features of MS OS/2 that support on-line help and suggests techniques
+for implementing a help system. The two main components of the system
+support for help are the WM_HELP message and the help hook.
+ 
+The WM_HELP message is defined by the system to notify an application when
+the user wants help. The WM_HELP message contains context information that
+allows the application to respond with information appropriate to current
+conditions. The system posts a WM_HELP message in the following situations:
+ 
+♦  During accelerator-table translation for a keyboard event, if the
+   keystroke corresponds to an accelerator-table entry with the AF_HELP
+   attribute. The system default accelerator table translates the F1 key
+   into a WM_HELP message. The WM_HELP message is posted to the focus
+   window. If the F1 key is pressed while a menu has the focus, the help
+   message goes to the menu, which calls the help hook.
+ 
+♦  When a menu item with the MIS_HELP style is chosen. All applications
+   should define at least one menu item with the MIS_HELP style in the menu
+   bar. This menu item is typically labeled "F1=Help".
+ 
+♦  When a push button with the BS_HELP style is pressed. (Note that this
+   includes the case in which the Help button is pressed in a message box
+   that has the MB_HELP style.) The WM_HELP message is posted to the
+   button's owner window, which is typically a dialog frame window.
+ 
+The processing required to respond to the WM_HELP messages that originate in
+these three situations is discussed later in this topic.
+ 
+The Help menu item and the F1 accelerator key provide a standard
+user-interface to the help system. They allow the user to get general help
+about the application. The BS_HELP push button style allows applications to
+provide help within dialog boxes. You should provide a Help push button in
+every dialog box; the help message should explain the purpose and
+consequence of any action that could be taken by using that dialog box.
+ 
+Your application should process the WM_HELP message to provide
+context-appropriate help to the user. In the case of the Help menu item or
+the F1 accelerator key, the WM_HELP message is posted to the focus window.
+The focus window can process the message or it can pass it to the
+<b>WinDefWindowProc</b> function, which sends the message to the parent window. If
+you have a client window with several child windows that can accept the
+focus, you can intercept the WM_HELP message in the client window procedure
+as the message is passed up from the child window with the focus. The state
+of the application when the help message is received determines the
+appropriate help, which may be a list of help topics or information about
+the window that has the focus.
+ 
+There are limits to what can be accomplished by intercepting the WM_HELP
+message. In particular, the application does not receive WM_HELP messages
+generated while a menu item is selected. For example, if the user presses
+the F1 key while selecting a menu item, the WM_HELP message goes to the menu
+window. The menu window does not pass the message on; instead, it calls the
+help hook.
+ 
+The help hook allows you to install code that is called by menu windows and
+frame windows when they receive WM_HELP messages. You must install a help
+hook for your application if you want to provide help for selected menu
+items, since there is no way to intercept the WM_HELP message that
+originates while a menu item is selected. In addition, if you don't process
+a WM_HELP message in your client window, the message is passed to the frame
+window, which calls the help hook.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

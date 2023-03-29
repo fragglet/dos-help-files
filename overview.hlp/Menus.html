@@ -1,0 +1,341 @@
+<html>
+
+<head>
+<title>About Menus (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Menus (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Menus.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#menu functions 1.2'>Function Group</a><span class='grhilite'>►</span>       </i>              <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Messages_and_Message_Queues.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                                About Menus
+ 
+This topic describes how to use menus in your applications. You should also
+be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='unknown#rc.exe'>MS OS/2 Resource Compiler</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Keyboard_Accelerators.html'>Accelerator tables</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Frame_Windows.html'>Frame windows</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Messages_and_Message_Queues.html'>Messages and message queues</a><span class='grhilite'>►</span>
+ 
+Menus are windows that contain a list of items. These items can be text
+strings, bitmaps, or images drawn by the application. Menus allow the user
+to use the mouse or keyboard to choose from a predetermined list of choices.
+When a user makes a choice from a menu, the menu posts a message containing
+the item's unique menu-item identifier to the menu's owner window.
+ 
+Typically, an application defines its menus by using Resource Compiler and
+associates the menus with an frame window when the window is created.
+Applications can also create menus by filling in menu-template data
+structures and then creating windows with the WC_MENU class. Either way,
+applications can dynamically add, delete, or change menu items by sending
+messages to menu windows.
+ 
+Menu windows are always owned by another window; this is important because a
+menu sends messages to its owner whenever a menu item is highlighted or
+chosen by the user. Owner windows send messages to menus to add, delete, or
+change menu items.
+ 
+<b>Menu-Bar and Pull-Down Menus</b>
+ 
+Typically, an application uses a menu-bar menu and several pull-down
+submenus. The menu bar is a child window in the parent window frame. The
+submenus are normally hidden and become visible when the user makes
+selections in the menu bar.
+ 
+There are two main types of menu items: command items and submenu items.
+When the user chooses a command item, a command message is immediately
+posted to the parent window. When the user selects a submenu item, a
+pull-down menu is displayed from which the user may choose another command
+item. Since a pull-down menu window can also contain a submenu item,
+pull-down menus can originate from other pull-down menus. An item in the
+menu bar may be a command item or a submenu item.
+ 
+When a command item is selected, either from the menu bar or from a
+pull-down menu, the menu system posts a WM_COMMAND, WM_SYSCOMMAND, or
+<b>WM_HELP</b> message to the owner window, depending on the menu item's style
+bits.
+ 
+The menu bar is a child window of the frame window; the menu-bar window
+handle is the key to communicating with menus. The handle of the menu-bar
+window can be obtained by calling the WinWindowFromID function with the
+handle of the parent window and the FID_MENU frame-control identifier. Most
+messages for menus and submenus can be sent to the menu-bar window. Flags in
+the messages tell the window whether to search submenus for requested menu
+items.
+ 
+<b>System Menu</b>
+ 
+The system menu in the upper-left corner of a standard frame window is
+different from the menu-bar and pull-down menus defined by the application.
+The system menu is controlled and defined almost exclusively by the system.
+Your only decision about the system menu is whether or not to include it
+when creating a frame window. (It is unusual for a frame window not to
+include a system menu.) The system menu generates WM_SYSCOMMAND messages
+instead of WM_COMMAND messages. Most applications simply allow the default
+behavior for WM_SYSCOMMAND messages.
+ 
+If necessary, you can obtain the handle of the system menu by calling the
+<b>WinWindowFromID</b> function with the handle of the parent (frame) window and
+the FID_SYSMENU frame-control identifier. The application can add, delete,
+and change system-menu entries.
+ 
+<b>Menu-Item Styles</b>
+ 
+All menu items have a combination of style bits that determine what kind of
+data the item contains and what kind of message it generates when it is
+chosen by the user. For instance, a menu item can have the MIS_TEXT,
+MIS_BITMAP, or other styles, specifying what kind of display object visually
+represents the menu item on the screen. Other styles determine what kinds of
+messages the item sends to its owner window and whether the owner window
+draws the item. Menu-item styles typically do not change during program
+execution, but they can be queried and set by sending MM_SETITEM and
+<b>MM_QUERYITEM</b> messages to the menu with the identifier of the item.
+ 
+<b>Menu-Item Attributes</b>
+ 
+Menu items have attributes that determine how they are displayed and whether
+or not the user can choose them. Menu-item attributes can be set and queried
+by sending MM_SETITEMATTR and MM_QUERYITEMATTR messages with the identifier
+of the item to the menu-bar menu window. If the specified item is in a
+submenu, you must set a flag in the message so that submenus are searched
+for the item.
+ 
+<b>Defining Menu Items in a Resource File</b>
+ 
+A menu resource consists of command items and submenu items. One menu
+resource typically represents the menu bar and all its submenus. An
+application can specify the identifier of the menu resource when creating a
+standard window, or it can load the menu resource directly by using the
+<b>WinLoadMenu</b> function. A menu-item definition is organized as follows:
+ 
+MENUITEM item text, item identifier, item style, item attributes
+ 
+The menu resource-definition file specifies the text of each item in the
+menu, unique identifier, its style and its attributes, and whether it is a
+command item or a submenu item. Following is sample source code that defines
+a menu resource for Resource Compiler. The code defines a menu with three
+submenu items in the menu bar (File, Edit, and Fonts) and a command item
+(Help). Each submenu has several command items, and the Fonts submenu has
+two other submenus within it.
+ 
+MENU ID_MENU_RESOURCE
+BEGIN
+    SUBMENU "~File", IDM_FILE
+        BEGIN
+            MENUITEM "~Open...",       IDM_FI_OPEN
+            MENUITEM "~Close\tF3",     IDM_FI_CLOSE, MIS_DISABLED
+            MENUITEM "~Quit",          IDM_FI_QUIT
+            MENUITEM "",               IDM_FI_SEP1, MIS_SEPARATOR
+            MENUITEM "~About Sample",  IDM_FI_ABOUT
+        END
+    SUBMENU "~Edit", IDM_EDIT
+        BEGIN
+            MENUITEM "~Undo",          IDM_ED_UNDO, 0, MIA_DISABLED
+            MENUITEM "",               IDM_ED_SEP1, MIS_SEPARATOR
+            MENUITEM "~Cut",           IDM_ED_CUT
+            MENUITEM "C~opy",          IDM_ED_COPY
+            MENUITEM "~Paste",         IDM_ED_PASTE
+            MENUITEM "C~lear",         IDM_ED_CLEAR
+        END
+    SUBMENU "Font", IDM_FONT
+        BEGIN
+            SUBMENU "Style",           IDM_FONT_STYLE
+                BEGIN
+                    MENUITEM "Plain",  IDM_FONT_STYLE_PLAIN
+                    MENUITEM "Bold",   IDM_FONT_STYLE_BOLD
+                    MENUITEM "Italic", IDM_FONT_STYLE_ITALIC
+                END
+            SUBMENU "Size",            IDM_FONT_SIZE
+                BEGIN
+                    MENUITEM "10",     IDM_FONT_SIZE_10
+                    MENUITEM "12",     IDM_FONT_SIZE_12
+                    MENUITEM "14",     IDM_FONT_SIZE_14
+                END
+        END
+    MENUITEM "F1=Help", 0x00, MIS_TEXT | MIS_BUTTONSEPARATOR | MIS_HELP
+END
+ 
+You can indicate a mnemonic keystroke for the menu item by preceding that
+character in the item text with a tilde, as in "File". The user can choose
+that item by pressing the mnemonic key when the menu is active. (The menu
+bar is active when the user presses and releases the ALT key, and the first
+item in the menu bar is highlighted. A pull-down menu is active when it is
+open.)
+ 
+In addition to mnemonics, a menu item can have an associated keyboard
+accelerator. Accelerators are different from mnemonics, in that the menu
+does not have to be active for the accelerator key to work. If a menu item
+has a keyboard accelerator associated with it, the corresponding menu item
+should display the accelerator to the right of the menu item. This is done
+by placing a tab character (\t) in the menu text before the characters that
+should be displayed on the right. For example, if the Close item had the F3
+function key as its keyboard accelerator, the text for the item would be
+"Close\tF3".
+ 
+Each entry that defines a menu item specifies the text for the item, its
+identifier, and the style and attributes of the item. A menu item that has
+no specification for style or attributes has the default style of MIS_TEXT
+and all attribute bits off, indicating that the item is enabled. The
+MIS_SEPARATOR style identifies nonselectable lines between menu items.
+ 
+To define a menu item with the MIS_BITMAP style, an application should use a
+tool such as Icon Editor to create a bitmap, include the bitmap in the
+application's resource-definition file, and define a menu in the file (as
+shown in the following code fragment). The text for the bitmap menu items is
+an ASCII representation of the resource identifier of the bitmap resource to
+be displayed for that item.
+ 
+/* Bring externally created bitmaps into the resource file. */
+ 
+BITMAP 101 button.bmp
+BITMAP 102 hirest.bmp
+BITMAP 103 hizoom.bmp
+BITMAP 104 hired.bmp
+ 
+/* Connect a menu item with a bitmap. */
+ 
+SUBMENU "~Bitmaps", IDM_BITMAP
+    BEGIN
+        MENUITEM "#101", IDM_BM_01, MIS_BITMAP
+        MENUITEM "#102", IDM_BM_02, MIS_BITMAP
+        MENUITEM "#103", IDM_BM_03, MIS_BITMAP
+        MENUITEM "#104", IDM_BM_04, MIS_BITMAP
+    END
+ 
+<b>Menu Data Structures</b>
+ 
+There are two main data structures that define the contents of a menu: the
+menu-item structure and the menu-template structure. The menu-item structure
+defines a single menu item, and the menu-template structure contains all the
+menu items that make up a menu resource, including the menu bar and all its
+pull-down menus.
+ 
+A single menu item is defined by the MENUITEM data structure. This data
+structure is used with the MM_INSERTITEM message to insert items into a
+menu, or to query and set item characteristics with the MM_QUERYITEM and
+<b>MM_SETITEM</b> messages.
+ 
+The values of most of the fields in the data structure can be derived
+directly from the resource-definition file. The last field in the structure,
+<b>hItem</b>, depends on the style of the menu item.
+ 
+The iPosition field specifies the ordinal position of the item within its
+menu window. If the item is part of the menu bar, iPosition gives its
+relative left-to-right position, with zero being the leftmost item. If the
+item is part of a submenu, iPosition gives its relative top-to-bottom and
+left-to-right position, with zero being the upper-left item. An item with
+the MIS_BREAKSEPARATOR style in a pull-down menu will cause a new column to
+begin.
+ 
+The afStyle field contains the style bits of the item. The afAttribute field
+contains the attribute bits.
+ 
+The id field contains the identifier for the menu item. The identifier
+should be unique but does not have to be. When multiple items have the same
+identifier, they post the same command number in the WM_COMMAND,
+<b>WM_SYSCOMMAND, and WM_HELP messages. Al</b>so, any message that specifies a menu
+item with a nonunique identifier will find the first item that has that
+identifier.
+ 
+The hwndSubMenu field contains the window handle of a pull-down menu window
+(if the item is a submenu item). The hwndSubMenu field is NULL for command
+items.
+ 
+The hItem field contains a handle to the display object for the item, unless
+the item has the MIS_TEXT style, in which case hItem is NULL. For example, a
+menu item with the MIS_BITMAP style has an hItem field that is equal to its
+bitmap handle.
+ 
+<b>Menu Template</b>
+ 
+A menu template is a variable-length data structure that represents the
+entire menu, including all items and submenus. A menu template is made up of
+a series of variable-length records. Each record represents a single menu
+item. If the item is a submenu, the template that describes the submenu is
+nested after the submenu item record.
+ 
+The menu template is a representation of the menu as it is defined in the
+resource-definition file. Typically, applications require information about
+the internal structure of a menu template only when creating a menu template
+without using a resource-definition file.
+ 
+A template is defined as shown in the following code fragment:
+ 
+typedef struct _MT {
+    USHORT cb;          /* length of template in bytes              */
+    USHORT version;     /* version; set to zero                     */
+    USHORT codepage;    /* code page                                */
+    USHORT iInputsize;  /* length of input field for host terminals */
+    USHORT cMti;        /* count of items                           */
+    MTI    rgMti[cMti];
+} MT;
+ 
+MS OS/2 version 1.2 sets the codepage, and iInputsize fields to zero and
+ignores the contents of these fields if they are set by an application. The
+<b>version</b> field specifies whether there are presentation parameters. This
+field is zero if there are no presentation parameters; otherwise, it is 1,
+and an additional field (coffPresParams) is added between the cMti and
+<b>rgMti fields. This additional field contains the offset to the <a href='unknown#PPRESPARAMS'>PRESPARAMS</a></b>
+structure. The cMti field specifies the number of menu-template items that
+follow. Each menu-template item describes one item in the menu. Since each
+menu item can require a different amount of storage, the following variable
+definition of a menu-template item is used:
+ 
+typedef struct _MTI {
+    USHORT afStyle;
+    USHORT afAttribute;
+    USHORT idItem;
+    if (afStyle AND MIS_BITMAP)
+      CHAR szItemString ? ;
+    if (afStyle AND MIS_OWNERDRAW)
+      VOID;
+    if (afStyle AND MIS_TEXT)
+      CHAR szItemString ? ;
+    if (aStyle AND MIS_SEPARATOR)
+      VOID;
+    if (afStyle AND MIS_SUBMENU)
+      MT MenuTemplate;
+} MTI;
+ 
+The first three fields of a structure for a menu-template item specify the
+style, attributes, and identifier of the item. The data that follows these
+fields is determined by the style of the item. The cases can be summarized
+as follows:
+ 
+If the afStyle field is MIS_TEXT, the data that follows the idItem field is
+a null-terminated string representing the menu-item text.
+ 
+If the afStyle field is MIS_BITMAP, the data that follows idItem is a
+null-terminated string that can represent one of three things:
+ 
+♦  If the first byte is NULL, then no bitmap resource is defined; the
+   application provides a bitmap handle for the item.
+ 
+♦  If the first byte is "#", subsequent characters make up the decimal
+   representation of the bitmap resource-identifier.
+ 
+♦  If neither of the previous cases apply, the handle is set to NULL, and
+   the application must set it manually.
+ 
+If the afStyle field is MIS_OWNERDRAW or MIS_SEPARATOR, there is no data
+following the idItem field.
+ 
+If the afStyle field is MIS_SUBMENU, a complete menu-template structure for
+the submenu follows the idItem field.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

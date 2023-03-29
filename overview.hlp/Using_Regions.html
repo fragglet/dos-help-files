@@ -1,0 +1,265 @@
+<html>
+
+<head>
+<title>Using Regions (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Regions (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Regions.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#region functions 1.2'>Function Group</a><span class='grhilite'>►</span>        </i>             <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='segments.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                               Using Regions
+ 
+You can use region functions to perform the following tasks:
+ 
+♦  Create a region.
+ 
+♦  Combine regions.
+ 
+♦  Destroy a region.
+ 
+♦  Compare regions.
+ 
+♦  Move a region.
+ 
+♦  Fill a region.
+ 
+♦  Locate a point with respect to a region.
+ 
+♦  Determine coordinates of region rectangles.
+ 
+♦  Locate a rectangle with respect to another region.
+ 
+<b>Creating a Region</b>
+ 
+To create a region, you must perform the following steps:
+ 
+1  Create an array of RECTL structures containing the dimensions of the
+   rectangles that will compose the region.
+ 
+2  Call the GpiCreateRegion function to create the region (this function
+   returns a handle that identifies the region).
+ 
+The following code fragment shows how to create a region:
+ 
+HPS hps;                 /* presentation-space handle */
+HRGN hrgn;               /* region handle             */
+RECTL rcl[] = { 25, 50,  /* rectangle 1               */
+    75, 100,
+    50, 75,              /* rectangle 2               */
+    100, 150,
+    75, 125,             /* rectangle 3               */
+    200, 175,
+    150, 75,             /* rectangle 4               */
+    250, 150};
+    .
+    .
+    .
+hrgn = GpiCreateRegion(hps,  /* creates region */
+    4L,      /* number of rectangles in region */
+    rcl);    /* array of rectangle structures  */
+ 
+<b>Combining Regions</b>
+ 
+To combine two regions, you must perform the following steps:
+ 
+1  Create a region that MS OS/2 can use as the final destination region (one
+   that contains the two combined regions).
+ 
+2  Determine which of the five available combining methods is best suited to
+   your application.
+ 
+3  Call the GpiCombineRegion function.
+ 
+The following code fragment shows how to combine two regions by using the OR
+operation:
+ 
+HPS hps;                   /* presentation-space handle            */
+HRGN hrgn1, hrgn2, hrgn3;  /* region handles                       */
+RECTL rcl1[] = { 50, 100,  /* rectangle forming first region       */
+    200, 175};
+ 
+RECTL rcl2[] = { 125, 150, /* rectangle forming second region      */
+    225, 200 };
+ 
+RECTL rcl3[] = { 0, 0,     /* rectangle forming destination region */
+    0, 0 };
+    .
+    .
+    .
+hrgn1 = GpiCreateRegion(hps, 1L, /* creates first region            */
+    rcl1);
+hrgn2 = GpiCreateRegion(hps, 1L, /* creates second region           */
+    rcl2);
+hrgn3 = GpiCreateRegion(hps, 1L, /* creates destination region      */
+    rcl3);
+GpiCombineRegion(hps,            /* creates union of hrgn and hrgn2 */
+    hrgn3, hrgn1, hrgn2, CRGN_OR);
+ 
+<b>Destroying a Region</b>
+ 
+To destroy a region, you must call the GpiDestroyRegion function and pass it
+a handle that identifies the region your application is no longer using, as
+shown in the following code fragment:
+ 
+HPS hps;       /* presentation-space handle */
+HRGN hrgn;     /* region handle             */
+ 
+GpiDestroyRegion(hps, hrgn);   /* destroys region identified by hrgn */
+ 
+<b>Comparing Regions</b>
+ 
+You can determine whether two regions are identical by calling the
+<b>GpiEqualRegion</b> function, as shown in the following code fragment:
+ 
+HPS hps;         /* presentation-space handle       */
+HRGN hrgn1;      /* handle of first region          */
+HRGN hrgn2;      /* handle of second region         */
+LONG lEqual;     /* return value for GpiEqualRegion */
+ 
+lEqual = GpiEqualRegion(hps,
+    hrgn1, hrgn2);              /* compares regions 1 and 2 */
+if (lEqual == EQRGN_EQUAL) {
+    .
+    . /* regions are equal */
+    .
+}
+ 
+if (lEqual == EQRGN_NOTEQUAL) {
+    .
+    . /* regions are not equal */
+    .
+}
+if (lEqual == EQRGN_ERROR) {
+    .
+    . /* error occurred */
+    .
+}
+ 
+<b>Offsetting a Region</b>
+ 
+The GpiOffsetRegion function moves a region by a specified offset in world
+space. When you call this function, you pass the address of a POINTL
+structure that contains an x- and a y-translation factor. The following code
+fragment shows how to offset a region:
+ 
+HRGN hrgn;         /* region handle              */
+HPS hps;           /* presentation-space handle  */
+POINTL ptlNewPos;  /* structure for offset value */
+ 
+/*
+ * Set the offset here, storing the x- and
+ * y-components in ptlNewPos.
+ */
+ 
+GpiOffsetRegion(hps, hrgn, &amp;ptlNewPos);    /* offsets region */
+ 
+<b>Painting a Region</b>
+ 
+The GpiPaintRegion function fills a region with the current fill pattern,
+using the colors and mix modes that appear in the current AREABUNDLE
+structure. The following code fragment shows how to change the fill-pattern
+color to green and then paint the region:
+ 
+HRGN hrgn;      /* region handle             */
+HPS hps;        /* presentation-space handle */
+ 
+GpiSetColor(hps, CLR_GREEN);
+GpiPaintRegion(hps, hrgn); /* paints region at new location */
+ 
+<b>Locating a Point with Respect to a Region</b>
+ 
+The GpiPtInRegion function determines whether a point lies within the
+borders of a region. This function is especially useful in applications that
+must determine whether the mouse pointer lies over a region.
+ 
+You must perform the following steps to determine the location of the mouse
+pointer with respect to a region──for example, when the user presses the
+leftmost mouse button:
+ 
+1  Retrieve the mouse-pointer coordinates and store them in a POINTL
+   structure.
+2  Call the GpiPtInRegion function, passing it a handle that identifies the
+   appropriate region and the address of the POINTL structure from Step 1.
+3  Examine the value that GpiPtInRegion returns in order to determine
+   whether the point lies within the region.
+ 
+The following code fragment shows how to locate the mouse pointer with
+respect to the region:
+ 
+HPS hps;          /* presentation-space handle      */
+POINTL ptlCurPos; /* point structure                */
+HRGN hrgn;        /* region handle                  */
+LONG lPosition;   /* return value for GpiPtInRegion */
+ 
+    .
+    . /* Determine the mouse coordinates and store them in ptlCurPos. */
+    .
+ 
+lPosition = GpiPtInRegion(hps, hrgn, &amp;ptlCurPos);
+ 
+if (lPosition == PRGN_INSIDE) {
+    .
+    . /* point lies within region */
+    .
+}
+ 
+else if (lPosition == PRGN_OUTSIDE) {
+    .
+    . /* point lies outside region */
+    .
+}
+ 
+<b>Determining Coordinates of Rectangles in a Region</b>
+ 
+If a region consists of more than one rectangle, you can call the
+<b>GpiQueryRegionRects</b> function to retrieve the coordinates of the lower-left
+and upper-right corners of each rectangle.
+ 
+To determine the coordinates for the rectangles that form a region, you must
+perform the following steps:
+ 
+1  Create a copy of the RGNRECT structure that MS OS/2 uses when it
+   retrieves the rectangle coordinates.
+ 
+2  Create an array of RECTL structures that MS OS/2 can load with rectangle
+   coordinates.
+ 
+3  Set the approximate number of rectangles that compose the region and set
+   the crc field in the RGNRECT structure to this number.
+ 
+4  Set the direction in which MS OS/2 traverses the region to retrieve the
+   rectangle coordinates and set the usDirection field in the RGNRECT
+   structure to the associated value.
+ 
+5  Call the GpiQueryRegionRects function to retrieve the coordinates.
+ 
+The following code fragment shows how to determine the coordinates of the
+rectangles in a region:
+ 
+HPS hps;        /* presentation-space handle       */
+HRGN hrgn;      /* region handle                   */
+RGNRECT rgnrc;  /* structure for region rectangles */
+RECTL rcl[7];   /* array of RECTL structures       */
+ 
+rgnrc.crc = 7;                            /* rectangles to query    */
+rgnrc.usDirection = RECTDIR_RTLF_BOTTOP;  /* right/left, bottom/top */
+GpiQueryRegionRects(hps, hrgn,
+    0L,                        /* returns all rectangle coordinates */
+    &amp;rgnrc, rcl);
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

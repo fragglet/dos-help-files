@@ -1,0 +1,67 @@
+<html>
+
+<head>
+<title>PDSK_WRITEPHYSTRACK (1.2) - ioctl12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ioctl12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> PDSK_WRITEPHYSTRACK (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='IOCtls.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='PRT_ACTIVATEFONT.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVIOCTL
+ 
+USHORT DosDevIOCtl(pbBuffer, pbCommand, 0x0044, 0x0009, hDevice)
+PBYTE pbBuffer;     /* pointer to buffer with data       */
+PBYTE pbCommand;    /* pointer to structure with command */
+HFILE hDevice;      /* device handle                     */
+ 
+The PDSK_WRITEPHYSTRACK function writes to a physical track on the device
+specified in the request.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pbBuffer</i>   Points to the buffer that contains the data to be written.
+ 
+<i>pbCommand  Points to the TR</i>ACKLAYOUT structure that contains information
+           about the write operation.
+ 
+<i>hDevice</i>    Identifies the disk drive that receives the device-control
+           function. The handle must have been created previously by using
+           the DosPhysicalDisk function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful or an error value if
+an error occurs.
+ 
+<b>Comments</b>
+ 
+This function is similar to the DSK_WRITETRACK function (0x0008, 0x0044)
+except that I/O is offset from the beginning of the physical drive instead
+of from the unit number.
+ 
+The track-layout table passed in this function determines the sector number,
+which is passed to the disk controller. When the sectors are odd-numbered or
+nonconsecutive, the request is broken into an appropriate number of
+single-sector operations, and one sector at a time is written.
+ 
+<b>See Also</b>
+ 
+<b>DosPhysicalDisk, DSK_WRITETRACK, PDSK_READPHYSTRACK, PDSK_VERIFYPHYSTRACK,</b>
+<b>TRACKLAYOUT</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

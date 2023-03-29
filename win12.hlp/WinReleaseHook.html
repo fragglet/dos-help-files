@@ -1,0 +1,92 @@
+<html>
+
+<head>
+<title>WinReleaseHook (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinReleaseHook (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Hook_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Hooks 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinReleasePS.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINHOOKS
+ 
+BOOL WinReleaseHook(hab, hmq, iHook, pfnHook, hmod)
+HAB hab;         /* handle of the anchor block               */
+HMQ hmq;         /* handle of the message queue              */
+SHORT iHook;     /* hook identifier                          */
+PFN pfnHook;     /* address of the hook procedure            */
+HMODULE hmod;    /* handle of the module with hook procedure */
+ 
+The WinReleaseHook function releases an application hook from a hook chain.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hab</i>        Identifies the anchor block.
+ 
+<i>hmq</i>        Specifies the message queue from which the hook is to be
+           released. If hmq is NULL, the hook is released from the system
+           hook chain. If hmq is HMQ_CURRENT, the hook is released from the
+           message queue associated with the current thread (calling
+           thread).
+ 
+<i>iHook</i>      Specifies the type of hook chain. This parameter can be one of
+           the following values:
+ 
+           Hook type           Description
+           ─────────────────────────────────────────────────────────────────
+           HK_HELP             Monitors the WM_HELP message.
+ 
+           HK_INPUT            Monitors messages in a message queue.
+ 
+           HK_JOURNALPLAYBACK  Allows applications to insert events into the
+                               system input queue.
+ 
+           HK_JOURNALRECORD    Allows applications to record system input
+                               queue events.
+ 
+           HK_MSGFILTER        Monitors input events during system modal
+                               loops.
+ 
+           HK_SENDMSG          Monitors messages sent with WinSendMsg.
+ 
+<i>pfnHook</i>    Points to the hook routine.
+ 
+<i>hmod</i>       Identifies the module that contains the hook procedure. This
+           parameter can be either the module handle returned by the
+           DosLoadModule function or NULL for the application's module.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful or FALSE if an error
+occurs.
+ 
+<b>Comments</b>
+ 
+If a system hook is called by a process other than the process that set the
+hook, the DLL containing the hook will not be unloaded until every process
+is exited that referenced it. For most system hooks, this applies until the
+machine is rebooted. For the most part, this is not a problem; as with
+swapping, the unused DLL will end up somewhere in your swap space, never to
+be used again. The only complication is that when you are developing the
+hook the DLL containing the hook is still in use, and you cannot copy over
+it or link into it.
+ 
+<b>See Also</b>
+ 
+<b>DosLoadModule, WinSendMsg, WinSetHook</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

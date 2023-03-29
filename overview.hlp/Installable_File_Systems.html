@@ -1,0 +1,334 @@
+<html>
+
+<head>
+<title>Installable File Systems (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Installable File Systems (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Interprocess_Communication.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                          Installable File Systems
+ 
+This topic describes how MS OS/2 enables applications to use installable
+file systems. A file system is the combination of software and hardware that
+supports storing information on a storage device. An installable file system
+is a file system whose software can be installed when the operating system
+starts. MS OS/2 supports installable file systems and permits users to have
+multiple file systems active at the same time.
+ 
+This section also describes some of the MS OS/2 functions that enable
+applications to create, read, and write data files in installable file
+systems. Because installable file systems are not available with releases of
+MS OS/2 prior to version 1.2 or with MS-DOS versions 2.0 through 3.3,
+applications that use the family application programming interface (family
+API) cannot use functions that are specific to installable file systems.
+ 
+In MS OS/2 version 1.2, users install a file system by specifying the
+file-system components in the config.sys file. The file-system software
+consists of device drivers that access storage devices and dynamic-link
+libraries that control the format of information on a device and manage the
+flow of data to and from the device. The user must use the device command to
+specify the device driver and the ifs command to specify the dynamic-link
+library. MS OS/2 loads the device driver and dynamic-link library and
+initializes a specific device for use as a file system.
+ 
+MS OS/2 version 1.2 has two file systems: the file allocation table (FAT)
+file system and the high-performance file system (HPFS). These file systems
+define how information is organized on the storage devices. Both file
+systems create data files supported by one or more tables that specify the
+location and size of the data files on the storage device.
+ 
+The file allocation table (FAT) file system is the default file system for
+MS OS/2; it does not need to be installed. The FAT file system, used in
+previous releases of MS OS/2 and also in MS-DOS, controls storage of data
+files for fixed and floppy disks. The FAT file system is hierarchical,
+allowing multiple directories on the disk. Each directory can contain one or
+more files. The distinguishing feature of the FAT file system is its 8.3
+filename convention. Under this convention, the filename consists of a
+filename (up to eight characters), a separating period (.), and a filename
+extension (up to three characters).
+ 
+The high-performance file system (HPFS) is an installable file system for MS
+OS/2. It is an hierarchical file system and allows for multiple directories.
+HPFS controls storage of data for fixed disks. Filenames under HPFS can be
+any practical length and can contain characters that are not valid for the
+FAT file system, for example, spaces and underscores (__). In many cases,
+accessing files under HPFS is faster than accessing similar files under the
+FAT file system.
+ 
+A user can choose either or both file systems. Applications must be able to
+work with any file system. Fortunately, MS OS/2 provides a common set of
+file-system functions that are not dependent upon a particular file system;
+it also gives guidelines for working with file systems, such as specific
+filename conventions.
+ 
+<b>File-System Functions</b>
+ 
+MS OS/2 provides a standard set of file-system functions. This means that
+applications can create, open, read, write, copy, and delete files and
+directories by using the same functions, regardless of which file system is
+used. When an application calls a file-system function, MS OS/2 passes the
+request to the dynamic-link library that supports the file system. Most
+file-system processing, such as validating filenames, is carried out by the
+dynamic-link library. If an error occurs, the file system returns the error
+to MS OS/2, which then passes it back to the calling application.
+ 
+Occasionally, a file system may extend the standard set of file-system
+functions by providing file-system control functions. The control functions
+are specific to the given file system. An application can call a control
+function by using the DosFSCtl function, which directs MS OS/2 to pass the
+control-function information to the dynamic-link library for the particular
+file system.
+ 
+<b>Volumes</b>
+ 
+MS OS/2 allows more than one file system on a single storage device. If the
+device can have more than one logical partition (or volume), each partition
+can be initialized as an MS OS/2 partition and given a valid MS OS/2 file
+system. For each volume, MS OS/2 determines the type of file system the
+first time the volume is accessed by a function or when the medium in the
+drive changes. After that, MS OS/2 manages all input and output to that
+volume by using the corresponding dynamic-link library for the file system.
+ 
+MS OS/2 uses the volume label and serial number to ensure that the medium in
+the drive does not change while there are outstanding requests for input and
+output. Each volume has a volume label and a 32-bit volume serial number,
+stored in a reserved location in logical sector zero at the time of
+formatting. If the volume label and serial number do not match, MS OS/2
+signals the critical-error handler to prompt the user to insert the volume
+that has the specified serial number and label. MS OS/2 maintains the
+connection between the medium and the volume label and serial number until
+all open files on the volume are closed and all search references and
+cache-buffer references are removed. The system redetermines the type of the
+file system and the volume label and serial number for the volume only when
+the medium changes.
+ 
+<b>Local and Remote File Systems</b>
+ 
+Installable file systems work with a variety of storage devices. A file
+system on a local device such as a disk drive or virtual disk is called a
+local file system. A file system on a remote device such as a disk drive on
+another computer is called a remote file system. An application can
+establish a connection to a local or a remote file system by using the
+<b>DosFSAttach</b> function.
+ 
+For a local file system, MS OS/2 uses a block device driver to handle input
+and output to the device. MS OS/2 automatically connects most (if not all)
+local file systems when it starts. However, an application can connect and
+disconnect (sometimes called mount and dismount) additional file systems as
+needed.
+ 
+For a remote file system, the corresponding device driver typically accesses
+a communications or network device instead of a block device driver used to
+access disk hardware. Typically, the actual storage device is located on
+another computer, and the two computers communicate requests and data
+through a network connection. An application can connect a remote file
+system to a drive letter by using the DosFSAttach function. Once the
+connection is made, the application can access directories and files on the
+remote device simply by using the assigned drive letter, treating the remote
+device as if it were on the same computer.
+ 
+<b>Pseudo-Character Device</b>
+ 
+An application can attach a device name to a file system and use the file
+system as a pseudo-character device (also called a single-file device).
+Attaching a device name to a file system lets an application open the device
+associated with the file system as if it were a character device (for
+example, a serial port) and read from and write to the device by using the
+<b>DosRead and DosWrite </b>functions. Unlike with a character device, an
+application can use the DosChgFilePtr and DosFileLocks functions for working
+with a pseudo-character device. An MS OS/2 pseudo-character device name is a
+null-terminated string in the format of an MS OS/2 filename in a
+subdirectory called \dev.
+ 
+A file system that can be attached to a pseudo-character device is typically
+associated with a single disk file or with a special storage device such as
+a tape drive. The file system establishes a connection with the device and
+transfers requests and data between MS OS/2 and the device. The following
+example attaches the device associated with the file system cabinet1 to the
+pseudo-character device named \dev\host:
+ 
+BYTE bData[];
+USHORT cbData;
+ 
+DosFSAttach("\dev\host", "cabinet1", bData, cbData, 0);
+ 
+If the application successfully attaches the file system, the application
+can then open the file \dev\host by using the DosOpen function, read
+host-created data by using the DosRead function, and write data and commands
+to the host by using the DosWrite function. This example assumes that the
+name cabinet1 corresponds to an installable file system and that the file
+system can perform the necessary host communication and translation.
+ 
+<b>Filename Conventions</b>
+ 
+Filename conventions are the rules used to form names that uniquely identify
+files in a given file system. Although each installable file system can have
+specific rules about how individual components in a directory or filename
+are formed, all file systems follow the same general conventions for
+combining components. For example, the FAT file system requires that file
+and directory names have the 8.3 filename format, HPFS allows names to be
+any length, but both file systems use the backslash (\) character to
+separate directory names and the filename when forming a path.
+ 
+When creating names for directories and files or when processing names
+supplied by the user, applications should follow these general rules:
+ 
+1  Process a path as a null-terminated string. An application can determine
+   maximum length for a path by using the DosQSysInfo function.
+ 
+2  Use any character in the current code page for a name, but do not use a
+   path separator, a character in the range 0 through 31, or any character
+   explicitly disallowed by the file system. Although a name can contain
+   characters above 127, an application must be able to switch code pages if
+   necessary to access the corresponding file.
+ 
+3  Compare names using a case-insensitive comparison. Names such as ABC,
+   Abc, and abc are considered to be the same name.
+ 
+4  Use the backslash (\) and/or the forward slash (/) to separate components
+   in a path. No other character is accepted as a path separator.
+ 
+5  Use the dot (.) as a directory component in a path to represent the
+   current directory.
+ 
+6  Use two dots (..) as a directory component in a path to represent the
+   parent of the current directory.
+ 
+7  Use a period (.) to separate components in a directory name or filename.
+   Unless explicitly defined by a file system, there are no restrictions on
+   the number of components in a name.
+ 
+<b>Filenames in DOS-Compatibility Mode</b>
+ 
+For compatibility with existing DOS 3.x applications, all file systems
+support the FAT file system's 8.3 filename format. This means that
+applications running in DOS-compatibility mode can access files on non-FAT
+file systems if the filenames have the 8.3 format. To guarantee this rule,
+MS OS/2 automatically applies the 8.3 truncation rules to all filenames
+given in file-system requests from DOS-compatibility mode.
+ 
+<b>Filenames in User Input</b>
+ 
+Users often supply filenames as part of an application's command line or in
+response to a prompt from the application. Traditionally, users have been
+able to supply more than one filename on the command line or in a prompt by
+separating the names with certain characters, such as a blank space. In some
+file systems, however, traditional separators can be used as valid filename
+characters. This means that some additional conventions are required to
+ensure that an application processes all characters in a name.
+ 
+When an application processes arguments (including filenames) from its
+command line, the application should treat the double quotation mark (") and
+the caret (^) as quotation characters. All characters between the starting
+and closing double quotation marks should be processed as a single argument.
+The character immediately following the caret should be processed as part of
+the current argument. In both cases, the quotation characters are discarded
+and not treated as part of the final argument.
+ 
+When an application processes two or more filenames from a dialog box or
+other prompt, it expects the user to enter each filename on a new line. For
+example, a Presentation Manager application should use a multiple-line entry
+field to prompt for multiple filenames. This makes the use of quotation
+characters unnecessary.
+ 
+When an application is started from File Manager, File Manager may construct
+a command line for the application. If the command line includes filenames,
+File Manager separates each argument with a space character and marks the
+end of the argument list with two null characters. Programs that start other
+applications by using the DosExecPgm function also can pass arguments using
+this convention or by using quotation characters. In practice, most
+applications receive a command line as a single, null-terminated string.
+Therefore, applications that use the DosExecPgm function should prepare
+command lines as a single string with any filenames in the string enclosed
+in quotation marks.
+ 
+<b>Metacharacters in Filenames</b>
+ 
+To give the user a shortcut to entering long lists of names, applications
+that accept more than one filename on their command line can allow
+metacharacters in filenames. The metacharacters, the asterisk (*) and the
+question mark (?), represent placeholders in a filename. Although a name
+that contains metacharacters is not a complete filename, an application can
+use functions, such as DosFindFirst and DosEditName, to expand the name
+(replace the metacharacters) to create one or more valid filenames.
+ 
+An application can expand a name with metacharacters to a list of filenames
+by using the DosFindFirst function. The asterisk (*) matches one or more
+characters, including blanks. The question mark (?) matches one character,
+unless that character is a period (.). To match a period, the original name
+must contain a period.
+ 
+An application can create a new filename from an existing name by using the
+<b>DosEditName</b> function. This function takes a template (a name with
+metacharacters) and expands it, using characters from an existing name. An
+asterisk (*) in the template directs the function to copy all characters in
+the existing name until it locates a character that matches the character
+following the asterisk. A question mark (?) directs the function to copy one
+character unless that character is a period. The period (.) in the template
+directs the function look for and move to the next period in the existing
+name, skipping any characters between the current position and the period.
+ 
+The metacharacters are illegal in all but the last component of a path.
+ 
+<b>File-System Errors</b>
+ 
+Some MS OS/2 file-system functions return the following errors:
+ 
+<b>Value                   Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>ERROR_WRITE_PROTECT</i>     The disk in the drive is write-protected.
+ 
+<i>ERROR_BAD_UNIT</i>          There is a breakdown of internal consistency in
+                        mapping between the logical drive and the device
+                        driver. Internal error.
+ 
+<i>ERROR_NOT_READY</i>         The device is not ready.
+ 
+<i>ERROR_BAD_COMMAND</i>       There is a breakdown of internal consistency between
+                        the expected capability of a device driver and its
+                        true capability.
+ 
+<i>ERROR_CRC</i>               The device driver detected a cyclic redundancy check
+                        (CRC) mismatch.
+ 
+<i>ERROR_BAD_LENGTH</i>        There is a breakdown of internal consistency between
+                        the expected length of a request packet and the true
+                        length. Internal error.
+ 
+<i>ERROR_SEEK</i>              The device driver detected an error during a seek
+                        operation.
+ 
+<i>ERROR_NOT_DOS_DISK</i>      The disk is not recognized as being manageable by MS
+                        OS/2.
+ 
+<i>ERROR_SECTOR_NOT_FOUND</i>  The device is unable to find the specific sector.
+ 
+<i>ERROR_OUT_OF_PAPER</i>      The printer is out of paper.
+ 
+<i>ERROR_WRITE_FAULT</i>       Other write-specific error.
+ 
+<i>ERROR_READ_FAULT</i>        Other read-specific error.
+ 
+<i>ERROR_GEN_FAILURE</i>       Other error.
+ 
+There are also errors defined by and specific to the specific device driver.
+These are indicated by either 0xFF or 0xFE in the high byte of the error
+code.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

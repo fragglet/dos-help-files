@@ -1,0 +1,127 @@
+<html>
+
+<head>
+<title>WinSetClipbrdData (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinSetClipbrdData (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Clipboard_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Clipboard 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#clipboard messages 1.2'>Message Group</a><span class='grhilite'>►</span>         </i><span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinSetClipbrdOwner.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINCLIPBOARD
+ 
+BOOL WinSetClipbrdData(hab, ulData, fmt, fsFmtInfo)
+HAB hab;             /* handle of the anchor block */
+ULONG ulData;        /* data object                */
+USHORT fmt;          /* specifies the format       */
+USHORT fsFmtInfo;    /* specifies the data type    */
+ 
+The WinSetClipbrdData function puts data into the clipboard. Data of the
+specified format already in the clipboard is freed by this function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hab</i>        Identifies an anchor block.
+ 
+<i>ulData</i>     Specifies the data object being put into the clipboard. If this
+           parameter is NULL, a WM_RENDERFMT message is sent to the
+           clipboard owner window, to render the format when the
+           WinQueryClipbrdData function is called with the specified format.
+           Once the data object has been put into the clipboard, the object
+           it refers to (if given by a reference such as a selector or
+           handle) is no longer accessible by the application. To access the
+           data after it has been placed into the clipboard, use the
+           WinQueryClipbrdData function.
+ 
+<i>fmt      </i>  Specifies the format of the data object specified by the ulData
+           parameter. The following list describes the standard clipboard
+           formats:
+ 
+           Value           Meaning
+           ─────────────────────────────────────────────────────────────────
+           CF_BITMAP       The data is a bitmap. The CFI_HANDLE memory-model
+                           flag must be set in the fsFmtInfo parameter.
+ 
+           CF_DSPBITMAP    The data is a bitmap representation of a private
+                           data format. The clipboard viewer can use this
+                           format to display a private format. The
+                           memory-model flag CFI_HANDLE must be set in the
+                           fsFmtInfo parameter.
+ 
+           CF_METAFILE     The data is a metafile. The CFI_HANDLE
+                           memory-model flag must be set in the fsFmtInfo
+                           parameter.
+ 
+           CF_DSPMETAFILE  The data is a metafile representation of a
+                           private data format. The clipboard viewer can use
+                           this format to display a private format. The
+                           memory-model flag CFI_HANDLE must be set in the
+                           fsFmtInfo parameter.
+ 
+           CF_TEXT         The data is an array of text characters, which
+                           may include newline characters to mark line
+                           breaks. The null character indicates the end of
+                           the text data. The CFI_SELECTOR memory-model flag
+                           must be set in the fsFmtInfo parameter.
+ 
+           CF_DSPTEXT      The data is a textual representation of a private
+                           data format. The clipboard viewer can use this
+                           format to display a private format. The
+                           memory-model flag CFI_SELECTOR must be set in the
+                           fsFmtInfo parameter.
+ 
+<i>fsFmtInfo  Specifies the ty</i>pe of data specified by the ulData parameter.
+           This consists of memory-model and usage flags, as follows:
+ 
+           Memory-model flag  Meaning
+           ─────────────────────────────────────────────────────────────────
+           CFI_HANDLE         Handle is the handle to a metafile or bitmap.
+ 
+           CFI_SELECTOR       Handle is a selector plus zero offset to a
+                              segment in storage.
+ 
+           Usage flag        Meaning
+           ─────────────────────────────────────────────────────────────────
+           CFI_OWNERDISPLAY  Format will be drawn by the clipboard owner in
+                             the clipboard-viewer window by means of the
+                             WM_PAINTCLIPBOARD message. The ulData parameter
+                             should be NULL.
+ 
+           CFI_OWNERFREE     Handle is not freed by the WinEmptyClipboard
+                             function. The application must free the data,
+                             if necessary.
+ 
+           Any number of the usage flags may be specified, but only one of
+           the memory models may be specified. When using WinSetClipbrdData
+           for user-defined formats, an application puts a user-defined
+           format into the clipboard. It may then specify the CFI_SELECTOR
+           memory model. The system then saves the selector so that if the
+           calling application terminates, normally or abnormally, the data
+           is still available. The system frees the selector from the
+           calling process; therefore, the calling process may no longer use
+           the selector.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if data is placed in the clipboard, or FALSE if an
+error occurred.
+ 
+<b>See Also</b>
+ 
+<b>WinEmptyClipbrd, WinQueryClipbrdData</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

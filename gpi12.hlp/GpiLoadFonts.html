@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<title>GpiLoadFonts (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiLoadFonts (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='text_output.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Fonts and Character Primitives 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L8101.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiLoadMetaFile.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPILCIDS
+ 
+BOOL GpiLoadFonts(hab, pszFileName)
+HAB hab;            /* anchor-block handle */
+PSZ pszFileName;    /* pointer to filename */
+ 
+The GpiLoadFonts function loads fonts from the specified resource file. Once
+loaded, the fonts are private fonts and can be used by any thread in the
+process. Any other process can use the fonts but only if it also loads the
+font by using the GpiLoadFonts. The function loads a copy of the fonts once
+only. Any subsequent call to the function by another process for the same
+fonts simply increments the use count for the resource and gives that
+process access.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hab</i>          Identifies the anchor block.
+ 
+<i>pszFileName</i>  Points to a null-terminated string. This string must be a valid
+             MS OS/2 filename. If it does not specify a path and the
+             filename extension, the function appends the default extension
+             (.dll) and searches for the font resource file in the
+             directories specified by the libpath command in the config.sys
+             file.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+the following:
+ 
+     PMERR_INV_FONT_FILE_DATA
+ 
+<b>Example</b>
+ 
+This example uses the GpiLoadFonts function to load all fonts from the font
+resource file helv.dll. The GpiQueryFonts function retrieves the number of
+fonts loaded.
+ 
+LONG cFonts = 0L;
+ 
+GpiLoadFonts(hab, "helv");
+cFonts = GpiQueryFonts(hps, QF_PRIVATE, (PSZ) NULL, &amp;cFonts, 0L,
+    (PFONTMETRICS) NULL);
+ 
+<b>See Also</b>
+ 
+<b>GpiCreateLogFont, GpiDeleteSetId, GpiQueryFonts, GpiUnloadFonts,</b>
+<b>WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

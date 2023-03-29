@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>VioModeUndo (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioModeUndo (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioModeWait.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioModeUndo(fRelinquish, fTerminate, hvio)
+USHORT fRelinquish;    /* ownership flag   */
+USHORT fTerminate;     /* termination flag */
+USHORT hvio;           /* video handle     */
+ 
+The VioModeUndo function cancels a request by a process to be notified of a
+change in video mode. A process makes this request by calling the
+<b>VioModeWait</b> function. The request forces the calling thread to wait until
+the video mode changes. The VioModeUndo function cancels the request and
+permits the thread to continue (or ends the thread, if requested to do so).
+ 
+MS OS/2 permits only one process in a screen group to request notification
+of a video-mode change. The first process to make a request owns it.
+Thereafter, other processes must wait for the owning process to relinquish
+the request before being granted ownership. To force a process to relinquish
+ownership of the request, use the VioModeUndo function.
+ 
+Only the process that owns the change-mode request may call the VioModeUndo
+function.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>fRelinquish</i>  Specifies whether the process should retain or relinquish
+             ownership of the request. If this parameter is UNDOI_GETOWNER,
+             the process retains ownership and can make the request again
+             without competing with other processes. If this parameter is
+             UNDOI_RELEASEOWNER, the process relinquishes ownership of the
+             request and is canceled by VioModeUndo.
+ 
+<i>fTerminate</i>   Specifies whether to terminate the thread waiting for the mode
+             change. If this parameter is UNDOK_ERRORCODE, the thread
+             continues and receives an error value from the VioModeWait
+             function. If the parameter is UNDOK_TERMINATE, the thread
+             terminates.
+ 
+<i>hvio</i>         Identifies an advanced video-input-and-output (AVIO)
+             presentation space. For AVIO programs, this handle must have
+             been created previously using the VioCreatePS function. For
+             other programs, hvio must be NULL.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_VIO_FUNCTION_OWNED
+     ERROR_VIO_INVALID_PARMS
+     ERROR_VIO_NO_MODE_THREAD
+ 
+<b>See Also</b>
+ 
+<b>VioCreatePS, VioModeWait</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

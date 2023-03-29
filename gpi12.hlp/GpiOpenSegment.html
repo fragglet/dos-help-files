@@ -1,0 +1,117 @@
+<html>
+
+<head>
+<title>GpiOpenSegment (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiOpenSegment (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='retained_graphics.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiOutlinePath.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPISEGMENTS
+ 
+BOOL GpiOpenSegment(hps, idSegment)
+HPS hps;           /* presentation-space handle */
+LONG idSegment;    /* segment identifier        */
+ 
+The GpiOpenSegment function opens the segment specified by the idSegment
+parameter. The function creates a new segment if a segment having the
+specified identifier does not already exist. Otherwise, it opens the
+segment. Once a segment is opened or created, the system stores an element
+in the segment for each subsequent primitive and attribute function, up to
+the next call to the GpiCloseSegment function. If the segment previously
+existed, the system either replaces the old elements with the new or inserts
+the new elements, depending on the segment editing mode.
+ 
+The function can create a segment when the drawing mode is set to either
+DM_RETAIN or DM_DRAWANDRETAIN but can open an existing segment only when the
+drawing mode is DM_RETAIN. (The GpiOpenSegment function can also create a
+segment when the drawing mode is DM_DRAW, but subsequent elements are not
+stored.)
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>idSegment</i>  Specifies the segment identifier. The segment identifier must be
+           a positive integer. If the identifier is unique──that is, has not
+           been used before with the presentation space──the function
+           creates a new segment. Zero is reserved for unnamed segments.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_ALREADY_IN_SRG
+     PMERR_AREA_INCOMPLETE
+     PMERR_DYNAMIC_SEG_ZERO_INV
+     PMERR_IMAGE_INCOMPLETE
+     PMERR_INV_HPS
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_INV_MODE_FOR_OPEN_DYN
+     PMERR_INV_MODE_FOR_REOPEN_SEG
+     PMERR_INV_SEG_NAME
+     PMERR_PATH_INCOMPLETE
+     PMERR_PS_BUSY
+     PMERR_UNCHAINED_SEG_ZERO_INV
+ 
+<b>Comments</b>
+ 
+If the segment identifier is zero, the function creates an unnamed segment.
+An unnamed segment is like any other segment except it cannot be referenced
+by identifiers in subsequent segment functions. For example, an unnamed
+segment cannot be drawn directly since the GpiDrawSegment function requires
+a segment identifier, but the unnamed segment can be drawn if it is added to
+the picture chain. GpiOpenSegment creates a new unnamed segment for each
+call specifying the zero identifier. Any number of unnamed segments can be
+created, and the unnamed segments continue to exist until all segments are
+deleted.
+ 
+The GpiOpenSegment function assigns segment attributes to each new segment.
+The initial segment attributes are set by the GpiSetInitialSegmentAttrs
+function. If the initial attributes specify a dynamic segment, the segment
+can be created only in DM_RETAIN drawing mode.
+ 
+Only one segment per presentation space can be open at a time.
+ 
+<b>Example</b>
+ 
+This example uses the GpiOpenSegment to create a new segment. The segment is
+subsequently drawn by using the GpiDrawSegment function.
+ 
+POINTL ptlStart = { 0, 0 };
+POINTL ptlTriangle[] = { 100, 100, 200, 0, 0, 0 };
+ 
+GpiOpenSegment(hps, 1L);            /* opens the segment             */
+GpiMove(hps, &amp;ptlStart);            /* moves to starting point (0,0) */
+GpiPolyLine(hps, 3L, ptlTriangle);  /* draws triangle                */
+GpiCloseSegment(hps);               /* closes the segment            */
+ 
+GpiDrawSegment(hps, 1L);
+ 
+<b>See Also</b>
+ 
+<b>GpiCloseSegment, GpiErrorSegmentData, GpiSetInitialSegmentAttrs,</b>
+<b>GpiSetSegmentAttrs, GpiSetViewingTransformMatrix, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

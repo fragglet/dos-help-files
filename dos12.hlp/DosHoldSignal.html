@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<title>DosHoldSignal (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosHoldSignal (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='signals.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Interprocess Communication 1.2'>Overview</a><span class='grhilite'>►</span>                  </i>        <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosInsMessage.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSSIGNALS
+ 
+USHORT DosHoldSignal(fDisable)
+USHORT fDisable;    /* disable/enable signals */
+ 
+The DosHoldSignal function disables or enables signal processing for the
+current process.
+ 
+The DosHoldSignal function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>fDisable</i>   Specifies whether to disable or enable signals that are intended
+           for the current process. If this parameter is HLDSIG_DISABLE, the
+           function disables signals. If it is HLDSIG_ENABLE, the function
+           enables signals and restores the request count to its value
+           before the last call to DosHoldSignal.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_INVALID_FUNCTION
+ 
+<b>Comments</b>
+ 
+If the fDisable parameter is HLDSIG_DISABLE, the function holds all signals
+without processing them until DosHoldSignal is called again with fDisable
+set to HLDSIG_ENABLE. Signals should be held for as little time as possible;
+if necessary, a signal should be released and then held again.
+ 
+Requests to disable and enable signal processing are cumulative. This means
+two requests to disable processing must be followed by two requests to
+enable processing before processing is enabled.
+ 
+The DosHoldSignal function is intended to be used by library routines,
+subsystems, and similar code that need to prevent a possible signal from
+interfering with the completion of the current activity──for instance,
+activity in locked segments or in temporarily reserved resources.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restriction applies to the DosHoldSignal
+function:
+ 
+♦  Only the signal interrupt (SIG_CTRLC) and signal break (SIG_CTRLBREAK)
+   signals are recognized.
+ 
+<b>Example</b>
+ 
+This example calls the DosHoldSignal function to disable signals and calls
+the DosEnterCritSec function to stop all other threads. When the processing
+of the critical section of code is completed, the DosHoldSignal function
+enables signals again:
+ 
+DosHoldSignal(HLDSIG_DISABLE);       /* disables signals        */
+DosEnterCritSec();                   /* enters critical section */
+    .
+    .
+    .
+DosExitCritSec();                    /* exits critical section  */
+DosHoldSignal(HLDSIG_ENABLE);        /* enables signals         */
+ 
+<b>See Also</b>
+ 
+<b>DosCLIAccess, DosEnterCritSec, DosFlagProcess</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

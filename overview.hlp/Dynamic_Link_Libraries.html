@@ -1,0 +1,327 @@
+<html>
+
+<head>
+<title>About Dynamic-Link Libraries (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Dynamic-Link Libraries (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Dynamic_Link_Libraries.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#dynamic link functions 1.2'>Function Group</a><span class='grhilite'>►</span>           </i>          <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Extended_Attributes.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                        About Dynamic-Link Libraries
+ 
+This topic describes the portions of MS OS/2 that allow you to dynamically
+link functions in dynamic-link libraries to your programs. It also describes
+how to build dynamic-link libraries. You should also be familiar with the
+following topic:
+ 
+    <span class='grhilite'>◄</span><a href='processes.html'>Multitasking</a><span class='grhilite'>►</span>
+ 
+Dynamic linking is a way for a program to gain access at run time to
+functions that are not part of the program's executable code. With dynamic
+linking, a program loads a dynamic-link library (also called a module),
+retrieves the address of a function in that library, and calls the function
+to carry out a task.
+ 
+Any application can use the functions contained in a dynamic-link library.
+The only requirement is that you must import the function name so that the
+reference can be resolved when you run the application. There are three ways
+to import the name of a dynamic-link function:
+ 
+♦  Specify the import library of the dynamic-link library during linking.
+ 
+♦  Specify the function name in the IMPORTS statement of the application's
+   module-definition file.
+ 
+♦  Use the MS OS/2 dynamic-link functions to import the function during
+   execution of the application.
+ 
+For most applications, function names are resolved by using an import
+library. For example, the file os2.lib is an import library that contains
+import records for all the MS OS/2 functions. Because much of the code for
+MS OS/2 is in dynamic-link libraries, the import library is needed to
+prepare MS OS/2 programs for execution.
+ 
+The IMPORTS statement in a program's module-definition file is similar to
+the import library, except that you must supply the information needed by
+the linker to build the import records of the functions you use.
+ 
+The MS OS/2 dynamic-link functions let a program load dynamic-link libraries
+and import functions while the program runs. Although the dynamic-link
+functions can be used to import any functions (including the MS OS/2 system
+functions), they are more often used to import functions in device drivers
+or in special-purpose libraries. Using an import library or the IMPORTS
+statement is more common than using the dynamic-link functions, since in
+those cases MS OS/2 automatically loads and links the specified function for
+you.
+ 
+You can load any number of dynamic-link libraries and create links to any of
+the functions in the libraries. It is a good idea to free libraries whenever
+you are not using them, however, since this frees memory and avoids
+unnecessary swapping.
+ 
+<b>Building Dynamic-Link Libraries</b>
+ 
+This section describes how to build a dynamic-link library. A dynamic-link
+library usually contains executable code for common functions. With standard
+libraries, such as the C-language run-time library, the code for common
+functions is combined with the program code when the program is created, but
+with a dynamic-link library the code is not combined. Instead, the program
+contains nothing more than an import record of the function and the name of
+the dynamic-link library containing it. The function is not linked until the
+program needs it.
+ 
+Using a dynamic-link library saves memory, since the library is loaded only
+once. All programs that use functions in the library share the library's
+code. To avoid conflicts, each program uses its own stack when calling a
+library function.
+ 
+After creating the dynamic-link library, remember to copy it to one of the
+directories specified by the libpath command in your config.sys file.
+ 
+<b>The Source File</b>
+ 
+The following simple dynamic-link-library source file, dynlink.c,
+illustrates how a dynamic-link library is built:
+ 
+#include &lt;os2.h&gt;
+int _acrtused = 0;
+ 
+EXPENTRY Sample(pchString, cbLength)
+PCH pchString;
+USHORT cbLength;
+{
+    USHORT usBytes;
+    DosWrite(1, pchString, cbLength, &amp;usBytes);
+}
+ 
+As with all MS OS/2 programs, the os2.h file is included in the library
+(since the DosWrite function is called). Notice that the _acrtused variable
+is declared and initialized to zero. This directs the linker not to load the
+<i>crt0</i> start-up module, which is not needed with dynamic-link libraries.
+ 
+The function Sample is declared with the EXPENTRY attribute. This attribute,
+defined in the os2.h file, identifies the function as an export entry.
+Export entries use the Pascal calling conventions and require a far call to
+invoke them. The far call is necessary because a dynamic-link library always
+resides in a different segment from that of the calling program.
+ 
+Dynamic-link libraries can contain either global or local variables. If your
+library uses global variables, the data segment of the calling program must
+be pushed on the stack and then reloaded with the library's own data
+segment. The calling program's data segment must be restored before control
+returns from the library. Compilers such as the Microsoft C Optimizing
+Compiler provide command-line options and special keywords to automatically
+insert the code needed to push and pop the data segment. Strings are always
+treated as global variables.
+ 
+Dynamic-link libraries must not assume that the stack and the global data
+are located in the same segment. Since a calling program must use its own
+stack when calling a function in a dynamic-link library, the ss register
+will not be equal to the ds register if the dynamic-link library has its own
+data segment.
+ 
+You must not include stack probes when compiling a dynamic-link library.
+Because the stack setup for dynamic-link libraries differs from the stack
+setup for MS OS/2 programs, stack checking would cause unpredictable
+results.
+ 
+<b>The Module-Definition File</b>
+ 
+Each dynamic-link library must use export definitions to make its functions
+directly available to other modules. You supply an export definition for a
+dynamic-link library in its module-definition file.
+ 
+A module-definition file describes the name, attributes, exports, imports,
+and other characteristics of a program or library for MS OS/2. This file is
+optional for MS OS/2 programs but is required for dynamic-link libraries.
+ 
+For example, the dynamic-link library dynlink.dll contains the function
+Sample, which can be called from other programs. To make Sample available to
+calling programs, the module-definition file dynlink.def contains the
+following lines:
+ 
+LIBRARY DYNLINK
+EXPORTS SAMPLE
+ 
+The LIBRARY statement tells the linker that the file dynlink is a
+dynamic-link library. The EXPORTS statement tells the linker that the
+function Sample in dynlink is available for other programs to call. (The
+Microsoft C Optimizing Compiler converts the names of functions that use the
+Pascal calling conventions to uppercase letters.) A program that calls the
+dynamic-link library dynlink must specify an import definition for Sample
+(unless an import library for dynlink exists) by using the following
+<b>IMPORTS</b> statement in the program's module-definition file:
+ 
+IMPORTS DYNLINK.SAMPLE
+ 
+You must list every function that will be called at run time in the
+module-definition file of the dynamic-link library.
+ 
+<b>Import Libraries</b>
+ 
+An alternative way to specify import definitions is to create an import
+library. If you have many functions in a dynamic-link library, it is usually
+easier to create an import library than to use import definitions. The
+import library os2.lib is an example of an import library that is linked
+with all MS OS/2 applications.
+ 
+To generate an import library, you must first create a module-definition
+file for the dynamic-link library. As in the preceding example, this file
+should contain LIBRARY and EXPORTS statements. Once you have created the
+module-definition file, use the Microsoft Import Library Manager (implib) to
+create an import library to use during linking.
+ 
+For example, to create the import library dynlink.lib for the dynamic-link
+library dynlink.dll, run implib as follows:
+ 
+implib dynlink.lib dynlink.def
+ 
+If your program makes calls to the newly created dynamic-link library, its
+import-library name must be included in the library field of the linker
+command line. For example, if the program dcall calls dynlink.dll, link
+<b>dcall</b> with the library as follows:
+ 
+link /noi dcall.obj,,,os2.lib dynlink.lib,dcall.def
+ 
+You can also use assembly language to write a dynamic-link library. If you
+choose to do so, you must declare each function in your library as follows:
+ 
+<i>functionname proc far</i>
+ 
+You should also declare the functions to be public.
+ 
+Your assembly-language dynamic-link-library functions must set up a stack
+frame for the parameters being passed to them. To set up the stack frame, a
+function must do the following:
+ 
+♦  Set up the frame pointer (bp).
+ 
+♦  Set up space for local variables.
+ 
+♦  Save the old ds register and set up the data segment for your
+   dynamic-link library.
+ 
+♦  Save the si, di, and ss registers (if the values will be changed).
+ 
+♦  Push MS OS/2 parameters on the stack.
+ 
+The function must first set up a frame pointer by pushing the old bp
+register value on the stack and setting the bp register equal to the sp
+register, as follows:
+ 
+push    bp
+mov     bp,sp
+ 
+After pushing the old ds register value on the stack and setting the bp
+register equal to the sp register, the function must move the stack pointer
+down and push local variables on the stack in they are needed. For example,
+the following lines save the old bp value, assign the bp register to sp, and
+move sp so that it points to local variables:
+ 
+push    bp
+mov     bp,sp
+sub     sp,04
+ 
+Local variables are pushed on the stack in the positions (bp-2), (bp-4),
+(bp-6), and so on. Thus, you can use these addresses to access the
+variables.
+ 
+Before returning to the calling program, the function should restore sp by
+setting it equal to bp.
+ 
+If you are creating a dynamic-link library that has an automatic data
+segment, each function must set the ds register to the proper value when it
+starts. To do this, the function should set DGROUP so that it points to the
+data segment of the dynamic-link library, as follows:
+ 
+DGROUP  GROUP   data
+ 
+Each function in the dynamic-link library that needs to use the library's
+automatic data segment must save the old data segment and reload the ds
+register so that it points to the data segment of the dynamic-link library.
+Placed at the beginning of the function, the following lines of code do
+this:
+ 
+push    ds
+mov     ax, seg DGROUP
+mov     ds,ax
+ 
+Before the function returns to the calling program, it must restore the old
+<b>ds</b> register value by popping it off the stack, as follows:
+ 
+pop     ds
+ 
+Functions that use the si, di, and ss registers should save the old register
+values by pushing them on the stack, after setting the frame pointer and
+allocating any existing local data. The following example shows how to push
+these registers on the stack:
+ 
+push    bp
+mov     bp,sp
+sub     sp,4
+push    si
+push    di
+push    ss
+ 
+Before returning to the calling program, the function must pop the registers
+off the stack in reverse order, as follows:
+ 
+pop     ss
+pop     di
+pop     si
+ 
+Since MS OS/2 uses the Pascal calling convention to pass parameters to the
+MS OS/2 system functions, it is recommended that you use the same convention
+for the dynamic-link-library functions that you create. Although the Pascal
+calling convention is not required, it provides a consistent interface for
+programs that call functions in dynamic-link libraries. If the Pascal
+calling convention is used, applications must push parameters on the stack
+before calling the dynamic-link-library function. (Under the Pascal
+convention, the number of parameters required by a given function is
+fixed.)
+ 
+When the calling program exits from a function for which parameters were
+pushed on the stack, the called function should always restore the ds and
+<b>bp registers a</b>nd then use a ret nn instruction, where nn is the number of
+bytes pushed upon entry.
+ 
+Return values are returned in the ax (16-bit) register or in the dx:ax
+(32-bit) registers, where dx holds the high 16 bits and ax holds the low 16
+bits.
+ 
+<b>The Initialization Function</b>
+ 
+You can optionally add an initialization function to a dynamic-link library.
+This function, which is called before the actual code for the dynamic-link
+library is called, performs user-defined operations. As with
+dynamic-link-library functions, you must push existing registers on the
+stack before using them in an initialization routine and restore them in
+reverse order before exiting from the routine.
+ 
+Be aware that when MS OS/2 starts executing a dynamic-link library, it sets
+the CPU registers to known values. For a list of these initial values, see
+the topic <span class='grhilite'>◄</span><a href='processes.html'>Multitasking</a><span class='grhilite'>►</span>.
+ 
+Initialization functions must be written in assembly language, because the
+assembly-language end statement is required to identify the start of the
+function. In C, there is no equivalent end statement. You can, however,
+write your initialization code in assembly language and the library
+functions in C, assemble and compile these files separately, and then
+combine them during linking.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

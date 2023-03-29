@@ -1,0 +1,132 @@
+<html>
+
+<head>
+<title>About Keyboard Accelerators (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Keyboard Accelerators (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Keyboard_Accelerators.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Accelerator functions 1.2'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#accelerator table messages 1.2'>Message Group</a><span class='grhilite'>►</span>    <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='List_Box_controls.html'>Next</a></i><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                        About Keyboard Accelerators
+ 
+This topic describes how to use accelerator tables in your applications. You
+should also be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='Menus.html'>Menus</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Frame_Windows.html'>Frame windows</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Messages_and_Message_Queues.html'>Messages and message queues</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='unknown#rc.exe'>MS OS/2 Resource Compiler</a><span class='grhilite'>►</span>
+ 
+Accelerators are keystrokes that generate command messages for an
+application; they elicit the same behavior as choosing a menu item. Menus
+provide an easy way to learn an application's command set, but accelerators
+provide quicker access to those commands.
+ 
+Accelerators filter keyboard input. Accelerator keystrokes are translated
+into command messages before they reach the application. When an accelerator
+is used, the application receives a command message rather than a keyboard
+message.
+ 
+Accelerators function differently from the usual keyboard-to-menu interface.
+By default, a user can use the ALT key to access submenus and the ARROW keys
+to move along the menu bar. Accelerators provide single keystrokes that
+generate command messages without the visual effects of pulling down menus
+or stepping from one item to another.
+ 
+Like menu items, accelerators can generate WM_COMMAND, WM_HELP, and
+<b>WM_SYSCOMMAND</b> messages, depending on the setting of the accelerator's style
+bits. Although accelerators are normally used to generate commands that
+already exist as menu items, they can also send commands that have no
+equivalent menu items.
+ 
+An accelerator table contains an array of accelerators. Accelerator tables
+exist at two levels within MS OS/2. MS OS/2 maintains a single accelerator
+table for the system queue and individual accelerator tables for application
+windows. Accelerators in the system queue apply to all applications──for
+example, the F1 key always generates a WM_HELP message. Having accelerators
+for individual application windows ensures that an application can define
+its own accelerators without interfering with other applications. An
+accelerator for an application window overrides the accelerator in the
+system queue. An application can modify both its own accelerator table and
+the system accelerator table.
+ 
+<b>Accelerator Tables in a Resource-Definition File</b>
+ 
+An application that uses accelerators typically creates an accelerator table
+resource-definition file containing its accelerators and associates that
+resource with a standard frame window when the window is created.
+ 
+The resource-definition file of an accelerator table is a list of
+accelerator items. Each item defines the keystroke that triggers the
+accelerator, the command that the accelerator generates, and the
+accelerator's style. The style bits specify whether the keystroke is a
+virtual key, a character, or a scan code, and whether the generated message
+is WM_COMMAND, WM_SYSCOMMAND, or WM_HELP. (WM_COMMAND is the default
+message.)
+ 
+A resource-definition file for an accelerator table is shown in the
+following code fragment:
+ 
+ACCELTABLE      ID_ACCEL_RESOURCE
+BEGIN
+    VK_ESC,     IDM_ED_UNDO,   VIRTUALKEY,  SHIFT
+    VK_DELETE,  IDM_ED_CUT,    VIRTUALKEY
+    VK_F2,      IDM_ED_COPY,   VIRTUALKEY
+    VK_INSERT,  IDM_ED_PASTE,  VIRTUALKEY
+END
+ 
+This accelerator table has four accelerator items. The first one is
+triggered when the user presses SHIFT+ESC; it sends a WM_COMMAND message
+(the default) just as if the IDM_ED_UNDO menu item had been chosen.
+ 
+The accelerator table resource-definition file has a resource-identification
+number that is usually the same as the identifier of the application's menu
+resource; this allows the accelerator table to be associated with a standard
+frame window when the frame window is created. You can also define
+accelerator-table resources with other identification numbers and associate
+them with windows after the windows are created.
+ 
+<b>Accelerator-Table Data Structures</b>
+ 
+Applications that manipulate accelerator tables can refer to them with a
+32-bit handle (HACCEL). Using this handle allows an application to make most
+API function calls for accelerators without needing to account for the
+internal structures that define the accelerator table. To use accelerator
+tables in the default manner, it is sufficient to define the table in the
+resource-definition file and associate it with a standard frame window when
+creating the window. When an application needs to dynamically create or
+change an accelerator table, it must use the ACCEL and ACCELTABLE data
+structures.
+ 
+An accelerator table is made up of individual accelerator items. Each item
+is represented by an ACCEL data structure that defines the accelerator's
+style, keystroke, and command identifier.
+ 
+Typically, an application defines these aspects of the accelerator in the
+accelerator's resource-definition file, but the data structure can be built
+in memory at run time, if necessary.
+ 
+An accelerator table is made up of one or more accelerator items and
+information that specifies the number of accelerator items in the table and
+the code page used for the keystrokes in the accelerator items.
+ 
+Notice that the array of accelerator items is defined as having only one
+member. Applications that use accelerator-table data structures directly
+must allocate sufficient memory to hold all the items in the table.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

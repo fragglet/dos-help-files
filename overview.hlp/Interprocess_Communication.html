@@ -1,0 +1,409 @@
+<html>
+
+<head>
+<title>About Interprocess Communication (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Interprocess Communication (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Interprocess_Communication.html'>Using Section</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Keyboard.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                      About Interprocess Communication
+ 
+This topic describes system and RAM semaphores, signals, pipes, and queues.
+Semaphores let programs signal the completion of certain tasks and control
+access to resources that more than one thread or process may need to use.
+Signals let a user or a process control the execution of another process.
+Pipes let two or more related or unrelated processes to communicate as if
+they were reading from and writing to a file. Queues let one or more
+processes channel data to a specific process. You should also be familiar
+with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='File_Systems.html'>File systems</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='memory_manager.html'>Memory manager</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='processes.html'>Multitasking</a><span class='grhilite'>►</span>
+ 
+The following sections describe the methods used for passing information
+between processes. This exchange of data is particularly important in a
+multitasking system.
+ 
+<b>Semaphores</b>
+ 
+A semaphore is a special variable that a program can use to signal the
+beginning and ending of a given operation. Semaphores are typically used in
+conjunction with a limited resource to prevent more than one process or one
+thread within a process from accessing the resource at the same time. A
+process can create and use three types of semaphores: system, RAM, and
+fast-safe RAM.
+ 
+<b>System Semaphores</b>
+ 
+System semaphores are used between processes to control access to a shared
+resource. Any process can create a system semaphore by using the
+<b>DosCreateSem</b> function. Once the semaphore is created, any other process can
+use it as long as it knows the semaphore name.
+ 
+A system semaphore has a unique name that the process creating the semaphore
+must supply. The semaphore name has the following form:
+ 
+<b>\sem\name</b>
+ 
+The name parameter must conform to the rules for MS OS/2 filenames, but no
+actual file is created for the semaphore.
+ 
+MS OS/2 supplies a semaphore handle when a system semaphore is created. The
+process can use this handle in subsequent semaphore functions to set, clear,
+and wait for the semaphore.
+ 
+If any other process wants to use the system semaphore, it can open the
+semaphore by using the DosOpenSem function and supplying the specified
+semaphore name. When a process is finished using a system semaphore, it
+should close the semaphore by using the DosCloseSem function.
+ 
+To use a semaphore, the process sets the semaphore by using the DosSemSet
+function when it wants to access the shared resource and clears the
+semaphore by using the DosSemClear function when it is finished with the
+shared resource. If the semaphore is an exclusive semaphore (as specified
+when created), only the process that created the semaphore can set or clear
+it.
+ 
+Once a semaphore is set, the process can wait for that semaphore to become
+clear, or for a specified time interval to elapse, by using the DosSemWait
+function. Ideally, one process or thread waits for the semaphore while
+another process or thread carries out a task and then clears the semaphore.
+A process or thread can also wait for a given semaphore to become clear by
+using the DosSemSetWait, DosSemRequest, or DosMuxSemWait function.
+ 
+<b>RAM Semaphores</b>
+ 
+RAM semaphores are used by the threads in a given process. A RAM semaphore
+is an unsigned long variable defined as a global variable for the process.
+To use a RAM semaphore, a process simply passes to the semaphore functions a
+pointer to the unsigned long variable. The process does not need to create
+or open the semaphore, as it does a system semaphore. However, before the
+process uses a RAM semaphore for the first time, it must initialize the
+semaphore to zero.
+ 
+As with a system semaphore, a process sets and clears a RAM semaphore and
+can wait for that semaphore to become clear before continuing.
+ 
+Since a RAM semaphore is nothing more than a global variable, you must be
+especially careful to prevent its value from being changed in any way other
+than by using the semaphore functions. Changing the value of a RAM semaphore
+while it is in use can invalidate the semaphore's status.
+ 
+<b>Fast-Safe RAM Semaphores</b>
+ 
+Fast-safe RAM semaphores combine the reliability of a system semaphore with
+the performance of a RAM semaphore. These semaphores can be used between
+processes or between threads in a process.
+ 
+Like a RAM semaphore, a fast-safe RAM semaphore is a variable in memory. If
+a fast-safe RAM semaphore is used only by the threads in a given process, it
+can be declared as a global variable. If it is used by more than one
+process, it must be allocated as a shared segment so that each process has
+access to it.
+ 
+Each fast-safe RAM semaphore has a corresponding DOSFSRSEM structure that
+contains information about the process and thread that have set the
+semaphore, as well as a count of the number of times the semaphore has been
+set and a RAM semaphore.
+ 
+<b>Signals</b>
+ 
+A signal is special input from the user or from another process that causes
+a process to temporarily suspend execution while a signal-handler function
+is executed. A signal handler is simply a function that receives control
+when the signal occurs. A process receives a signal whenever the user
+presses the CTRL+C or CTRL+BREAK key while the process is running. A process
+also receives a signal when another process uses the DosSendSignal,
+<b>DosFlagProcess, or DosKillProcess function</b>.
+ 
+When the user presses CTRL+C or CTRL+BREAK in a full-screen session or when
+a full-screen program is in the active window of the Presentation Manager
+session, either the current foreground process or the last process to use
+the DosSetSigHandler function receives the signal. When a process calls the
+<b>DosSendSignal, DosFlagProcess, or DosKillProcess function, the pr</b>ocess
+specified by these functions receives the signal.
+ 
+When a process receives a signal, MS OS/2 suspends execution of the main
+thread (thread 1) of the process and passes control to the process's signal
+handler. If a process has not explicitly set a signal handler by using the
+<b>DosSetSigHandler</b> function, a default signal handler is used. The default
+signal handlers for the CTRL+C, CTRL+BREAK, and DosKillProcess signals
+terminate the process. The default signal handlers for the flag signals
+ignore the signal.
+ 
+A process can replace the default signal handler for any signal by using the
+<b>DosSetSigHandler</b> function. Although a signal handler has a specific form, it
+can carry out any action, such as cleaning up and saving files before
+terminating the process. When the handler has completed its activities, it
+can either terminate the program or return control to the point at which the
+process was suspended.
+ 
+<b>Pipes</b>
+ 
+The MS OS/2 pipe function, DosMakePipe, lets a program create a pipe that
+can be used to transfer information between related processes. A pipe is a
+special internal file that a process can write to and read from. The
+<b>DosMakePipe</b> function creates the pipe and supplies two file handles to the
+pipe: one for writing to the pipe, the other for reading from the pipe. A
+process can write to the pipe by using the DosWrite function and read from
+the pipe by using the DosRead function.
+ 
+A pipe is typically used to direct the output of one process to the standard
+input of another process. To do this, a process opens a pipe, duplicates the
+pipe read handle as the standard-input file for a child process, and then
+starts the child process. The parent process can then write to the pipe and
+the child process can read what the parent process has written.
+ 
+A pipe continues until both handles are closed. There can be no more than
+65,535 bytes of unread data in a pipe at any given time. The DosWrite
+function may wait for data to be read from the pipe before completing its
+operation. If the read handle is closed before the write handle is closed,
+writing to the pipe generates an error.
+ 
+<b>Named Pipes</b>
+ 
+A named pipe allows communication between unrelated processes. Unlike the
+case with pipes created by using DosMakePipe, any process that knows its
+name can open and use a named pipe. To use a named pipe, one process, called
+the server process, creates the pipe, and another process, called the client
+process, opens the pipe. The server process can then connect the pipe and
+the server and the client can pass data back and forth by reading from and
+writing to the pipe.
+ 
+The server process creates a named pipe by using the DosMakeNmPipe function.
+The function returns a pipe handle that can be used with subsequent pipe
+operations. A named pipe can be local or remote. A local named pipe can be
+used between any two processes on the same computer. A remote named pipe can
+be used between any two processes connected to the same local area network
+(LAN).
+ 
+Each named pipe must have a unique name that distinguishes it from other
+named pipes. A local-pipe name has the following form:
+ 
+<b>\pipe\name</b>
+ 
+A remote-pipe name has the following form:
+ 
+<b>\ser</b>ver\pipe\name
+ 
+The name parameter must conform to the rules for MS OS/2 filenames, but no
+actual file is created for the pipe.
+ 
+When a server process creates a pipe, the process specifies the direction of
+data through the pipe. The server uses an in-bound pipe if it intends to
+read data from the client process, an out-bound pipe if it intends to write
+data to the client, or a duplex pipe if it intends to both read from and
+write to the client.
+ 
+Data passes through a pipe as either bytes or messages, depending on the
+type of the pipe. The server process also specifies the pipe type when it
+creates a named pipe. If a pipe has byte type, the server and client process
+read and write bytes. If a pipe has message type, the processes read and
+write messages. A message is a block of data with a system-supplied header
+that is read or written as a single unit. The size and format of a message
+are defined by the server and client processes.
+ 
+The server process also specifies how many instances of the named pipe can
+be open. Although only one client process can be connected to the pipe at
+any time, several processes (up to the number of instances specified) can
+open the pipe at the same time. The instance count is useful if a process
+needs to restrict access to the named pipe. A process can also specify
+unlimited instances.
+ 
+When the server process creates a pipe, the server can also specify whether
+the named pipe will be inherited by child processes and whether the process
+writes data to a remote pipe immediately or waits to write the data when an
+internal buffer is full.
+ 
+<b>Working with Named Pipes</b>
+ 
+The server process establishes a connection to a client process by using the
+<b>DosConnectNmPipe</b> function. The client process must open the pipe by using
+the DosOpen function before the connection can be completed. If no client
+process has opened the pipe when the server process calls DosConnectNmPipe,
+the function either waits until a client opens the pipe or returns the error
+ERROR_PIPE_NOT_CONNECTED immediately. The action taken depends on whether
+the server process created the pipe to wait for data.
+ 
+If a client process receives ERROR_PIPE_BUSY from calling DosOpen, no
+instances of the given pipe are available. A process can wait for one to
+become available by using the DosWaitNmPipe function. The function waits
+until an instance is free or until the specified interval of time elapses.
+When an instance becomes free, the process can open the pipe by using the
+<b>DosOpen</b> function again. If several processes are waiting for an instance to
+become available, the system attempts to give the named pipe to the process
+that has been waiting the longest.
+ 
+The server process can disconnect a client from a pipe by using the
+<b>DosDisConnectNmPipe</b> function. Ideally, the client process closes the pipe by
+using the DosClose function before the server process disconnects the pipe.
+However, if the client process does not close the pipe, DosDisConnectNmPipe
+disconnects anyway and the client process receives errors if it attempts to
+access the closed pipe. Note that forcing the closure of the client's pipe
+may discard data in the pipe before the client reads the data.
+ 
+To synchronize data through a pipe, the server process can set the pipe so
+that read and write operations wait if no data is available or if there is
+no room in the pipe. Waiting permits one process to add or remove bytes to
+let the other process continue. The server can also set the pipe so that
+reading and writing do not wait. Waiting also affects whether
+<b>DosConnectNmPipe</b> waits for a client process to open the pipe.
+ 
+A process can read and write bytes to a named pipe by using the DosRead and
+<b>DosWrite functions or by</b> using the DosTransactNmPipe function. Depending on
+access mode, the function writes a message to the pipe, reads a message from
+the pipe, or both. If a named pipe contains any unread data or if the named
+pipe is not in message mode, the DosTransactNmPipe function fails. If
+reading from the pipe, DosTransactNmPipe does not return until a complete
+message is read. This is true even if the server set the pipe so that it
+does not wait when reading.
+ 
+A process can read data from a named pipe without also removing the data
+from the pipe by using the DosPeekNmPipe function. The function copies the
+specified number of bytes from the pipe, supplies a count of the number of
+bytes of data left in the pipe, and supplies a count of the number of bytes
+left in the current message, if any.
+ 
+<b>DosPeekNmPipe</b> also specifies the state of the pipe: connected, disconnected,
+listening, or closing. A pipe is connected when a client process has opened
+the pipe and the server has called DosConnectNmPipe. Only connected pipes
+permit processes to read from and write to them. A pipe is disconnected when
+the server process calls DosDisConnectNmPipe. A pipe is also disconnected
+when it is first created. A pipe is listening when the server has called
+<b>DosConnectNmPipe</b> but a client process has not yet opened the pipe. A pipe is
+closing when the client process has closed the pipe by using DosClose but
+the server process has not yet disconnected the pipe. The DosPeekNmPipe
+function never waits, regardless of whether the pipe was set to wait.
+ 
+A process can open, read from, write to, and close a named pipe by using the
+<b>DosCallNmPipe function. The function is</b> equivalent to calling the DosOpen,
+<b>DosTransactNmPipe, and DosClose functions. If no in</b>stances of the pipe are
+available, DosCallNmPipe waits for an instance or returns without opening
+the pipe if the specified interval of time elapses.
+ 
+A process can retrieve information about the state of the named pipe by
+using the DosQNmPHandState function. The state is a combination of the
+instance count, the access mode, and the pipe type specified when the pipe
+was created. DosQNmPHandState also specifies whether the process owning the
+handle is a server or client and whether the pipe waits if reading and
+writing cannot proceed.
+ 
+A process can modify the state of a named pipe by using the
+<b>DosSetNmPHandState</b> function. For example, it can change the reading mode for
+the pipe, allowing a process to read bytes from the pipe instead of
+messages.
+ 
+A process can retrieve information about a named pipe by using the
+<b>DosQNmPipeInfo</b> function. Information about the pipe is returned in a
+<b>PIPEINFO</b> structure and includes the name of the pipe, the instance count
+(the maximum number of times the pipe can be opened), the size of the input
+and output buffers for the pipe, and the client's pipe identifier, as
+follows:
+ 
+typedef struct _PIPEINFO {
+    USHORT cbOut;
+    USHORT cbIn;
+    BYTE   cbMaxInst;
+    BYTE   cbCurInst;
+    BYTE   cbName;
+    CHAR   szName[];
+} PIPEINFO;
+ 
+<b>Using Semaphores with Named Pipes</b>
+ 
+A server or client process can use system semaphores in conjunction with a
+named pipe to control access to the pipe. System semaphores are useful for
+any process that reads from several named pipes. The system clears a
+semaphore whenever data is available in the pipe. This means that the
+reading process can use the DosSemWait or DosMuxSemWait function to wait for
+data to arrive rather than devote a thread to periodically polling the
+pipe.
+ 
+To use a system semaphore with a pipe, the process associates the semaphore
+with the pipe by using the DosSetNmPipeSem function. One or two semaphores
+can be associated with a named pipe ── one for the server and one for the
+client. If there is already a semaphore associated with one end of the pipe,
+the old semaphore is replaced. A process can check the state of the
+semaphores by using the DosQNmPipeSemState function. Using system semaphores
+to control access to named pipes works only for local pipes.
+ 
+<b>Queues</b>
+ 
+A queue is a special linked list of data that a process can use to receive
+information from other processes. Processes pass information to a queue in
+the form of messages. The process that owns the queue can then read the
+messages from the queue.
+ 
+A program creates a queue by using the DosCreateQueue function and
+specifying a unique queue name. The queue name has the following form:
+ 
+<b>\queues\name</b>
+ 
+The name parameter must conform to the rules for MS OS/2 filenames, but no
+actual file is created for the queue.
+ 
+Once the queue has been created, other processes can open it by using the
+<b>DosOpenQueue</b> function and supplying the specified queue name. Processes that
+open the queue can write messages to it by using the DosWriteQueue function.
+The format of a queue message depends entirely on the process that creates
+the queue. The format and content must be understood by the processes
+writing messages to the queue.
+ 
+Only the process that created the queue can read messages from it, by using
+the DosReadQueue function. The owner process can also examine messages
+without removing them by using the DosPeekQueue function, or remove all
+messages from the queue by using the DosPurgeQueue function. The system
+automatically supplies the process identifier of the process that adds a
+message to the queue, so that the owner process can determine the origin of
+the message.
+ 
+If the queue is empty when a process attempts to read from it, the process
+can either wait for an element to become available or continue executing
+without reading from the queue. If a process manages one queue, it is
+usually a good idea for it to wait for an element. However, if a process
+manages several queues, waiting for one queue means that other queues cannot
+be read. To avoid this problem, a process can supply a semaphore when it
+calls the DosReadQueue or DosPeekQueue function. The process can then
+continue executing without reading from the queue, since the DosWriteQueue
+function will clear the semaphore when an element is ready. If the process
+uses a unique semaphore for each queue, it can use the DosMuxSemWait
+function to wait for the first queue to receive an element. The semaphore
+can be either a RAM semaphore or a system semaphore. If it is a RAM
+semaphore, it must be in shared memory. If it is a system semaphore, any
+process that writes to the queue must also open the semaphore by using the
+<b>DosOpenSem</b> function.
+ 
+The order in which the owner process reads messages from the queue depends
+on the type of queue. A queue can have first-in/first-out (FIFO),
+last-in/first-out (LIFO), or priority ordering. In priority ordering, the
+message with the highest priority is read first. Priority values range from
+0 (lowest priority) through 15 (highest priority).
+ 
+The DosReadQueue function reads either a specified element or the element at
+the beginning of the queue. (The beginning of the queue is determined by the
+queue priority. For example, the beginning of a queue with LIFO priority is
+the last element in the queue.) A process can use the DosPeekQueue function
+to examine the elements in the queue to determine which one to actually
+read. Each call to DosPeekQueue returns the identifier of the next element
+in the queue, so the function can be called recursively to move through the
+queue. The identifier of the desired element can then be supplied to
+<b>DosReadQueue</b>, to read that element from the queue.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

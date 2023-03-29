@@ -1,0 +1,273 @@
+<html>
+
+<head>
+<title>About Multiple-Line Entry-Field Controls (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Multiple-Line Entry-Field Controls (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_MLE_Controls.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#mle messages 1.2'>Message Group</a><span class='grhilite'>►</span>       </i>               <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='mouse_and_keyboard_input.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                  About Multiple-Line Entry-Field Controls
+ 
+This section describes how to use multiple-line entry fields to let the user
+view and edit text in an application. Before reading this section, you
+should be familiar with entry-field controls, messages and message queues,
+and standard user-interface guidelines.
+ 
+A multiple-line entry field (MLE) is a sophisticated control window that
+users use to view and edit multiple lines of text. An MLE provides all the
+text-editing capabilities of a simple text editor, making these features
+readily available to applications.
+ 
+You can create multiple-line entry fields by using the WinCreateWindow
+function or by specifying the MLE statement in a dialog-window template in a
+resource file.
+ 
+<b>MLE Text Editing</b>
+ 
+An MLE contains one or more lines of text. Each line consists of one or more
+characters and ends with one or more characters that represent the end of
+the line. The user inserts text by typing (when the MLE has the focus). The
+application can insert text at any time by using the MLM_INSERT message and
+specifying the text as a null-terminated string. The MLE inserts the new
+text at the cursor position or replaces the selected text.
+ 
+The entry mode determines the action of the MLE when the user inserts text.
+The entry mode can be set to overstrike or insertion. The user sets it by
+pressing the INS key. When overstrike mode is enabled, at least one
+character is always selected. This means that the MLM_INSERT message always
+replaces at least one character. If insert mode is enabled, the MLM_INSERT
+message replaces only characters the user or the application has selected.
+Otherwise, the MLE makes room for the inserted characters by moving existing
+characters to the right at the cursor position.
+ 
+The cursor position, identified by a flashing caret, is always specified as
+a character offset, relative to the beginning of text. The user sets the
+cursor position by moving the flashing caret by using the mouse or the ARROW
+keys. An application can set the cursor position by using the MLM_SETSEL
+message. This message directs the MLE to move the flashing caret to a given
+character position.
+ 
+The MLM_SETSEL message also sets the selection. The selection is one or more
+characters of text on which the MLE carries out an operation, such as
+deleting or copying. The user selects text by pressing the SHIFT key while
+moving the cursor. An application selects text by specifying the cursor
+position and anchor point using the MLM_SETSEL message. The selection is all
+text between the cursor position and the anchor point. If the cursor
+position and anchor point are equal, there is no selection. An application
+can retrieve the cursor position and/or anchor point by using the
+<b>MLM_QUERYSEL</b> message.
+ 
+The user can delete characters, one at a time, by pressing the DEL key or
+the BKSP key. These keys delete the character to the left of the cursor. An
+application can delete one or more characters by using the MLM_DELETE
+message. This message directs the MLE to delete a specified number of
+characters, starting at the given position. This message does not change the
+cursor position. An application can delete selected text by using the
+<b>MLM_CLEAR</b> message.
+ 
+An application can reverse the previous operation by using the MLM_UNDO
+message. This message directs the MLE to restore the entry field to its
+previous state. It is a quick way to fix users' editing mistakes.
+ 
+But not all operations can be undone. The application can determine whether
+the previous operation can be undone by using the MLM_QUERYUNDO message.
+This message returns TRUE and an indication of the type of operation that
+can be undone. An application can prevent a subsequent MLM_UNDO message from
+changing the state of the MLE by using the MLM_RESETUNDO message.
+ 
+<b>MLE Text Formatting</b>
+ 
+An application can retrieve the number of lines of text in an MLE by using
+the MLM_QUERYLINECOUNT message. It can retrieve the number of characters in
+the MLE by using the MLM_QUERYTEXTLENGTH message. The amount of text and,
+subsequently, the number of lines to be entered in an MLE depend on the text
+limit. An application can set the text limit by using the MLM_SETTEXTLIMIT
+message and determine the current limit by using the MLM_QUERYTEXTLIMIT
+message. The user cannot set the limit. If the user types to the text limit,
+the MLE beeps and ignores subsequent characters. If the application attempts
+to add text beyond the limit, the MLE truncates the text.
+ 
+An application can control the length of each line in an MLE by enabling
+word-wrapping. When word-wrapping is enabled, the MLE automatically breaks
+any line that is longer than the MLE is wide. An application can set
+word-wrapping by using the MLM_SETWRAP message, and it can determine whether
+the MLE is wrapping text by using the MLM_QUERYWRAP message. Unless the
+MLS_WORDWRAP style is specified when the MLE is created, word-wrapping is
+initially disabled.
+ 
+An application can set tab stops for an MLE by using the MLM_SETTABSTOP
+message. Tab stops specify the maximum width of tab character. When the user
+or an application inserts a tab character, the MLE expands the character so
+that it fills the space between cursor position and the next tab stop. The
+<b>MLM_SETTABSTOP</b> message actually sets the distance (specified in pixels)
+between tab stops, and the MLE provides as many tab stops as needed, no
+matter how long the line gets. The application can retrieve the distance
+between tab stops by using the MLM_QUERYTABSTOP message.
+ 
+An application can use the MLM_SETFORMATRECT message to set the format
+rectangle. The format rectangle is used to set the horizontal and/or
+vertical limits for text. The MLE sends a notification message to the parent
+window of the MLE if text exceeds the limit. An application typically uses
+the format rectangle to provide its own word-wrapping or other special text
+processing. An application can retrieve the current formatting rectangle by
+using the MLM_QUERYFORMATRECT message.
+ 
+An application can prevent the user from entering text in the entry field by
+using the MLM_SETREADONLY message. The MLM_QUERYREADONLY message specifies
+whether the MLE is read-only. An application can also set the MLE to
+read-only by specifying the MLS_READONLY style when creating the MLE.
+ 
+An application can set the colors and font for an MLE by using the
+<b>MLM_SETTEXTCOLOR, MLM_SETBACKCOLOR, and MLM_SETFONT messages. These messages</b>
+affect all text in the MLE; an MLE cannot contain a mixture of fonts and
+colors. An application can retrieve the current values for the color and the
+font by using the MLM_QUERYTEXTCOLOR, MLM_QUERYBACKCOLOR, and MLM_QUERYFONT
+messages.
+ 
+<b>Importing and Exporting MLE Text</b>
+ 
+An application can copy text to and from an MLE by importing and exporting.
+Importing using the MLM_IMPORT message copies text from a buffer to the MLE.
+Exporting using the MLM_EXPORT message copies text from the MLE to a buffer.
+The application uses the MLM_SETIMPORTEXPORT message to set the import and
+export buffers. To import, the application must fill the buffer with the
+text to copy to the MLE. To export, the MLE copies the specified text to the
+buffer.
+ 
+An application can import and export text in a variety of formats. The text
+format identifies which characters are used for the end-of-line characters
+and is set by using the MLM_FORMAT message. An MLE can have the following
+text formats:
+ 
+<b>Type           Format</b>
+────────────────────────────────────────────────────────────────────────────
+<i>MLFIE_CFTEXT</i>   Exported lines end with a carriage-return/newline character
+               pair (0x0D, 0x0A). Imported lines must end with a newline
+               character, a carriage-return/newline character pair, or a
+               newline/carriage-return character pair.
+ 
+<i>MLFIE_NOTRANS</i>  Imported and exported lines end with a newline character
+               (0x0A).
+ 
+<i>MLFIE_WINFMT</i>   For exported lines, the carriage-return/newline character
+               pair marks a hard line break (a break entered by the user),
+               and two carriage-return characters and a newline character
+               (0x0D, 0x0D, 0x0A) mark a soft line break (a break inserted
+               during word-wrapping, not entered by the user). For imported
+               lines, soft line break characters are ignored.
+ 
+The text format can affect the number of characters in a selection. To
+ensure the export buffer is large enough to hold exported text, an
+application can send the MLM_QUERYFORMATLINELENGTH message and the
+<b>MLM_QUERYFORMATTEXTLENGTH</b> message to determine the number of bytes in text
+to be exported.
+ 
+Each time an application inserts text in an MLE, the MLE automatically
+refreshes the display by drawing the new text. When an application copies
+large amounts of text to an MLE, refreshing can be quite time-consuming, so
+applications should disable the automatic refresh setting in such cases. An
+application can disable this setting by sending the MLM_DISABLEREFRESH
+message. After copying all the text, the application can restore the refresh
+by sending the MLM_ENABLEREFRESH message.
+ 
+<b>MLE Cut, Copy, and Paste Operations</b>
+ 
+The user can cut, copy, and paste text in an MLE by using the CTRL+DEL,
+SHIFT+DEL, and SHIFT+INS keys. An application can cut, copy, and paste text
+by using the MLM_CUT, MLM_COPY, and MLM_PASTE messages. The MLM_CUT and
+<b>MLM_COPY</b> messages direct the MLE to copy the selected text to the clipboard.
+The MLM_CUT message also deletes the text (MLM_COPY does not). The
+<b>MLM_PASTE</b> message directs the MLE to copy the text on the clipboard to the
+current position in the MLE, replacing any existing text with the copied
+text. An application can delete the selected text without copying it to the
+clipboard by using the MLM_CLEAR message.
+ 
+An application can also copy the selected text from an MLE to a buffer by
+using the MLM_QUERYSELTEXT message. This message does not affect the
+contents of the clipboard.
+ 
+<b>MLE Search and Replace Operations</b>
+ 
+An application can search for a specified string within MLE text by using
+the MLM_SEARCH message. This message directs the MLE to search for the
+string. If the string is found, the MLE returns TRUE. The cursor does not
+move to the string unless the message specifies the MLFSEARCH_SELECTMATCH
+option.
+ 
+An application can also use the MLM_SEARCH message to replace one string
+with another. If the MLFSEARCH_CHANGEALL option is specified, the MLE
+replaces all occurrences of the search string with the replacement string.
+Both the search string and the replacement string must be given in a
+<b>MLE_SEARCHDATA</b> structure passed with the message.
+ 
+<b>MLE Notification Codes</b>
+ 
+An MLE sends notification codes to its parent window whenever certain events
+occur, for example, when the user or the application tries to insert too
+much text or when the user uses the scroll bars. The parent window uses the
+notification codes to carry out custom operations for the MLE or to respond
+to errors. Notification codes that are closely related to MLE messages are
+described here.
+ 
+The MLE sends the MLN_HSCROLL or MLN_VSCROLL notification codes when the
+user uses the scroll bars so the application can monitor the visible
+contents of the MLE. The application can also monitor the contents of an MLE
+by using the MLM_QUERYFIRSTCHAR message. This message identifies the
+character in the upper-left corner of the MLE (by specifying its offset).
+This represents the first MLE character that is visible to the user. An
+application can move a specified character to the upper-left corner of an
+MLE by using the MLM_SETFIRSTCHAR message as an alternative way of scrolling
+the contents of an MLE.
+ 
+The MLE sends an MLN_CHANGE notification code when the user changes the text
+in some way. This code is especially useful when the MLE is in a dialog box,
+because it can determine whether the dialog procedure should process the
+contents of the MLE. The MLM_QUERYCHANGED message also can determine whether
+the user has made changes. The MLM_SETCHANGED message causes the MLE to send
+a notification code, regardless of whether the user has changed anything;
+this code can also be used to hide a change made by a user.
+ 
+<b>MLE Styles</b>
+ 
+MLE styles can be specified by using the WinCreateWindow function or the
+<b>MLE</b> statement in a resource file. Styles can be combined by using the OR
+operator. Applications can specify a combination of the following styles for
+an MLE:
+ 
+<b>Style          Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>MLS_BORDER</i>     Draws a border around the MLE.
+ 
+<i>MLS_HSCROLL</i>    Adds a horizontal scroll bar to the MLE. The scroll bar is
+               enabled when any line exceeds the width of the MLE.
+ 
+<i>MLS_IGNORETAB</i>  Directs the MLE to ignore the TAB key.
+ 
+<i>MLS_READONLY</i>   Prevents the MLE from accepting text from the user. This
+               style is useful for displaying lengthy static text in windows
+               or dialog boxes.
+ 
+<i>MLS_VSCROLL</i>    Adds a vertical scroll bar to the MLE. The scroll bar is
+               enabled when the number of lines exceeds the height of the
+               MLE.
+ 
+<i>MLS_WORDWRAP</i>   Prevents lines that are longer than the width of the MLE. The
+               MLE automatically breaks the line at a convenient place.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

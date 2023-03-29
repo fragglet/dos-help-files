@@ -1,0 +1,64 @@
+<html>
+
+<head>
+<title>WM_QUIT (1.2) - msgs12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msgs12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WM_QUIT (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='messages.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WM_RENDERALLFMTS.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMESSAGEMGR
+ 
+<b>WM_QUIT</b>
+ 
+The WM_QUIT message is posted to terminate an application. The WinGetMsg
+function returns FALSE when it receives this message. A message-processing
+loop should terminate when WinGetMsg returns FALSE. For more information,
+see the description of the WinGetMsg function.
+ 
+This message does not have any parameters.
+ 
+<b>Return Value</b>
+ 
+This message does not have a return value because it causes the message loop
+to terminate before the message is sent to the application's window
+procedure.
+ 
+<b>Example</b>
+ 
+In this example, a WM_CLOSE message is received. If the fChanges flag is
+set, the application calls a function to determine if the user wants to save
+the changes before exiting. This function (called QuerySaveFile in this
+example) would ask the user if he or she wants to save the changes. If the
+user selects OK, it would save the changes. If the user selects Cancel, the
+function returns this value and the application continues normal execution.
+Otherwise, it posts a WM_QUIT message to terminate the application.
+ 
+case WM_CLOSE:
+    if (fChanges) {             /* changes have not been saved */
+        if (QuerySaveFile(hwnd) == MB_CANCEL) {
+            return (0L);        /* do not exit after all       */
+        }
+    }
+    WinPostMsg(hwnd, WM_QUIT, 0L, 0L);
+    return (0L);
+ 
+<b>See Also</b>
+ 
+<b>WinGetMsg, WinPostMsg</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

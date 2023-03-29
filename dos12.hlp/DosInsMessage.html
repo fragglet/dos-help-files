@@ -1,0 +1,100 @@
+<html>
+
+<head>
+<title>DosInsMessage (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosInsMessage (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='x_at_L80c8.html'>Changes</a><span class='grhilite'>►</span>                                             <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosKillProcess.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSMISC
+ 
+USHORT DosInsMessage(ppchVTable, usVCount, pszMsg, cbMsg, pchBuf, cbBuf,
+    pcbMsg)
+PCHAR FAR * ppchVTable;    /* pointer to table of character pointers    */
+USHORT usVCount;           /* number of pointers in table               */
+PSZ pszMsg;                /* pointer to input message                  */
+USHORT cbMsg;              /* number of bytes in input message          */
+PCHAR pchBuf;              /* pointer to buffer for updated message     */
+USHORT cbBuf;              /* number of bytes in buffer                 */
+PUSHORT pcbMsg;            /* pointer to variable for length of message */
+ 
+The DosInsMessage function copies a specified message to a buffer. Unlike
+the DosGetMessage function, DosInsMessage does not retrieve a message.
+<b>DosInsMessage</b> is often used when messages are loaded before the
+insertion-text strings are known.
+ 
+The DosInsMessage function is a family API function.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>ppchVTable</i>  Points to a table of pointers to null-terminated strings that
+            can be inserted into the message. Up to nine strings can be
+            given.
+ 
+<i>usVCount</i>    Specifies the number of strings in the table. This parameter can
+            be any value from 0 through 9. If this parameter is zero, the
+            ppchVTable parameter is ignored. If this parameter is greater
+            than 9, the function returns an error value indicating that the
+            usVCount parameter is out of range.
+ 
+<i>pszMsg</i>      Points to a null-terminated string that specifies the message to
+            process.
+ 
+<i>cbMsg</i>       Specifies the length (in bytes) of the message.
+ 
+<i>pchBuf</i>      Points to the buffer that receives the message.
+ 
+<i>cbBuf</i>       Specifies the length (in bytes) of the buffer that receives the
+            message.
+ 
+<i>pcbMsg</i>      Points to the variable that receives the number of bytes copied
+            to the buffer.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_MR_INV_IVCOUNT
+     ERROR_MR_MSG_TOO_LONG
+ 
+<b>Comments</b>
+ 
+As it copies a message, the DosInsMessage function replaces any symbol in
+the form %x (where x is a digit from 1 through 9) with one of the strings
+pointed to in the table pointed to by the ppchVTable parameter. For example,
+the function replaces all symbols of the form %1 with the first string
+pointed to in the table. If there is no corresponding string in the table,
+<b>DosInsMessage copies the %x sequence to</b> the buffer. If the message is too
+long to fit in the buffer, the DosGetMessage function truncates the message
+and returns an error code.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restriction applies to the DosInsMessage
+function:
+ 
+♦  There is no method of identifying the boot drive. The system assumes that
+   the message file is in the root directory of the current drive.
+ 
+<b>See Also</b>
+ 
+<b>DosGetMessage, DosPutMessage</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

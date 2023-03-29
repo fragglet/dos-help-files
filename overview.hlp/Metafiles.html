@@ -1,0 +1,209 @@
+<html>
+
+<head>
+<title>About Metafiles (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Metafiles (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Metafiles.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#metafile functions 1.2'>Function Group</a><span class='grhilite'>►</span>         </i>            <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Paths.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                              About Metafiles
+ 
+This topic describes a special file called a metafile. You should also be
+familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='mix_modes.html'>Color and mix modes</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='areas.html'>Area primitives</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='fonts.html'>Fonts and character primitives</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='segments.html'>Segments and retained graphics</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='device_contexts.html'>Presentation spaces and device contexts</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='coordinate_spaces.html'>Coordinate spaces and transformations</a><span class='grhilite'>►</span>
+ 
+A metafile is a file that contains a picture and information that MS OS/2
+uses when it draws the picture. The following list describes the elements
+found in a metafile:
+ 
+♦  Picture
+♦  Logical color table
+♦  Logical font (optional)
+♦  Fill pattern (optional)
+♦  Viewing transformation
+♦  Page units
+♦  Page dimensions
+ 
+You can display the contents of a metafile (its picture) in a window on a
+video display, or you can print it on a printer. When displaying the
+contents of a metafile, you can use the logical color table, logical font,
+fill pattern, and transformations that are in the application's presentation
+space, or you can use the color table, font, fill pattern, and
+transformations that are in the metafile. You can save metafiles onto a disk
+and load them from a disk into your application, or you can transfer them
+from application to application by using the clipboard or from user to user
+over a network.
+ 
+<b>Graphics Orders</b>
+ 
+Unlike a bitmap, which contains color information for pels in a raster
+image, a metafile contains graphics orders that MS OS/2 uses to construct
+the picture. MS OS/2 uses several types of graphics orders, which are
+low-level graphics commands. Two such graphics orders represent,
+respectively, the drawing functions and attribute functions for lines, arcs,
+characters, markers, text, and bitmaps; a third graphics←order represents
+miscellaneous functions that set transformations, call segments, and so
+forth. There are four graphics-order sizes:
+ 
+♦  1-byte orders
+♦  2-byte orders
+♦  Long orders (maximum length of 256 bytes)
+♦  Very long orders (maximum length of 64K bytes)
+ 
+A 1-byte order contains a hexadecimal identifier corresponding to a drawing
+function or attribute function. A 2-byte order contains a hexadecimal
+identifier in the first byte and data in the second byte. Long and very long
+orders contain a hexadecimal identifier corresponding to a drawing function
+or attribute function, a length value that specifies how many bytes are used
+by the graphics-order arguments, and the actual arguments. The following
+example shows a long graphics order that corresponds to the GpiLine drawing
+function:
+ 
+81 8 100 0 0 0 100 0 0 0
+ 
+The first number, 81, is the hexadecimal identifier that corresponds to the
+<b>GpiLine</b> function. The second number, 8, is the length value that specifies
+how many bytes are used by the graphics-order arguments. The next eight
+bytes contain the arguments for GpiLine. In this case, these arguments
+specify the line's endpoint at (100,100).
+ 
+<b>Creating Metafiles</b>
+ 
+To store graphics orders and drawing information in a metafile, you need to
+create a metafile device context and associate it with your application's
+presentation space. A metafile device context is a special device context
+that returns a handle to a metafile when you close it. To create a metafile
+device context, call the DevOpenDC function, passing it the OD_METAFILE type
+as the second argument. The following code fragment creates a metafile
+device context that is compatible with a display:
+ 
+DEVOPENSTRUC dop;
+ 
+dop.pszLogAddress = NULL;
+dop.pszDriverName = "DISPLAY";
+dop.pdriv = NULL;
+dop.pszDataType = NULL;
+ 
+hdcMeta = DevOpenDC(hab, OD_METAFILE, "*", 4L,
+    (PDEVOPENDATA) &amp;dop, hdcComp);
+ 
+<b>Storing Pictures in Metafiles</b>
+ 
+Once you create a metafile device context, you can associate it with your
+application's presentation space and begin drawing the picture. If the
+drawing mode is DM_DRAW, MS OS/2 stores (in the metafile) the graphics
+orders that correspond to drawing functions and primitive attributes. If the
+drawing order is DM_RETAIN, MS OS/2 does not store graphics orders in the
+metafile. Instead, it stores them in segments. An application can then copy
+these orders from segments into a metafile by calling one of the following
+functions:
+ 
+<b>Function        Description</b>
+────────────────────────────────────────────────────────────────────────────
+<b>GpiDrawChain</b>    Copies the segment chain into the metafile.
+<b>GpiDrawFrom</b>     Copies a selected range of segments from the segment chain
+                into the metafile.
+<b>GpiDrawSegment</b>  Copies the contents of a particular segment into the
+                metafile.
+ 
+If the drawing mode is DM_DRAWANDRETAIN, MS OS/2 stores the graphics orders
+in the metafile and in any open segments. You can set the drawing mode by
+calling the GpiSetDrawingMode function.
+ 
+After you finish drawing into a metafile, you can obtain a handle for it by
+calling the DevCloseDC function and passing the handle that identifies the
+metafile device context:
+ 
+GpiAssociate(hps, NULL);
+hmf = DevCloseDC(hdcMeta);
+ 
+The GpiAssociate call disassociates the metafile device context from the
+presentation space identified by the hps argument. You disassociate the
+metafile from the presentation space before you call DevCloseDC. Once you
+obtain a handle to the metafile, you can save the metafile on disk or
+display its contents on an output device.
+ 
+<b>Editing Metafiles</b>
+ 
+To edit graphics orders in a metafile, you must first copy them into an
+array of bytes by calling the GpiQueryMetaFileBits function. The number of
+drawing orders copied depends on the size of the array that you supply. You
+can determine the size of the metafile (in bytes) by calling the
+<b>GpiQueryMetaFileLength</b> function. Once you finish editing the graphics
+orders, you can copy them back into the metafile by calling the
+<b>GpiSetMetaFileBits</b> function.
+ 
+<b>Playing Metafiles</b>
+ 
+You can display or print the picture in a metafile by playing its contents
+with the GpiPlayMetaFile function. When you call this function, you must
+specify whether you want MS OS/2 to use the logical color table, logical
+font, fill pattern, viewing transformation, and device transformation that
+are in your application's presentation space or whether you want MS OS/2 to
+use the definitions for these objects in the metafile. The following code
+fragment shows a call to the GpiPlayMetaFile function that uses the
+definitions in the application's presentation space and ignores the
+definitions in the metafile:
+ 
+alOpt[0] = 0L;           /* reserved                               */
+alOpt[1] = LT_DEFAULT;   /* viewing transformation in PS           */
+alOpt[2] = 0L;           /* reserved                               */
+alOpt[3] = LC_DEFAULT;   /* font and fill pattern in PS            */
+alOpt[4] = RES_DEFAULT;  /* page units and dimensions in PS        */
+alOpt[5] = SUP_DEFAULT;  /* draws metafile into PS                 */
+alOpt[6] = CTAB_DEFAULT; /* logical color table in PS              */
+alOpt[7] = CREA_DEFAULT; /* sets realizable option in color table  */
+GpiPlayMetaFile(hps, hmf, 8L, alOpt, 0L, 0L, NULL);
+ 
+If you must use the fonts, fill patterns, color tables, and transformations
+from the metafile, you should call the GpiPlayMetaFile function and load the
+options array with the following flags:
+ 
+alOpt[0] = 0L;              /* reserved                              */
+alOpt[1] = LT_ORIGINALVIEW; /* viewing transformation in metafile    */
+alOpt[2] = 0L;              /* reserved                              */
+alOpt[3] = LC_LOADDISC;     /* font and fill pattern in metafile     */
+alOpt[4] = RES_RESET;       /* page units/dimensions in metafile     */
+alOpt[5] = SUP_DEFAULT;     /* draws metafile into PS                */
+alOpt[6] = CTAB_REPLACE;    /* color table in metafile               */
+alOpt[7] = CREA_DEFAULT;    /* set realizable option in color table  */
+GpiPlayMetaFile(hps, hmf, 8L, alOpt, 0L, 0L, NULL);
+ 
+When you use the definitions in the metafile, MS OS/2 resets the
+presentation space using the values found in the metafile.
+ 
+<b>Saving Metafiles</b>
+ 
+You can save a metafile onto a disk by calling the GpiSaveMetaFile function.
+This function saves the metafile in the same directory the application is
+in. You cannot use this function to save a metafile into a separate
+directory on another drive (or even on the same drive). Once you save a
+metafile onto a disk, its handle is no longer valid──you cannot draw the
+contents of the metafile again until you load it from disk. To load a
+metafile that you've saved on disk, you should call the GpiLoadMetaFile
+function and pass it the name of the file. This function returns a handle to
+the metafile after loading it.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,291 @@
+<html>
+
+<head>
+<title>About Window Classes (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Window Classes (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_Window_Classes.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#class functions 1.2'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#control classes 1.2'>Control Classes</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Window_Procedures.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                            About Window Classes
+ 
+This topic describes how applications create and use window classes. You
+should also be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='Windows.html'>Windows</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Window_Procedures.html'>Window procedures</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Messages_and_Message_Queues.html'>Messages and message queues</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Initialization_Files.html'>Initialization files</a><span class='grhilite'>►</span>
+ 
+A window class determines the window styles and window procedure given to
+windows of that class when they are created. Every window created by an
+application is a member of a window class. Each window class has an
+associated window procedure that it shares with all windows of that same
+class. The window procedure handles messages for all windows of that class
+and therefore defines the behavior and appearance of the window.
+ 
+When an application creates a window, it must specify a window class. The
+<b>WinCreateWindow</b> function requires that the class be given explicitly. Other
+window-creation functions use specific classes by default. In all cases, a
+window class must be registered before it can be used to create windows. An
+application can register its own (private) window classes or use
+pregistered, public window classes.
+ 
+<b>Custom Window Classes</b>
+ 
+A custom (or private) window class is any window class registered by an
+application. The application defines the window procedure, class style, and
+window data size for the class and then registers the class by using the
+<b>WinRegisterClass</b> function. The window class is available to the application,
+but only to that application. Classes created in this way are private and
+cannot be shared by other applications. When the application terminates, the
+system removes any data associated with the private window class and
+invalidates the class name.
+ 
+An application can register its own window classes at any time. Typically,
+an application registers window classes as part of its initialization, but
+this is not required. The only restriction is that no window of a particular
+class can be created until that class is registered by the application.
+ 
+When an application registers a window class, it must supply the following
+information:
+ 
+♦  Class name
+♦  Class styles
+♦  Window procedure
+♦  Window data size
+ 
+The class name identifies the window class. The application uses this name
+when creating a window, specifying the class to use. The class name can be a
+character string or an integer value. The class name must be unique. The
+system checks to see if a public class or a class already registered by the
+application has the same name. If the class name is not unique, an error is
+returned.
+ 
+The class style is one or more values that tell the system what initial
+window styles to give a window created with this class. Some class styles
+(for example, CS_SYNCPAINT) cause a new window to be given the corresponding
+window style when it is created. Styles such as CS_MOVENOTIFY direct the
+system to send messages to the window procedure when it ordinarily would
+not.
+ 
+The window procedure is a function that receives and processes all messages
+sent to the window by the system. It is the chief component of the window
+class because it explicitly defines the appearance and behavior of each
+window created with the class. The window procedure can be part of the
+application or part of a dynamic-link library. In either case, it must be an
+exported function. When a window procedure is in a dynamic-link library
+rather than in the application, the application must import the window
+procedure by using an import library when linking, using the IMPORTS
+statement in the application's module-definition file, or using the
+<b>DosLoadModule and DosGetProcAddr functi</b>ons to retrieve the function
+address.
+ 
+The window data size is a value that specifies the number of extra bytes to
+allocate for each window data structure. The system creates a window data
+structure for each window. The extra bytes can be used by an application to
+store additional information about a particular window.
+ 
+Once created, a window-class data structure cannot be changed. However, it
+is relatively easy to change the window styles and window procedure of a
+window created with that class. An application cannot deregister a window
+class. Window classes remain registered and available until the application
+terminates.
+ 
+An application that registers a window class can also support its own set of
+window styles for windows of that class. Standard window styles──for
+example, WS_VISIBLE and WS_SYNCPAINT──still apply to these windows. However,
+since a window style is a 32-bit integer and only the high 16 bits are used
+for the standard window styles, an application can use the low 16 bits for
+styles unique to the custom window.
+ 
+MS OS/2 has unique window styles for all preregistered window classes.
+Styles such as FS_BORDER and BS_PUSHBUTTON are processed by the window
+procedure for the corresponding class and not by the system. This means that
+an application can build the support for its own window styles into the
+window procedure for its custom class. Using a window style designed for one
+window class will not work with another window class.
+ 
+If more than one instance of an application is running at the same time, the
+window classes in one instance are not available to any other instance. This
+means a second instance must register the classes for itself. If an instance
+of an application terminates, the window classes for any other instance of
+that application remain unchanged.
+ 
+<b>Class Styles</b>
+ 
+Each window class has one or more class styles. A class style tells the
+system what initial window style to give a window created with that class.
+An application sets the class styles for a window class when it registers
+the class. The styles cannot be changed.
+ 
+When you register a window class, you can specify one or more class styles,
+combining them as necessary by using the bitwise OR operator.
+ 
+An application can examine the class style for any window class by using the
+<b>WinQueryClassInfo</b> function. There are ten class styles, as listed below:
+ 
+<b>Style            Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>CS_CLIPCHILDREN</i>  Sets the WS_CLIPCHILDREN style for windows created with
+                 this class.
+ 
+<i>CS_CLIPSIBLINGS</i>  Sets the WS_CLIPSIBLINGS style for windows created with
+                 this class.
+ 
+<i>CS_PARENTCLIP</i>    Sets the WS_PARENTCLIP style for windows created with this
+                 class.
+ 
+<i>CS_SAVEBITS</i>      Sets the WS_SAVEBITS style for windows created with this
+                 class.
+ 
+<i>CS_SYNCPAINT</i>     Sets the WS_SYNCPAINT style for windows created with this
+                 class.
+ 
+<i>CS_FRAME</i>         Identifies windows created with this class as frame
+                 windows.
+ 
+<i>CS_PUBLIC</i>        Creates a public window class.
+ 
+<i>CS_HITTEST       Directs the s</i>ystem to send WM_HITTEST messages to windows
+                 of this class whenever the mouse pointer moves in the
+                 window.
+ 
+<i>CS_SIZEREDRAW</i>    Directs the system to invalidate the entire window whenever
+                 the size of the window changes.
+ 
+<i>CS_MOVENOTIFY    Directs the system to </i>send WM_MOVE messages to the window
+                 whenever the window is moved.
+ 
+<b>Window Procedures</b>
+ 
+The window procedure for a window class handles the messages sent to windows
+of that class. One window procedure is shared by all windows of a class, so
+applications must ensure that no conflicts arise when two windows of the
+same class attempt to access the same global data. In other words, the
+window procedure must protect global data and other shared resources.
+ 
+<b>Public Window Classes</b>
+ 
+Although MS OS/2 allows an application to register its own window classes,
+most applications rarely register more than one window class. This window
+class supports the client window in the application's main window. For all
+other windows, the application generally uses public window classes. Public
+window classes support frame windows, controls, menus, and dialog windows.
+ 
+Public window classes are available to all applications. An application does
+not need to register a public window class to use it. The window procedure
+for a public window class always resides in a dynamic-link library and is
+accessible to all applications. An application does not need to import the
+window procedure to use a public window class.
+ 
+<b>Preregistered Window Classes</b>
+ 
+MS OS/2 provides several preregistered, public window classes. Applications
+can use these public window classes to create frame windows, dialog windows,
+menus, push buttons, entry fields, and other controls. The window procedures
+for these classes are predefined so the application does not register the
+class before using it.
+ 
+An application uses a preregistered, public window class by specifying its
+class in a call to the WinCreateWindow function. The class names for the
+preregistered, public window classes are integer values represented by the
+following constant names:
+ 
+<b>Class name     Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>WC_FRAME</i>       Creates a frame window. Has class styles CS_FRAME,
+               CS_HITTEST, CS_SYNCPAINT, CS_PUBLIC, and CS_CLIPSIBLINGS.
+ 
+<i>WC_BUTTON</i>      Creates a button control. Has class styles CS_PARENTCLIP,
+               CS_SYNCPAINT, CS_SIZEREDRAW, and CS_PUBLIC.
+ 
+<i>WC_ENTRYFIELD</i>  Creates a text-entry control field. Has class styles
+               CS_PARENTCLIP, CS_SYNCPAINT, CS_SIZEREDRAW, and CS_PUBLIC.
+ 
+<i>WC_LISTBOX</i>     Creates a list box. Has class styles CS_PARENTCLIP,
+               CS_SYNCPAINT, and CS_PUBLIC.
+ 
+<i>WC_MENU</i>        Creates a menu. Has class styles CS_SYNCPAINT, CS_SIZEREDRAW,
+               and CS_PUBLIC.
+ 
+<i>WC_SCROLLBAR</i>   Creates a scroll bar. Has class styles CS_HITTEST,
+               CS_PARENTCLIP, CS_SYNCPAINT, CS_SIZEREDRAW, and CS_PUBLIC.
+ 
+<i>WC_STATIC</i>      Creates a static control. Has class styles CS_PARENTCLIP,
+               CS_SYNCPAINT, CS_SIZEREDRAW, CS_HITTEST, and CS_PUBLIC.
+ 
+<i>WC_TITLEBAR</i>    Creates a title bar. Has class styles CS_HITTEST,
+               CS_PARENTCLIP, CS_SYNCPAINT, CS_SIZEREDRAW, and CS_PUBLIC.
+ 
+Each preregistered, public window class also supports several window styles
+that an application can use to customize a window. For example, a window
+created with the WC_BUTTON class can have any one of four different
+behaviors and appearances. The application specifies the style (and the
+behavior and appearance of the window) in the call to the WinCreateWindow
+function.
+ 
+An application must not use the preregistered, public window-class names
+when it registers its own window classes.
+ 
+<b>Custom Public Classes</b>
+ 
+An application can create its own public window class, but this must be done
+in a special manner at system initialization. Only the shell can register a
+public window class and only when the system starts. Registering a public
+window class requires a special load entry in the os2.ini file that
+instructs the shell to load a dynamic-link library whose initialization
+routine registers the window class. Public window classes must be registered
+by using the WinRegisterClass function and must have the class style
+CS_PUBLIC. A public window class registered in this way can have the same
+name as an existing public window class, but this replaces the original
+window class.
+ 
+If a dynamic-link library replaces a public window class, it can also save
+the previous window-procedure address and use it to subclass the original
+window class. The dynamic-link library retrieves the original
+window-procedure address by using the WinQueryClassInfo function. The new
+window procedure then passes unprocessed messages to the original window
+procedure. All windows created using this revised public window class will
+automatically be subclassed.
+ 
+When subclassing a public window class, the window data size cannot be
+smaller than the original window data size. All public window classes
+defined by MS OS/2 use four extra bytes for storing a pointer to custom
+window data. This size is not guaranteed for public window classes defined
+by dynamic-link modules not belonging to MS OS/2.
+ 
+<b>Class Data</b>
+ 
+An application can examine a registered window class by using the
+<b>WinQueryClassInfo</b> function. This is useful for checking the class styles of
+a public window class. An application can also retrieve the name of the
+class for a given window by using the WinQueryClassName function. Using the
+window class name, you can then call the WinQueryClassInfo function to
+retrieve the window class data.
+ 
+The WinQueryClassName function retrieves the name of the window class. If
+the window is one of the preregistered, public window classes, the window
+class name returned is in the form #nnnnn, where nnnnn is up to five digits
+representing the value of the window class name constant.
+ 
+The WinQueryClassInfo function retrieves information about a window class.
+It copies the class style, window-procedure address, and window data size to
+a CLASSINFO data structure.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

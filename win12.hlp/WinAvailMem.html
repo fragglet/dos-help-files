@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<title>WinAvailMem (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinAvailMem (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Heap_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Heaps 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinBeginEnumWindows.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINHEAP
+ 
+USHORT WinAvailMem(hHeap, fCompact, cbMinFree)
+HHEAP hHeap;         /* handle of the heap          */
+BOOL fCompact;       /* memory-compaction flag      */
+USHORT cbMinFree;    /* amount of storage requested */
+ 
+The WinAvailMem function returns the size of the largest free block on the
+heap.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hHeap</i>      Identifies the heap. This handle must have been created by a
+           previous call to the WinCreateHeap function.
+ 
+<i>fCompact</i>   Specifies the memory-compaction flag. If TRUE, the heap is
+           reorganized. If FALSE, the heap is not reorganized.
+ 
+<i>cbMinFree</i>  This parameter is currently not used, but should be set to the
+           amount of storage the caller is requesting. A future release may
+           use this value to limit the scope of the compaction.
+ 
+<b>Return Value</b>
+ 
+The return value is the largest memory block available if the function is
+successful, or 0xFFFF if an error occurs.
+ 
+<b>Comments</b>
+ 
+If the passed heap was created with the HM_MOVEABLE option, the
+reorganization entails moving all movable blocks toward the beginning of the
+heap. The presence of fixed objects may inhibit the amount of movement that
+can occur. While the compaction is occurring, the dedicated and nondedicated
+free lists are reconstructed from any free blocks that cannot be filled by
+the compactor.
+ 
+If the passed heap was not created with the HM_MOVEABLE option, the
+reorganization entails sorting all free lists into a single list in address
+order, scanning the list for adjacent blocks to coalesce, and then
+reconstructing the dedicated and nondedicated free lists.
+ 
+No synchronization is done for this call. Multi-threaded applications should
+use semaphores if more then one thread will be making this call to prevent
+two or more threads from calling this function at the same time.
+ 
+<b>See Also</b>
+ 
+<b>WinAllocMem, WinCreateHeap, WinFreeMem, WinReallocMem</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

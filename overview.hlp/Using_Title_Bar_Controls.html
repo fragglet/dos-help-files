@@ -1,0 +1,123 @@
+<html>
+
+<head>
+<title>Using Title-Bar Controls (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Title-Bar Controls (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='title_bar_controls.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Title bar messages 1.2'>Message Group</a><span class='grhilite'>►</span>          </i>            <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Window_Classes.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                          Using Title-Bar Controls
+ 
+Typically, you need not be too concerned with the title-bar control. The
+default behavior of the title-bar control follows the standard
+user-interface guidelines. Most applications allow the title-bar control to
+operate according to these guidelines.
+ 
+To include a title-bar control in a standard frame window, the application
+must compare (by using the OR operator) constants representing each control
+type and pass the resulting value to the WinCreateStdWindow function. The
+following code fragment shows the creation of a standard frame window with a
+title bar, a minimum-maximum control, a size border, a System menu, and an
+application menu. (The System menu and application menu are considered frame
+controls. For more information about frame controls, see the topic
+<i><span class='grhilite'>◄</span><a href='Frame_Windows.html'>Frame</i> windows</a><span class='grhilite'>►</span>.)
+ 
+ULONG lControlStyle = FCF_TITLEBAR | FCF_SIZEBORDER |  FCF_MINMAX |
+    FCF_SYSMENU | FCF_MENU;
+ 
+hwndFrame = WinCreateStdWindow (HWND_DESKTOP,
+    WS_VISIBLE | FS_ACCELTABLE,
+    &amp;lControlStyle,
+    szClassName,
+    szClassName,
+    0L, NULL,
+    ID_MENU_RESOURCE,
+    &amp;hwndClient);
+ 
+Once the frame controls are in place in the frame window, most applications
+can ignore them. The system handles the frame controls. In some cases, the
+application may take control of the title bar by sending messages to the
+title-bar control window.
+ 
+To get the window handle of a title-bar control in a frame window, the
+application calls the WinWindowFromID function with the frame-window handle
+and a constant identifying the title-bar control, as shown in the following
+code:
+ 
+hwndTitleBar = WinWindowFromID(hwndFrame, FID_TITLEBAR);
+ 
+To change the text of a title bar, the application sets the window text of
+the frame window by calling the WinSetWindowText function. The frame window
+passes the message to the title bar. This changes the title-bar text.
+ 
+<b>Altering Dragging Action</b>
+ 
+When the user clicks in the title-bar control, the title bar sends a
+<b>WM_TRACKFRAME</b> message to its owner (the frame window). The frame window also
+sends a WM_QUERYTRACKINFO message to itself to fill in a TRACKINFO structure
+that defines the tracking parameters and boundaries. To modify the default
+behavior, you must subclass the frame window and intercept the
+<b>WM_QUERYTRACKINFO message and modify the TRACKINFO </b>structure. If you return
+TRUE for the WM_QUERYTRACKINFO message, the tracking information proceeds
+according to the information in the TRACKINFO structure. If you return
+FALSE, no tracking occurs.
+ 
+<b>Default Title-Bar Behavior</b>
+ 
+This section describes all the messages specifically handled by the
+predefined title-bar control class.
+ 
+<b>Message               Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>WM_CREATE</i>             Sets the window text for the control. Return FALSE if
+                      creation succeeds.
+ 
+<i>WM_DESTROY</i>            Frees the window text for the control.
+ 
+<i>WM_QUERYWINDOWPARAMS</i>  Returns the requested window parameters.
+ 
+<i>WM_SETWINDOWPARAMS</i>    Sets the specified window parameters.
+ 
+<i>WM_PAINT</i>              Draws the title bar.
+ 
+<i>WM_HITTEST</i>            Always returns HT_NORMAL, so the title bar does not
+                      beep when it is disabled (it is disabled when the
+                      frame window is maximized).
+ 
+<i>WM_BUTTON1DOWN        Sends the WM_TRACKFR</i>AME message to the owner
+                      (typically a frame window) to start tracking.
+ 
+<i>WM_BUTTON1DBLCLK</i>      Restores the window if the owner window is minimized
+                      or maximized. If the window is neither, maximizes the
+                      window.
+ 
+<i>WM_WINDOWPOSCHANGED</i>   Returns FALSE. Process this message to prevent the
+                      WinDefWindowProc function from sending the size and
+                      show messages.
+ 
+<i>WM_QUERYDLGCODE</i>       Returns the predefined constant DLGC_STATIC. A user
+                      cannot use the TAB key to move to this window in a
+                      dialog box.
+ 
+<i>TBM_QUERYHILITE</i>       Returns the highlight state of the title bar.
+ 
+<i>TBM_SETHILITE</i>         Sets the highlight state of the title bar, repainting
+                      it if the state is changing.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

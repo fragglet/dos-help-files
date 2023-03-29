@@ -1,0 +1,132 @@
+<html>
+
+<head>
+<title>DosQFSAttach (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosQFSAttach (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosQFSInfo.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosQFSAttach(pszDev, usOrdinal, usInfoLevel, pFSAttBuf,
+    pcbAttBuf, ulReserved);
+PSZ pszDev;            /* pointer to drive or device                      */
+USHORT usOrdinal;      /* index to drive or device                        */
+USHORT usInfoLevel;    /* level of information                            */
+PBYTE pFSAttBuf;       /* pointer to structure for file-system attributes */
+PUSHORT pcbAttBuf;     /* pointer to structure length                     */
+ULONG ulReserved;      /* must be zero                                    */
+ 
+The DosQFSAttach function queries information about an attached remote file
+system or a local file system. The function can also query information about
+a character device or pseudo-character device attached to a local or remote
+file system.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pszDev</i>       Points to a null-terminated string that specifies the drive
+             letter followed by a colon or to the name of a character or
+             pseudo-character device. If this parameter is a character or
+             pseudo-character device name, the format of the string is
+             \device\filename, where filename is a valid MS OS/2 filename.
+             This parameter is ignored if the usInfoLevel parameter is set
+             to either FSAIL_DEVNUMBER or FSAIL_DRVNUMBER.
+ 
+<i>usOrdinal</i>    Specifies an index into the list of character or
+             pseudo-character devices or the set of drives. The first item
+             in the list is always 1. This parameter is ignored if the
+             usInfoLevel parameter is set to FSAIL_QUERYNAME.
+ 
+<i>usInfoLevel</i>  Specifies the type of information requested. This parameter can
+             be one of the following values:
+ 
+             Value            Meaning
+             ───────────────────────────────────────────────────────────────
+             FSAIL_QUERYNAME  Returns information about the drive or device
+                              pointed to by the pszDev parameter. When this
+                              value is specified, the usOrdinal parameter is
+                              ignored.
+ 
+             FSAIL_DEVNUMBER  Returns information about the character or
+                              pseudo-character device specified by the
+                              usOrdinal parameter. When this value is
+                              specified, the pszDev parameter is ignored.
+ 
+             FSAIL_DRVNUMBER  Returns information about the drive specified
+                              by the usOrdinal parameter. When this value is
+                              specified, the pszDev parameter is ignored.
+ 
+<i>pFSAttBuf</i>    Points to the buffer that receives information about the file
+             system. The buffer is organized as a FSQBUFFER structure.
+             Because the name fields can vary in length, however, the
+             structure cannot be used directly to retrieve the data.
+ 
+<i>pcbAttBuf</i>    Points to a variable. When this function is called, the
+             variable specifies the length of the buffer pointed to by the
+             pFSAttBuf parameter. When the function returns, this variable
+             contains the length of the data copied to the pFSAttBuf
+             buffer.
+ 
+<i>ulReserved</i>   Specifies a reserved value; must be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_BUFFER_OVERFLOW
+     ERROR_INVALID_DRIVE
+     ERROR_INVALID_LEVEL
+     ERROR_NO_MORE_ITEMS
+ 
+<b>Comments</b>
+ 
+The DosQFSAttach function can be used to ensure that the correct file system
+is loaded for a disk. Without this information, there is potential for the
+data on the disk to be destroyed because the wrong file system could be
+attached to the disk by default.
+ 
+<b>Example</b>
+ 
+This example calls DosQFSAttach to get information about drive C, and then
+displays the device and file-system names:
+ 
+PSZ psz;
+PUSHORT pcb;
+USHORT cb;
+SEL sel;
+ 
+DosAllocSeg(1024, &amp;sel, SEG_NONSHARED); /* allocates buffer               */
+ 
+if (!DosQFSAttach("c:", 0, FSAIL_QUERYNAME, MAKEP(sel, 0), &amp;cb, 0L)) {
+    pcb = MAKEP(sel, 2);               /* points to length of device name */
+    psz = MAKEP(sel, 4);               /* points to device name           */
+    VioWrtTTY(psz, *pcb, (HVIO) NULL); /* displays device name     */
+    VioWrtTTY("\r\n", 2, 0L);
+    psz += *pcb + 3;              /* adds null char. and name-length var. */
+    pcb = (PUSHORT) (psz - 2);    /* points to length of name             */
+    VioWrtTTY(psz, *pcb, (HVIO) NULL); /* displays file-system name       */
+    VioWrtTTY("\r\n", 2, 0L);
+}
+ 
+<b>See Also</b>
+ 
+<b>DosFSAttach, DosQFSInfo, FSQBUFFER</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

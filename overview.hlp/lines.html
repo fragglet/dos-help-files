@@ -1,0 +1,184 @@
+<html>
+
+<head>
+<title>About Line and Arc Primitives (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Line and Arc Primitives (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='drawing_arcs.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#line and arc functions 1.2'>Function Group</a><span class='grhilite'>►</span>           </i>          <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='markers.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                       About Line and Arc Primitives
+ 
+This topic describes the line and arc primitives. You should also be
+familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='device_contexts.html'>Presentation spaces and device contexts</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='coordinate_spaces.html'>Coordinate spaces and transformations</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='mix_modes.html'>Color and mix modes</a><span class='grhilite'>►</span>
+ 
+Line and arc primitives are straight lines and arcs, respectively, that are
+drawn by line and arc functions. These primitives are useful for creating
+pictures that consist of objects such as polygons, circles, fillets,
+ellipses, and other geometric figures.
+ 
+Line and arc primitives are useful in many applications. Spreadsheet
+applications use them to construct pie charts, bar charts, and graphs.
+Simple drawing applications use them as drawing tools. Computer-aided-design
+(CAD) applications combine them to draw such complex pictures as schematic
+diagrams for electrical wiring, blueprints for a building site, and
+cross-sectional views of machinery. This broad range of pictures, from
+simple pie charts to complex blueprints, demonstrates how these primitives
+can benefit your applications.
+ 
+In addition to the line and arc functions, there are numerous other
+functions that you can use to alter the appearance of lines and arcs drawn
+by the primitive functions. These "other" functions are called attribute
+functions since they alter the attributes, or characteristics, of lines and
+arcs.
+ 
+<b>Drawing Straight Lines</b>
+ 
+You draw straight lines by calling the GpiMove function and either the
+<b>GpiLine or GpiPolyLine function. Gp</b>iMove sets the current position to the
+starting point of a line; GpiLine draws a single line from the current
+position to a specified point; and GpiPolyLine draws a series of connected
+lines, from the current position through successive points in an array.
+ 
+When MS OS/2 draws a line, it includes the pels at the starting and ending
+points of the line. The algorithm used to draw the rest of the line depends
+on the device driver. For example, a driver for a raster device may use a
+modified Brezenham algorithm to draw a line, but a driver for a vector
+device, such as a plotter, simply connects the line's starting and ending
+points. In all cases, the result is a line primitive that looks the same
+from device to device.
+ 
+<b>Drawing Arcs</b>
+ 
+You draw arcs by using GpiMove and one of the following functions:
+ 
+<b>Function            Description</b>
+────────────────────────────────────────────────────────────────────────────
+<b>GpiFullArc</b>          Draws a circle or an ellipse.
+<b>GpiPartialArc</b>       Draws a section of a circle or ellipse.
+<b>GpiPointArc</b>         Draws an arc through three points.
+<b>GpiPolyFillet</b>       Draws one or more fillets.
+<b>GpiPolyFilletSharp</b>  Draws one or more fillets with varying degrees of
+                    sharpness.
+<b>GpiPolySpline</b>       Draws one or more splines.
+ 
+The terms circle, ellipse, fillet, and spline are important in discussing
+arc primitives. A circle is a closed curve with a center from which every
+point on the curve is equidistant. An ellipse is a closed curve defined by
+two fixed points such that the sum of the distances from any point on the
+curve to the two fixed points is constant. A fillet is a curve that, given
+three control points, is tangent to the first and last points. A spline is a
+curve that, given four control points, is tangent to the first and last
+lines.
+ 
+<b>Arc Parameters</b>
+ 
+When you draw an arc or an ellipse in your application, the image that
+appears on the drawing surface reflects the current values of the arc
+parameters, p, q, r, and s. The default value of p is 1, as is the default
+value of q; the default value of r is 0, as is the default value of s. These
+parameters form a two-by-two matrix that scales and shears ellipses and arcs
+drawn by the GpiFullArc, GpiPointArc, and GpiPartialArc functions:
+ 
+    | p=1  r=0 |
+    | s=0  q=1 |
+ 
+The parameters p and q are scaling values: p scales in the x-direction; q
+scales in the y-direction. The parameters r and s are shear components. When
+you alter r and s, a sheared ellipse or arc results.
+ 
+All of the arc operations begin with a unit circle that lies at the origin
+in the world coordinate system. The arc parameters define a transformation
+that is applied to each point on the perimeter of the unit circle. For any
+point (x,y) on the perimeter of the unit circle, there exists a new point
+(x',y'), as determined by the following two algorithms:
+ 
+          x' = p * x + r * y
+          y' = s * x + q * y
+ 
+If the addition of (p * r) and (s * q) is zero, the transformation is
+orthogonal, and the line from the origin (0,0) to the point (p,s) is either
+the radius of a circle or half of the major or minor axis of an ellipse. The
+line from the origin to the point (r,q) is either the radius of a circle or
+half of the minor or major axis of an ellipse.
+ 
+Additional scaling transformations in your application can change the shape
+of the figure accordingly. For instance, if the page units in your
+application are PU_PELS and the pels on your device are rectangular (rather
+than square), MS OS/2 will draw an ellipse (rather than a circle) with
+<b>GpiFullArc</b> when the arc parameters are set to their default values.
+ 
+If (p * q) is greater than (r * s), MS OS/2 draws the ellipse
+counterclockwise for the GpiFullArc and GpiPartialArc functions. If (p q) is
+less than (r * s), MS OS/2 draws the ellipse clockwise, and if (p * q) is
+equal to (r * s), MS OS/2 draws a straight line rather than an ellipse.
+ 
+You can determine the current arc parameters by calling the
+<b>GpiQueryArcParams</b> function, which copies the current arc parameters to their
+corresponding fields in the ARCPARAMS structure. You can set the arc
+parameters by calling GpiSetArcParams and passing it a copy of the
+<b>ARCPARAMS</b> structure that contains the new arc parameters you want to use.
+ 
+<b>Line Attributes</b>
+ 
+Every line and arc has style, width, and color characteristics. These
+characteristics are called line attributes.
+ 
+The first line attribute, line style, defines the way the line is drawn:
+solid, as a series of dashes, as a series of dots, or as a combination of
+dashes and dots. The second line attribute, line width, defines the width of
+the line in pels. The third line attribute, line color, defines the color
+used to draw the line. Usually, this color is mixed with colors already on
+the drawing surface. This means that the final color of a line or curve
+depends not only on the line color but on the mix mode and the color of the
+drawing surface as well. If you draw a dotted or dashed line, the color that
+appears between the dots or dashes is the current drawing-surface color. The
+mix mode tells MS OS/2 how to combine the line and background colors (using
+a bitwise operation on the bits in the corresponding RGB values). For
+example, one mix mode combines the bits by using the bitwise OR operator.
+The resulting line has both the line and background colors. Using this mix
+mode, you would make a purple line when the line color is red and the
+background color is blue. For more information about color and mix-mode
+attributes, see the topic <span class='grhilite'>◄</span><a href='mix_modes.html'>Color and mix modes</a><span class='grhilite'>►</span>.
+ 
+When you create a normal presentation space, the line attributes are set to
+the following default values:
+ 
+<b>Line attribute  Default value</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Line style</i>      LINETYPE_SOLID
+<i>Line color</i>      CLR_NEUTRAL
+<i>Line width</i>      1.0
+<i>Mix mode</i>        FM_OVERPAINT
+ 
+You can retrieve the current line-attribute values by calling the
+<b>GpiQueryAttrs</b> function. This function copies the current line attributes to
+a LINEBUNDLE structure. You can change the values at any time by calling the
+<b>GpiSetAttrs</b> function. To make changes, you retrieve the current line
+attributes, set the appropriate fields in the LINEBUNDLE structure to new
+values, and pass the structure to GpiSetAttrs.
+ 
+Several of the fields in this structure apply to a special wide line that
+you can construct using the path functions. For more information about paths
+and wide lines, see the topic <span class='grhilite'>◄</span><a href='Paths.html'>Paths</a><span class='grhilite'>►</span>.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

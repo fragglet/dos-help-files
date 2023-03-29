@@ -1,0 +1,117 @@
+<html>
+
+<head>
+<title>DosFindNext (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosFindNext (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80c1.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosFlagProcess.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosFindNext(hdir, pfindbuf, cbfindbuf, pcSearch)
+HDIR hdir;                /* handle of search directory             */
+PFILEFINDBUF pfindbuf;    /* pointer to structure for search result */
+USHORT cbfindbuf;         /* length of result buffer                */
+PUSHORT pcSearch;         /* pointer to variable for file count     */
+ 
+The DosFindNext function searches for the next file or group of files
+matching the specified filename and attributes. The function copies the name
+and requested information about the file to the specified structure. The
+information returned is as accurate as the most recent call to the DosClose
+or DosBufReset function.
+ 
+The DosFindNext function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hdir</i>       Identifies the search directory and the filename(s) to search
+           for. This handle must have been created previously by using the
+           DosFindFirst function.
+ 
+<i>pfindbuf</i>   Points to the structure that receives the result of the search.
+           This structure will be either a FILEFINDBUF or FILEFINDBUF2
+           structure, depending on the information level requested in the
+           DosFindFirst or DosFindFirst2 function that preceded this
+           function. For specific information on the format of these
+           structures, see the DosFindFirst and DosFindFirst2 functions.
+ 
+<i>cbfindbuf</i>  Specifies the length (in bytes) of the structure pointed to by
+           the pfindbuf parameter.
+ 
+<i>pcSearch</i>   Points to the variable that specifies the number of matching
+           filenames to locate. The function copies the number of filenames
+           found to the variable before returning.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_BUFFER_OVERFLOW
+     ERROR_INVALID_HANDLE
+     ERROR_INVALID_PARAMETER
+     ERROR_NO_MORE_FILES
+     ERROR_NOT_DOS_DISK
+     ERROR_EAS_DIDNT_FIT
+ 
+<b>Comments</b>
+ 
+The pcSearch parameter specifies the number of files to search for. The
+number of files whose information is copied is the number of files
+requested, the number of files whose information fits in the structure, or
+the number of files that exist, whichever is smallest. If you want to obtain
+information for more than one file, the pfindbuf parameter must point to a
+buffer that consists of consecutive  structures. If the DosFindNext function
+fails to find a match or cannot copy all the information about the file to
+the structure, it returns an error.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restriction applies to the DosFindNext
+function:
+ 
+♦  The hdir parameter must be set to HDIR_SYSTEM.
+ 
+<b>Example</b>
+ 
+This example calls the DosFindFirst function to find all files matching
+"*.*", and then uses the DosFindNext function to display them one at a
+time:
+ 
+FILEFINDBUF findbuf;
+HDIR hdir = HDIR_CREATE;
+USHORT cSearch = 1;
+DosFindFirst("*.*", &amp;hdir, FILE_NORMAL, &amp;findbuf, sizeof(findbuf),
+    &amp;cSearch, 0L);
+do {
+    VioWrtTTY(findbuf.achName, findbuf.cchName, 0);
+    VioWrtTTY("\r\n", 2, 0);     /* cursor to next line     */
+}
+while (DosFindNext(hdir,         /* handle of directory     */
+    &amp;findbuf,                    /* address of buffer       */
+    sizeof(findbuf),             /* length of buffer        */
+    &amp;cSearch)                    /* number of files to find */
+    == 0);                       /* while no error occurs   */
+ 
+<b>See Also</b>
+ 
+<b>DosBufReset, DosClose, DosFindClose, DosFindFirst, DosFindFirst2,</b>
+<b>FILEFINDBUF</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

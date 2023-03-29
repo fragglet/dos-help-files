@@ -1,0 +1,127 @@
+<html>
+
+<head>
+<title>KBDTRANS (1.2) - msos2.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msos2.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> KBDTRANS (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='x_at_L80ac.html'>Changes</a><span class='grhilite'>►</span>                                             <span class='grhilite'>◄</span><a href='Structures.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='kbdtyp.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_KBD
+ 
+typedef struct _KBDTRANS {    /* kbxl */
+    UCHAR  chChar;
+    UCHAR  chScan;
+    UCHAR  fbStatus;
+    UCHAR  bNlsShift;
+    USHORT fsState;
+    ULONG  time;
+    USHORT fsDD;
+    USHORT fsXlate;
+    USHORT fsShift;
+    USHORT sZero;
+} KBDTRANS;
+ 
+The KBDTRANS structure contains translated character information.
+ 
+<b>Field      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<b>chChar</b>     Specifies the character value of the translated scan code. The
+           function copies the value to this field before returning.
+ 
+<b>chScan</b>     Specifies the scan code of the keystroke to be translated. This
+           field must be set before the function is called.
+ 
+<b>fbStatus</b>   Specifies the state of the returned scan code. It can be any
+           combination of the following values:
+ 
+           Value                      Meaning
+           ─────────────────────────────────────────────────────────────────
+           KBDTRF_SHIFT_KEY_IN        Shift key received (valid only in
+                                      binary mode when shift reporting is
+                                      turned on).
+ 
+           KBDTRF_CONVERSION_REQUEST  Conversion requested.
+ 
+           KBDTRF_FINAL_CHAR_IN       Final character received.
+ 
+           KBDTRF_INTERIM_CHAR_IN     Interim character received.
+ 
+<b>bNlsShift</b>  Specifies a reserved value; must be zero.
+ 
+<b>fsState</b>    Specifies the state of the shift keys. It can be one of the
+           following values:
+ 
+           Value                 Meaning
+           ─────────────────────────────────────────────────────────────────
+           KBDSTF_RIGHTSHIFT     Right SHIFT key down.
+ 
+           KBDSTF_LEFTSHIFT      Left SHIFT key down.
+ 
+           KBDSTF_CONTROL        Either CTRL key down.
+ 
+           KBDSTF_ALT            Either ALT key down.
+ 
+           KBDSTF_SCROLLLOCK_ON  SCROLL LOCK mode turned on.
+ 
+           KBDSTF_NUMLOCK_ON     NUMLOCK mode turned on.
+ 
+           KBDSTF_CAPSLOCK_ON    CAPSLOCK mode turned on.
+ 
+           KBDSTF_INSERT_ON      INS mode turned on.
+ 
+           KBDSTF_LEFTCONTROL    Left CTRL key down.
+ 
+           KBDSTF_LEFTALT        Left ALT key down.
+ 
+           KBDSTF_RIGHTCONTROL   Right CTRL key down.
+ 
+           KBDSTF_RIGHTALT       Right ALT key down.
+ 
+           KBDSTF_SCROLLLOCK     SCROLL LOCK key down.
+ 
+           KBDSTF_NUMLOCK        NUMLOCK key down.
+ 
+           KBDSTF_CAPSLOCK       CAPSLOCK key down.
+ 
+           KBDSTF_SYSREQ         SYSREQ key down.
+ 
+<b>time</b>       Specifies the time stamp of the keystroke (in milliseconds).
+ 
+<b>fsDD</b>       Defined for monitor packets. For more information, see the
+           DosMonReg function.
+ 
+<b>fsXlate</b>    Specifies the translation flags. If this field is 0x0000,
+           translation is incomplete. If it is 0x0001, translation is
+           complete.
+ 
+<b>fsShift</b>    Specifies the state of translation across successive calls.
+           Initially, this field should be zero. It should be reset to zero
+           when the caller wants to start a new translation. Note that it
+           may take several calls to the KbdXlate function to complete a
+           character, so this field should not be changed unless a new
+           translation is desired. This field is cleared when translation is
+           complete.
+ 
+<b>sZero</b>      Specifies a reserved value; must be zero.
+ 
+<b>See Also</b>
+ 
+<b>DosMonReg, KbdXlate</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

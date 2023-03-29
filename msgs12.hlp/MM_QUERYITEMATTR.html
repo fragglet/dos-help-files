@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>MM_QUERYITEMATTR (1.2) - msgs12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msgs12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MM_QUERYITEMATTR (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Menu_messages.html'>Message Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Menus 1.2'>Overview</a><span class='grhilite'>►</span>                           <span class='grhilite'>◄</span><a href='messages.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MM_QUERYITEMCOUNT.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMENUS
+ 
+<b>MM_QUERYITEMATTR</b>
+mp1 = MPFROM2SHORT((USHORT) idItem, (BOOL) fIncludeSubMenus);
+mp2 = MPFROMSHORT((USHORT) rgfAttributeMask);
+ 
+An application sends an MM_QUERYITEMATTR message to determine the state of
+the specified attributes of a menu item.
+ 
+<b>Parameter         Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>idItem            </i>Low word of mp1. Identifies the menu item.
+ 
+<i>fIncludeSubMenus  High word of mp1. Specifies wh</i>ether to include submenus in
+                  the search for an item that matches the idItem parameter.
+ 
+<i>rgfAttributeMask  Low word of mp2. Specifies the</i> attributes to get the state
+                  of. This parameter can be any combination of the following
+                  values:
+ 
+                  Value          Meaning
+                  ──────────────────────────────────────────────────────────
+                  MIA_CHECKED    A check mark appears to the left of the
+                                 menu item.
+ 
+                  MIA_DISABLED   The menu item is disabled.
+ 
+                  MIA_FRAMED     The menu item is framed by vertical lines
+                                 to the left and right.
+ 
+                  MIA_HILITED    The menu item is selected (highlighted).
+ 
+                  MIA_NODISMISS  Indicates whether the menu is self
+                                 dismissing.
+ 
+<b>Return Value</b>
+ 
+The return value is the state of the attributes specified in the
+<i>rgfAttributeMask parameter for the menu item spe</i>cified by the idItem
+parameter.
+ 
+<b>Example</b>
+ 
+This example sends an MM_QUERYITEMATTR message to find the state of the
+<i>idCase</i> menu item. It then toggles the state of the item and sends an
+<b>MM_SETITEMATTR</b> message to set the new state.
+ 
+sState = (SHORT) WinSendMsg(hwndMenu, MM_QUERYITEMATTR,
+    MPFROM2SHORT(idCase, TRUE), MPFROMSHORT(MIA_CHECKED));
+sState ^= MIA_CHECKED;
+WinSendMsg(hwndMenu, MM_SETITEMATTR, MPFROM2SHORT(idCase, TRUE),
+    MPFROM2SHORT(MIA_CHECKED, sState));
+ 
+<b>See Also</b>
+ 
+<b>MM_SETITEMATTR</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

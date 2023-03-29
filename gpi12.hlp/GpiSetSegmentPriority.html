@@ -1,0 +1,103 @@
+<html>
+
+<head>
+<title>GpiSetSegmentPriority (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiSetSegmentPriority (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='retained_graphics.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiSetSegmentTransformMatrix.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPISEGMENTS
+ 
+BOOL GpiSetSegmentPriority(hps, idSegment, idRefSegment, cmdOrder)
+HPS hps;              /* presentation-space handle    */
+LONG idSegment;       /* segment identifier           */
+LONG idRefSegment;    /* reference-segment identifier */
+LONG cmdOrder;        /* command options              */
+ 
+The GpiSetSegmentPriority function sets the priority for the segment
+specified by idSegment. Segment priority applies only to chained segments.
+The segment priority of a segment specifies the position of that segment in
+the picture chain. The priority affects how the segment appears when drawn,
+since segments with higher priorities (later positions in the chain) may
+draw over the segment.
+ 
+The function changes a segment's priority by moving its position in the
+picture chain relative to a given segment. The function places the segment
+either before or after the segment specified by the idRefSegment parameter.
+The cmdOrder parameter specifies the priority that the segment should have
+relative to the idRefSegment segment, and therefore determines whether it
+goes before or after. The function places the segment at either the
+beginning or end of the picture chain if the idRefSegment parameter is
+zero.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>           Identifies the presentation space.
+ 
+<i>idSegment</i>     Specifies the identifier of the segment whose priority is to
+              change; it must be greater than zero.
+ 
+<i>idRefSegment</i>  Specifies the reference-segment identifier. It must be the
+              identifier of a segment in the picture chain, or it must be
+              zero. If it is zero, the function uses the beginning or end of
+              the picture chain.
+ 
+<i>cmdOrder</i>      Specifies whether to give the segment higher or lower priority
+              than the segment specified by idRefSegment. It can be one of
+              the following values:
+ 
+              Value       Meaning
+              ──────────────────────────────────────────────────────────────
+              LOWER_PRI   Gives the segment lower priority. The function
+                          places the segment before the reference segment in
+                          the chain. If the idRefSegment is zero, the
+                          function makes the segment the highest-priority
+                          segment.
+ 
+              HIGHER_PRI  Gives the segment higher priority. The function
+                          places the segment after the reference segment in
+                          the chain. If the idRefSegment is zero, the
+                          function makes the segment the lowest-priority
+                          segment.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_INV_ORDERING_PARM
+     PMERR_INV_SEG_NAME
+     PMERR_PS_BUSY
+     PMERR_SEG_AND_REFSEG_ARE_SAME
+     PMERR_SEG_IS_CURRENT
+     PMERR_SEG_NOT_CHAINED
+     PMERR_SEG_NOT_FOUND
+ 
+<b>See Also</b>
+ 
+<b>GpiDrawChain, GpiDrawFrom, GpiQuerySegmentPriority, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

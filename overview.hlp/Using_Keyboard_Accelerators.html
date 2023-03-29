@@ -1,0 +1,113 @@
+<html>
+
+<head>
+<title>Using Keyboard Accelerators (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Keyboard Accelerators (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Keyboard_Accelerators.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Accelerator functions 1.2'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#accelerator table messages 1.2'>Message Group</a><span class='grhilite'>►</span>    <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='List_Box_controls.html'>Next</a></i><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                        Using Keyboard Accelerators
+ 
+An application can automatically load an accelerator table
+resource-definition file when creating a standard frame window, or it can
+load the resource independently and associate it with a window or with the
+entire system.
+ 
+An application can set and query the accelerator tables for a specific
+window or for the entire system. For example, an application could query the
+system accelerator table, copy it, modify the copied accelerator-table data
+structures, and then use the modified copy to set the system accelerator
+table. An application that does this should maintain the original
+accelerator table and restore it when the application terminates. An
+application can also modify its window's accelerator table at run time to
+respond more appropriately to the current environment.
+ 
+<b>Including an Accelerator Table in a Frame Window</b>
+ 
+An application can add an accelerator table to a frame window either by
+using the WinSetAccelTable function or by defining an accelerator-table
+resource and creating a frame window with the FCF_ACCELTABLE frame style.
+The second method is shown in the following code fragment:
+ 
+ULONG lControlStyle = FCF_MENU | FCF_SIZEBORDER
+                      | FCF_TITLEBAR | FCF_ACCELTABLE;
+ 
+hwndFrame = WinCreateStdWindow (HWND_DESKTOP,
+    WS_VISIBLE,
+    &amp;lControlStyle,
+    szClassName,
+    szTitle,
+    0L, NULL,
+    ID_MENU_RESOURCE,
+    &amp;hwndClient);
+ 
+Note that if you set the lControlStyle parameter to FCF_STANDARD you must
+define an accelerator-table resource, because FCF_STANDARD includes the
+FCF_ACCELTABLE flag.
+ 
+If the window being created also has a menu, the menu resource and the
+accelerator resource must have the same resource identifier; this is because
+the WinCreateStdWindow function has only one input parameter to specify the
+resource ID of menus, accelerator tables, and icons. If an application
+creates an accelerator table resource-definition file and then opens a
+standard frame window, as shown in the preceding example, the accelerator
+table is automatically installed in the window's input queue and keyboard
+events are translated during the normal processing of events. The
+application simply responds to WM_COMMAND, WM_SYSCOMMAND, and WM_HELP
+messages; it does not matter whether they come from a menu or from an
+accelerator.
+ 
+An application can also add an accelerator table to a window by calling the
+<b>WinSetAccelTable</b> function with an accelerator-table handle and a
+frame-window handle. The application can call either the WinLoadAccelTable
+function to retrieve an accelerator table from a resource file or the
+<b>WinCreateAccelTable</b> function to create an accelerator table from an
+accelerator-table data structure in memory.
+ 
+<b>Modifying an Accelerator Table</b>
+ 
+An application can modify an accelerator table, either for its own windows
+or for the system, by retrieving the handle of the accelerator table, using
+the handle to copy the accelerator-table data to an application-supplied
+buffer, changing the data in the buffer, and then using the data in the
+buffer to create a new accelerator table. The application can then use the
+new accelerator-table handle to set the accelerator table, either for a
+window or for the system. This process is outlined in the following list:
+ 
+1  Call the WinQueryAccelTable function to retrieve an accelerator-table
+   handle.
+ 
+2  Call the WinCopyAccelTable function with a null buffer handle to
+   determine how many bytes are in the table.
+ 
+3  Allocate sufficient memory for the accelerator-table data.
+ 
+4  Call the WinCopyAccelTable function with a pointer to the allocated
+   memory.
+ 
+5  Modify the data in the buffer (assuming it has the form of an ACCELTABLE
+   data structure).
+ 
+6  Call the WinCreateAccelTable function, passing a pointer to the buffer
+   with the modified accelerator-table data.
+ 
+7  Call the WinSetAccelTable function with the handle returned by the
+   WinCreateAccelTable function.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

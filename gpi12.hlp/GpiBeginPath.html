@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>GpiBeginPath (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiBeginPath (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Path_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Paths 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiBitBlt.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPATHS
+ 
+BOOL GpiBeginPath(hps, idPath)
+HPS hps;        /* presentation-space handle */
+LONG idPath;    /* path identifier           */
+ 
+The GpiBeginPath function starts a path bracket, that is, starts a sequence
+of functions that define the shape and size of a path. GpiBeginPath sets the
+path identifier and initializes the path, clearing any path created
+previously with this identifier. All subsequent drawing functions, up to the
+next GpiEndPath function, apply to the new path.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>idPath</i>     Specifies the path identifier; for MS OS/2 version 1.2, it must
+           be 1.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_ALREADY_IN_PATH
+     PMERR_INV_HPS
+     PMERR_INV_IN_AREA
+     PMERR_INV_PATH_ID
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+Since there is a limit to the size of a path, any line or curve drawing
+function within a path bracket that would exceed the limit returns the
+PMERR_PATH_TOO_BIG error value.
+ 
+<b>Example</b>
+ 
+This example uses the GpiBeginPath function to create a path. The path, an
+isosceles triangle, is given path identifier 1. After the path bracket is
+ended using GpiEndPath, a subsequent call to the GpiFillPath function draws
+and fills the path.
+ 
+HPS hps;
+POINTL ptlStart = { 0, 0 };
+POINTL ptlTriangle[] = { 100, 100, 200, 0 };
+GpiBeginPath(hps, 1L);                  /* start the path bracket */
+GpiMove(hps, &amp;ptlStart);                /* move to starting point */
+GpiPolyLine(hps, 2L, ptlTriangle);      /* draw the three sides   */
+GpiCloseFigure(hps);                    /* close the triangle     */
+GpiEndPath(hps);                        /* end the path bracket   */
+GpiFillPath(hps, 1L, FPATH_ALTERNATE);  /* draw and fill the path */
+ 
+<b>See Also</b>
+ 
+<b>GpiCloseFigure, GpiEndPath, GpiFillPath, GpiModifyPath, GpiSetClipPath,</b>
+<b>GpiSetLineWidthGeom, GpiStrokePath, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

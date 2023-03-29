@@ -1,0 +1,116 @@
+<html>
+
+<head>
+<title>GpiPartialArc (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiPartialArc (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='arcs.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Line and Arc Primitives 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiPlayMetaFile.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+LONG GpiPartialArc(hps, pptl, fxMultiplier, fxStartAngle, fxSweepAngle)
+HPS hps;               /* presentation-space handle             */
+PPOINTL pptl;          /* address of structure for center point */
+FIXED fxMultiplier;    /* arc-size multiplier                   */
+FIXED fxStartAngle;    /* start angle of arc                    */
+FIXED fxSweepAngle;    /* sweep angle of arc                    */
+ 
+The GpiPartialArc function draws a partial arc. The function actually draws
+two figures: a straight line, from the current position to the start point
+of an arc; and the arc itself, with its center at the specified point. The
+function determines the start and end points of the arc by using the start
+and sweep angles specified by the fxStartAngle and fxSweepAngle functions.
+ 
+The GpiPartialArc function moves the current position to the end point on
+the partial arc.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>           Identifies the presentation space.
+ 
+<i>pptl        </i>  Points to a POINTL structure that contains the center point.
+ 
+<i>fxMultiplier</i>  Specifies the amount to scale the width and height of the arc.
+              It must be a fixed-point value in the range 1 through 255 (or
+              in the range 0x10000 to 0xFF0000 if expressed as a 32-bit
+              value). This means the function can scale the arc from 1 to
+              255 times the current arc-parameter dimensions.
+ 
+<i>fxStartAngle</i>  Specifies the start angle in degrees. It must be a positive,
+              fixed-point value.
+ 
+<i>fxSweepAngle</i>  Specifies the sweep angle in degrees. It must be a positive,
+              fixed-point value.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK or GPI_HITS if the function is successful (it is
+GPI_HITS if the detectable attribute is set for the presentation space and a
+correlation hit occurs). The return value is GPI_ERROR if an error occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_ANGLE_PARM
+     PMERR_INV_COORDINATE
+     PMERR_INV_HPS
+     PMERR_INV_MULTIPLIER
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+To draw the arc, the GpiPartialArc function first constructs an imaginary
+unit circle at the specified center point. The function locates the start
+point of the arc by measuring counterclockwise from the x-axis of the circle
+by the number of degrees in the start angle. It then locates the end point
+of the arc by measuring counterclockwise from the start point by the number
+of degrees in the sweep angle. Finally, the function draws the arc by
+applying the current arc parameters and the arc-size multiplier. The
+direction in which the function draws the arc depends on the arc parameters.
+The direction may affect the way a closed figure containing an arc is
+filled.
+ 
+If the sweep angle is greater than 360 degrees, the function draws one or
+more complete circles or ellipses (depending on the original sweep-angle
+value) followed by an arc. The sweep angle of the final arc is the remainder
+after dividing the original sweep angle by 360.
+ 
+<b>Example</b>
+ 
+This example uses the GpiPartialArc function to draw a chord. A chord is an
+arc whose end points are connected by a straight line.
+ 
+POINTL ptl = { 100, 100 };             /* center point for arc */
+ 
+GpiSetLineType(hps, LINETYPE_INVISIBLE);
+GpiPartialArc(hps, &amp;ptl, MAKEFIXED(50, 0), MAKEFIXED(0, 0),
+    MAKEFIXED(180, 0));
+GpiSetLineType(hps, LINETYPE_SOLID);
+GpiPartialArc(hps, &amp;ptl, MAKEFIXED(50, 0), MAKEFIXED(0, 0),
+    MAKEFIXED(180, 0));
+ 
+<b>See Also</b>
+ 
+<b>GpiFullArc, GpiLine, GpiMove, GpiPointArc, GpiQueryArcParams,</b>
+<b>GpiSetArcParams, GpiSetAttrs, GpiSetColor, GpiSetCurrentPosition,</b>
+<b>GpiSetLineType, WinGetLastError, POINTL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

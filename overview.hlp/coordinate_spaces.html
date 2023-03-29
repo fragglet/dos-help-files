@@ -1,0 +1,514 @@
+<html>
+
+<head>
+<title>About Coordinate Spaces and Transformations (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Coordinate Spaces and Transformations (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='using_coordinate_spaces.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#transformations 1.2'>Function Group</a><span class='grhilite'>►</span>                     <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='fonts.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                About Coordinate Spaces and Transformations
+ 
+This topic describes coordinate spaces and transformations. You should also
+be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='device_contexts.html'>Presentation spaces and device contexts</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='segments.html'>Segments and retained graphics</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Clipping.html'>Clipping</a><span class='grhilite'>►</span>
+ 
+A coordinate space is a two-dimensional set of points. A point is the
+smallest definable location in a coordinate space. There are four coordinate
+spaces in Microsoft Operating System/2 Presentation Manager:
+ 
+♦  World coordinate space
+♦  Model coordinate space
+♦  Page coordinate space
+♦  Device coordinate space
+ 
+A coordinate system is a means of specifying the location of a point in a
+coordinate space. For each of the four coordinate spaces in MS OS/2, there
+is a corresponding coordinate system. The four coordinate systems for MS
+OS/2 are two-dimensional systems with x- and y-axes, an origin, and
+dimensions. The x-axis extends horizontally across the system; the y-axis,
+vertically across the system. The origin is located at the intersection of
+the x- and y-axes and lies at the center of the system. The world, model,
+and page coordinate systems' x- and y-axes extend from 0 to 134,217,727 in
+the positive direction and from 0 to -134,217,728 in the negative direction.
+The device coordinate system's x- and y-axes extend from 0 to 32,767 in the
+positive direction and from 0 to -32,768 in the negative direction.
+ 
+When you specify a coordinate in MS OS/2, the values you use are long
+integers (32-bits).
+ 
+<b>Single-Coordinate-Space Systems</b>
+ 
+All graphics systems use at least one coordinate space and system to
+generate output on a video display or printer. The simplest systems use a
+single coordinate space, whose points are the pels on the display. In
+single-coordinate-space, or single-space, systems, one corner of the display
+(usually the lower-left) corresponds to the origin of the coordinate system;
+the positive x-axis extends from the origin to the lower-right corner of the
+display; and the positive y-axis extends from the origin to the upper-left
+corner of the display.
+ 
+There are two fundamental drawbacks to a graphics system with a single
+coordinate space:
+ 
+♦  Any application written for the graphics system is device dependent.
+♦  It is difficult to draw output in convenient units like centimeters,
+   feet, inches, or twips.
+ 
+Since the coordinate space in a simple system is made up of pels, and since
+the shape of pels varies from device to device, the output from an
+application written for one device may look different on another device.
+ 
+Single-coordinate-space systems are difficult to use for drawing or
+computer-aided-design (CAD) applications since these applications work in
+units of inches, feet, meters, and so on. For example, to draw a simple
+horizontal line that is 1 inch long, you must perform the following tasks:
+ 
+1  Determine the width (in inches) of the video display or printer paper.
+2  Determine the width (in pels) of the video display.
+3  Divide the width in pels by the width in inches to determine the ratio of
+   pels to inches.
+4  Using this ratio, perform the line-drawing command.
+ 
+<b>Multiple-Coordinate-Space Systems</b>
+ 
+Single-coordinate-space, or single-space, systems do not provide the
+flexibility that most applications and application developers need. An
+application written for a single-coordinate-space system will create
+meaningful output only on a device on which the pels are a certain width and
+height. Since spreadsheet, word-processing, desktop-publishing, and CAD
+applications normally draw output on video displays and printers or
+plotters, it is obvious that a single-coordinate-space system is
+impractical. In Presentation Manager, however, you can avoid the limitations
+of a single-coordinate-space system by using additional coordinate spaces
+and other operations, called transformations. Transformations require two
+coordinate spaces──a source coordinate space and a target coordinate space.
+ 
+<b>Transformations</b>
+ 
+When copying objects from one coordinate space to another, MS OS/2 applies
+one or more of five operations, called transformations, to the points that
+define the object. These five transformations──scaling, rotation,
+translation, shear, and reflection──enable you to write applications that
+can do the following tasks:
+ 
+♦  Run on a variety of video displays, printers, and plotters.
+ 
+♦  Use convenient units of measurement (centimeters, inches, feet,
+   kilometers, miles, etc.).
+ 
+♦  Scroll and zoom pictures.
+ 
+♦  Rotate and scale objects in pictures.
+ 
+♦  Shift the positions of objects in pictures.
+ 
+♦  Display mirror images of objects in pictures.
+ 
+♦  Display sheared objects in pictures.
+ 
+When your application copies an object from the source coordinate space to
+the target coordinate space, the five transformations work as follows:
+ 
+♦  The scaling transformation makes the object look bigger or smaller.
+ 
+♦  The rotation transformation rotates the object.
+ 
+♦  The translation transformation shifts the object with respect to the
+   origin of the coordinate system.
+ 
+♦  The shear transformation rotates either all the vertical or all the
+   horizontal lines in an object.
+ 
+♦  The reflection transformation creates a mirror image of an object with
+   respect to the x- or y-axis.
+ 
+Presentation Manager uses three-by-three matrices to represent the three
+transformations. For any point (x,y) in a source coordinate space, you can
+determine the corresponding point (x',y') in the target coordinate space by
+using the following matrix multiplication:
+ 
+          |M11   M12   M13|
+[x y 1] * |M21   M22   M23| = [x' y' 1]
+          |M31   M32   M33|
+ 
+In the following example, the transformations are set to unity (represented
+by the identity matrix). In such cases, the original point in the source
+coordinate space is always identical to its corresponding point in the
+target coordinate space.
+ 
+            |1   0   0|
+[3 100 1] * |0   1   0| = [3 100 1]
+            |0   0   1|
+ 
+In the next example, the identity matrix is replaced with a new matrix that
+translates the point when the point is copied from the source coordinate
+space to the target coordinate space.
+ 
+            |1    0   0|
+[3 100 1] * |0    1   0| = [100 3 1]
+            |97 -97   1|
+ 
+In this example, the point (3,100) was translated to (100,3) by changing the
+values of M31 and M32.
+ 
+<b>The MATRIXLF Structure and Fixed Values</b>
+ 
+A special data structure called the MATRIXLF structure contains nine fields
+that correspond to the nine elements in a three-by-three transformation
+matrix. Five of these fields are 32-bit long integer values; the remaining
+four are special 32-bit fixed values.
+ 
+A fixed value is a binary representation of a floating-point number. A fixed
+value has two parts: the high-order 16-bits and the low-order 16-bits. The
+high-order 16-bits contain a signed integer in the range -32,768 through
+32,767; the low-order 16-bits contain the numerator of a fraction, in the
+range 0 through 65,535 (the denominator for this fraction is 65,536).
+ 
+You use fixed values to store the sines and cosines of angles for the
+rotation transformation. You also use fixed values to store scaling factors
+for the scaling transformation. To store the cosine of 60 degrees in a fixed
+value, you would multiply 0.5 by 65,536. The result, 32,768, is the value
+you would assign to a fixed value in the MATRIXLF structure. To store a
+scaling factor of, for example, 3 in a fixed value, you would multiply 3 by
+65,536. Again, the result, 196,608, is the value you would assign to a fixed
+value in the MATRIXLF structure.
+ 
+The MAKEFIXED macro provides a quick and convenient method for determining
+fixed values. This macro requires two arguments: The first is the integer
+part of the fixed value, and the second is the fraction part of the fixed
+value. In the following example, MAKEFIXED is used to determine the
+fixed-value equivalent of 1-and-1/8:
+ 
+matlf.fxM11 = MAKEFIXED(1, 8192)
+ 
+The first argument, 1, is the integer part of the fixed value. The second
+argument, 8192, is the result of multiplying 65,536 by 1/8.
+ 
+The following type definition shows each of the fields in the MATRIXLF
+structure. Fields with an fx prefix contain fixed values; fields with an l
+prefix contain long values.
+ 
+typedef struct _MATRIXLF {     /* matlf */
+    FIXED fxM11;      /* M11 */
+    FIXED fxM12;      /* M12 */
+    LONG  lM13;       /* M13 */
+    FIXED fxM21;      /* M21 */
+    FIXED fxM22;      /* M22 */
+    LONG  lM23;       /* M23 */
+    LONG  lM31;       /* M31 */
+    LONG  lM32;       /* M32 */
+    LONG  lM33;       /* M33 */
+} MATRIXLF;
+ 
+<b>Scaling Transformations</b>
+ 
+When you scale an object by using the scaling transformation, the matrix
+element M11 contains the horizontal scaling component (horz), and the matrix
+element M22 contains the vertical scaling component (vert):
+ 
+|horz      0       0|
+|  0      vert     0|
+|  0       0       1|
+ 
+<b>Rotation Transformations</b>
+ 
+When you rotate an object clockwise by using the rotation transformation,
+the matrix element M11 contains the cosine of the rotation angle; M12, the
+negative sine of the rotation angle; M21, the sine of the rotation angle;
+and M22, the cosine of the rotation angle:
+ 
+|cos    -sin     0|
+|sin    cos      0|
+|0        0      1|
+ 
+Remember that MS OS/2 applies a transformation to all points in the source
+coordinate space. This means that unless an object is drawn about the origin
+of the source coordinate space, translation will occur when the object is
+rotated or scaled.
+ 
+<b>Translation Transformations</b>
+ 
+When you translate an object by using the translation transformation, the
+matrix element M31 contains the horizontal translation component, and the
+matrix element M32 contains the vertical translation component, as follows:
+ 
+|1         0        0|
+|0         1        0|
+|horz     vert      1|
+ 
+<b>Shear Transformations</b>
+ 
+There are two shear transformations: vertical and horizontal. When an
+application uses the vertical shear transformation, it affects only the
+vertical lines in the object. In the matrix of the vertical shear
+transformation, the element M21 contains a horizontal shear component, and
+the element M22 contains a vertical shear component, as follows:
+ 
+|1        0      0|
+|horz   vert     0|
+|0        0      1|
+ 
+When an application uses the horizontal shear transformation, it affects
+only the horizontal lines in the object. In the matrix of the horizontal
+shear transformation, the element M11 contains a horizontal shear component,
+and the matrix element M21 contains a vertical shear component, as folows:
+ 
+|horz   vert      0|
+|0      1         0|
+|0      0         1|
+ 
+If an application shears an object that contains two orthogonal vectors (two
+perpendicular lines), the vectors will no longer be orthogonal.
+ 
+<b>Reflection Transformations</b>
+ 
+The reflection transformation creates a mirror image of an object with
+respect to the x- or the y-axis. The matrix element M11 contains the
+horizontal reflection component, which causes reflection about the y-axis.
+The matrix element M22 contains the vertical reflection component, which
+causes reflection about the x-axis. The reflection components are always
+negative.
+ 
+|horz       0       0|
+|0        vert      0|
+|0          0       1|
+ 
+<b>Combining Transformations</b>
+ 
+Each time you call a Gpi function that sets a transformation, you can
+specify whether you want to combine it with existing transformations and, if
+so, whether you want MS OS/2 to apply the existing transformation before or
+after the new transformation.
+ 
+If you want MS OS/2 to replace any existing transformations with the new
+transformation, use the TRANSFORM_REPLACE flag when you set the
+transformation. If you want MS OS/2 to apply the new transformation before
+it applies the existing transformation, use the TRANSFORM_PREEMPT flag when
+you set the new transformation. If you want MS OS/2 to apply the new
+transformation after it applies the existing transformation, use the
+TRANSFORM_ADD flag when you set the new transformation.
+ 
+<b>Round-off Error</b>
+ 
+Whenever you use transformations in your application, you should check for
+any round-off error that occurs after multiple scaling, rotation, shear, or
+reflection transformations. For example, if your application uses a rotation
+transformation to rotate the hands of a clock, the accuracy of the clock
+will diminish due to rounding off after the transformation. In order to
+prevent the loss of accuracy, your application should check the results of
+each transformation.
+ 
+<b>World Coordinate Space</b>
+ 
+A world coordinate space, or world space, is where all Presentation Manager
+drawing operations begin. Whenever you draw with one of the line, arc,
+character, area, or image primitives, the coordinates that you specify are
+world coordinates. World-coordinate units can be inches, fractions of an
+inch, meters, centimeters, miles, kilometers, yards, and so on.
+ 
+If your application uses the retained-drawing mode to store subpictures in
+chained segments, MS OS/2 assigns a new world space to each segment. In
+other words, if the segment attribute is set to ATTR_CHAINED and you call
+the GpiOpenSegment function, the subpicture associated with that segment is
+drawn in a new world space.
+ 
+There is a special clipping area called a clip path that you can use to
+define a part of a world space that you want to copy into the next
+coordinate space (the model space). The advantage of a clip path is that it
+is the only clipping region that can be nonrectangular. Its edges can
+include arcs, curves, and straight lines. The coordinates that define the
+dimensions and shape of a clip path are always world coordinates. You can
+create a clip path by calling the GpiBeginPath, GpiEndPath, and
+<b>GpiSetClipPath functions and one or more G</b>pi primitives that define the
+dimensions and location of the path. For more information, see the topic
+<i><span class='grhilite'>◄</span><a href='Clipping.html'>Clipp</i>ing</a><span class='grhilite'>►</span>.
+ 
+<b>Model Coordinate Space</b>
+ 
+A model coordinate space, or model space, is where you build a model, or a
+complete picture, from subpictures in one or more world spaces. You can have
+more than one model space, each corresponding to a particular model.
+ 
+There is a special clipping area called a viewing limit that you can use to
+define a part of a model space that you want to copy into the next
+coordinate space (the page space). A viewing limit is always rectangular,
+and the coordinates that define its location and dimensions are always model
+coordinates. You can set the viewing limit by calling the
+<b>GpiSetViewingLimits</b> function.
+ 
+<b>World-to-Model-Space Transformations</b>
+ 
+There are three transformations that operate between the world space and the
+model space:
+ 
+♦  The model transformation
+♦  The segment transformation
+♦  The instance transformation
+ 
+<b>Model Transformations</b>
+ 
+Model transformations are used for retained- or nonretained-drawing
+operations. This means model transformations affect the output from the
+<b>GpiDrawChain, GpiDrawFrom, and GpiDrawSegment functions and any of the Gpi</b>
+functions that occur outside of a retained-drawing segment.
+ 
+You can determine the values for the current model transformation by calling
+the GpiQueryModelTransformMatrix function, which returns the model
+transformation's scaling, rotation, and translation values in a
+three-by-three matrix. Similarly, you can set these values by calling the
+<b>GpiSetModelTransformMatrix</b> function, passing it the scaling, rotation, and
+translation values in a three-by-three matrix.
+ 
+In a retained-graphics application, you could use a model transformation to
+rotate, scale, or translate parts of a subpicture. You can set and reset the
+model transformation any number of times within a retained-drawing segment.
+ 
+<b>Segment Transformations</b>
+ 
+Segment transformations alter retained-drawing output. Unlike a model
+transformation, which can be set and reset within a segment bracket, a
+segment transformation must be set outside of a segment bracket.
+ 
+You can determine the values for the current segment transformation by
+calling the GpiQuerySegmentTransformMatrix function, which returns the
+scaling, rotation, and translation values in a three-by-three matrix and
+passes a segment identifier. Similarly, you can set the values for the
+segment transformation by calling the GpiSetSegmentTransformMatrix function,
+passing it the necessary values (in a three-by-three matrix) and a segment
+identifier.
+ 
+The user of a CAD or drafting application may need to zoom in on part of a
+subpicture that was clipped in world space by a clip path. The application
+could perform this operation by setting the segment transformation for that
+particular subpicture after setting the clip path.
+ 
+<b>Instance Transformations</b>
+ 
+Instance transformations alter the retained-drawing output from special
+segments referred to as "called" segments. A called segment usually contains
+a subpicture that is duplicated several times in other subpictures. The
+instance transformation positions, sizes, and rotates the subpicture each
+time it is duplicated. You can set the values for the instance
+transformation by calling the GpiCallSegmentMatrix function, passing it the
+transformation values (in a three-by-three matrix) and a segment
+identifier.
+ 
+<b>Page Coordinate Space</b>
+ 
+A page coordinate space, or page space, is where a complete picture is
+prepared for viewing in a window on a video display, printing on a page of
+printer paper, or plotting on a page of plotter paper. Page-coordinate units
+can be increments of an inch, a meter, several pels, a twip, or some
+arbitrary value. (A twip is a standard unit in the typesetting industry that
+measures 1/1440 of an inch.) You specify the units used for page coordinates
+when you call the GpiCreatePS function and create a presentation space.
+ 
+If your application uses retained-drawing mode, the picture in page space
+will contain parts of models (or pictures) from each of the model spaces
+that have not been clipped; the picture will also contain any additional
+graphics-primitive output (that has not been clipped) that the application
+generated in nonretained-drawing mode. If your application uses
+nonretained-drawing mode, the picture in page space will contain all of the
+graphics-primitive output that has not been clipped.
+ 
+In the page space, there is a special clipping area called a graphics field
+that you can use to define the part of the page space that you want to copy
+into the next coordinate space (the device space). The graphics field is
+always rectangular. The coordinates that define the location and dimensions
+of the graphics field are always page coordinates.
+ 
+<b>Model-to-Page-Space Transformations</b>
+ 
+There are two transformations that operate between the model space and the
+page space:
+ 
+♦  The default viewing transformation
+♦  The viewing transformation
+ 
+<b>Default Viewing Transformations</b>
+ 
+Default viewing transformations scroll or zoom pictures in a window on a
+video display or on a page of printer or plotter paper. You can determine
+the current values for the default viewing transformation by calling the
+<b>GpiQueryDefaultViewMatrix</b> function, which returns the
+default-viewing-transformation values in a three-by-three matrix. You can
+set these values by calling the GpiSetDefaultViewMatrix function and passing
+it the transformation values (in a three-by-three matrix).
+ 
+<b>Viewing Transformations</b>
+ 
+Viewing transformations create pictures from multiple model spaces. For
+example, you could copy a picture from a model space to a page space,
+leaving all parts of the picture intact. Then you could copy a part of
+another picture from a second model space by using a viewing limit to define
+the part of the picture that you want to copy and then using the viewing
+transformation to scale and translate that part. You can determine the
+current values for the viewing transformation by calling the
+<b>GpiQueryViewingTransformMatrix</b> function, which returns the values for the
+viewing transformation in a three-by-three matrix. You can set the values by
+calling the GpiSetViewingTransformMatrix function and passing it the
+transformation values (in a three-by-three matrix).
+ 
+<b>Device Coordinate Space</b>
+ 
+A device coordinate space, or device space, is the final space in which a
+picture is drawn before it appears in a window or on the page of a printer
+or plotter. Device-coordinate units are pels if the page units are pels,
+twips, increments of an inch, or increments of a meter. Device-coordinate
+units are arbitrary if the page units are arbitrary.
+ 
+<b>Page-to-Device-Space Transformations</b>
+ 
+There is one transformation between the page space and the device space──it
+is called the device transformation. Unlike the other transformations that
+rotate, scale, and translate objects, the device transformation only scales
+and translates objects; also, instead of a three-by-three matrix, the device
+transformation uses two rectangles. (The location of the first rectangle is
+fixed; the location of the second rectangle is movable.) These two
+rectangles are the presentation page and the page viewport.
+ 
+<b>Presentation Pages</b>
+ 
+A presentation page is a rectangle in a page space. Its lower-left corner is
+always positioned at the origin of the page space. You can determine the
+dimensions of the presentation page by calling the GpiQueryPS function,
+which returns a pointer to a SIZEL structure that contains the page
+dimensions. If you specify arbitrary page units when you create a
+presentation space, you must also specify the dimensions of the presentation
+page. If you specify any other page unit, MS OS/2 automatically sets the
+dimensions of the presentation page for you.
+ 
+<b>Page Viewports</b>
+ 
+A page viewport is a rectangle in a device space. MS OS/2 always copies the
+presentation-page rectangle into the page-viewport rectangle. You can
+determine the current dimensions of the page viewport by calling the
+<b>GpiQueryPageViewport function, which returns a pointer to a </b>RECTL structure
+that contains the coordinates of the viewport. You can set the location and
+dimensions of the page viewport by calling the GpiSetPageViewport function
+and passing it a pointer to a RECTL structure that contains the new values.
+ 
+The ratio of the page width to the page-viewport width defines a horizontal
+scaling factor, and the ratio of the page height to the viewport height
+defines a vertical scaling factor.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

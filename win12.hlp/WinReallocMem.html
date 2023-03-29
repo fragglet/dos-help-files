@@ -1,0 +1,84 @@
+<html>
+
+<head>
+<title>WinReallocMem (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinReallocMem (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Heap_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Heaps 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinRegisterClass.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINHEAP
+ 
+NPBYTE WinReallocMem(hHeap, npMem, cbOld, cbNew)
+HHEAP hHeap;     /* handle of the heap                    */
+NPBYTE npMem;    /* address of memory block to reallocate */
+USHORT cbOld;    /* old memory block length               */
+USHORT cbNew;    /* new memory block length               */
+ 
+The WinReallocMem function reallocates the size of a memory block on the
+heap.
+ 
+The calling routine must specify both the old size of the memory object and
+the new size. If the new size is larger than the old size, then this
+function calls the WinAllocMem function to allocate the new, larger object,
+copies the number of bytes specified by the cbOld parameter from the old
+object to the new, frees the old object, and returns a pointer to the new
+object. (It never causes an object to grow in place.)
+ 
+If the passed heap is created with the HM_MOVEABLE option, then the value of
+the cbOld parameter is ignored and the value in the size word of the
+allocated object is used. On completion, the size word contains the value of
+the cbNew parameter. If this function has to move the object in order to
+satisfy the request, then the handle value word is updated by adding to it
+the distance of the move, in bytes. The returned address is then the address
+of the first reserved word.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hHeap</i>      Identifies the heap. This parameter must have been returned from
+           a previous call to the WinCreateHeap function.
+ 
+<i>npMem</i>      Points to the memory block to be reallocated. The low two bits of
+           npMem are ignored, although they are preserved in the return
+           value of this function, even if the memory object is moved as a
+           result of growing. Except for the two low bits, the value of the
+           npMem parameter must have been returned by either the
+           WinAllocMem function or a previous call to WinReallocMem.
+ 
+<i>cbOld</i>      Specifies the old size of the memory block, in bytes.
+ 
+<i>cbNew</i>      Specifies the new size of the memory block, in bytes.
+ 
+<b>Return Value</b>
+ 
+The return value is a pointer to the reallocated memory block if the
+function was successful. Otherwise, it is NULL, indicating that the memory
+could not be reallocated to the requested size.
+ 
+The return pointer is a 16-bit offset from the start of the segment
+containing the heap of the reallocated memory object. The function returns
+NULL when the memory object cannot be reallocated because an invalid heap
+handle is specified, there is not enough room in the heap to increase the
+object to the specified size, or the npMem parameter points to memory
+outside the bounds of the passed heap.
+ 
+<b>See Also</b>
+ 
+<b>WinAllocMem, WinCreateHeap, WinFreeMem</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

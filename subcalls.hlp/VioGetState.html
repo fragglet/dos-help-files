@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>VioGetState (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioGetState (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioModeUndo.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioGetState(pvoidState, hvio)
+PVOID pvoidState;    /* pointer to structure for state information */
+HVIO hvio;           /* video handle                               */
+ 
+The VioGetState function retrieves the current settings of the
+screen-palette registers, the overscan (border) color, the blink/background
+intensity switch, the screen color, the underline position, or the target
+display.
+ 
+The VioSetState function is a family API function.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pvoidState</i>  Points to the structure that receives the state information. The
+            structure type, which depends on the request type specified in
+            the type field of each structure, is one of the following:
+            VIOPALSTATE, VIOOVERSCAN, VIOINTENSITY, VIOCOLORREG,
+            VIOSETULINELOC, or VIOSETTARGET.
+ 
+<i>hvio</i>        Identifies an advanced video-input-and-output (AVIO)
+            presentation space. For AVIO programs, this handle must have
+            been created by using the VioCreatePS function. For other
+            programs, hvio must be NULL.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_VIO_INVALID_HANDLE
+     ERROR_VIO_INVALID_LENGTH
+ 
+<b>Example</b>
+ 
+This example calls the VioGetState function to retrieve the settings for
+each of the 16 palette registers.
+ 
+BYTE abState[38];
+PVIOPALSTATE pviopal;
+pviopal = (PVIOPALSTATE) abState;
+pviopal-&gt;cb = sizeof(abState); /* structure size                   */
+pviopal-&gt;type = 0;             /* retrieves palette registers      */
+pviopal-&gt;iFirst = 0;           /* first palette register to return */
+VioGetState(pviopal, 0);
+ 
+<b>See Also</b>
+ 
+<b>VioCreatePS, VioGetMode, VioSetState, VIOCOLORREG, VIOINTENSITY,</b>
+<b>VIOOVERSCAN, VIOPALSTATE, VIOSETTARGET, VIOSETULINELOC</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

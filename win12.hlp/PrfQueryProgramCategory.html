@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<title>PrfQueryProgramCategory (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> PrfQueryProgramCategory (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='prf.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='PrfQueryProgramHandle.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINPROGRAMLIST
+ 
+PROGCATEGORY PrfQueryProgramCategory(hini, pszProgramName)
+HINI hini;             /* initialization-file handle */
+PSZ pszProgramName;    /* pointer to program name    */
+ 
+The PrfQueryProgramCategory function retrieves the type (category) of a
+specified program.
+ 
+<b>Parameter       Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hini</i>            Identifies the file to search for program information (if
+                the program type cannot be determined by searching the
+                header of the executable file). This parameter can be an
+                initialization-file handle obtained by using the
+                PrfOpenProfile function, or it can be the value
+                HINI_USERPROFILE, specifying the user-profile file.
+ 
+<i>pszProgramName</i>  Points to the null-terminated string that contains the name
+                of the executable file for which the type is to be returned.
+                If the string appears to be a fully qualified path [(that
+                is, it contains a colon (:) in the second position and/or
+                contains a backslash (\)], the file is searched for in the
+                indicated directory on the indicated drive. If neither of
+                these conditions is true and the file is not in the current
+                directory, each drive and directory specified in the path
+                defined in the current program's environment is searched.
+                The default extension for an executable file is .exe,
+                although any extension is acceptable.
+ 
+<b>Return Value</b>
+ 
+The return value is the program category if the function is successful or
+zero if an error occurs. The program type can be one of the following
+values:
+ 
+<b>Value               Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>PROG_FULLSCREEN</i>     Program runs only in a full-screen session.
+ 
+<i>PROG_WINDOWABLEVIO</i>  Program runs in a VIO window.
+ 
+<i>PROG_PM</i>             Program is a Presentation Manager application.
+ 
+<i>PROG_REAL</i>           Program is a real-mode (DOS) application.
+ 
+<i>PROG_DLL</i>            Program is a dynamic-link module.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+the following:
+ 
+    PMERR_DOS_ERROR
+ 
+<b>Comments</b>
+ 
+The PrfQueryProgramCategory function first calls the DosQAppType function.
+If the program type cannot be determined from this call, the profile
+specified by the hini parameter is searched.
+ 
+Because this function calls DosQAppType, the program type returned may not
+be the same type the user specified for the program in Desktop Manager.
+ 
+<b>See Also</b>
+ 
+<b>DosQAppType, PrfQueryDefinition</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

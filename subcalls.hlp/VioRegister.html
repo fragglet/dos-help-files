@@ -1,0 +1,315 @@
+<html>
+
+<head>
+<title>VioRegister (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioRegister (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioSavRedrawUndo.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioRegister(pszModuleName, pszEntryName, flFunction1,
+    flFunction2)
+PSZ pszModuleName;    /* pointer to module name      */
+PSZ pszEntryName;     /* pointer to entry-point name */
+ULONG flFunction1;    /* function flag 1             */
+ULONG flFunction2;    /* function flag 2             */
+ 
+The VioRegister function registers a Vio subsystem within a screen group.
+<b>VioRegister temporarily replaces </b>one or more default Vio functions, as
+specified by the flFunction1 and flFunction2 parameters, with the functions
+pointed to by the pszModuleName parameter. Once VioRegister replaces a
+function, MS OS/2 passes any subsequent call to the replaced function to a
+function in the given module. If you do not replace a function, MS OS/2
+continues to call the default Vio function.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pszModuleName</i>  Points to the null-terminated string that specifies the name
+               of the dynamic-link module containing the replacement Vio
+               functions. The string must be a valid filename.
+ 
+<i>pszEntryName</i>   Points to the null-terminated string that specifies the
+               dynamic-link entry-point name of the function that replaces
+               the specified Vio functions. For a full description, see the
+               following "Comments" section.
+ 
+<i>flFunction1    Specifies the Vio </i>function(s) to replace. This parameter can
+               be any combination of the following values:
+ 
+               Value                Meaning
+               ─────────────────────────────────────────────────────────────
+               VR_VIOGETCURPOS      Replace VioGetCurPos.
+ 
+               VR_VIOGETCURTYPE     Replace VioGetCurType.
+ 
+               VR_VIOGETMODE        Replace VioGetMode.
+ 
+               VR_VIOGETBUF         Replace VioGetBuf.
+ 
+               VR_VIOGETPHYSBUF     Replace VioGetPhysBuf.
+ 
+               VR_VIOSETCURPOS      Replace VioSetCurPos.
+ 
+               VR_VIOSETCURTYPE     Replace VioSetCurType.
+ 
+               VR_VIOSETMODE        Replace VioSetMode.
+ 
+               VR_VIOSHOWBUF        Replace VioShowBuf.
+ 
+               VR_VIOREADCHARSTR    Replace VioReadCharStr.
+ 
+               VR_VIOREADCELLSTR    Replace VioReadCellStr.
+ 
+               VR_VIOWRTNCHAR       Replace VioWrtNChar.
+ 
+               VR_VIOWRTNATTR       Replace VioWrtNAttr.
+ 
+               VR_VIOWRTNCELL       Replace VioWrtNCell.
+ 
+               VR_VIOWRTTTY         Replace VioWrtTTY.
+ 
+               VR_VIOWRTCHARSTR     Replace VioWrtCharStr.
+ 
+               VR_VIOWRTCHARSTRATT  Replace VioWrtCharStrAtt.
+ 
+               VR_VIOWRTCELLSTR     Replace VioWrtCellStr.
+ 
+               VR_VIOSCROLLUP       Replace VioScrollUp.
+ 
+               VR_VIOSCROLLDN       Replace VioScrollDn.
+ 
+               VR_VIOSCROLLLF       Replace VioScrollLf.
+ 
+               VR_VIOSCROLLRT       Replace VioScrollRt.
+ 
+               VR_VIOSETANSI        Replace VioSetAnsi.
+ 
+               VR_VIOGETANSI        Replace VioGetAnsi.
+ 
+               VR_VIOPRTSC          Replace VioPrtSc.
+ 
+               VR_VIOSCRLOCK        Replace VioScrLock.
+ 
+               VR_VIOSCRUNLOCK      Replace VioScrUnLock.
+ 
+               VR_VIOSAVREDRAWWAIT  Replace VioSavRedrawWait.
+ 
+               VR_VIOSAVREDRAWUNDO  Replace VioSavRedrawUndo.
+ 
+               VR_VIOPOPUP          Replace VioPopUp.
+ 
+               VR_VIOENDPOPUP       Replace VioEndPopUp.
+ 
+               VR_VIOPRTSCTOGGLE    Replace VioPrtScToggle.
+ 
+<i>flFunction2    Specifies the Vio </i>function(s) to replace. This parameter can
+               be any combination of the following values:
+ 
+               Value            Meaning
+               ─────────────────────────────────────────────────────────────
+               VR_VIOMODEWAIT   Replace VioModeWait.
+ 
+               VR_VIOMODEUNDO   Replace VioModeUndo.
+ 
+               VR_VIOGETFONT    Replace VioGetFont.
+ 
+               VR_VIOGETCONFIG  Replace VioGetConfig.
+ 
+               VR_VIOSETCP      Replace VioSetCp.
+ 
+               VR_VIOGETCP      Replace VioGetCp.
+ 
+               VR_VIOSETFONT    Replace VioSetFont.
+ 
+               VR_VIOGETSTATE   Replace VioGetState.
+ 
+               VR_VIOSETSTATE   Replace VioSetState.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_VIO_INVALID_ASCIIZ
+     ERROR_VIO_INVALID_MASK
+     ERROR_VIO_REGISTER
+ 
+<b>Comments</b>
+ 
+MS OS/2 passes a Vio function to the given module by preparing the stack and
+calling the function pointed to by the pszEntryName parameter. The specified
+module must export the entry-point function name. The entry-point function
+must determine which function is being requested (by checking the function
+code on the stack), then pass control to the appropriate function in the
+module. The entry-point function may then access any additional parameters
+placed on the stack by the original call.
+ 
+Only one process in a screen group may use the VioRegister function at any
+given time. That is, only one process at a time can replace Vio functions.
+The process can restore the default Vio functions by calling the
+<b>VioDeRegister function. A process can r</b>eplace Vio functions any number of
+times, but only by first restoring the default functions and then
+reregistering the new functions.
+ 
+The entry-point function (FuncName) must have the following form:
+ 
+     SHORT FAR FuncName(selDataSeg, usReserved1, fFunction, ulReserved2,
+         usParam1, usParam2, usParam3, usParam4, usParam5, usParam6)
+     SEL selDataSeg;
+     USHORT usReserved1;
+     USHORT fFunction;
+     ULONG ulReserved2;
+     USHORT usParam1;
+     USHORT usParam2;
+     USHORT usParam3;
+     USHORT usParam4;
+     USHORT usParam5;
+     USHORT usParam6;
+ 
+<b>Parameter           Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>selDataSeg</i>          Specifies the data segment selector of the process
+                    calling the Vio function.
+ 
+<i>usReserved1</i>         Specifies a reserved value that must not be changed.
+                    This value represents a return address for the MS OS/2
+                    function that routes calls to Vio functions.
+ 
+<i>fFunction</i>           Specifies the function code of the function request.
+                    This parameter can be one of the following values:
+ 
+                    Value   Meaning
+                    ────────────────────────────────────────────────────────
+                    0x0000  VioGetPhysBuf called.
+ 
+                    0x0001  VioGetBuf called.
+                    0x0002  VioShowBuf called.
+ 
+                    0x0003  VioGetCurPos called.
+ 
+                    0x0004  VioGetCurType called.
+ 
+                    0x0005  VioGetMode called.
+ 
+                    0x0006  VioSetCurPos called.
+ 
+                    0x0007  VioSetCurType called.
+ 
+                    0x0008  VioSetMode called.
+ 
+                    0x0009  VioReadCharStr called.
+ 
+                    0x000A  VioReadCellStr called.
+ 
+                    0x000B  VioWrtNChar called.
+ 
+                    0x000C  VioWrtNAttr called.
+ 
+                    0x000D  VioWrtNCell called.
+ 
+                    0x000E  VioWrtCharStr called.
+ 
+                    0x000F  VioWrtCharStrAtt called.
+ 
+                    0x0010  VioWrtCellStr called.
+ 
+                    0x0011  VioWrtTTY called.
+ 
+                    0x0012  VioScrollUp called.
+ 
+                    0x0013  VioScrollDn called.
+ 
+                    0x0014  VioScrollLf called.
+ 
+                    0x0015  VioScrollRt called.
+ 
+                    0x0016  VioSetAnsi called.
+ 
+                    0x0017  VioGetAnsi called.
+ 
+                    0x0018  VioPrtSc called.
+ 
+                    0x0019  VioScrLock called.
+ 
+                    0x001A  VioScrUnLock called.
+ 
+                    0x001B  VioSavRedrawWait called.
+ 
+                    0x001C  VioSavRedrawUndo called.
+ 
+                    0x001D  VioPopUp called.
+ 
+                    0x001E  VioEndPopUp called.
+ 
+                    0x001F  VioPrtScToggle called.
+ 
+                    0x0020  VioModeWait called.
+ 
+                    0x0021  VioModeUndo called.
+ 
+                    0x0022  VioGetFont called.
+ 
+                    0x0023  VioGetConfig called.
+ 
+                    0x0024  VioSetCp called.
+ 
+                    0x0025  VioGetCp called.
+ 
+                    0x0026  VioSetFont called.
+ 
+                    0x0027  VioGetState called.
+ 
+                    0x0028  VioSetState called.
+ 
+<i>ulReserved2</i>         Specifies a reserved value that must not be changed.
+                    This value represents the return address of the program
+                    that calls the specified Vio function.
+ 
+<i>usParam1──usParam6  Spec</i>ifies up to six values passed with the original call
+                    to the Vio function. Not all requests include all six
+                    parameters since not all Vio functions use six
+                    parameters. The number and type of parameters used
+                    depend on the specific function.
+ 
+The entry-point function should determine which function is requested and
+then carry out an appropriate action by using the passed parameters. The
+entry-point function can call a function within the same module to carry out
+the task. The entry-point or replacement function must leave the stack in
+the same state as it was received. This is required since the return
+addresses on the stack must be available in the correct order to return
+control to the program that originally called the VioRegister function.
+ 
+The registered function should return -1 if it wants the original function
+called, 0 if no error occurred, or an error value.
+ 
+In general, if the function needs to access the display, it must use the
+input-and-output control functions for the display.
+ 
+The VioRegister function itself cannot be replaced.
+ 
+If a process replaces the VioPopUp function, only the foreground process has
+access to the replacement function. Background processes continue to call
+the default VioPopUp function.
+ 
+<b>See Also</b>
+ 
+<b>VioDeRegister, VioPopUp, VioSetCurPos</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

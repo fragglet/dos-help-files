@@ -1,0 +1,138 @@
+<html>
+
+<head>
+<title>MLECTLDATA (1.2) - msos2.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msos2.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MLECTLDATA (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='Structures.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='mlefrd.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMLE
+ 
+typedef struct _MLECTLDATA {    /* mlectl */
+    USHORT cbCtlData;
+    USHORT afIEFormat;
+    ULONG  cchText;
+    IPT    iptAnchor;
+    IPT    iptCursor;
+    LONG   cxFormat;
+    LONG   cyFormat;
+    ULONG  afFormatFlags;
+} MLECTLDATA;
+ 
+The MLECTLDATA structure contains multiple-line entry-field (MLE) format
+information.
+ 
+<b>Field          Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<b>cbCtlData</b>      Specifies the size of the structure (in bytes). Programs
+               written in the C language should use the sizeof operator to
+               set this field.
+ 
+<b>afIEFormat</b>     Specifies the import/export format. This parameter is be one
+               of the following values:
+ 
+               Value          Meaning
+               ─────────────────────────────────────────────────────────────
+               MLFIE_CFTEXT   Specifies the clipboard text format. This
+                              format uses carriage-return/linefeed
+                              characters for line breaks on export, and
+                              recognizes linefeed, carriage-return/linefeed,
+                              or linefeed/carriage-return characters for
+                              line breaks on import. This is the default
+                              format.
+ 
+               MLFIE_NOTRANS  Specifies a format that uses linefeed
+                              characters for line breaks. Guarantees that
+                              any text imported into the MLE in this form
+                              can be recovered in exactly the same form on
+                              export.
+ 
+               MLFIE_WINFMT   Specifies the format of the MLE window. This
+                              format recognizes carriage-return/linefeed
+                              characters for line breaks on import. It
+                              ignores the sequence
+                              carriage-return/carriage-return/linefeed. On
+                              export, it uses carriage-return/linefeed
+                              characters to denote a hard line break and
+                              carriage-return/carriage-return/linefeed
+                              character to denote a soft line break caused
+                              by word-wrapping.
+ 
+<b>cchText</b>        Specifies the maximum amount (in bytes) of text.
+ 
+<b>iptAnchor</b>      Specifies the offset (number of characters from the beginning
+               of the text) of the first character of the selection.
+ 
+<b>iptCursor</b>      Specifies the offset of the cursor position (one character to
+               the right of the selection).
+ 
+<b>cxFormat</b>       Specifies the width (in pels) of the format rectangle.
+ 
+<b>cyFormat</b>       Specifies the height (in pels) of the format rectangle.
+ 
+<b>afFormatFlags</b>  Specifies how the format rectangle is to be treated. This
+               parameter can be one or more of the following flags:
+ 
+               Value                   Meaning
+               ─────────────────────────────────────────────────────────────
+               MLFFMTRECT_LIMITHORZ    Specifies that the text within the
+                                       MLE cannot exceed the horizontal
+                                       dimension specified by the cxFormat
+                                       field. If word-wrap mode is turned on
+                                       when the format rectangle is set,
+                                       lines automatically wrap to stay
+                                       within the horizontal limit of the
+                                       format rectangle. If word-wrap mode
+                                       is turned off when the format
+                                       rectangle is set, an
+                                       MLN_PIXHORZOVERFLOW notification
+                                       message is sent to the application
+                                       whenever an operation would exceed
+                                       the horizontal limit specified in the
+                                       format rectangle.
+ 
+               MLFFMTRECT_LIMITVERT    Specifies that the text within the
+                                       MLE cannot exceed the vertical
+                                       dimension specified by the cyFormat
+                                       field. Whenever an MLE operation
+                                       would cause text to exceed the
+                                       vertical limit, an
+                                       MLN_PIXVERTOVERFLOW notification
+                                       message is sent to the application.
+ 
+               MLFFMTRECT_MATCHWINDOW  Specifies that the format rectangle
+                                       is to be kept the same size as the
+                                       MLE window (minus the border or
+                                       scroll bars).
+ 
+               MLFFMTRECT_FORMATRECT   Specifies that the format rectangle
+                                       is to be kept the same size as the
+                                       MLE window (minus the border or
+                                       scroll bars) and that text cannot
+                                       exceed the size of the window. This
+                                       value is equivalent to combining the
+                                       values MLFFMTRECT_LIMITHORZ,
+                                       MLFFMTRECT_LIMITVERT, and
+                                       MLFFMTRECT_MATCHWINDOW.
+ 
+<b>See Also</b>
+ 
+<b>MLM_FORMAT, MLM_SETFORMATRECT</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

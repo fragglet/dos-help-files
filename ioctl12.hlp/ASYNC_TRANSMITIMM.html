@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>ASYNC_TRANSMITIMM (1.2) - ioctl12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ioctl12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ASYNC_TRANSMITIMM (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='IOCtls.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DEV_FLUSHINPUT.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVIOCTL
+ 
+USHORT DosDevIOCtl(0L, pbChar, 0x0044, 0x0001, hDevice)
+PBYTE pbChar;    /* pointer to character */
+FILE hDevice;    /* device handle        */
+ 
+The ASYNC_TRANSMITIMM function transmits the specified byte immediately.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pbChar</i>     Points to the character to be transmitted.
+ 
+<i>hDevice</i>    Identifies the serial device that receives the device-control
+           function. The handle must have been created previously by using
+           the DosOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful or an error value if
+an error occurs.
+ 
+<b>Comments</b>
+ 
+The device driver queues the character as the next character to be
+transmitted even if there are already characters in the transmit queue.
+ 
+If automatic-receiving control is enabled, an XON or XOFF character may be
+transmitted before the requested character.
+ 
+The function always returns before the character is actually transmitted.
+ 
+If a character is already waiting to be transmitted immediately, the
+function returns an error. The ASYNC_GETCOMMSTATUS  function (0x0001,0x0064)
+can be used to determine whether a character is currently waiting to be
+transmitted immediately.
+ 
+The device driver will not immediately transmit the character that is
+waiting to be transmitted immediately if the device driver is not
+transmitting characters due to modem-control signal-output handshaking or if
+the device driver is currently transmitting a break.
+ 
+If the device driver is not transmitting characters due to automatic
+transmission or receiving control (XON/XOFF) being enabled or due to
+operating as if an XOFF character had been received, the device driver still
+transmits a character that is waiting to be transmitted immediately due to
+this request. An application that requests that the device driver transmit a
+character immediately if automatic transmission or receiving control is
+enabled may cause unexpected results to happen to the communications line
+flow control protocol.
+ 
+This function is generally used to manually send XON and XOFF characters.
+ 
+The character waiting to be transmitted immediately is not considered part
+of the device driver transmit queue and is not flushed due to a flush
+request. XON/XOFF characters that are automatically transmitted due to
+automatic-receiving control may or may not be placed ahead of the character
+waiting to be transmitted immediately. Applications should not be dependent
+on this ordering.
+ 
+<b>See Also</b>
+ 
+<b>DosOpen, ASYNC_GETCOM</b>MSTATUS
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

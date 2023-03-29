@@ -1,0 +1,231 @@
+<html>
+
+<head>
+<title>Using Metafiles (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Metafiles (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Metafiles.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#metafile functions 1.2'>Function Group</a><span class='grhilite'>►</span>         </i>            <span class='grhilite'>◄</span><a href='Graphics_Programming_Interface.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Paths.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                              Using Metafiles
+ 
+You can use metafile functions to perform the following tasks:
+ 
+♦  Create a metafile.
+ 
+♦  Draw into a metafile.
+ 
+♦  Load a metafile onto disk.
+ 
+♦  Load a metafile from disk into an application.
+ 
+♦  Play a metafile.
+ 
+♦  Edit a metafile.
+ 
+<b>Creating and Drawing into a Metafile</b>
+ 
+To create a metafile, you must perform the following tasks:
+ 
+1  Create a metafile device context by calling the DevOpenDC function.
+ 
+2  Create a presentation space by calling the GpiCreatePS function, and
+   associate the presentation space with the metafile device context.
+ 
+3  Draw into the metafile by calling various Gpi drawing functions.
+ 
+4  Disassociate the metafile device context from the presentation space by
+   calling the GpiAssociate function.
+ 
+5  Close the metafile device context by calling the DevCloseDC function.
+ 
+The following code fragment shows how to create a simple metafile that draws
+text within the borders of a three-color box:
+ 
+DEVOPENSTRUC dop;
+ 
+dop.pszLogAddress = NULL;
+dop.pszDriverName = "DISPLAY";
+dop.pdriv = NULL;
+dop.pszDataType = NULL;
+ 
+hdcMeta = DevOpenDC(hab,
+    OD_METAFILE,                 /* metafile device context   */
+    "*",                         /* ignores os2.ini           */
+    4L,                          /* uses first four fields    */
+    (PDEVOPENDATA) &amp;dop,         /* device information        */
+    hdc);                        /* compatible device context */
+hpsMeta = GpiCreatePS(hab, hdcMeta,
+    &amp;sizlPage, PU_PELS | GPIA_ASSOC);
+ 
+/* Draw a box in a metafile. */
+ 
+GpiSetColor(hpsMeta, CLR_CYAN);
+ptl1.x = 150;
+ptl1.y = 200;
+GpiMove(hpsMeta, &amp;ptl1);
+ptl2.x = 300;
+ptl2.y = 275;
+GpiBox(hpsMeta, DRO_FILL, &amp;ptl2, 0L, 0L);
+ 
+GpiSetColor(hpsMeta, CLR_GREEN);
+ptl1.x = 300;
+ptl1.y = 200;
+GpiMove(hpsMeta, &amp;ptl1);
+ptl2.x = 390;
+ptl2.y = 275;
+GpiBox(hpsMeta, DRO_FILL, &amp;ptl2, 0L, 0L);
+ 
+GpiSetColor(hpsMeta, CLR_YELLOW);
+ptl1.x = 390;
+ptl1.y = 200;
+GpiMove(hpsMeta, &amp;ptl1);
+ptl2.x = 530;
+ptl2.y = 275;
+GpiBox(hpsMeta, DRO_FILL, &amp;ptl2, 0L, 0L);
+ 
+ptl1.x = 175;
+ptl1.y = 230;
+GpiMove(hpsMeta, &amp;ptl1);
+GpiSetColor(hpsMeta, CLR_PINK);
+GpiCharString(hpsMeta, 41L,
+    "METAFILE COPY METAFILE COPY METAFILE COPY");
+GpiAssociate(hpsMeta, NULL);
+hmf = DevCloseDC(hdcMeta);
+ 
+<b>Drawing into a Metafile in Retain Mode</b>
+ 
+To draw into a metafile, you set the drawing mode to the appropriate value
+for your application and then perform the drawing operations. If your
+application is a drafting, drawing, or computer-aided-design (CAD)
+application, you should set the drawing mode to DM_RETAIN, perform your
+drawing operations in retained segments, and then copy the segments to the
+metafile. The following code fragment shows how to copy the contents of a
+segment into a metafile:
+ 
+/*
+ * Open a segment, assign it an identifier of 10,
+ * and draw some text into it.
+ */
+ 
+GpiSetDrawingMode(hps, DM_RETAIN);
+GpiOpenSegment(hps, 10L);
+ptl1.x = 175; ptl1.y = 230;
+GpiMove(hps, &amp;ptl1);
+GpiSetColor(hps, CLR_PINK);
+GpiCharString(hps, 41L,
+    "METAFILE COPY METAFILE COPY METAFILE COPY");
+GpiCloseSegment(hps);
+ 
+GpiAssociate(hps, NULL);         /* disassociates PS and screen DC */
+GpiAssociate(hps, hdcMeta);      /* associates PS and meta DC      */
+GpiDrawSegment(hps, 10L);        /* draws segment into metafile    */
+GpiAssociate(hps, NULL);         /* disassociates PS and meta DC   */
+hmf = DevCloseDC(hdcMeta);       /* closes metafile                */
+ 
+GpiAssociate(hps, hdc);          /* associates PS and screen DC    */
+GpiSetDrawingMode(hps, DM_DRAW); /* sets drawing mode to DM_DRAW   */
+ 
+/*
+ * Load the array of options for GpiPlayMetaFile
+ * with default values.
+ */
+ 
+alOpt[0] = 0L;                   /* reserved                       */
+alOpt[1] = LT_DEFAULT;           /* default transformations        */
+alOpt[2] = 0L;                   /* reserved                       */
+alOpt[3] = LC_DEFAULT;           /* uses default lcids             */
+alOpt[4] = RES_DEFAULT;          /* uses default                   */
+alOpt[5] = SUP_DEFAULT;          /* uses default                   */
+alOpt[6] = CTAB_DEFAULT;         /* uses default                   */
+alOpt[7] = CREA_DEFAULT;         /* uses default                   */
+GpiPlayMetaFile(hps,             /* plays metafile onto screen     */
+    hmf, 8L, alOpt, 0L, 0L, NULL);
+ 
+If you merely want to create a simple drawing in a metafile for repeated
+display, you can set the drawing mode to DM_DRAW and draw directly into the
+metafile. The code in the first code fragment shows how to do this.
+ 
+<b>Copying a Metafile onto Disk</b>
+ 
+You can copy a metafile onto disk by calling the GpiSaveMetaFile function,
+and you can load the file back into your application by calling the
+<b>GpiLoadMetaFile</b> function. The following code fragment shows how to copy a
+metafile into a file named meta.met, then load the same file back into the
+application and play it:
+ 
+GpiSaveMetaFile(hmf, "meta.met");        /* saves metafile on disk  */
+ 
+hmf2 = GpiLoadMetaFile(hab, "meta.met"); /* loads metafile          */
+ 
+alOpt[0] = 0L;                           /* reserved                */
+alOpt[1] = LT_DEFAULT;                   /* uses default transforms */
+alOpt[2] = 0L;                           /* reserved                */
+alOpt[3] = LC_DEFAULT;                   /* uses default            */
+alOpt[4] = RES_DEFAULT;                  /* uses default            */
+alOpt[5] = SUP_DEFAULT;                  /* uses default            */
+alOpt[6] = CTAB_DEFAULT;                 /* uses default            */
+alOpt[7] = CREA_DEFAULT;                 /* uses default            */
+GpiPlayMetaFile(hps,                     /* plays metafile          */
+    hmf2, 8L, alOpt, 0L, 0L, NULL);
+ 
+<b>Playing a Metafile</b>
+ 
+You can play the contents of a metafile by calling the GpiPlayMetaFile
+function. The following code fragment shows how to play the metafile using
+the font, color table, and fill-pattern descriptions in your application's
+presentation space:
+ 
+alOpt[0] = 0L;              /* reserved                        */
+alOpt[1] = LT_DEFAULT;      /* viewing transformation in PS    */
+alOpt[2] = 0L;              /* reserved                        */
+alOpt[3] = LC_DEFAULT;      /* font and fill pattern in PS     */
+alOpt[4] = RES_DEFAULT;     /* page units and dimensions in PS */
+alOpt[5] = SUP_DEFAULT;     /* draws metafile into PS          */
+alOpt[6] = CTAB_DEFAULT;    /* color table in PS               */
+alOpt[7] = CREA_DEFAULT;    /* sets realizable option          */
+GpiPlayMetaFile(hps, hmf, 8L, alOpt, 0L, 0L, NULL);
+ 
+The next code fragment shows how to play a metafile using the font, color
+table, and fill-pattern descriptions in the metafile:
+ 
+alOpt[0] = 0L;              /* reserved                          */
+alOpt[1] = LT_DEFAULT;      /* viewing transformation in PS      */
+alOpt[2] = 0L;              /* reserved                          */
+alOpt[3] = LC_LOADDISC;     /* font and fill pattern in metafile */
+alOpt[4] = RES_DEFAULT;     /* page units and dimensions in PS   */
+alOpt[5] = SUP_DEFAULT;     /* draws metafile into PS            */
+alOpt[6] = CTAB_REPLACE;    /* color table in metafile           */
+alOpt[7] = CREA_DEFAULT;    /* sets realizable option            */
+GpiPlayMetaFile(hps, hmf, 8L, alOpt, 0L, 0L, NULL);
+ 
+The last code fragment shows how to play a metafile using the viewing
+transformation, page units, and presentation-page dimensions specified in
+the metafile:
+ 
+alOpt[0] = 0L;              /* reserved                           */
+alOpt[1] = LT_ORIGINALVIEW; /* viewing transformation in metafile */
+alOpt[2] = 0L;              /* reserved                           */
+alOpt[3] = LC_DEFAULT;      /* font and fill pattern in PS        */
+alOpt[4] = RES_RESET;       /* page units/dimensions in metafile  */
+alOpt[5] = SUP_DEFAULT;     /* draws metafile into PS             */
+alOpt[6] = CTAB_DEFAULT;    /* uses color table in PS             */
+alOpt[7] = CREA_DEFAULT;    /* sets realizable option             */
+GpiPlayMetaFile(hps, hmf, 8L, alOpt, 0L, 0L, NULL);
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

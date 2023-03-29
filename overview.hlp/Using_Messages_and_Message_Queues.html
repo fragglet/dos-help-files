@@ -1,0 +1,190 @@
+<html>
+
+<head>
+<title>Using Messages and Message Queues (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Messages and Message Queues (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Messages_and_Message_Queues.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#PM Message functions 1.2'>Function Group</a><span class='grhilite'>►</span>          </i>           <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MLE_Controls.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                     Using Messages and Message Queues
+ 
+This section explains how to use the message and message-queue functions to
+create and manage message queues and to post and send messages between
+windows.
+ 
+<b>Creating a Message Queue and Message Loop</b>
+ 
+Your application needs a message queue and message loop to process messages
+for your windows. You create a message queue by using the WinCreateMsgQueue
+function. You create a message loop by using the WinGetMsg and
+<b>WinDispatchMsg</b> functions. You must create and show at least one window after
+creating the queue but before starting the message loop. The window is
+required because it is the only way the user can supply input to the message
+queue. The following code fragment shows how to create a message queue and a
+message loop:
+ 
+HAB hab;      /* anchor-block handle     */
+HMQ hmq;      /* message-queue handle    */
+QMSG qmsg;    /* queue-message structure */
+ 
+VOID cdecl main()
+{
+    hab = WinInitialize(0);
+    hmq = WinCreateMsgQueue(hab, DEFAULT_QUEUE_SIZE);
+ 
+        /*
+         * Use WinRegisterClass to register your window class. Use
+         * WinCreateStdWindow to create your window.
+         */
+ 
+    while (WinGetMsg(hab, &amp;qmsg, NULL, 0, 0))
+        WinDispatchMsg(hab, &amp;qmsg);
+ 
+    /* Use WinDestroyWindow to destroy your window. */
+ 
+    WinDestroyMsgQueue(hmq);
+    WinTerminate(hab);
+}
+ 
+Both the WinGetMsg and WinDispatchMsg functions take a pointer to a QMSG
+structure as a parameter. If a message is available, WinGetMsg copies it to
+the QMSG structure; WinDispatchMsg then uses the fields of the structure as
+arguments for the window procedure.
+ 
+Occasionally, you may need to process the message before dispatching it.
+This can occur, for example, if a window procedure posts a message to the
+queue for which a NULL window handle has been specified. Because the
+<b>WinDispatchMsg</b> function needs a window handle to dispatch the message, the
+message loop must process the message before dispatching it. The following
+code fragment shows how the message loop might process messages that have
+NULL window handles:
+ 
+while (WinGetMsg(hab, &amp;qmsg, NULL, 0, 0)) {
+    If (qmsg.hwnd == NULL) {
+        .
+        . /* Process the message. */
+        .
+    }
+    else
+        WinDispatchMsg(hab, &amp;qmsg);
+}
+ 
+<b>Examining the Message Queue</b>
+ 
+You can examine the contents of the message queue by using the WinPeekMsg or
+<b>WinQueryQueueStatus</b> function. It is useful to examine the queue if you start
+a lengthy operation that additional user input can affect, or if you need to
+look ahead in the queue to anticipate a response to user input.
+ 
+You can use the WinPeekMsg function to check for specific messages in the
+message queue. The function is useful for extracting messages for a specific
+window from the queue. The function returns immediately if there is no
+message in the queue. This function can be used in a loop without requiring
+the loop to wait for a message to arrive. The following code segment checks
+the queue for WM_CHAR messages:
+ 
+if (WinPeekMsg(hab, &amp;qmsg, NULL, WM_CHAR, WM_CHAR, PM_NOREMOVE))
+ 
+You can also use the WinQueryQueueStatus function to check for messages in
+the queue. This function is very fast and returns information about the
+kinds of messages available in the queue and which messages have been
+recently posted. Most applications use this function in program loops that
+need to be as fast as possible.
+ 
+If you have a very long operation to carry out, you should consider creating
+a separate thread for the operation. Despite the MS OS/2 multitasking
+features, any application thread having a message queue that does not
+periodically relinquish control by calling the WinGetMsg or WinWaitMsg
+function risks monopolizing the CPU and seriously degrading system
+performance.
+ 
+<b>Posting a Message to a Window</b>
+ 
+You can use the WinPostMsg function to post a message to a window. The
+message goes to the window's message queue. For example, the following code
+fragment posts the WM_QUIT message:
+ 
+if (!WinPostMsg(hwnd, WM_QUIT, 0L, 0L))
+ 
+    /* Message was not posted. */
+ 
+The function returns FALSE if the queue was full and the message could not
+be posted.
+ 
+<b>Sending a Message to a Window</b>
+ 
+You can use the WinSendMsg function to send a message directly to a window.
+Applications typically use this function to send messages to child windows.
+For example, the following code fragment directs a button control to draw a
+check mark by sending the BM_SETCHECK message to the control:
+ 
+WinSendMsg(hwndButton, BM_SETCHECK, MPFROMSHORT(1), 0L);
+ 
+<b>WinSendMsg</b> calls the window's window procedure and waits for that procedure
+to handle the message and return a result. A message can be sent to any
+window in the system; all that is required is a handle to the window. The
+message is not stored in the message queue. The thread making the call must
+have a message queue.
+ 
+<b>Broadcasting a Message</b>
+ 
+You can send messages to multiple windows by using the WinBroadcastMsg
+function. This function is useful for broadcasting the WM_SYSVALUECHANGED
+message after an application changes a system value. The following code
+fragment shows how to broadcast this message to all frame windows in all
+applications:
+ 
+WinBroadcastMsg(
+    hwnd,                                /* window handle         */
+    WM_SYSVALUECHANGED,                  /* message id            */
+    0L,                                  /* no message parameters */
+    0L,
+    BMSG_FRAMEONLY | BMSG_POSTQUEUE);    /* all frame windows     */
+ 
+You can broadcast messages to all windows, to just frame windows, or to just
+the windows in your application.
+ 
+<b>Using Message Macros</b>
+ 
+The MS OS/2 include files define several macros that help create and
+interpret message parameters.
+ 
+One set of macros helps you construct message parameters. Macros are useful
+for sending and posting messages. For example, the following code fragment
+uses the MPFROMSHORT macro to convert a 16-bit integer into the 32-bit
+message parameter:
+ 
+WinSendMsg(hwndButton, BM_SETCHECK, MPFROMSHORT(1), 0L);
+ 
+A second set of macros helps you extract values from a message parameter.
+They are useful for handling messages in a window procedure. The following
+code fragment illustrates this:
+ 
+case WM_FOCUSCHANGE:
+    fsFocusChange = SHORT2FROMMP(mp2);
+    if (SHORT1FROMMP(mp2))
+         hwndLoseFocus = HWNDFROMMP(mp1);
+ 
+A third set of macros helps you construct a message result. They are useful
+for returning message results in a window procedure. This is illustrated by
+the following code fragment:
+ 
+return (MRFROM2SHORT(1, 2));
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

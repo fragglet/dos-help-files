@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<title>About the Mouse (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About the Mouse (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_the_mouse.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#MOU'>Function Group</a><span class='grhilite'>►</span>                     <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='processes.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                              About the Mouse
+ 
+This topic describes the mouse functions. These functions give programs
+direct access to the system mouse or other pointing device. Programs can
+read individual mouse events (mouse motions and button presses) and carry
+out actions based on those events.
+ 
+In addition to using the keyboard for program input, you can use the mouse.
+To use the mouse, you must first open it by using the MouOpen function (MS
+OS/2 does not provide a default handle for the mouse as it does for the
+keyboard and screen) and then draw the mouse pointer by using the
+<b>MouDrawPtr</b> function. Once you have opened the mouse, you can read events
+from the mouse-event queue by using the MouReadEventQue function. An event
+defines the position of the mouse and the state of the mouse buttons. The
+system copies an event to the queue whenever the user moves the mouse or
+presses or releases a mouse button.
+ 
+MS OS/2 specifies the position of the mouse either in screen coordinates or
+as the number of mickeys relative to the last position. Screen coordinates
+are relative to the upper-left corner of the screen. The x-axis values
+increase to the right; the y-axis values increase downward. The screen units
+are either character cells or pels, depending on the screen mode (character
+cells for text mode, pels for graphics mode). The position never exceeds the
+width or height of the screen.
+ 
+A mickey is the mouse unit of motion. If the mouse position is specified in
+mickeys, it represents the direction and distance the mouse has moved from
+its last position. A program can determine how many centimeters the mouse
+has moved by using the MouGetNumMickeys function to retrieve the
+mickey-to-centimeter ratio. A position in mickeys is a signed value. If the
+<i>x</i>-coordinate is negative, the mouse moved to the left; if positive, it moved
+to the right. If the y-coordinate is negative, the mouse moved up; if
+positive, it moved down.
+ 
+MS OS/2 reports only the mouse events that are defined in the mouse-event
+mask. A program can set or retrieve the event mask by using the
+<b>MouSetEventMask or MouGetEventMask function, </b>determine how many mouse events
+are in the queue by using the MouGetNumQueEl function, or flush any existing
+events from the queue by using the MouFlushQue function.
+ 
+MS OS/2 cannot draw the mouse pointer unless a pointer driver has been
+specified in a device command in the config.sys file or a pointer-driver
+name is explicitly given when the mouse is opened. The pointer driver
+supplied with MS OS/2 is named pointdd.sys.
+ 
+A program can change the shape of the mouse-pointer. Typically, the program
+first retrieves the current shape by using the MouGetPtrShape function and
+then modifies that shape before setting it by using the MouSetPtrShape
+function. The mouse-pointer shape consists of two masks: an AND mask and an
+XOR mask. MS OS/2 first combines the AND mask with the contents of the
+screen at the current position by using the bitwise AND operator. It then
+combines the result with the XOR mask by using the bitwise XOR operator. The
+format of the masks depends on the screen mode: character-and-attribute
+pairs for text mode and bitmaps for graphics mode.
+ 
+If a program needs to temporarily hide the mouse pointer, the MouRemovePtr
+function removes the mouse pointer from all or a portion of the screen.
+ 
+MS OS/2 automatically updates the mouse-pointer position as the mouse moves,
+but only if the amount of motion is greater than or equal to the scaling
+factor. The scaling factor, set by using the MouSetScaleFact function,
+defines the number of mickeys the mouse must move before the mouse pointer
+moves one screen unit. For example, in text mode, the horizontal and
+vertical scaling factors are usually the same as the width and height of a
+character cell. This means that the mouse moves one character cell at a
+time, rather than moving within a cell.
+ 
+A program can move the mouse pointer by using the MouSetPtrPos function or
+retrieve the current pointer position by using the MouGetPtrPos function.
+ 
+Other mouse functions carry out special tasks for adapting the mouse for
+real-mode operation and for modifying the operation of one or more of the
+mouse functions.
+ 
+As with files in the file system, the mouse is a shared resource, available
+to every program in the current screen group. If two or more programs open
+and use the mouse, what one does affects the other. For this reason, you
+should close the mouse when you no longer need it.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

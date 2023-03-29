@@ -1,0 +1,110 @@
+<html>
+
+<head>
+<title>PrfQueryDefinition (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> PrfQueryDefinition (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='prf.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='PrfQueryProfile.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINPROGRAMLIST
+ 
+ULONG PrfQueryDefinition(hini, hprog, pprogde, cbBuf)
+HINI hini;               /* initialization-file handle             */
+HPROGRAM hprog;          /* program handle                         */
+PPROGDETAILS pprogde;    /* address of structure for program info. */
+ULONG cbBuf;             /* length of buffer for program info.     */
+ 
+The PrfQueryDefinition function retrieves information about a program or
+program group.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hini</i>       Identifies the file that contains the program information to
+           retrieve. This parameter can be an initialization-file handle
+           obtained by using the PrfOpenProfile function, or it can be the
+           value HINI_USERPROFILE, specifying the user-profile file.
+ 
+<i>hprog</i>      Identifies the program or group for which information is to be
+           retrieved.
+ 
+<i>pprogde</i>    Points to the buffer that receives the program or group
+           information. This buffer is formatted as a PROGDETAILS structure,
+           followed by various strings pointed to by the fields within the
+           PROGDETAILS structure. This buffer must be large enough for both
+           the structure and all strings returned by this function.
+ 
+<i>cbBuf</i>      Specifies the size (in bytes) of the buffer pointed to by the
+           pprogde parameter. If this parameter is zero, only the length of
+           the data is returned and the PROGDETAILS structure is not filled
+           in.
+ 
+<b>Return Value</b>
+ 
+The return value is the number of bytes copied to the buffer pointed to by
+the pprogde parameter if the function is successful or zero if an error
+occurs. If the cbBuf parameter is zero, the return value is the size (in
+bytes) of the required buffer pointed to by the pprogde parameter.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_BUFFER_TOO_SMALL
+     PMERR_INVALID_PARM
+     PMERR_INVALID_PIB
+     PMERR_INVALID_PROGRAM_HANDLE
+     PMERR_INVALID_GROUP_HANDLE
+     PMERR_MEMORY_ALLOCATION_ERR
+     PMERR_MEMORY_DEALLOCATION_ERR
+     PMERR_NOT_CURRENT_PL_VERSION
+     PMERR_NOT_IN_IDX
+ 
+<b>Comments</b>
+ 
+If the hprog parameter is a group handle, only the progt and pszTitle fields
+in the PROGDETAILS structure pointed to by pprogde are filled in.
+ 
+The PrfQueryDefinition function replaces the WinQueryDefintion function used
+in MS OS/2, version 1.1.
+ 
+<b>Example</b>
+ 
+This example calls PrfQueryDefinition to determine the size of the buffer
+needed to retrieve all of the information. It then calls DosAllocSeg to
+allocate the memory and calls PrfQueryDefinition again to retrieve all of
+the program information.
+ 
+SEL sel;
+ULONG cb;
+PPROGDETAILS pprogde;
+ 
+/* First find the size of the buffer needed. */
+ 
+cb = PrfQueryDefinition(HINI_USERPROFILE, hprog, NULL, 0L);
+DosAllocSeg(cb, &amp;sel, SEG_NONSHARED);
+pprogde = MAKEP(sel, 0);
+cb = PrfQueryDefinition(HINI_USERPROFILE, hprog, pprogde, cb);
+ 
+<b>See Also</b>
+ 
+<b>PrfAddProgram, PrfOpenProfile, WinQueryDefinition, PROGDETAILS,</b>
+<b>WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

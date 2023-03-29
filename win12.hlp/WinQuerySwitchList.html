@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<title>WinQuerySwitchList (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinQuerySwitchList (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#profile manager 1.2'>Overview</a><span class='grhilite'>►</span>                        </i>                    <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinQuerySysColor.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINSWITCHLIST
+ 
+USHORT WinQuerySwitchList(hab, pswblk, cbswblk)
+HAB hab;            /* anchor-block handle            */
+PSWBLOCK pswblk;    /* pointer to structure for items */
+USHORT cbswblk;     /* structure length               */
+ 
+The WinQuerySwitchList function obtains information about the items in the
+Task List (the list of programs running in the system).
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hab</i>        Identifies the anchor block.
+ 
+<i>pswblk     Points </i>to SWBLOCK structure that receives a description of all
+           the items in the Task List.
+ 
+<i>cbswblk    Specifies </i>the size (in bytes) of the SWBLOCK structure. This
+           parameter may be zero to retrieve only the number of Task-list
+           items.
+ 
+<b>Return Value</b>
+ 
+The return value is the current number of items in the Task List if the
+function is successful or zero if an error occurs.
+ 
+<b>Comments</b>
+ 
+The SWBLOCK structure contains an array of SWENTRY structures. The first
+array contains information about the Task List window. The second array
+contains information about the first program in the Task List.
+ 
+<b>Example</b>
+ 
+This example calls WinQuerySwitchList to determine the number of items in
+the Task List, allocates memory for the required buffer, and calls
+<b>WinQuerySwitchList</b> again to fill the buffer with the information about each
+program in the Task List.
+ 
+USHORT cbItems, cbBuf;
+PSWBLOCK pswblk;
+SEL sel;
+ 
+cbItems = WinQuerySwitchList(hab, (PSWBLOCK) NULL, 0);
+cbBuf = (cbItems * sizeof(SWENTRY)) + sizeof(HSWITCH);
+DosAllocSeg(cbBuf, &amp;sel, SEG_NONSHARED);      /* allocates buffer   */
+pswblk = MAKEP(sel, 0);
+WinQuerySwitchList(hab, pswblk, cbBuf);       /* gets struct. array */
+ 
+<b>See Also</b>
+ 
+<b>WinQuerySwitchEntry, SWBLOCK</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

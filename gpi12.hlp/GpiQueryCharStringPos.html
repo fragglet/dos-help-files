@@ -1,0 +1,121 @@
+<html>
+
+<head>
+<title>GpiQueryCharStringPos (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiQueryCharStringPos (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='text_output.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Fonts and Character Primitives 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L8106.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiQueryCharStringPosAt.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+BOOL GpiQueryCharStringPos(hps, flOptions, cchString, pchString, adx,
+    aptl)
+HPS hps;            /* presentation-space handle                 */
+ULONG flOptions;    /* option flags                              */
+LONG cchString;     /* length of the string                      */
+PCH pchString;      /* address of string to examine              */
+PLONG adx;          /* address of array for increment values     */
+PPOINTL aptl;       /* address of array of structures for points */
+ 
+The GpiQueryCharStringPos function determines a position for each character
+in the string pointed to by the pchString parameter. Each position is the
+position of the character in world coordinates as if it were drawn by using
+the GpiCharStringPos function.
+ 
+The GpiQueryCharStringPos function copies the character positions to the
+array of structures pointed to by the aptl parameter. It uses the current
+character attributes or the array of vector increments specified by the adx
+parameter to determine the positions. The function cannot be used in an open
+segment when the drawing mode is DM_RETAIN.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>flOptions</i>  Specifies whether to use the vector increments specified by the
+           adx parameter. It can be one of the following values:
+ 
+           Value       Meaning
+           ─────────────────────────────────────────────────────────────────
+           0           Advances the current position after each character by
+                       using the width of the character. The adx parameter
+                       is ignored.
+ 
+           CHS_VECTOR  Advances the current position after each character by
+                       using the next value in the array adx. The current
+                       character direction defines the direction in which
+                       the current position is advanced.
+ 
+<i>cchString  Specifies the le</i>ngth of the string pointed to by the pchString
+           parameter.
+ 
+<i>pchString</i>  Points to the character string to examine.
+ 
+<i>adx</i>        Points to an array of increment values. Each value is a 4-byte
+           signed integer specifying the distance (in world coordinates) to
+           advance the current position for each character. There must be
+           one value for each character in the string. The first element
+           specifies the distance for the first character, the second
+           element for the second character, and so on. This parameter may
+           be NULL if the flOptions parameter is set to zero.
+ 
+<i>aptl       P</i>oints to the array of POINTL structures that receives the
+           position (in world coordinates) of each character in the string.
+           The array must be large enough for each character in the string,
+           plus one final point that contains the position of the first
+           character that follows the string.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_CHAR_POS_OPTIONS
+     PMERR_INV_COORDINATE
+     PMERR_INV_HPS
+     PMERR_INV_IN_RETAIN_MODE
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_INV_RECT
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example calls the GpiQueryCharStringPos function to determine the
+location of each character in the string. Vector increments are not used.
+ 
+CHAR szString[] = "Sample string";
+POINTL aptl[sizeof(szString) + 1];
+ 
+GpiQueryCharStringPos(hps,     /* presentation-space handle      */
+    0L,                        /* does not use vector increments */
+    sizeof(szString),          /* number of characters in string */
+    szString,                  /* character string               */
+    (PLONG) NULL,              /* no vector increments           */
+    aptl);                     /* array of structures for points */
+ 
+<b>See Also</b>
+ 
+<b>GpiCharStringPos, GpiQueryCharStringPosAt, GpiSetDrawingMode, POINTL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

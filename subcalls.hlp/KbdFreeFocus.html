@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>KbdFreeFocus (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> KbdFreeFocus (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Keyboard 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='kbd.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='KbdGetCp.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_KBD
+ 
+USHORT KbdFreeFocus(hkbd)
+HKBD hkbd;    /* keyboard handle */
+ 
+The KbdFreeFocus function frees the focus from the specified logical
+keyboard. Other logical keyboards can then use the focus.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hkbd</i>       Identifies the logical keyboard that loses the focus. The handle
+           must have been created previously by using the KbdOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_KBD_DETACHED
+     ERROR_KBD_INVALID_HANDLE
+     ERROR_KBD_FOCUS_REQUIRED
+<b>Comments</b>
+ 
+If a process has been waiting for the focus as a result of calling the
+<b>KbdGetFocus</b> function, MS OS/2 assigns the focus to the logical keyboard as
+soon as it is free. If more than one process is waiting, MS OS/2 chooses a
+logical keyboard and assigns the focus. The other processes continue to wait
+until the focus is free.
+ 
+<b>Example</b>
+ 
+This example frees a logical keyboard: if other logical keyboards have been
+waiting, MS OS/2 assigns the focus to one of them; if no other logical
+keyboards have been waiting, MS OS/2 uses the default keyboard:
+ 
+HKBD hkbd;
+KbdOpen(&amp;hkbd);
+KbdGetFocus(IO_WAIT, hkbd);    /* gets focus  */
+    .
+    .
+    .
+KbdFreeFocus(hkbd);            /* frees focus */
+ 
+<b>See Also</b>
+ 
+<b>KbdGetFocus, KbdOpen</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

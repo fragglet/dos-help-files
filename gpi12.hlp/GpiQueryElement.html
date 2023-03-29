@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<title>GpiQueryElement (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiQueryElement (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='retained_graphics.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiQueryElementPointer.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPISEGEDITING
+ 
+LONG GpiQueryElement(hps, off, cbMax, pb)
+HPS hps;       /* presentation-space handle                 */
+LONG off;      /* offset to first byte to copy              */
+LONG cbMax;    /* size of the buffer                        */
+PBYTE pb;      /* address of buffer for graphics-order data */
+ 
+The GpiQueryElement function retrieves the graphics-order data for an
+element in the currently open segment. The element pointer must point to the
+element to retrieve. The function copies the data to the buffer pointed to
+by the pb parameter, copying all bytes in the current element or the number
+of bytes specified by cbMax, whichever is smaller. If off is not zero, the
+function uses this parameter as an offset from the beginning of the element
+to the first byte to copy to the buffer.
+ 
+The function can be used only in an open segment and only when the drawing
+mode is DM_RETAIN. It cannot be used in an element bracket.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>off</i>        Specifies the offset from the beginning of the segment to the
+           first byte of graphics-order data for the element.
+ 
+<i>cbMax      Spec</i>ifies the size in bytes of the pb buffer.
+ 
+<i>pb</i>         Points to a buffer that receives the graphics-order data for the
+           element.
+ 
+<b>Return Value</b>
+ 
+The return value specifies the number of bytes returned if the function is
+successful or GPI_ALTERROR if an error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_IN_ELEMENT
+     PMERR_INV_LENGTH
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_NO_CURRENT_ELEMENT
+     PMERR_NOT_IN_RETAIN_MODE
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiQueryElement function to retrieve the
+graphics-order data for an element.
+ 
+BYTE abElement[512];
+ 
+/* Move pointer to first element in segment. */
+ 
+GpiSetElementPointer(hps, 1L);
+GpiQueryElement(hps,    /* presentation space               */
+    0L,                 /* start with first byte in element */
+    512L,               /* copy no more than 512 bytes      */
+    abElement);         /* buffer to receive data           */
+ 
+<b>See Also</b>
+ 
+<b>GpiBeginElement, GpiDeleteElement, GpiEndElement, GpiQueryElementPointer,</b>
+<b>GpiSetElementPointer, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

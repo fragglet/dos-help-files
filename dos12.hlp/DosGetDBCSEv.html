@@ -1,0 +1,100 @@
+<html>
+
+<head>
+<title>DosGetDBCSEv (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosGetDBCSEv (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#code page functions 1.2'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80c3.html'>Changes</a><span class='grhilite'>►</span>                           <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosGetEnv.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSNLS
+ 
+USHORT DosGetDBCSEv(cbBuf, pctryc, pchBuf)
+USHORT cbBuf;           /* length of buffer                       */
+PCOUNTRYCODE pctryc;    /* pointer to structure for country code  */
+PCHAR pchBuf;           /* pointer to buffer for DBCS information */
+ 
+The DosGetDBCSEv function retrieves the double-byte character set (DBCS)
+environment vector for the given country code and code-page identifier.
+ 
+The DosGetDBCSEv function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>cbBuf</i>      Specifies the size (in bytes) of the buffer that receives the
+           DBCS environment vector.
+ 
+<i>pctryc     Points </i>to the COUNTRYCODE structure that contains the country
+           code and code-page identifier used to retrieve the DBCS
+           environment vector.
+ 
+<i>pchBuf</i>     Points to the buffer that receives the country-dependent DBCS
+           environment vector.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_NLS_BAD_TYPE
+     ERROR_NLS_NO_COUNTRY_FILE
+     ERROR_NLS_NO_CTRY_CODE
+     ERROR_NLS_OPEN_FAILED
+     ERROR_NLS_TABLE_TRUNCATED
+     ERROR_NLS_TYPE_NOT_FOUND
+ 
+<b>Comments</b>
+ 
+The DBCS environment vector defines the low and high ranges for the DBCS
+lead-byte values.
+ 
+The DosGetDBCSEv function copies the information from the country.sys file
+to a buffer. The first two bytes in the environment vector specify the low
+and high values in the range for the DBCS lead-byte values. The last two
+bytes are both set to zero. The form of the information is similar to the
+following:
+ 
+BYTE low1, high1;
+BYTE low, high2;
+    .
+    .
+    .
+BYTE lown, highn;
+BYTE 0, 0;
+ 
+If the buffer is too small to hold all of the information, the DosGetDBCSEv
+function truncates the information. To avoid this, make sure the buffer is
+at least ten bytes long. You can verify that all information has been copied
+by checking the last two bytes to make sure they are zeros. If the structure
+is larger than the information, the function fills any remaining bytes with
+zeros.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restriction applies to the DosGetDBCSEv
+function:
+ 
+♦  There is no method of identifying the boot drive. The system assumes that
+   the country.sys file is in the root directory of the current drive.
+ 
+<b>See Also</b>
+ 
+<b>DosCaseMap, DosGetCollate, DosGetCp, DosGetCtryInfo, DosSetCp, VioGetCp,</b>
+<b>VioSetCp, COUNTRYCODE</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

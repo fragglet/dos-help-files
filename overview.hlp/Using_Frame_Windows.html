@@ -1,0 +1,123 @@
+<html>
+
+<head>
+<title>Using Frame Windows (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Frame Windows (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Frame_Windows.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#frame window functions 1.2'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#frame window messages'>Message Group</a><span class='grhilite'>►</span>    <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Heaps.html'></i>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                            Using Frame Windows
+ 
+The following sections detail creating and using frame windows.
+ 
+<b>Creating a Main Window</b>
+ 
+You can create a main window by using the WinCreateStdWindow function. The
+following code fragment creates a typical main window: a frame window that
+has a System menu, title bar, menu, vertical and horizontal scroll bars,
+minimize and maximize buttons, and a sizing border.
+ 
+/* Create a main window. */
+ 
+ULONG flFrameControlFlags =
+    FCF_SYSMENU | FCF_TITLEBAR   | FCF_SIZEBORDER |
+    FCF_MENU    | FCF_MINMAX     | FCF_HORZSCROLL |
+    FCF_VERTSCROLL;
+ 
+hwndFrame = WinCreateStdWindow(
+    HWND_DESKTOP,          /* frame-window parent      */
+    0L,                    /* no window styles         */
+    &amp;flFrameControlFlags,  /* frame-control flags      */
+    "MyClass",             /* client-window class      */
+    "Main Window",         /* window title             */
+    0L,                    /* no client-window styles  */
+    NULL,                  /* app module has resources */
+    1,                     /* resource ID              */
+    &amp;hwndClient);          /* client-window handle     */
+ 
+You can also create a "standard" main window for an application by creating
+a frame window with the FCF_STANDARD style. You create the frame window
+using the WinCreateStdWindow function. The following code fragment creates
+the window:
+ 
+/* Set the frame-control flags. */
+ 
+ULONG flFrameControlFlags = FCF_STANDARD;
+ 
+hwndFrame = WinCreateStdWindow (HWND_DESKTOP, ..., &amp;hwndClient);
+ 
+Another way to create a main window and its frame controls is by calling the
+<b>WinCreateWindow</b> function to create the frame window and the frame controls
+and then calling WinCreateWindow to create the client window. One of the
+advantages of this approach is that you can specify an initial size and
+position of the frame window when you create it. The following code fragment
+illustrates this approach:
+ 
+FRAMECDATA fcdata;
+ 
+fcdata.cb = sizeof(fcdata);
+fcdata.flCreateFlags = FCF_STANDARD;
+fcdata.hmodResources = NULL;
+fcdata.idResources   = idFrame;
+ 
+hwndFrame = WinCreateWindow(
+    HWND_DESKTOP,   /* frame-window parent            */
+    WC_FRAME,       /* frame-window class             */
+    "Main Window",  /* window title                   */
+    0L,             /* initially invisible            */
+    0, 0, 0, 0,     /* size and position = 0          */
+    NULL,           /* no owner                       */
+    HWND_TOP,       /* top Z-order position           */
+    idFrame,        /* frame-window ID                */
+    &amp;fcdata,        /* pointer to class-specific data */
+    NULL);          /* no presentation parameters     */
+ 
+hwndClient = WinCreateWindow(
+    hwndFrame,      /* client-window parent           */
+    "My Class",     /* client-window class            */
+    NULL,           /* no title for client window     */
+    0L,             /* initially invisible            */
+    0, 0, 0, 0,     /* size and position = 0          */
+    hwndFrame,      /* owner is frame window          */
+    HWND_BOTTOM,    /* bottom Z-order position        */
+    FID_CLIENT,     /* standard client-window ID      */
+    NULL,           /* no class-specific data         */
+    NULL);          /* no presentation parameters     */
+ 
+/* ... continue initialization ... */
+ 
+WinShowWindow(hwndFrame, TRUE);
+ 
+<b>Retrieving Frame Handles</b>
+ 
+You can easily retrieve a frame-control handle by using the WinWindowFromID
+function. The following code fragment retrieves the control handle of the
+title bar:
+ 
+hwndTitleBar = WinWindowFromID(hwndFrame, FID_TITLEBAR);
+ 
+Given a frame-control handle, you can retrieve its parent frame-window
+handle by using the WinQueryWindow function as follows:
+ 
+hwndFrame = WinQueryWindow(hwndTitleBar, QW_PARENT, FALSE);
+ 
+By using identifiers to identify frame controls rather than window classes,
+you can create your own controls to replace the predefined controls.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

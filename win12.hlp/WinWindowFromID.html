@@ -1,0 +1,94 @@
+<html>
+
+<head>
+<title>WinWindowFromID (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinWindowFromID (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='x_at_L8149.html'>Changes</a><span class='grhilite'>►</span>                                             <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinWindowFromPoint.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMESSAGEMGR
+ 
+HWND WinWindowFromID(hwndParent, id)
+HWND hwndParent;    /* parent-window handle */
+USHORT id;          /* window identifier    */
+ 
+The WinWindowFromID function returns the first child window that has the
+specified identifier of the specified parent window.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwndParent</i>  Identifies the parent window.
+ 
+<i>id</i>          Identifies the window.
+ 
+<b>Return Value</b>
+ 
+The return value is a window handle. If no child window exists with
+identifier id the return value is NULL.
+ 
+<b>Comments</b>
+ 
+To obtain the window handle for an item within a dialog box, the hwndParent
+parameter is set to the dialog-box window's handle and the id parameter is
+set to the identifier of the item in the dialog template.
+ 
+To obtain the window handle for a frame control, the hwndParent parameter is
+set to the frame window's handle and the id parameter is set to one of the
+FID constants, indicating which frame control you want a handle of.
+ 
+The following list contains the frame control identifiers. Note that you
+must also define the INCL_WINFRAMEMGR constant before including pmwin.h.
+ 
+<b>Value           Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>FID_CLIENT</i>      Identifies the client window.
+ 
+<i>FID_HORZSCROLL</i>  Identifies the horizontal scroll bar.
+ 
+<i>FID_MENU</i>        Identifies the application menu.
+ 
+<i>FID_MINMAX</i>      Identifies the minimize/maximize box.
+ 
+<i>FID_SYSMENU</i>     Identifies the system menu.
+ 
+<i>FID_TITLEBAR</i>    Identifies the title bar.
+ 
+<i>FID_VERTSCROLL</i>  Identifies the vertical scroll bar.
+ 
+<b>Example</b>
+ 
+This example calls WinWindowFromID to get the window handle of the system
+menu and calls WinSendMsg to send a message to disable the Close menu item.
+ 
+#define INCL_WINMESSAGEMGR   /* includes message manager functions */
+#define INCL_WINFRAMEMGR     /* includes FID_ constants            */
+#include &lt;os2.h&gt;
+ 
+HWND hwndSysMenu;
+ 
+hwndSysMenu = WinWindowFromID(hwndDlg, FID_SYSMENU);
+WinSendMsg(hwndSysMenu, MM_SETITEMATTR,
+    MPFROM2SHORT(SC_CLOSE, TRUE),
+    MPFROM2SHORT(MIA_DISABLED, MIA_DISABLED));
+ 
+<b>See Also</b>
+ 
+<b>WinMultWindowFromIDs, WinWindowFromPoint</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

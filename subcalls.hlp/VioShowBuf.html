@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>VioShowBuf (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioShowBuf (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L807b.html'>Changes</a><span class='grhilite'>►</span>                       </i>          <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioShowPS.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioShowBuf(offLVB, cbOutput, hvio)
+USHORT offLVB;      /* offset into logical video buffer */
+USHORT cbOutput;    /* length                           */
+HVIO hvio;          /* video handle                     */
+ 
+The VioShowBuf function updates the physical screen from the logical video
+buffer (LVB). You may use the logical video buffer to directly manipulate
+information displayed on the screen.
+ 
+The VioShowBuf function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>offLVB</i>     Specifies the offset into the logical video buffer at which the
+           screen update is to start.
+ 
+<i>cbOutput</i>   Specifies the length (in bytes) of the screen area to update.
+ 
+<i>hvio</i>       Identifies an advanced video-input-and-output (AVIO) presentation
+           space. For AVIO programs, this handle must have been created
+           using the VioCreatePS function. For other programs, hvio must be
+           NULL.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_VIO_INVALID_HANDLE
+     ERROR_VIO_DETACHED
+ 
+<b>Comments</b>
+ 
+If a background process calls VioShowBuf, the function will return
+ERROR_VIO_DETACHED.
+ 
+<b>Example</b>
+ 
+This example retrieves the address of the logical video buffer, makes
+changes to that buffer, and calls VioShowBuf to update the physical video
+buffer from the logical video buffer.
+ 
+PBYTE pbLVB;
+USHORT cbOutput;
+VioGetBuf((PULONG) &amp;pbLVB, &amp;cbOutput, 0);
+    .
+    .
+    .
+VioShowBuf(0,         /* offset into logical video buffer */
+    cbOutput,         /* length of screen area            */
+    0);               /* video handle                     */
+ 
+<b>See Also</b>
+ 
+<b>VioCreatePS, VioGetBuf, VioGetPhysBuf</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

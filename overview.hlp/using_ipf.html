@@ -1,0 +1,352 @@
+<html>
+
+<head>
+<title>Using the Information Presentation Facility (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using the Information Presentation Facility (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='online_help.html'>About Section</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Painting_and_Drawing.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                Using the Information Presentation Facility
+ 
+There are two methods of providing help in an application. The simplest
+method provides general information to the user by processing the WM_HELP
+message in the client window. The second method, installing a help hook,
+provides help in situations in which the WM_HELP message is not available to
+the client window. Since installing a help hook is not difficult, most
+applications use both methods.
+ 
+<b>Help Menu Item</b>
+ 
+Every application should have a Help menu item in the menu bar of its main
+window. The text of the Help item should be "F1=Help" and it should have a
+menu-item identifier of zero. The Help menu item should have the MIS_HELP
+and MIS_BUTTONSEPARATOR styles. The following resource-definition file shows
+how to place a Help item in the menu bar:
+ 
+MENU ID_MENU_RSRC
+BEGIN
+    SUBMENU "~File", IDM_FILE
+        BEGIN
+            MENUITEM "~Quit",      IDM_FI_QUIT
+            MENUITEM "",           IDM_FI_SEP3,      MIS_SEPARATOR
+            MENUITEM "~About Sample...", IDM_FI_ABOUT
+        END
+    SUBMENU "~Edit", IDM_EDIT
+        BEGIN
+            MENUITEM "~Undo",      IDM_ED_UNDO,      0,MIA_DISABLED
+            MENUITEM "",           IDM_ED_SEP1,      MIS_SEPARATOR
+            MENUITEM "~Cut",       IDM_ED_CUT,       0,MIA_DISABLED
+            MENUITEM "C~opy",      IDM_ED_COPY,      0,MIA_DISABLED
+            MENUITEM "~Paste",     IDM_ED_PASTE,     0,MIA_DISABLED
+            MENUITEM "C~lear",     IDM_ED_CLEAR,     0,MIA_DISABLED
+        END
+    MENUITEM "F1=Help", 0x00, MIS_HELP | MIS_BUTTONSEPARATOR
+END
+ 
+If the user clicks the Help item in the menu bar, the system posts a
+<b>WM_HELP</b> message to the current focus window. If the client window has the
+focus, it can process the WM_HELP message to provide general help
+information for the user. If a child window of the client has the focus, the
+child window passes the message up the parent-window chain to the client
+window (by default). In this case, the client window can process the
+<b>WM_HELP</b> message appropriately for the child window that has the focus.
+ 
+If the client window passes the WM_HELP message on to the WinDefWindowProc
+function, this function passes the message up the parent-window chain until
+it finds a frame window. The default frame window processes the WM_HELP
+message by calling the help hook.
+ 
+<b>Help in a Dialog Box</b>
+ 
+You should provide a Help button in each dialog box that your application
+displays. The Help button should have the BS_HELP style. When the user
+presses the Help button, a WM_HELP message is posted to the button's owner,
+which is usually the dialog window. The dialog procedure can process the
+message and give the user help pertaining to the dialog box. Alternatively,
+if you pass the WM_HELP message on to the WinDefDlgProc function, it will
+call the help hook; this means you can choose whether to process dialog help
+in the dialog procedure or in the help hook.
+ 
+<b>Help in a Message Box</b>
+ 
+A message box can be given a Help button by specifying MB_HELP when creating
+the message box. Message boxes are like dialog boxes, except that you do not
+specify your own dialog procedure. If a message box contains a Help button,
+the program does not process the WM_HELP message. The default window
+procedure for the message box responds to the WM_HELP message by calling the
+help hook. To provide help for message boxes, you must install a help hook.
+Because the window identifier that you specify for the message box is passed
+to the help hook, you must use unique identifiers if you want to provide
+help for multiple message boxes.
+ 
+<b>Help for a Menu Item</b>
+ 
+One of the most important functions of a help system is to provide
+information about individual menu items. The user requests help for a menu
+item by pressing the F1 key while the menu item is selected. The menu
+receives the WM_HELP message, since the menu has the focus while the item is
+selected. The menu responds to the message by calling the help hook,
+supplying the identifier of the selected item.
+ 
+You must install a help hook to provide this kind of help for individual
+menu items.
+ 
+A way to supply less comprehensive help for menu items is to use the
+<b>WM_MENUSELECT message. The menu system </b>sends a WM_MENUSELECT message every
+time the menu selection changes. The low word of the mp1 parameter of this
+message contains the identifier of the item that is changing state, and the
+high word is a 16-bit Boolean value that describes whether or not the item
+is chosen; the mp2 parameter contains the handle of the menu.
+ 
+If the Boolean value is FALSE, the menu item is selected but not chosen──for
+example, if the user moves the cursor or mouse pointer over the item while
+the button is down. An application can use this message to display brief
+help information at the bottom of the application window.
+ 
+<b>The Help Hook</b>
+ 
+You must install a help hook if you want to provide help for message boxes
+or menu items. You can also use the help hook to provide help when WM_HELP
+messages are passed up to a frame window. You can install more than one help
+hook; the system will call them in last-installed, first-called order.
+ 
+The parameters for a sample help hook are shown in the following code
+fragment:
+ 
+BOOL EXPENTRY HelpHook(HAB hab,
+    USHORT usMode,
+    USHORT idTopic,
+    USHORT idSubTopic,
+    PRECTL prcPosition);
+ 
+The usMode parameter has three possible values:
+ 
+<b>Value        Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>HLPM_MENU</i>    The help message originated in a menu window when the user
+             pressed the F1 key while a menu item was selected.
+ 
+<i>HLPM_FRAME   The frame window </i>received a WM_HELP message, and the parent of
+             the focus window is the client window of the frame window.
+ 
+<i>HLPM_WINDOW  The frame window rec</i>eived a WM_HELP message, and the parent of
+             the focus window is not the client window of the frame window.
+ 
+The value of the idTopic parameter depends on the value of the usMode
+parameter. The following list shows the possible values of the idTopic
+parameter:
+ 
+<b>Value        Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>HLPM_MENU</i>    Identifier of submenu containing selected item.
+ 
+<i>HLPM_FRAME</i>   Identifier of frame window that called the help hook.
+ 
+<i>HLPM_WINDOW</i>  Identifier of parent of focus window.
+ 
+The value of the idSubTopic parameter depends on the value of the usMode
+parameter. The following list shows the possible values of the idSubTopic
+parameter:
+ 
+<b>Value        Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>HLPM_MENU</i>    Identifier of selected menu item (-1 if menu-bar item is
+             selected).
+ 
+<i>HLPM_FRAME</i>   Identifier of focus window.
+ 
+<i>HLPM_WINDOW</i>  Identifier of focus window.
+ 
+The prcPosition parameter of the help hook indicates the screen area from
+which the help was requested. This argument may be the bounding rectangle of
+a menu item or the bounding rectangle of the focus window. You should use
+this information when displaying your help window to avoid covering up the
+corresponding screen area.
+ 
+The following code fragment shows a template for a help hook that handles
+the three possible calling modes:
+ 
+BOOL EXPENTRY HelpHook(HAB hab,
+    USHORT usMode,
+    USHORT idTopic,
+    USHORT idSubTopic,
+    PRECTL prcPosition);
+{
+    CHAR szMessage[256];
+ 
+    switch(usMode){
+        case HLPM_MENU:
+             /*
+              * idTopic: submenu identifier
+              * idSubTopic: item identifier
+              * prcPosition: boundary of item
+              */
+ 
+            break;
+ 
+        case HLPM_FRAME:
+             /*
+              * idTopic: frame identifier
+              * idSubTopic: focus-window identifier
+              * prcPosition: boundary of focus window
+              */
+ 
+            break;
+ 
+        case HLPM_WINDOW:
+             /*
+              * idTopic: identifier of parent of focus window
+              * idSubTopic: focus window identifier
+              * prcPosition: boundary of focus window
+              */
+ 
+            break;
+    }
+}
+ 
+<b>Installing a Help Hook</b>
+ 
+Typically, you define a help hook as a function in your program's source
+code. At run time you install the help hook by calling the WinSetHook
+function, specifying the message queue and a pointer to the help function,
+as shown in the following code fragment:
+ 
+/* Install the help hook. */
+ 
+WinSetHook(hab,     /* anchor block                 */
+    hmq,            /* message queue                */
+    HK_HELP,        /* hook type                    */
+    (PFN) HelpHook, /* function pointer             */
+    NULL);          /* module = NULL =&gt; in our .exe */
+ 
+If you install a help hook you must release it by using the WinReleaseHook
+function before your program terminates. The following code fragment shows
+how to release a help hook:
+ 
+/* Release the help hook. */
+ 
+WinReleaseHook(hab, /* anchor block                 */
+    hmq,            /* message queue                */
+    HK_HELP,        /* hook type                    */
+    (PFN) HelpHook, /* function pointer             */
+    NULL);          /* module = NULL =&gt; in our .exe */
+ 
+<b>Help Hook for a Menu Item</b>
+ 
+When the user presses the F1 key while a menu item is selected, the menu
+receives a WM_HELP message. The menu responds to the help message by calling
+the help hook with the HLPM_MENU argument to the usMode parameter of the
+HelpHook function. The idTopic parameter contains the identifier of the
+submenu containing the selected item. The idSubTopic parameter contains the
+identifier of the selected item. If the selected item is in the menu bar
+instead of a submenu, idTopic contains the identifier of the menu-bar item
+and idSubTopic contains 0xFFFF.
+ 
+Your help hook can use this information to determine which menu item was
+selected when the F1 key was pressed. Using this information, the help hook
+should display information that explains the function of the menu item. The
+following code fragment shows a help hook that is capable of giving
+information about a file menu with two items and an edit menu with five
+items:
+ 
+BOOL EXPENTRY HelpHook(HAB hab,
+    USHORT usMode,
+    USHORT idTopic,
+    USHORT idSubTopic,
+    PRECTL prcPosition);
+{
+    /*
+     * idTopic: submenu identifier
+     * idSubTopic: item identifier
+     */
+    switch(usMode){
+ 
+        case HLPM_MENU:
+ 
+            switch(idTopic){
+ 
+                case IDM_FILE:
+                    /* One of the File menu items is selected.   */
+                    switch(idSubTopic){
+                         case 0xFFFF:
+                           /*
+                            * A menu-bar item is selected; display
+                            * information on all items in File menu.
+                            */
+                           break;
+ 
+                         case IDM_FI_QUIT:
+                           /* Display information on Quit item.  */
+                           break;
+ 
+                         case IDM_FI_ABOUT:
+                           /* Display information on About item. */
+                           break;
+ 
+                    }      /* ends idSubTopic switch      */
+                    break;
+ 
+                case IDM_EDIT:
+                    /* One of the Edit menu items is selected.   */
+                    switch(idSubTopic) {
+                         case 0xFFFF:
+                           /*
+                            * A menu-bar item is selected; display
+                            * information on all items in Edit menu.
+                            */
+                           break;
+ 
+                         case IDM_ED_UNDO:
+                           /* Display information on Undo item.  */
+                           break;
+ 
+                         case IDM_ED_CUT:
+                           /* Display information on Cut item.   */
+                           break;
+ 
+                         case IDM_ED_COPY:
+                           /* Display information on Copy item.  */
+                           break;
+ 
+                         case IDM_ED_PASTE:
+                           /* Display information on Paste item. */
+                           break;
+ 
+                         case IDM_ED_CLEAR:
+                           /* Display information on Clear item. */
+                           break;
+ 
+                    }      /* ends idSubTopic switch      */
+ 
+                    break; /* ends IDM_EDIT case          */
+ 
+            }              /* ends idTopic switch         */
+ 
+            break;         /* ends HLPM_MENU case         */
+    }
+}
+ 
+<b>Syntax of the Help Hook</b>
+ 
+The following syntax description is for the help hook, which is used to
+provide help for message boxes and menu items:
+ 
+<b>BOOL EXPENTRY HelpHook(HAB hab, USHORT usMode, USHORT idTopic, USHORT</b>
+<i>idSubTopic, PRECTL prcPosition)</i>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

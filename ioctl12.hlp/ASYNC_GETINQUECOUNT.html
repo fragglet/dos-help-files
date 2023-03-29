@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>ASYNC_GETINQUECOUNT (1.2) - ioctl12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+ioctl12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ASYNC_GETINQUECOUNT (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='IOCtls.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ASYNC_GETLINECTRL.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVIOCTL
+ 
+USHORT DosDevIOCtl(pcReceiveQue, 0L, 0x0068, 0x0001, hDevice)
+PUSHORT pcReceiveQue;    /* pointer to structure for character count */
+HFILE hDevice;           /* device handle                            */
+ 
+The ASYNC_GETINQUECOUNT function retrieves the number of characters in the
+receive queue.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pcReceiveQue  Points to the RXQUEUE </i>structure that receives the count of
+              characters in the receive queue.
+ 
+<i>hDevice</i>       Identifies the serial device that receives the device-control
+              function. The handle must have been created previously by
+              using the DosOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful or an error value if
+an error occurs.
+ 
+<b>Comments</b>
+ 
+The device-driver receive queue is a memory buffer between the memory
+pointed to by the read-request packet and the receive hardware for this
+serial device. The application may not assume that there are no unsatisfied
+read requests if there are characters in the device-driver receive queue.
+The behavior of data movement between the read request and the receive queue
+may change from release to release of the device driver. Programs should not
+be written to have a dependency on this information.
+ 
+Programs should be written to be independent of the receive queue being a
+fixed size. The information in this field allows the application to get the
+size of the receive queue. The current size of the receive queue is
+approximately 1K but is subject to change.
+ 
+The application should be written to avoid device-driver receive queue
+overruns by using an application-to-application block protocol with the
+system the application is communicating with.
+ 
+<b>See Also</b>
+ 
+<b>DosOpen, ASYNC_GETOUTQUECOUNT, RXQU</b>EUE
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

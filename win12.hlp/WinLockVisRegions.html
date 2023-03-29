@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<title>WinLockVisRegions (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinLockVisRegions (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Region functions'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Regions 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinLockWindow.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINWINDOWMGR
+ 
+BOOL WinLockVisRegions(hwndDesktop, fLock)
+HWND hwndDesktop;    /* handle of the desktop */
+BOOL fLock;          /* lock/unlock flag      */
+ 
+The WinLockVisRegions function locks or unlocks the visible regions of all
+windows on the screen, preventing any of the visible regions from changing.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwndDesktop</i>  Identifies the desktop window. This parameter can be
+             HWND_DESKTOP or the desktop window handle.
+ 
+<i>fLock</i>        Specifies whether to lock or unlock the visible regions. If
+             TRUE, the visible regions are locked. If FALSE, the visible
+             regions are unlocked.
+ 
+<b>Comments</b>
+ 
+This function is used to prevent a window's visible regions from changing
+while a thread performs a screen operation. For example, WinLockVisRegions
+should be used if the application is moving bits from one part of a window
+to another. Calling WinLockVisRegions during this operation ensures that no
+other window will appear on top of the window that bits are being copied
+from and therefore no physical change in the bits will take place. Using
+<b>WinLockWindowUpdate</b> for this bit copying will not work, because although no
+bits will changed in the locked area, it is still possible that the visible
+region of the presentation space being used for the bit copying might
+change.
+ 
+While the visible regions are locked, no messages should be sent and no
+functions called that could send messages.
+ 
+Only one thread can lock the visible regions at any one time. The same
+thread can call WinLockVisRegions multiple times. A lock count is maintained
+by the system and is incremented each time a locking call is made and
+decremented each time an unlocking call is made. The visible regions are
+unlocked when the count is zero.
+ 
+If WinLockVisRegions is called while another thread has locked the visible
+regions, the function will not return until the thread locking the visible
+regions has unlocked them.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful or FALSE if an error
+occurs.
+ 
+<b>See Also</b>
+ 
+<b>WinLockWindowUpdate</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

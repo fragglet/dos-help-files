@@ -1,0 +1,108 @@
+<html>
+
+<head>
+<title>VioScrLock (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioScrLock (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioScrollDn.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioScrLock(fWait, pfNotLocked, hvio)
+USHORT fWait;         /* wait/no-wait flag              */
+PBYTE pfNotLocked;    /* pointer to variable for status */
+HVIO hvio;            /* video handle                   */
+ 
+The VioScrLock function locks the physical video buffer for a process. While
+the buffer is locked, no other process can lock it.
+ 
+The VioScrLock function is a family API function.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>fWait</i>        Specifies the flag that determines whether the process is to
+             wait until the screen input or output can occur. If this flag
+             is LOCKIO_NOWAIT, the process returns immediately if the screen
+             is not available. If the flag is LOCKIO_WAIT, the process waits
+             for the screen to become available.
+ 
+<i>pfNotLocked</i>  Points to the variable that receives the flag specifying
+             whether the screen is locked. If this flag is LOCK_SUCCESS, the
+             screen is locked. If the flag is LOCK_FAIL, the screen is not
+             locked.
+ 
+<i>hvio</i>         Identifies an advanced video-input-and-output (AVIO)
+             presentation space. For AVIO programs, this handle must have
+             been created previously using the VioCreatePS function. For
+             other programs, hvio must be NULL.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_VIO_INVALID_HANDLE
+     ERROR_VIO_LOCK
+     ERROR_VIO_WAIT_FLAG
+ 
+<b>Comments</b>
+ 
+This function is used typically to coordinate the output of programs that
+write directly to the physical video buffer, so that only one process writes
+to the physical video buffer at a time. The function indicates when the
+screen is locked by another process and is not available for writing, rather
+than denying processes access to the physical video buffer.
+ 
+Only one process in a screen group can lock the screen. If the screen is
+already locked, VioScrLock either waits for the screen to become unlocked or
+returns immediately, as determined by the fWait parameter. Processes that
+lock the screen should unlock it by using the VioScrUnLock function as soon
+as they have completed the output.
+ 
+If a screen-switch request occurs while the screen lock is in effect, the
+switch is held for at least 30 seconds. If the process does not unlock the
+screen before 30 seconds elapse, MS OS/2 suspends the process and switches
+the screen. The suspended process remains in the background until it is
+switched back to the foreground.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restriction applies to the VioScrLock function:
+ 
+♦  The function always indicates that the lock was successful.
+ 
+<b>Example</b>
+ 
+This example calls VioScrLock and waits until the screen lock can be
+performed (the process is in the foreground):
+ 
+USHORT fNotLocked;
+VioScrLock(LOCKIO_WAIT,  /* waits until I/O can take place  */
+    &amp;fNotLocked,         /* variable to receive lock status */
+    0);                  /* video handle                    */
+    .
+    .
+    .
+VioScrUnLock(0);
+ 
+<b>See Also</b>
+ 
+<b>VioCreatePS, VioGetPhysBuf, VioScrUnLock</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

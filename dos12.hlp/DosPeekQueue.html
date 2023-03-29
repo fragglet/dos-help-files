@@ -1,0 +1,110 @@
+<html>
+
+<head>
+<title>DosPeekQueue (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosPeekQueue (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='queues.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Interprocess Communication 1.2'>Overview</a><span class='grhilite'>►</span>                  </i>        <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosPhysicalDisk.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSQUEUES
+ 
+USHORT DosPeekQueue(hqueue, pqresc, pcbElement, ppv, pusElementCode,
+    fWait, pbElemPrty, hsem)
+HQUEUE hqueue;           /* handle of queue to read from                  */
+PQUEUERESULT pqresc;     /* pointer to structure for PID and request code */
+PUSHORT pcbElement;      /* pointer to variable for element size          */
+PVOID FAR * ppv;         /* pointer to buffer for element received        */
+PUSHORT pusElementCode;  /* pointer to variable for element position      */
+UCHAR fWait;             /* wait/no wait indicator                        */
+PBYTE pbElemPrty;        /* pointer to variable for priority of element   */
+ULONG hsem;              /* semaphore handle                              */
+ 
+The DosPeekQueue function retrieves an element without removing it from a
+queue. It copies the address of the element to a pointer and fills a
+structure with information about the element.
+ 
+<b>Parameter       Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hqueue</i>          Identifies the queue to read from. This handle must have
+                been created or opened by using the DosCreateQueue or
+                DosOpenQueue function.
+ 
+<i>pqresc          Po</i>ints to the QUEUERESULT structure that receives
+                information about the request.
+ 
+<i>pcbElement</i>      Points to the variable that receives the length (in bytes)
+                of the element.
+ 
+<i>ppv</i>             Points to the pointer that receives the address of the
+                element in the queue.
+ 
+<i>pusElementCode</i>  Points to the variable that specifies where to look in the
+                queue for the element. If this parameter is 0x0000, the
+                function looks at the beginning of the queue. Otherwise, the
+                function assumes the value is an element identifier and
+                looks for the element that immediately follows the specified
+                element. When the function returns, it copies the identifier
+                of the retrieved element to the variable. The element
+                identifier can then be used to search for the next element
+                or to read the given element from the queue.
+ 
+<i>fWait</i>           Specifies whether the function should wait for an element to
+                be placed in the queue, if the queue is empty. If this
+                parameter is DCWW_WAIT, the function waits until an element
+                is available. If this parameter is DCWW_NOWAIT, the function
+                returns immediately.
+ 
+<i>pbElemPrty</i>      Points to the variable that receives the priority value
+                specified when the element was added to the queue. This is a
+                value in the range 0 through 15; 15 indicates the highest
+                priority.
+ 
+<i>hsem</i>            Identifies a semaphore. This value can be the handle of a
+                system semaphore that has been created or opened by using
+                the DosCreateSem or DosOpenSem function, or it can be the
+                address of a RAM semaphore. This semaphore would typically
+                be used in a call to the DosMuxSemWait function to wait
+                until the queue has an element. If the fWait parameter is
+                DCWW_WAIT, hsem is ignored.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_QUE_ELEMENT_NOT_EXIST
+     ERROR_QUE_EMPTY
+     ERROR_QUE_INVALID_HANDLE
+     ERROR_QUE_INVALID_WAIT
+     ERROR_QUE_PROC_NOT_OWNED
+ 
+<b>Comments</b>
+ 
+If the queue is empty, the DosPeekQueue function either returns immediately
+or waits for an element to be written to the queue, depending on the value
+of the fWait parameter.
+ 
+Only the process that created the queue may call the DosPeekQueue function.
+ 
+<b>See Also</b>
+ 
+<b>DosCreateQueue, DosCreateSem, DosMuxSemWait, DosOpenSem, DosOpenQueue,</b>
+<b>DosReadQueue, QUEUERESULT</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,130 @@
+<html>
+
+<head>
+<title>GpiCallSegmentMatrix (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiCallSegmentMatrix (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='retained_graphics.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Segments and Retained Graphics 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80fd.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiCharString.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPITRANSFORMS
+ 
+LONG GpiCallSegmentMatrix(hps, idSegment, cElements, pmatlf, lType)
+HPS hps;             /* presentation-space handle            */
+LONG idSegment;      /* segment identifier                   */
+LONG cElements;      /* number of matrix elements to examine */
+PMATRIXLF pmatlf;    /* address of structure for matrix      */
+LONG lType;          /* transformation modifier              */
+ 
+The GpiCallSegmentMatrix function draws the specified segment using an
+instance transformation. The function combines the instance transformation
+pointed to by pmatlf with the current model transformation, then draws the
+segment as if calling the GpiDrawSegment function. The combined
+transformation applies only while the function draws the segment.
+<b>GpiCallSegmentMatrix</b> does not modify the current model transformation.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>idSegment</i>  Specifies the segment to draw. This value must be greater than
+           zero.
+ 
+<i>cElements  Specifies the nu</i>mber of matrix elements pointed to by pmatlf. It
+           can be any value from 0 through 9.
+ 
+<i>pmatlf     Points </i>to a MATRIXLF structure that contains the matrix for the
+           instance transformation. Although a transformation requires nine
+           matrix elements, the function copies from the structure only the
+           number of matrix elements specified by cElements. If cElements is
+           less than nine, the function supplies the remaining elements by
+           substituting corresponding elements from the identity matrix.
+ 
+<i>lType</i>      Specifies how to combine the instance transformation with the
+           model transformation. It can be one of the following values:
+ 
+           Value              Meaning
+           ─────────────────────────────────────────────────────────────────
+           TRANSFORM_ADD      Adds the model transformation to the instance
+                              transformation (MODEL * INSTANCE).
+ 
+           TRANSFORM_PREEMPT  Adds the instance transformation to the model
+                              transformation (INSTANCE * MODEL).
+ 
+           TRANSFORM_REPLACE  Replaces the model transform with the instance
+                              transformation.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK or GPI_HITS if the function is successful (it is
+GPI_HITS if the detectable attribute is set for the presentation space and a
+correlation hit occurs). The return value is GPI_ERROR if an error occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_CALLED_SEG_IS_CURRENT
+     PMERR_CALLED_SEG_NOT_FOUND
+     PMERR_INV_HPS
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_INV_MATRIX_ELEMENT
+     PMERR_INV_MICROPS_FUNCTION
+     PMERR_INV_SEG_NAME
+     PMERR_INV_TRANSFORM_TYPE
+     PMERR_PS_BUSY
+     PMERR_SEG_CALL_RECURSIVE
+     PMERR_SEG_NOT_FOUND
+ 
+<b>Example</b>
+ 
+This example calls the GpiCallSegmentMatrix function to draw a segment three
+times. Each time the segment is drawn, the instance transformation doubles
+in size. The result is three triangles with the last triangle twice the size
+of the second, and the second twice the size of the first.
+ 
+POINTL ptlStart = { 0, 0 };
+POINTL ptlTriangle[] = { 100, 100, 200, 0, 0, 0 };
+MATRIXLF matlfInstance = { MAKEFIXED(1, 0),  MAKEFIXED(0, 0), 0,
+                           MAKEFIXED(0, 0),  MAKEFIXED(1, 0), 0,
+                           0,                0,               1 };
+ 
+GpiOpenSegment(hps, 1L);             /* opens segment               */
+GpiMove(hps, &amp;ptlStart);             /* moves to start point (0, 0) */
+GpiPolyLine(hps, 3L, ptlTriangle);   /* draws triangle              */
+GpiCloseSegment(hps);                /* closes segment              */
+ 
+for (i = 0; i &lt; 3; i++) {
+ 
+    /*
+     * Draw the segment after adding the matrix to the model
+     * transformation.
+     */
+ 
+    GpiCallSegmentMatrix(hps, 1L, 9, &amp;matlfInstance, TRANSFORM_ADD);
+    matlfInstance.fxM11 *= 2;
+    matlfInstance.fxM22 *= 2;
+}
+ 
+ 
+<b>See Also</b>
+ 
+<b>GpiDrawSegment, WinGetLastError, MAKEFIXED, MATRIXLF</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,118 @@
+<html>
+
+<head>
+<title>WinGetMsg (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinGetMsg (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='PM_Message_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Messages and Message Queues 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinGetNextWindow.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMESSAGEMGR
+ 
+BOOL WinGetMsg(hab, pqmsg, hwndFilter, msgFilterFirst, msgFilterLast)
+HAB hab;                  /* handle of the anchor block        */
+PQMSG pqmsg;              /* address of structure with message */
+HWND hwndFilter;          /* window-filter handle              */
+USHORT msgFilterFirst;    /* first message                     */
+USHORT msgFilterLast;     /* last message                      */
+ 
+The WinGetMsg function retrieves a message from the thread's message queue,
+waits if necessary, and returns when a message conforming to the filtering
+criteria is available.
+ 
+<b>Parameter       Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hab</i>             Identifies the anchor block.
+ 
+<i>pqmsg          </i> Points to the QMSG structure that contains a message.
+ 
+<i>hwndFilter</i>      Identifies the window filter.
+ 
+<i>msgFilterFirst</i>  Specifies the first message.
+ 
+<i>msgFilterLast</i>   Specifies the last message.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the returned message is not WM_QUIT. The return
+value is FALSE if the returned message is WM_QUIT.
+ 
+<b>Comments</b>
+ 
+Filtering allows an application to process messages in a different order
+than the one in the queue. Filtering is used so the application can receive
+messages of a particular type only, rather than receiving other types of
+messages at an inconvenient point in the logic of the application. For
+example, when a "mouse button down" message is received, the application can
+use filtering to wait for the "mouse button up" message without having to
+process other messages.
+ 
+When using filtering, you must ensure that a message satisfying the
+specification of the filtering parameters can occur; otherwise, the
+<b>WinGetMsg</b> function cannot completely execute. For example, calling the
+<b>WinGetMsg function with the msgFilterFirst an</b>d msgFilterLast parameters
+equal to WM_CHAR and with the hwndFilter parameter set to a window handle
+that does not have the input focus prevents WinGetMsg from returning.
+ 
+Keystrokes are passed to the WinTranslateAccel function. This means that
+accelerator keys are translated into WM_COMMAND or WM_SYSCOMMAND messages
+and are not seen as WM_CHAR messages by the application.
+ 
+The hwndFilter parameter limits the returned message to a specific window or
+its child windows. When hwndFilter is NULL, the returned message can be for
+any window. The message identity is restricted to the range specified by the
+<i>msgFilterFirst and msgFilterLast parameters. When msgFilterFirst and</i>
+<i>msgFilterLast</i> are both zero, any message satisfies the range constraint.
+When msgFilterFirst is greater than msgFilterLast, messages except those
+whose identities lie between msgFilterFirst and msgFilterLast can be
+returned. Messages that do not conform to the filtering criteria remain in
+the queue.
+ 
+When msgFilterFirst and msgFilterLast are both zero, all messages are
+returned.
+ 
+The constants WM_MOUSEFIRST and WM_MOUSELAST can be used for msgFilterFirst
+and msgFilterLast to filter all but mouse messages.
+ 
+The constants WM_BUTTONCLICKFIRST and WM_BUTTONCLICKLAST can be used for
+<i>msgFilterFirst and msgFilterLast to filter</i> all but mouse button messages.
+ 
+The constants WM_DDE_FIRST and WM_DDE_LAST can be used for msgFilterFirst
+and msgFilterLast to filter all but dynamic data exchange messages.
+ 
+<b>Example</b>
+ 
+This example calls WinGetMsg to retrieve a message and WinDispatchMsg to
+send the message.
+ 
+HAB hab;
+QMSG qmsg;
+ 
+while (WinGetMsg(hab,    /* handle to the anchor block             */
+        &amp;qmsg,           /* address of the message queue structure */
+        (HWND) NULL,     /* accept messages for any window         */
+        0,               /* first message to accept                */
+        0))              /* accept all messages                    */
+    WinDispatchMsg(hab, &amp;qmsg);
+ 
+<b>See Also</b>
+ 
+<b>WinDispatchMsg, WinPeekMsg, WinPostMsg, WinTranslateAccel, WinWaitMsg, QMSG,</b>
+<b>WM_CHAR, WM_COMMAND, WM_QUIT, WM_SYSCOMMAND</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

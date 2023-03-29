@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>MLM_QUERYSEL (1.2) - msgs12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msgs12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MLM_QUERYSEL (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='mle.html'>Message Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#MLE controls 1.2'>Overview</a><span class='grhilite'>►</span>            </i>               <span class='grhilite'>◄</span><a href='messages.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MLM_QUERYSELTEXT.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMLE
+ 
+<b>MLM_QUERYSEL</b>
+mp1 = MPFROMSHORT(usQueryMode);    /* specifies the type of query */
+mp2 = 0L;                          /* not used, must be zero      */
+ 
+An application sends an MLM_QUERYSEL message to retrieve the offsets (number
+of characters from the beginning of the text) of the characters selected in
+a multiple-line entry field (MLE).
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>usQueryMode  Low word of mp1. Spe</i>cifies which offset to return. This
+             parameter can be one of the following values:
+ 
+             Value            Meaning
+             ───────────────────────────────────────────────────────────────
+             MLFQS_MINMAXSEL  Returns the offsets of the selection in a
+                              single 32-bit value. The high word contains
+                              the offset of the ending selection character,
+                              and the low word will contain the offset of
+                              the beginning character. These values are
+                              invalid if the selection contains offsets
+                              greater than 64K.
+ 
+             MLFQS_MINSEL     Returns the minimum (leftmost) offset of the
+                              selection.
+ 
+             MLFQS_MAXSEL     Returns the maximum (rightmost) offset of the
+                              selection.
+ 
+             MLFQS_ANCHORSEL  Returns the offset of the first selected
+                              character.
+ 
+             MLFQS_CURSORSEL  Returns the offset of the cursor.
+ 
+<b>Return Value</b>
+ 
+The return value is a 32-bit value; its meaning depends on the setting of
+the usQueryMode parameter.
+ 
+<b>Example</b>
+ 
+This example sends two MLM_QUERYSEL messages to obtain the beginning and
+ending points of the current selection, sends an MLM_SETIMPORTEXPORT message
+to set up the export buffer, and then sends an MLM_EXPORT message to export
+the selection into the buffer.
+ 
+LONG lStart, cch;
+CHAR szBuf[500];
+ 
+lStart = (LONG) WinSendMsg(hwndMle, MLM_QUERYSEL,
+    (MPARAM) MLFQS_MINSEL, (MPARAM) 0L);
+cch = lStart - (LONG) WinSendMsg(hwndMle, MLM_QUERYSEL,
+    (MPARAM) MLFQS_MAXSEL, (MPARAM) 0L);
+WinSendMsg(hwndMle, MLM_SETIMPORTEXPORT,
+    (MPARAM) szBuf, (MPARAM) sizeof(szBuf));
+WinSendMsg(hwndMle, MLM_EXPORT, (MPARAM) &amp;lStart, (MPARAM) &amp;cch);
+ 
+<b>See Also</b>
+ 
+<b>MLM_EXPORT, MLM_QUERYSELTEXT, MLM_SETIMPORTEXPORT, MLM_SETSEL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,84 @@
+<html>
+
+<head>
+<title>MouSetPtrShape (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MouSetPtrShape (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Mouse 1.2'>Overview</a><span class='grhilite'>►</span>                   </i>                         <span class='grhilite'>◄</span><a href='mou.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MouSetScaleFact.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_MOU
+ 
+USHORT MouSetPtrShape(pbBuffer, pmoupsInfo, hmou)
+PBYTE pbBuffer;          /* address of buffer with shape masks     */
+PPTRSHAPE pmoupsInfo;    /* address of structure with shape info. */
+HMOU hmou;               /* mouse handle                           */
+ 
+The MouSetPtrShape function sets the AND and XOR masks that define the shape
+of the mouse pointer for the specified mouse. MouSetPtrShape also sets
+information about the pointer, such as the width and height of masks and the
+location of the hot spot.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pbBuffer</i>    Points to the buffer that contains the new masks.
+ 
+<i>pmoupsInfo  Points to the PTRS</i>HAPE structure that contains the new pointer
+            information.
+ 
+<i>hmou</i>        Identifies the mouse. The handle must have been created
+            previously by using the MouOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_MOUSE_INV_PARMS
+     ERROR_MOUSE_NO_DEVICE
+ 
+<b>Comments</b>
+ 
+The MouSetPtrShape function copies the AND and XOR masks from the buffer
+pointed to by the pbBuffer parameter. The format and size of the masks
+depend on the display device and the video mode. In text mode, each mask is
+typically a character/attribute pair. In graphics mode, each mask is a
+bitmap.
+ 
+The MouSetPtrShape function copies information about the pointer from the
+structure pointed to by the pmoupsInfo parameter. The structure defines the
+length (in bytes) of the AND and XOR masks, the width and height of each
+mask, and the offset from the current mouse position (or hot spot) to the
+upper-left corner of the pointer.
+ 
+If the pointer is displayed, the MouSetPtrShape function may not display a
+new shape immediately. If the pointer is not displayed, you must use the
+<b>MouRemovePtr and MouDrawPtr function</b>s to display the new shape.
+ 
+The pointer shape is dependent on the device driver used to support the
+display device. In text mode, MS OS/2 supports the pointer shape as a
+reverse block character. This character has a one-character height and
+width; that is, in text modes, the height and width fields must each be one.
+You can determine the current pointer shape in effect for the screen group
+by using the MouGetPtrShape function.
+ 
+<b>See Also</b>
+ 
+<b>MouDrawPtr, MouGetPtrShape, MouOpen, MouRemovePtr, PTRSHAPE</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

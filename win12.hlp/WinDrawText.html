@@ -1,0 +1,176 @@
+<html>
+
+<head>
+<title>WinDrawText (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinDrawText (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Window_drawing_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Drawing in Windows 1.2'>Overview</a><span class='grhilite'>►</span>              </i>            <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinEmptyClipbrd.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMESSAGEMGR
+ 
+SHORT WinDrawText(hps, cchText, pszText, pcrl, clrFore, clrBack, fsCmd)
+HPS hps;          /* handle of the presentation space                */
+SHORT cchText;    /* number of characters in the string              */
+PSZ pszText;      /* address of the text                             */
+PRECTL prcl;      /* address of structure with formatting dimensions */
+LONG clrFore;     /* color of the foreground                         */
+LONG clrBack;     /* color of the background                         */
+USHORT fsCmd;     /* text-drawing flags                              */
+ 
+The WinDrawText function draws a single line of formatted text into a
+specified rectangle.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space in which to draw the text.
+ 
+<i>cchText</i>    Specifies the number of characters in the string to draw. If this
+           is set to 0xFFFF, the string is assumed to be null-terminated and
+           its length is calculated by the function itself.
+ 
+<i>pszText</i>    Points to the character string to draw. A carriage-return or
+           linefeed character terminates the line, even if the line is
+           shorter than specified by the cchText parameter.
+ 
+<i>prcl       P</i>oints to a RECTL data structure that contains the rectangle in
+           which the text is formatted. If DT_QUERYEXTENT is specified in
+           the fsCmd parameter, the RECTL structure is set to the string's
+           bounding rectangle upon return from WinDrawText.
+ 
+<i>clrFore</i>    Specifies the color of the foreground. This parameter is ignored
+           if DT_TEXTATTRS is set in the fsCmd parameter.
+ 
+<i>clrBack</i>    Specifies the color of the background. This parameter is ignored
+           if DT_TEXTATTRS is set in the fsCmd parameter.
+ 
+<i>fsCmd</i>      Specifies an array of flags that determine how the text is drawn.
+           It can be any of the following values:
+ 
+           Value               Meaning
+           ─────────────────────────────────────────────────────────────────
+           DT_LEFT             Left justify the text.
+ 
+           DT_RIGHT            Right justify the text.
+ 
+           DT_TOP              Top justify the text.
+ 
+           DT_BOTTOM           Bottom justify the text.
+ 
+           DT_CENTER           Center the text.
+ 
+           DT_VCENTER          Center the text vertically.
+ 
+           DT_ERASERECT        This flag causes the RECTL structure
+                               specified in prcl to be filled with the
+                               window color before printing the text, but
+                               only if the DT_QUERYEXTENT flag is not
+                               specified.
+ 
+           DT_EXTERNALLEADING  This flag causes the external leading value
+                               from the passed font to be added to the
+                               bottom of the bounding rectangle before
+                               returning. It only has an effect when both
+                               DT_TOP and DT_QUERYEXTENT are also
+                               specified.
+ 
+           DT_HALFTONE         Make the text display halftone.
+ 
+           DT_MNEMONIC         If a mnemonic prefix character is
+                               encountered, draw the next character with
+                               mnemonic emphasis.
+ 
+           DT_QUERYEXTENT      No drawing is performed. The prcl parameter
+                               is changed to a rectangle that bounds the
+                               string if it was drawn with the WinDrawText
+                               function.
+ 
+           DT_TEXTATTRS        This flag causes the colors specified in
+                               clrFore and clrBack to be ignored. The colors
+                               already selected in the presentation space
+                               are used instead.
+ 
+           DT_WORDBREAK        Only words that fit completely within the
+                               supplied rectangle are drawn. A word is
+                               defined as any number of leading spaces
+                               followed by one or more visible characters
+                               and terminated by a space, carriage-return,
+                               or linefeed character. When calculating
+                               whether a particular word will fit within the
+                               given rectangle, WinDrawText does not
+                               consider the trailing blanks. It tests only
+                               the length of the visible part of the word
+                               against the right edge of the rectangle. Note
+                               that WinDrawText will always try to draw at
+                               least one word, even if that word does not
+                               fit in the passed rectangle. This is so that
+                               progress is always made when drawing
+                               multi-line text.
+ 
+           Some of the DT flags are mutually exclusive. Only one flag from
+           each of the following groups is significant:
+ 
+           ♦  DT_LEFT, DT_CENTER, DT_RIGHT
+ 
+           ♦  DT_TOP, DT_VCENTER, DT_BOTTOM
+ 
+<b>Return Value</b>
+ 
+The return value is the number of characters, drawn by the function, that
+fit completely within the structure pointed to by prcl.
+ 
+<b>Example</b>
+ 
+This example shows how the WinDrawText function can be used to wrap text
+within a window by using the DT_WORDBREAK flag. The cchDrawn variable
+receives the number of characters actually drawn by the WinDrawText
+function. If this value is zero, no text was drawn and the for loop is
+exited. This can occur if the vertical height of the window is too short for
+the entire text. Otherwise, cchDrawn is added to the cchTotalDrawn variable
+to provide an offset into the string for the next call to WinDrawText.
+ 
+hps = WinGetPS(hwnd);          /* get a ps for the entire window */
+WinQueryWindowRect(hwnd, &amp;rcl);         /* get window dimensions */
+WinFillRect(hps, &amp;rcl, CLR_WHITE);      /* clear entire window   */
+cchText = strlen(pszText);              /* get length of string  */
+cyCharHeight = 15L;                     /* set character height  */
+for (cchTotalDrawn = 0;
+        cchTotalDrawn != cchText;       /* until all chars drawn */
+        rcl.yTop -= cyCharHeight) {
+ 
+    /* draw the text */
+ 
+    cchDrawn = WinDrawText(hps,     /* presentation-space handle */
+        cch - cchTotalDrawn,        /* length of text to draw    */
+        pszText + cchTotalDrawn,    /* address of the text       */
+        &amp;rcl,                       /* rectangle to draw in      */
+        0L,                         /* foreground color          */
+        0L,                         /* background color          */
+        DT_WORDBREAK | DT_TOP | DT_LEFT | DT_TEXTATTRS);
+    if (cchDrawn)
+        cchTotalDrawn += cchDrawn;
+    else
+        break;                      /* text could not be drawn   */
+}
+WinReleasePS(hps);                  /* release the ps            */
+ 
+<b>See Also</b>
+ 
+<b>WinSetDlgItemText, RECTL</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

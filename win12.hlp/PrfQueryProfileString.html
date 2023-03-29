@@ -1,0 +1,105 @@
+<html>
+
+<head>
+<title>PrfQueryProfileString (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> PrfQueryProfileString (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Initialization_file_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Profile Manager 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='prf.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='PrfQueryProgramCategory.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINSHELLDATA
+ 
+ULONG PrfQueryProfileString(hini, pszAppName, pszKeyName, pszError,
+    pszBuf, cchBuf)
+HINI hini;         /* initialization-file handle   */
+PSZ pszAppName;    /* pointer to application name  */
+PSZ pszKeyName;    /* pointer to keyname           */
+PSZ pszError;      /* pointer to default string    */
+PSZ pszBuf;        /* pointer to buffer for string */
+ULONG cchBuf;      /* buffer size                  */
+ 
+The PrfQueryProfileString function retrieves a string from the profile file.
+The location of the string is determined by the application name and keyname
+passed to this function.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hini</i>        Identifies the file to query. This parameter can be a file
+            handle or one of the following values:
+ 
+            Value               Meaning
+            ────────────────────────────────────────────────────────────────
+            HINI_PROFILE        Search the user profile, and if no matching
+                                entries are found, search the system
+                                profile.
+ 
+            HINI_USERPROFILE    Search only the user profile.
+ 
+            HINI_SYSTEMPROFILE  Search only the system profile.
+ 
+<i>pszAppName</i>  Points to the null-terminated string that contains the
+            application name. The string must be less than 1024 bytes long,
+            including the terminating null character. The application name
+            is case-sensitive. If pszAppName is NULL, a list of all
+            application names in the profile specified by the hini parameter
+            is returned.
+ 
+<i>pszKeyName</i>  Points to the null-terminated string that contains the keyname.
+            The string must be less than 1024 bytes long, including the
+            terminating null character. The keyname is case-sensitive. If
+            pszKeyName is NULL, all keynames in the profile specified by the
+            hini parameter are enumerated.
+ 
+<i>pszError</i>    Points to the null-terminated string placed in the buffer
+            pointed to by pszBuf if the keyname is not found.
+ 
+<i>pszBuf</i>      Points to the buffer that receives the null-terminated string.
+ 
+<i>cchBuf      Specif</i>ies the length of the buffer pointed to by the pszBuf
+            parameter. If the string retrieved is longer than this value, it
+            is truncated.
+ 
+<b>Return Value</b>
+ 
+The return value is the number of characters in the buffer pointed to by
+<i>pszBuf</i>, or zero if an error occurs.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INVALID_PARM
+     PMERR_MEMORY_ALLOC
+     PMERR_MEMORY_ALLOCATION_ERR
+     PMERR_MEMORY_DEALLOCATION_ERR
+ 
+<b>Comments</b>
+ 
+When NULL is used in pszKeyName and the application name specified by
+<i>pszAppName is not found, PrfQu</i>eryProfileString returns FALSE.
+ 
+Application data should be stored in the user profile or an
+application-specific profile. The system profile should be used only for
+system data.
+ 
+<b>See Also</b>
+ 
+<b>PrfWriteProfileString, WinQueryProfileString</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

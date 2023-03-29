@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>MouGetNumQueEl (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MouGetNumQueEl (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Mouse 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L8033.html'>Changes</a><span class='grhilite'>►</span>                                 <span class='grhilite'>◄</span><a href='mou.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MouGetPtrPos.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_MOU
+ 
+USHORT MouGetNumQueEl(pmouqi, hmou)
+PMOUQUEINFO pmouqi;    /* pointer to structure for number of events */
+HMOU hmou;             /* mouse handle                              */
+ 
+The MouGetNumQueEl function retrieves the number of events in the
+mouse-event queue.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pmouqi     Points </i>to the MOUQUEINFO structure that receives the number of
+           events in the mouse-event queue.
+ 
+<i>hmou</i>       Identifies the mouse. This handle must have been created
+           previously by using the MouOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_MOUSE_NO_DEVICE
+ 
+<b>Example</b>
+ 
+This example creates a mouse handle, enables the mouse pointer to be drawn,
+and runs within an infinite for loop until there are no events in the
+queue.
+ 
+HMOU hmou;
+MOUEVENTINFO mouevEvent;
+MOUQUEINFO mouqi;
+USHORT fWait = FALSE;
+MouOpen(0L, &amp;hmou);
+MouDrawPtr(hmou);
+for (;;) {
+    MouGetNumQueEl(&amp;mouqi, hmou);      /* retrieves queue         */
+    if (mouqi.cEvents &gt; 1)             /* until the last queue... */
+        MouReadEventQue(&amp;mouevEvent, &amp;fWait, hmou);
+    else
+        break;
+}
+ 
+<b>See Also</b>
+ 
+<b>MouFlushQue, MouOpen, MouReadEventQue, MOUQUEINFO</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

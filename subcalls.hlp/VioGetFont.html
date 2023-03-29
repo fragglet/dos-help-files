@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>VioGetFont (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioGetFont (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioGetMode.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioGetFont(pviofi, hvio)
+PVIOFONTINFO pviofi;    /* pointer to structure for font information */
+HVIO hvio;              /* video handle                              */
+ 
+The VioGetFont function retrieves a specified font. A font consists of one
+bitmap for each character in a character set. The bitmaps define the
+character shapes. The VioGetFont function retrieves a copy of either the
+current font or a font from the ROM of the video display adapter.
+ 
+The VioGetFont function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pviofi     Points </i>to the VIOFONTINFO structure that specifies the request
+           type and receives the font information.
+ 
+<i>hvio</i>       Identifies an advanced video-input-and-output (AVIO) presentation
+           space. For AVIO programs, this handle must have been created
+           previously using the VioCreatePS function. For other programs,
+           hvio must be NULL.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_VIO_COL
+     ERROR_VIO_FONT
+     ERROR_VIO_INVALID_PARMS
+     ERROR_VIO_ROW
+ 
+<b>Comments</b>
+ 
+Although the VioGetFont function can retrieve fonts for many display
+adapters, the fonts for some adapters are not available. In most cases, the
+function retrieves a full 256-character font. This font may consist of a
+complete ROM font, or it may be derived from downloaded fonts that are saved
+in the adapter's BIOS. The current font is defined by the most recent
+<b>DosSetCp or VioSetCp function, or it can</b> be set by using the VioSetFont
+function.
+ 
+<b>Example</b>
+ 
+This example calls the VioGetFont function to obtain the current font. When
+it returns, the cxCell and cyCell fields will contain the dimensions (in
+points) of a character cell. The pbData field points to the font:
+ 
+VIOFONTINFO viofiFont;
+viofiFont.cb = sizeof(viofiFont);      /* length of structure    */
+viofiFont.type = VGFI_GETCURFONT;      /* retrieves current font */
+viofiFont.cxCell = 0;                  /* clears columns         */
+viofiFont.cyCell = 0;                  /* clears rows            */
+viofiFont.pbData = 0L;                 /* address of data area   */
+viofiFont.cbData = 0;                  /* length of data area    */
+VioGetFont(&amp;viofiFont, 0);
+ 
+<b>See Also</b>
+ 
+<b>DosSetCp, VioCreatePS, VioSetCp, VioSetFont, VIOFONTINFO</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

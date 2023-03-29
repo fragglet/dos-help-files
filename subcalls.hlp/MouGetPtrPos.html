@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>MouGetPtrPos (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MouGetPtrPos (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Mouse 1.2'>Overview</a><span class='grhilite'>►</span>                   </i>                         <span class='grhilite'>◄</span><a href='mou.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MouGetPtrShape.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_MOU
+ 
+USHORT MouGetPtrPos(pmouplPosition, hmou)
+PPTRLOC pmoupl;    /* address of structure for current mouse position */
+HMOU hmou;         /* mouse handle                                    */
+ 
+The MouGetPtrPos function retrieves the current position of the mouse
+device. This position is given in screen coordinates.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pmoupl     Points </i>to the PTRLOC structure that receives the coordinates of
+           the mouse position.
+ 
+<i>hmou</i>       Identifies the mouse. The handle must have been created
+           previously by using the MouOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_MOUSE_NO_DEVICE
+ 
+<b>Comments</b>
+ 
+The current device status as defined by the MouSetDevStatus function does
+not affect the row and col fields of the PTRLOC structure. These fields
+always specify an absolute position relative to the upper-left corner of the
+screen.
+ 
+<b>Example</b>
+ 
+This example creates a mouse handle and enables the mouse pointer to be
+drawn. It then displays the text "Place mouse here" at the top of the screen
+and repeatedly calls the MouGetPtrPos function until the mouse is moved over
+the text:
+ 
+PTRLOC moupl;
+HMOU hmou;
+BYTE bAttr = 0x72;      /* green character on white background */
+MouOpen(0L, &amp;hmou);
+MouDrawPtr(hmou);
+VioWrtCharStrAtt("Place mouse here", 16, 0, 35, &amp;bAttr, 0);
+do
+    MouGetPtrPos(&amp;moupl, hmou);
+while (moupl.row != 0 || (moupl.col &lt; 35 || moupl.col &gt; 50));
+ 
+<b>See Also</b>
+ 
+<b>MouOpen, MouSetDevStatus, MouSetPtrPos, PTRLOC</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

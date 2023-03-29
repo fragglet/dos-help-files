@@ -1,0 +1,237 @@
+<html>
+
+<head>
+<title>DosExecPgm (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosExecPgm (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Multitasking_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#multitasking 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosExit.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSPROCESS
+ 
+USHORT DosExecPgm(pchFailName, cbFailName, fExecFlags, pszArgs, pszEnv,
+    prescResults, pszPgmName)
+PCHAR pchFailName;            /* pointer to buffer for failed filename */
+SHORT cbFailName;             /* size of failed filename buffer        */
+USHORT fExecFlags;            /* synchronous/trace flags               */
+PSZ pszArgs;                  /* pointer to argument strings           */
+PSZ pszEnv;                   /* pointer to environment strings        */
+PRESULTCODES prescResults;    /* pointer to structure for result codes */
+PSZ pszPgmName;               /* pointer to name of program to execute */
+ 
+The DosExecPgm function loads and starts a child process.
+ 
+The DosExecPgm function is a family API function.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pchFailName</i>   Points to the buffer that receives the name of the object
+              (such as a dynamic-link module). The DosExecPgm function
+              copies a name to this buffer if it cannot load and start the
+              specified program.
+ 
+<i>cbFailName</i>    Specifies the length (in bytes) of the buffer pointed to by
+              the pchFailName parameter.
+ 
+<i>fExecFlags</i>    Specifies how a given program should be run. This parameter
+              can be one of the following values:
+ 
+              Value             Meaning
+              ──────────────────────────────────────────────────────────────
+              EXEC_ASYNC        Execute asynchronously to the parent
+                                process. The DosExecPgm function copies the
+                                process identifier of the child process to
+                                the codeTerminate field of the structure
+                                pointed to by the prescResults parameter.
+ 
+              EXEC_ASYNCRESULT  Execute asynchronously to the parent
+                                process. Before returning, the DosExecPgm
+                                function copies the process identifier of
+                                the child process to the codeTerminate field
+                                of the structure pointed to by the
+                                prescResults parameter. When the child
+                                process ends, the system saves the
+                                termination and result codes in memory it
+                                reserves for these codes. This memory
+                                remains allocated until the parent process
+                                calls the DosCwait function to retrieve the
+                                information.
+ 
+              EXEC_SYNC         Execute synchronously to the parent process.
+                                When the child process ends, the DosExecPgm
+                                function copies its termination and result
+                                codes to the structure pointed to by the
+                                prescResults parameter.
+ 
+              EXEC_BACKGROUND   Execute asynchronously to the parent process
+                                and detach from the screen group of the
+                                parent process. The detached process
+                                executes in the background. If a process
+                                terminates the parent process──for example,
+                                by using the DosKillProcess function──the
+                                child process continues to run. The child
+                                process should not require screen output
+                                (other than through the VioPopUp function).
+                                The child process also should not call Vio,
+                                Kbd, or Mou functions.
+ 
+              EXEC_TRACE        Execute under conditions for tracing. The
+                                parent process debugs the child process.
+ 
+<i>pszArgs</i>       Points to a set of null-terminated argument strings that
+              represent the program's command parameters. The argument
+              strings are copied to the process's environment segment. The
+              string can have any format but must end with two null
+              characters. A typical format is the program name, a null
+              character, the program parameters (separated by spaces), and
+              two null characters.
+ 
+              If this parameter is zero, no argument strings are passed to
+              the child process.
+ 
+<i>pszEnv</i>        Points to a set of null-terminated environment strings that
+              represent environment variables and their current values. The
+              environment strings are copied to the process's environment
+              segment. These strings represent environment variables and
+              their current values. An environment string has the following
+              form:
+ 
+                   variable=value
+ 
+              Two or more strings can be concatenated to pass multiple
+              environment strings to the child process. The last environment
+              string must end with two null characters.
+ 
+              If this parameter is zero, the child process inherits the
+              unchanged environment of the parent process.
+ 
+<i>prescResults  Points to the RESULTCO</i>DES structure that receives the
+              termination and result codes of the child process.
+ 
+<i>pszPgmName</i>    Points to a null-terminated string that specifies the process
+              to load and start. The string must be a valid MS OS/2 filename
+              and include the filename extension. The string must specify an
+              executable file.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_ACCESS_DENIED
+     ERROR_AUTODATASEG_EXCEEDS_64k
+     ERROR_BAD_ENVIRONMENT
+     ERROR_BAD_FORMAT
+     ERROR_DRIVE_LOCKED
+     ERROR_DYNLINK_FROM_INVALID_RING
+     ERROR_EXE_MARKED_INVALID
+     ERROR_FILE_NOT_FOUND
+     ERROR_INTERRUPT
+     ERROR_INVALID_DATA
+     ERROR_INVALID_EXE_SIGNATURE
+     ERROR_INVALID_FUNCTION
+     ERROR_INVALID_MINALLOCSIZE
+     ERROR_INVALID_MODULETYPE
+     ERROR_INVALID_ORDINAL
+     ERROR_INVALID_SEGDPL
+     ERROR_INVALID_SEGMENT_NUMBER
+     ERROR_INVALID_STACKSEG
+     ERROR_INVALID_STARTING_CODESEG
+     ERROR_ITERATED_DATA_EXCEEDS_64K
+     ERROR_LOCK_VIOLATION
+     ERROR_NO_PROC_SLOTS
+     ERROR_NOT_DOS_DISK
+     ERROR_NOT_ENOUGH_MEMORY
+     ERROR_PATH_NOT_FOUND
+     ERROR_PROC_NOT_FOUND
+     ERROR_RELOC_CHAIN_XEEDS_SEGLIM
+     ERROR_SHARING_BUFFER_EXCEEDED
+     ERROR_SHARING_VIOLATION
+     ERROR_TOO_MANY_OPEN_FILES
+ 
+<b>Comments</b>
+ 
+If the filename is a complete path name (a drive name, path, and filename),
+the DosExecPgm function loads the program from the specified location. If
+only a filename is given and that filename is not found in the current
+directory, the DosExecPgm function searches each directory specified in the
+parent process's PATH environment variable for the given file.
+ 
+The child process receives a discrete address space──that is, it receives
+its own local descriptor table. This means that the parent process and the
+child process cannot access each other's data. To pass data between
+processes, the parent process typically opens a pipe by using the
+<b>DosMakePipe</b> function before starting the child process, then lets the child
+process access one end of the pipe.
+ 
+The environment segment of the child process consists of the environment
+strings (at offset zero), the program filename, and the argument strings.
+The system passes the offset to the argument strings in the bx register and
+the environment segment's selector in the ax register. These values can also
+be retrieved by using the DosGetEnv function.
+ 
+When the child process starts, it inherits all pipe handles and all open
+file handles from the parent process. (File handles that are opened with the
+<i>fsOpenMode parameter of the Do</i>sOpen function set to OPEN_FLAGS_NOINHERIT are
+not inherited by the child process──for more information, see the DosOpen
+function.) The child process can use these handles immediately, without
+opening or preparing them in any way. This gives the parent process control
+over the files associated with the standard input, output, and error file
+handles. For example, the parent process can redirect the standard output
+from the screen to a file by opening the file and duplicating its handle as
+the standard output handle (0x0001). If the child process then writes to the
+standard output, the data goes to the file, not to the screen.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restrictions apply to the DosExecPgm function:
+ 
+♦  The only value allowed for the fExecFlags parameter is EXEC_SYNC.
+ 
+♦  The buffer pointed to by the pchFailName parameter is filled with blanks,
+   even if the function fails.
+ 
+♦  The codeResult field of the RESULTCODES structure receives the exit code
+   from either the DosExit function or the MS-DOS int 21h, 4cH system call,
+   whichever is used to terminate the program.
+ 
+<b>Example</b>
+ 
+This example calls the DosExecPgm function to execute the program test.exe.
+The program executes as a child process asynchronously with the parent
+program.
+ 
+RESULTCODES resc;
+UCHAR szFailName[CCHMAXPATH];
+ 
+UCHAR szCommandLine[] = { "test\0-option1 -option2\0" };
+ 
+DosExecPgm(szFailName,      /* object-name buffer  */
+    sizeof(szFailName),     /* length of buffer    */
+    EXEC_SYNC,              /* sync flag           */
+    szCommandLine,          /* argument string     */
+    (PSZ) NULL,             /* environment string  */
+    &amp;resc,                  /* address of result   */
+   "test.exe");             /* name of application */
+ 
+<b>See Also</b>
+ 
+<b>DosCreateThread, DosCwait, DosExit, DosGetEnv, DosKillProcess, DosMakePipe,</b>
+<b>DosOpen, VioPopUp, RESULTCODES</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

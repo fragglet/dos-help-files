@@ -1,0 +1,91 @@
+<html>
+
+<head>
+<title>MouRemovePtr (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MouRemovePtr (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#Mouse 1.2'>Overview</a><span class='grhilite'>►</span>                   </i>                         <span class='grhilite'>◄</span><a href='mou.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MouSetDevStatus.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_MOU
+ 
+USHORT MouRemovePtr(pmourtRect, hmou)
+PNOPTRRECT pmourtRect;   /* address of structure with exclusion rectangle */
+HMOU hmou;               /* mouse handle                                  */
+ 
+The MouRemovePtr function removes the mouse pointer from a portion of the
+screen or from the entire screen. This part of the screen is called an
+exclusion rectangle, because when the mouse pointer moves into it, the
+pointer disappears──it is still present and can be moved, but it will not
+appear until it is moved out of the exclusion rectangle. If the pointer is
+outside the exclusion rectangle and is not currently displayed, MS OS/2
+draws the mouse pointer.
+ 
+The MouRemovePtr function may be called by any process in the screen group.
+Only one exclusion rectangle is active at a time, so each call to the
+function replaces the previous rectangle. The MouDrawPtr function removes
+the exclusion rectangle completely.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pmourtRect  Points to the NOPT</i>RRECT structure that contains the coordinates
+            of the exclusion rectangle.
+ 
+<i>hmou</i>        Identifies the mouse. The handle must have been created
+            previously by using the MouOpen function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_MOUSE_INV_PARMS
+     ERROR_MOUSE_NO_DEVICE
+ 
+<b>Comments</b>
+ 
+You should exclude the mouse pointer from any portion of the screen that is
+likely to change, such as a text-entry field. When you position the mouse
+pointer, MS OS/2 saves the character beneath it; when you move the mouse
+again, MS OS/2 restores the character. If the character changed between the
+time you positioned the mouse and the time you moved it, the new character
+is lost when MS OS/2 restores the old character.
+ 
+<b>Example</b>
+ 
+This example creates a mouse handle and enables the mouse pointer to be
+drawn. It then defines an exclusion rectangle in the center of the screen
+and calls the MouRemovePtr function to notify the mouse device driver that
+this rectangle is for the exclusive use of the process. When you move the
+mouse pointer into this rectangle, the pointer disappears:
+ 
+NOPTRRECT mourtRect;
+HMOU hmou;
+MouOpen(0L, &amp;hmou);
+MouDrawPtr(hmou);
+mourtRect.row = 6;
+mourtRect.col = 30;     /* upper-left y-coordinate  */
+mourtRect.cRow = 18;    /* lower-right x-coordinate */
+mourtRect.cCol = 50;    /* lower-right y-coordinate */
+MouRemovePtr(&amp;mourtRect, hmou);
+ 
+<b>See Also</b>
+ 
+<b>MouDrawPtr, MouOpen, MouSetPtrShape, NOPTRRECT</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

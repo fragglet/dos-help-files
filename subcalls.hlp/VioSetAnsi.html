@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<title>VioSetAnsi (1.2) - subcalls.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+subcalls.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VioSetAnsi (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='unknown#video input and output 1.2'>Overview</a><span class='grhilite'>►</span>                                            <span class='grhilite'>◄</span><a href='Vio.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VioSetCp.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_VIO
+ 
+USHORT VioSetAnsi(fAnsi, hvio)
+USHORT fAnsi;    /* ANSI flag    */
+HVIO hvio;       /* video handle */
+ 
+The VioSetAnsi function enables or disables processing of ANSI escape
+sequences by setting or clearing the ANSI flag, which specifies whether the
+<b>VioWrtTTY</b> function processes ANSI escape sequences.
+ 
+When a screen group is started, ANSI processing is enabled for the screen
+group.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>fAnsi</i>      Specifies the ANSI flag, which determines whether ANSI processing
+           is enabled or disabled. If this flag is ANSI_ON, ANSI processing
+           is enabled. If the flag is ANSI_OFF, ANSI processing is
+           disabled.
+ 
+<i>hvio</i>       Identifies an advanced video-input-and-output (AVIO) presentation
+           space. For AVIO programs, this handle must have been created
+           previously using the VioCreatePS function. For other programs,
+           hvio must be NULL.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_VIO_INVALID_HANDLE
+ 
+<b>Example</b>
+ 
+This example displays two identical strings. Before the first string is
+displayed, VioSetAnsi disables ANSI processing. As a result, the VioWrtTTY
+function displays the ANSI escape sequences as characters. Before VioWrtTTY
+displays the second string, VioSetAnsi enables ANSI processing, and the
+string is displayed in inverse video (black characters on a white
+background):
+ 
+VioSetAnsi(ANSI_OFF, 0);          /* disables ANSI processing */
+VioWrtTTY("\33[7mHello World\33[0m\n\r", 21, 0);
+VioSetAnsi(ANSI_ON, 0);           /* enables ANSI processing  */
+VioWrtTTY("\33[7mHello World\33[0m\n\r", 21, 0);
+ 
+<b>See Also</b>
+ 
+<b>VioCreatePS, VioGetAnsi, VioWrtTTY</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

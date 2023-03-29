@@ -1,0 +1,406 @@
+<html>
+
+<head>
+<title>Using the Memory Manager (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using the Memory Manager (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='memory_manager.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#memory allocation functions 1.2'>Function Group</a><span class='grhilite'>►</span>                     <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Mouse.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                          Using the Memory Manager
+ 
+This section describes how you can use the MS OS/2 memory-manager functions
+and configuration commands to control the use of memory for your MS OS/2
+programs.
+ 
+<b>Segments</b>
+ 
+You can allocate a segment of memory by using the DosAllocSeg function. You
+simply specify the amount of memory that you need and a variable to receive
+the selector created by DosAllocSeg to identify the new segment. The
+following code fragment allocates 512 bytes of memory:
+ 
+SEL selArray;
+ 
+DosAllocSeg(512, &amp;selArray, SEG_NONSHARED);
+ 
+You can allocate from 1 to 65,536 bytes for a segment. (To allocate 65,536
+bytes, specify a size of 0 in DosAllocSeg.) To access a byte in the segment,
+you need to create a far pointer to the segment. You can do this by using
+the MAKEP macro, which combines the selector from DosAllocSeg and an address
+offset to create a pointer to the byte you want, as shown in the following
+code fragment:
+ 
+PCH pch;
+ 
+pch = MAKEP(selArray, 0);
+ 
+The selector applies only to the bytes allocated for the segment. You cannot
+use the selector to access any other part of system memory. If you supply an
+incorrect offset or attempt to access a byte outside the segment, MS OS/2
+displays a "protection violation" message and terminates the program.
+ 
+The initial content of a segment is undefined, so it is a good idea to
+initialize the new memory segment immediately after creating it.
+ 
+If a segment that you have allocated is too small or too large to meet your
+needs, you can avoid protection violations or wasted space by using the
+<b>DosReallocSeg</b> function to reallocate the segment. This function adjusts the
+size of the segment to a given size without changing the segment selector.
+In the following code fragment, the DosReallocSeg function expands the
+segment from 512 bytes to 1024 bytes:
+ 
+SEL selBuf;
+ 
+DosAllocSeg(512, &amp;selBuf, SEG_NONSHARED);
+    .
+    .
+    .
+DosReallocSeg(1024, selBuf);
+ 
+If you decrease the size of a segment, you lose any data at the end of the
+segment, but all other data is preserved. If you increase the segment size,
+new, uninitialized bytes appear at the end of the segment. You can retrieve
+the size in bytes of any segment by using the DosSizeSeg function.
+ 
+When you have finished using a segment, you can free it by using the
+<b>DosFreeSeg</b> function. Freeing the segment returns that memory to the system's
+pool of available memory and invalidates the selector that identifies the
+segment. The data in the freed segment is lost and any attempt to access the
+segment by using the selector of the freed segment is a protection
+violation.
+ 
+<b>Huge Memory</b>
+ 
+Although segments are limited to 64 kilobytes, you can allocate more than 64
+kilobytes of memory at a time by using the DosAllocHuge function. This
+function allocates as much memory as is requested, up to the limit available
+in the system. It allocates several 64K segments but ensures that the
+segment selectors are consecutive. (This does not mean that the segments are
+in consecutive memory.)  You can then access the memory by computing the
+appropriate segment selector and offset with the help of the
+<b>DosGetHugeShift</b> function.
+ 
+With DosAllocHuge, you specify the number of 64K segments you want, instead
+of the number of bytes. If the block of memory you need is not a multiple of
+64 kilobytes, you can also specify 1 to 65,535 bytes for the last segment.
+The following code fragment allocates 328,192 bytes:
+ 
+SEL selHuge;
+ 
+DosAllocHuge(5,       /* allocates five 64K segments             */
+    512,              /* plus 512 additional bytes               */
+    &amp;selHuge,         /* first segment selector                  */
+    6,                /* reserves six selectors for reallocation */
+    SEG_NONSHARED);   /* allocation flags                        */
+ 
+<b>DosAllocHuge</b> supplies only one segment selector for a huge-memory block.
+This is the selector for the first segment. To access bytes in the other
+segments, you must calculate the segment selector by adding the
+segment-selector offset one or more times to the selector of the first
+segment.
+ 
+The selector offset is computed by using the huge-segment shift count
+retrieved by the DosGetHugeShift function. The shift count is an exponent of
+2, so a segment-selector offset equals the value 1 shifted left by the shift
+count. The following code fragment shows how to compute the selector
+offset:
+ 
+USHORT usShiftCount;
+USHORT offSelector;
+ 
+DosGetHugeShift(&amp;usShiftCount);
+offSelector = 2 &lt;&lt; usShiftCount;
+ 
+To create a pointer to bytes in huge memory, use the MAKEP macro as shown in
+the following code fragment:
+ 
+PCH pch;
+ 
+pch = MAKEP(selHuge+offSelector, 127); /* byte 65663 in huge memory */
+ 
+If you write MS OS/2 programs in assembly language, the global symbols
+DOSHUGESHIFT and DOSHUGEINC are available for computing huge-memory
+addresses. DOSHUGESHIFT is equal to the shift count retrieved by
+<b>DosGetHugeShift</b>, and DOSHUGEINC is equal to the selector offset.
+ 
+You can change the size of a huge-memory block by using the DosReallocHuge
+function, and you can free a huge-memory block by using the DosFreeSeg
+function. Freeing the selector of the first segment in a huge-memory block
+frees all segments.
+ 
+You can use the DosMemAvail function to determine the size of the largest
+available block of free memory. This is a reasonable size to start with if
+you want to allocate the largest possible amount of memory with the
+<b>DosAllocHuge function. DosMemAvail r</b>etrieves the available memory in bytes,
+so you will need to compute the number of available segments from this value
+before using DosAllocHuge. If there are many programs running that allocate
+memory, or if your system is swapping, the value retrieved by DosMemAvail
+may not always be accurate.
+ 
+<b>Moving and Swapping</b>
+ 
+The system moves data and code segments and swaps data segments whenever
+necessary. Moving segments gives the system the opportunity to collect all
+free space into one contiguous block so that it can offer much larger blocks
+of memory than would otherwise be possible.
+ 
+Swapping of segments occurs whenever a program requests more memory than is
+free, thus allowing the system to handle more segments than can fit in
+physical memory. If there is enough space in the system swap file,
+<i>swapper.dat</i>, the system copies one or more data segments to the file. It
+copies these segments back into memory when they are needed again, possibly
+swapping other data segments out in the process.
+ 
+The system can also discard segments if it needs additional space. In a
+sense, discarding is similar to swapping, except that the discarded segment
+is not copied to the disk. The system discards code segments if the space is
+needed and if the segments were loaded originally from an executable file on
+a hard disk. In MS OS/2, all code segments are pure──that is, not subject to
+change during execution──so the system can always retrieve a fresh copy of a
+discarded code segment from the original executable file. (For programs
+loaded from floppy disks, the original disk may not be present when needed,
+so no code segments are discarded.)
+ 
+Although a program cannot control moving and swapping, the user can specify
+whether the system may move and swap segments by including the memman
+command in the config.sys file. For special-purpose programs, you can
+request the user to disable swapping and/or moving. Typically, disabling
+these features enhances the performance of the system when it is needed for
+dedicated, time-critical tasks.
+ 
+If the memman command specifies move, MS OS/2 consolidates free space in
+memory by compacting the existing code and data segments. MS OS/2 compacts
+memory by moving the code and data segments together so that no free memory
+appears between them. If the memman command specifies swap, MS OS/2 writes
+selected data segments to the swapper.dat file whenever insufficient
+physical memory exists for a given allocation request. MS OS/2 selects the
+data segments to swap based on when they were last used. If a program later
+needs the segments, MS OS/2 reads them from the swapper.dat file into
+memory, possibly swapping other segments to make room. If the memman command
+specifies nomove or noswap, MS OS/2 does not move segments or does not swap
+segments, respectively.
+ 
+Through swapping, programs can allocate more memory than actually exists in
+the computer. The exact amount of memory available to a program depends on
+the size of the swapper.dat file as well as on the number of other programs
+already running. The size of the swapper.dat file can be specified by
+including the swappath command in the config.sys file. Actually, swappath
+specifies how much free space to reserve on the disk. MS OS/2 adjusts the
+size of swapper.dat as needed, always leaving other files on the drive and
+the requested free space untouched.
+ 
+Swapping and moving do not affect the segment selectors. A selector remains
+valid even though the location of the segment may change.
+ 
+<b>Discardable Segments</b>
+ 
+A discardable segment provides a convenient way to store data that you need
+infrequently and can regenerate easily. When you use a discardable segment,
+the system is free to automatically discard your segment if it needs the
+space. Since the segment selector of a discarded segment remains valid, you
+can restore the segment by simply reallocating it to the original size and
+again filling it with the data.
+ 
+You can create discardable segments by specifying the SEG_DISCARDABLE option
+when you allocate segments by using the DosAllocSeg or DosAllocHuge
+function, as shown in the following code fragment:
+ 
+SEL selTempData;
+ 
+DosAllocSeg(256, &amp;selTempData, SEG_DISCARDABLE);
+ 
+MS OS/2 locks a discardable segment when it allocates it. While the segment
+is locked, you can examine and modify its contents without risk of the
+system discarding the segment. After examining or modifying the segment, you
+can unlock it by using the DosUnlockSeg function. Unlocking the segment does
+not discard the segment, although it does permit the system to discard the
+segment at any subsequent time. To access the discardable segment again, you
+must first relock it by using the DosLockSeg function.
+ 
+The system discards the segment when it needs to, but only if the segment is
+not locked. After the segment is discarded, any data in the segment is lost,
+but the segment still exists. If the program that owns the segment attempts
+to access the data without reallocating the segment, a protection violation
+results.
+ 
+Before you attempt to read from or write to a segment, you must check to see
+if the segment has been discarded. If it has, you can reallocate the segment
+(to restore it to its original size) and then fill it again. You can
+determine whether a segment has been discarded by checking the return value
+of the DosLockSeg function. If the value is nonzero, the segment has been
+discarded.
+ 
+<b>Shared Segments</b>
+ 
+A shared segment is a memory segment that two or more programs can read from
+and write to. Shared segments are typically used in programs as an efficient
+way to share data. MS OS/2 prepares a shared segment in such a way that any
+program that can retrieve its segment selector can access the data in the
+segment. The shared segment is still protected against access by programs
+that do not have the segment selector.
+ 
+There are two basic methods of using shared segments. One method allows two
+or more programs to share the same segment at the same time. Both programs
+read from and write to the segment, usually controlling access to the
+segment by using a semaphore. The other method allows one program to prepare
+data in a segment and then pass that segment on to another program for
+further processing. The first program usually releases the segment after
+passing it along, so that only one program accesses it at a time.
+ 
+<b>Named Shared Segments</b>
+ 
+A named shared segment has the special property of having a unique name. Any
+program that knows the segment name can use DosGetShrSeg to retrieve the
+segment selector and access the data in the segment. Named shared segments
+are typically used to share a segment between two or more programs at the
+same time.
+ 
+The name of a named shared segment has the following form:
+ 
+<b>\sharemem\name</b>
+ 
+The name parameter must conform to the rules for an MS OS/2 filename.
+However, no file is actually created for the segment.
+ 
+You can allocate a named shared segment by using the DosAllocShrSeg
+function. The segment can have from 1 to 65,536 bytes. DosAllocShrSeg does
+not initialize a shared segment, so  the content of a segment when first
+allocated is unknown.
+ 
+You can free a named shared segment by using the DosFreeSeg function. The
+segment is not removed from memory until the last program with access to the
+segment frees it. You can also change the size of the segment by using the
+<b>DosReallocSeg</b> function.
+ 
+<b>Unnamed Shared Segments</b>
+ 
+You can allocate an unnamed shared segment by specifying the SEG_GETTABLE or
+SEG_GIVEABLE option when you allocate the segment by using the DosAllocSeg
+or DosAllocHuge function. Sharing segments in this way is more difficult
+than sharing named segments, since the program creating the segment must
+somehow pass the segment selector to the other programs. This is typically
+done by using some form of interprocess communication, such as a queue or a
+named pipe.
+ 
+If you allocate a segment with the SEG_GETTABLE option, you can pass the
+segment selector to another program and that program can gain access to the
+segment by using the DosGetSeg function to validate the passed selector. If
+you allocate a segment with the SEG_GIVEABLE option, you must create a new
+segment selector by using the DosGiveSeg function and the process identifier
+of the program that is to receive the new selector. Once you pass the new
+selector to the other program, it can use the selector immediately──that is,
+it does not need to use the DosGetSeg function.
+ 
+<b>Heaps</b>
+ 
+A heap is an area of memory, usually within a single segment, from which you
+can allocate blocks of memory. A heap is useful in programs that need to
+allocate many small blocks of memory. Since MS OS/2 programs have only a
+finite number of selectors available for use, using a heap to allocate small
+blocks of memory is more efficient than allocating a segment for each block.
+A heap lets you reserve segment selectors for large blocks of memory while
+satisfying your program's need for small blocks of memory.
+ 
+MS OS/2 provides two methods of creating and using a heap. One method,
+described in the topic <span class='grhilite'>◄</span><a href='Heaps.html'>Heaps</a><span class='grhilite'>►</span>, lets you create a heap that supports movable
+blocks of memory and fast allocation using free lists. The alternative
+method, described in this section, provides a less powerful but simpler way
+of allocating blocks of memory in a heap.
+ 
+To use the alternative method for your program, you first create a heap by
+using the DosAllocSeg and DosSubSet functions. DosAllocSeg allocates the
+segment to contain the heap, and DosSubSet sets up the segment for use as a
+heap. The segment size can be up to 65,536 bytes. The following code
+fragment creates a heap having 1024 bytes:
+ 
+SEL selHeap;
+ 
+DosAllocSeg(1024, &amp;selHeap, SEG_NONSHARED);
+DosSubSet(selHeap,               /* selector for heap segment */
+          1,                     /* initialize heap           */
+          1024);                 /* heap size                 */
+ 
+You can create any number of heaps for your program. Each heap is uniquely
+identified by the selector of the segment containing the heap.
+ 
+Once you have the heap, you use the DosSubAlloc function to allocate blocks
+of memory and the DosSubFree function to free the memory. Each block of
+memory has a unique offset from the beginning of the segment. You can
+combine this offset with the segment selector to create a pointer to the
+block, as shown in the following code fragment:
+ 
+USHORT offBlock;
+PBYTE pb;
+ 
+DosSubAlloc(selHeap, &amp;offBlock, 256);   /* 256 bytes in block */
+pb = MAKEP(selHeap, offBlock);
+    .
+    .
+    .
+DosSubFree(selHeap, offBlock, 256);     /* free block         */
+ 
+The DosSubAlloc function always rounds the given size to the next multiple
+of 4, so a memory block is always at least 4 bytes. Also, MS OS/2 reserves
+12 bytes in the heap for its own use. Thus, even though the segment
+containing the heap may have 256 bytes, only 244 are available for
+allocation. It is your responsibility to ensure that you do not allocate
+more bytes than are available in the heap.
+ 
+You must be especially careful when using pointers to the memory blocks. MS
+OS/2 does not provide the protection against invalid offsets in a memory
+block that it does for a segment. Using a pointer that has an invalid offset
+may destroy data in another block or even destroy the heap.
+ 
+If you need additional space or less space in a heap, you can always change
+the size of the segment by using the DosReallocSeg function. If you do
+reallocate the segment, you need to use the DosSubSet function again to
+adjust the heap to the new size. The following code fragment adjusts an
+existing heap to 2048 bytes:
+ 
+DosReallocSeg(2048, selHeap);
+DosSubSet(selHeap, 0, 2048);
+ 
+Whenever you use a heap, the memory blocks you allocate are completely
+contained in the segment and any action the system carries out on the
+segment is applied to all blocks in the segment. For example, the
+<b>DosFreeSeg</b> function frees the segment and all blocks of memory in the
+segment. This is a quick way to remove the heap when you no longer need it.
+ 
+The HEAPSIZE statement in a program's module-definition file does not apply
+to heaps created by using the DosSubSet function. HEAPSIZE specifies how
+much memory to reserve in the program's automatic data segment for a heap
+created by using the WinCreateHeap function. For more information about
+<b>WinCreateHeap, see the topic <span class='grhilite'>◄</span><a href='Heaps.html'>Heaps</a><span class='grhilite'>►</span>.</b>
+ 
+<b>Code-Segment Aliases</b>
+ 
+A code-segment alias is a special segment selector that lets a program pass
+execution control to code in a data segment. Normally, MS OS/2 does not
+permit control of execution to be passed to addresses in data segments, but
+a code-segment alias makes the data segment appear to be a code segment. You
+can create a code-segment alias for a data segment by using the
+<b>DosCreateCSAlias</b> function.
+ 
+Code-segment aliases are useful in programs that need to create and execute
+code while the program is running. Since MS OS/2 protects code segments
+against changes, the only way to create and execute code in this way is to
+write it to a data segment, create an alias, and use the alias to pass
+execution control to the code.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

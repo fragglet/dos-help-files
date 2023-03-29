@@ -1,0 +1,99 @@
+<html>
+
+<head>
+<title>GpiQueryDeviceBitmapFormats (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiQueryDeviceBitmapFormats (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Bitmap_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Bitmaps 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiQueryDrawControl.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIBITMAPS
+ 
+BOOL GpiQueryDeviceBitmapFormats(hps, clData, alData)
+HPS hps;         /* presentation-space handle */
+LONG clData;     /* number of elements        */
+PLONG alData;    /* array of elements         */
+ 
+The GpiQueryDeviceBitmapFormats function retrieves the bitmap formats for
+the raster or memory device associated with the given presentation space.
+The function copies the formats to the array pointed to by the alData
+parameter. A bitmap format consists of two 32-bit values, the first
+specifying the number of color planes, and the second specifying the number
+of color bits per pel. The first format copied to the array is the format
+that most closely matches the device.
+ 
+The GpiQueryDeviceBitmapFormats function uses the clData parameter to
+determine how many formats to return. Since each format fills two elements
+in the array, the clData must be a multiple of 2. Although there are several
+standard bitmap formats, most devices use just a few. If clData specifies
+more formats than the device supports, the functions fills the extra
+elements with zero. The DevQueryCaps function can be used to retrieve the
+actual number of bitmap formats for the device.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>clData</i>     Specifies the number of elements to copy to the array. Since each
+           bitmap format fills two elements, this parameter must be a
+           multiple of 2.
+ 
+<i>alData</i>     Points to the array to receive the bitmap formats.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiQueryDeviceBitmapFormats function to retrieve a
+bitmap format for the given device. The format is then used to create a
+bitmap that is compatible with the device.
+ 
+LONG alFormats[2];
+BITMAPINFOHEADER bmp;
+HBITMAP hbm;
+ 
+/* Retrieve the format that most closely matches the device. */
+ 
+GpiQueryDeviceBitmapFormats(hps, 2L, alFormats);
+ 
+/* Set the bitmap dimensions and format and create the bitmap. */
+ 
+bmp.cbFix = 12;
+bmp.cx = 100;
+bmp.cy = 100;
+bmp.cPlanes = alFormats[0];
+bmp.cBitCount = alFormats[1];
+hbm = GpiCreateBitmap(hps, &amp;bmp, 0L, (PBYTE) NULL, (PBITMAPINFO) NULL);
+ 
+<b>See Also</b>
+ 
+<b>DevQueryCaps, GpiBitBlt, GpiCreateBitmap, GpiLoadBitmap</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

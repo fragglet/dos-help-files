@@ -1,0 +1,92 @@
+<html>
+
+<head>
+<title>GpiQueryRegionRects (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiQueryRegionRects (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Region_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Regions 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiQueryRGBColor.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIREGIONS
+ 
+BOOL GpiQueryRegionRects(hps, hrgn, prclBound, prgnrc, arcl)
+HPS hps;             /* presentation-space handle                    */
+HRGN hrgn;           /* region handle                                */
+PRECTL prclBound;    /* address of structure for enclosing rectangle */
+PRGNRECT prgnrc;     /* address of structure controlling processing  */
+PRECTL arcl;         /* address of array of rectangle structures     */
+ 
+The GpiQueryRegionRects function retrieves the rectangles that define the
+region identified by the hrgn parameter. The rectangles can be used to
+recreate the region, by using the GpiCreateRegion function. The function
+copies the coordinates of one or more of the defining rectangles to the
+array of structures pointed to by the arcl parameter. It uses the rectangle
+pointed to by the prclBound parameter to determine which rectangles to
+retrieve. Only rectangles within this rectangle are retrieved. If the
+<i>prclBound</i> parameter is NULL, the function retrieves all rectangles in the
+region.
+ 
+The GpiQueryRegionRects function uses the fields of the RGNRECT structure
+pointed to by the prgnrc parameter to control how the defining rectangles
+are retrieved. Since a region may comprise several rectangles, the RGNRECT
+structure lets an application retrieve a few rectangles at a time. The
+structure specifies which rectangle to start with and how many to retrieve.
+The function copies the actual number of rectangles retrieved to the
+structure. Also, a field in this structure specifies the direction through
+the region the function is to take as it retrieves rectangles.
+ 
+The GpiQueryRegionRects function cannot be used if no device context is
+associated with the presentation space.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>hrgn</i>       Identifies the region.
+ 
+<i>prclBound  Points to the RE</i>CTL structure that contains the enclosing
+           rectangle. Only rectangles within this rectangle are retrieved.
+ 
+<i>prgnrc     Points </i>to the RGNRECT structure that specifies how to retrieve
+           the rectangles.
+ 
+<i>arcl       P</i>oints to the array of RECTL structures that receives the
+           defining rectangles.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_COORDINATE
+     PMERR_INV_HPS
+     PMERR_INV_HRGN
+     PMERR_INV_RECT
+     PMERR_INV_REGION_CONTROL
+     PMERR_PS_BUSY
+ 
+<b>See Also</b>
+ 
+<b>GpiCombineRegion, GpiCreateRegion, WinGetLastError, RECTL, RGNRECT</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

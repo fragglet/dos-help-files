@@ -1,0 +1,119 @@
+<html>
+
+<head>
+<title>About Mouse and Keyboard Input (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About Mouse and Keyboard Input (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Using_the_Mouse_and_Keyboard.html'>Using Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Mouse and keyboard input functions 1.2'>Function Group</a><span class='grhilite'>►</span>                 </i>    <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='icons.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                       About Mouse and Keyboard Input
+ 
+This topic describes how to use mouse and keyboard input in your
+applications. You should also be familiar with the following topics:
+ 
+    <span class='grhilite'>◄</span><a href='Messages_and_Message_Queues.html'>Messages and message queues</a><span class='grhilite'>►</span>
+    <span class='grhilite'>◄</span><a href='Keyboard_Accelerators.html'>Keyboard accelerators</a><span class='grhilite'>►</span>
+ 
+MS OS/2 Presentation Manager applications should support input from both the
+mouse and keyboard. The mouse can have either one, two, or three buttons.
+Only one window at a time can receive mouse input and only one window at a
+time can receive keyboard input. These windows are not necessarily the same,
+although they can be.
+ 
+<b>The System Message Queue</b>
+ 
+All mouse and keyboard input is routed through a single system message
+queue. The system takes input events, such as keys being pressed or mouse
+movements, out of the system queue and routes them to the appropriate
+application. Generally, mouse input is directed to the application that owns
+the window in which the mouse-pointer event occurs. An application can route
+all mouse input, regardless of mouse position, to a particular window by
+setting the mouse capture window. Keyboard input is sent to the application
+that owns the "keyboard focus" window. Keyboard focus and mouse capture are
+discussed more fully later in this topic.
+ 
+The system takes messages out of the system message queue and places them in
+the appropriate application message queue. An application receives input
+messages from its own queue by calling the WinGetMsg or WinPeekMsg
+function.
+ 
+Mouse and keyboard events in the system queue are strictly ordered so that
+an input event cannot be processed until all previous input events have been
+fully processed. This is because the destination window of an input event is
+not known until all previous input has been processed.
+ 
+For example, if a user types a command in one window, uses the mouse to
+activate another window, and then types another command in the second
+window, the destination of the second keyboard command depends on how the
+mouse click is handled. An application might not activate its window in
+response to the mouse click. The second keyboard event goes to the second
+window only if that window becomes active as a result of the mouse click,
+which also depends on how the application processes the mouse click.
+ 
+Because the input queue is strictly ordered and events cannot be processed
+until all previous input has been processed, it is very important that
+applications process input events quickly to avoid slowing user interactions
+with the system.
+ 
+<b>Mouse Capture</b>
+ 
+Generally, a mouse message goes to the window under the mouse pointer at the
+time the event is read from the system queue. Applications can change this
+by setting the mouse capture window, in which case all mouse input is sent
+to the mouse capture window until the mouse capture is released or set to
+another window. Mouse capture is useful if a window should receive all mouse
+input even when the mouse pointer moves outside the window. For example, it
+is common to track the mouse-pointer position after a mouse button-down
+event, following the mouse pointer until a mouse button-up event is
+received. If you do not set the mouse capture to a particular window and the
+user moves the mouse pointer outside the window and releases the mouse
+button, your application will not receive the mouse button-up message. If
+you set the mouse capture to a particular window while tracking the mouse
+pointer, your application will receive the mouse button-up message even if
+the mouse moves outside the window.
+ 
+<b>Keyboard Focus</b>
+ 
+Only one window at a time receives keyboard input. The window receiving the
+keyboard input is called the keyboard-focus window. Applications can allow
+the system to set the keyboard-focus window by default as windows are
+activated and deactivated, or an application can specifically set the
+keyboard focus to a specific window. If there is no keyboard-focus window
+specified, the system sends keyboard input to the currently active frame
+window.
+ 
+<b>Window Activation</b>
+ 
+Because there can be many windows belonging to many applications on the
+screen at the same time, MS OS/2 provides a way to arbitrate input among
+windows and applications. There is at most one active application at any
+time in the Presentation Manager screen group. The active application
+usually has only one active frame window, although it is possible to have
+more than one active frame window. For example, an application with a
+multiple-document interface can have several child frame windows.
+ 
+The activation state of a window is important when an application responds
+to mouse clicks. It is also important because activation and keyboard focus
+are closely related window attributes.
+ 
+The WinQueryActiveWindow function returns the currently active frame window.
+Note that a client window is never returned by this function. Activation of
+the client window is an attribute of frame windows.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

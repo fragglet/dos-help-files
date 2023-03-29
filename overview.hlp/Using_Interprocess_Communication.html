@@ -1,0 +1,354 @@
+<html>
+
+<head>
+<title>Using Interprocess Communication (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Interprocess Communication (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Interprocess_Communication.html'>About Section</a><span class='grhilite'>►</span>                                       <span class='grhilite'>◄</span><a href='System_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Keyboard.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                      Using Interprocess Communication
+ 
+The following sections describe some specific ways to use semaphores,
+signals, pipes, and queues to provide and control communication between
+processes.
+ 
+<b>Using Semaphores</b>
+ 
+Semaphores are often used to control access to shared resources, such as
+memory, variables, and devices, or to signal other processes upon completion
+of specific tasks. Semaphores are useful in all MS OS/2 programs, including
+Presentation Manager applications.
+ 
+<b>Using a System Semaphore as a Signal</b>
+ 
+You can use an exclusive system semaphore as a signal to trigger execution
+of other processes. This is useful if one process provides data to many
+other processes. Using a semaphore as a signal frees the other processes
+from the trouble of polling to determine when new data is available. You use
+an exclusive semaphore for this signal to prevent any other process from
+clearing the semaphore and sending a false signal to the other processes.
+ 
+The process controlling the signal first creates an exclusive system
+semaphore by using the DosCreateSem function and then immediately sets the
+semaphore by using the DosSemSet function. When the process has new data
+available for the other processes, it clears the semaphore. In the following
+code fragment, the process uses the DosSleep function to wait momentarily,
+so that all processes waiting for the semaphore get an opportunity to
+respond; then it sets the semaphore and repeats the cycle:
+ 
+HSYSSEM hssm;
+ 
+DosCreateSem(CSEM_PRIVATE, &amp;hssm, "\\sem\\signal");
+ 
+while (TRUE) {
+    DosSemSet(hssm);                        /* set the semaphore */
+       .
+       .                 /* get new data */
+       .
+    DosSemClear(hssm);   /* signal that data is ready            */
+    DosSleep(500L);      /* give all processes chance to respond */
+}
+ 
+All other processes use the DosOpenSem function to open this semaphore and
+then use the DosSemWait function to wait for the signal to be sent, as shown
+in the following code fragment:
+ 
+HSYSSEM hssm;
+ 
+DosOpenSem(&amp;hssm, "\\sem\\signal");
+ 
+while (TRUE) {
+    DosSemWait(hssm, SEM_INDEFINITE_WAIT);
+       .
+       .                /* process new data */
+       .
+ 
+}
+ 
+<b>Protecting a Resource with a RAM Semaphore</b>
+ 
+You can use a RAM semaphore to control access to a shared resource in a
+process. You simply define the semaphore as a global variable, so that all
+threads have access to it, and set its initial value to zero. To gain access
+to the resource, you can use the DosSemWait function to wait for any other
+thread to complete its access and then use the DosSemSet function to set the
+semaphore while you work with the resource. Finally, you can use the
+<b>DosSemClear</b> function to clear the semaphore when you are done with the
+resource. The following code fragment uses these three functions to control
+access to a resource:
+ 
+ULONG ulRAMSem = 0;
+ 
+if (DosSemWait(&amp;ulRAMSem, 6000L) != ERROR_SEM_TIMEOUT) {
+    /* wait 6 seconds for resource to become free */
+    DosSemSet(&amp;ulRAMSem);
+    /* Set the semaphore, work with the resource,
+     * then clear the semaphore.
+     */
+    DosSemClear(&amp;ulRAMSem);
+}
+ 
+Although you can direct the DosSemWait function to wait indefinitely, it is
+usually a good idea to set a time limit, to prevent the thread from stopping
+permanently if an error in another thread is preventing the semaphore from
+being cleared. If the interval elapses, the function returns
+ERROR_SEM_TIMEOUT instead of zero.
+ 
+<b>Managing Fast-Safe RAM Semaphores</b>
+ 
+A thread sets a fast-safe RAM semaphore by using the DosFSRamSemRequest
+function. The function sets the semaphore, records the identifiers for the
+thread and its process, and increases the use count of the semaphore by one.
+The thread can also set the client field of the DOSFSRSEM structure to
+identify the resource being controlled by the semaphore, but only after the
+semaphore is set. (The values in the client field may be useful to a
+<b>DosExitList</b> function handler in determining the appropriate cleanup action.)
+A thread should not change any other fields in the structure.
+ 
+In reality, DosFSRamSemRequest may wait to set the semaphore, depending on
+whether the semaphore is already set and on the value you specify for the
+<i>lTimeout parameter. If t</i>he semaphore is not set, DosFSRamSemRequest sets it,
+increases the use count, and returns immediately. If the semaphore is
+already set, DosFSRamSemRequest may wait until the semaphore is cleared
+before returning. (The function does not return unless the specified
+semaphore remains clear long enough for the calling thread to obtain it.) As
+with other semaphores, the process can specify how much time to wait before
+continuing execution. When the given interval elapses, the function returns
+whether or not the semaphore is cleared.
+ 
+A thread can clear the semaphore by using the DosFSRamSemClear function.
+This function decreases the use count by one but does not actually clear the
+semaphore unless the use count becomes zero. This means that a thread that
+sets the semaphore several times must clear it the same number of times
+before it is really cleared. Although any thread can wait for the semaphore
+to clear, only the thread that created the semaphore can clear it.
+ 
+The process that set a fast-safe semaphore must clear it before terminating.
+One way to ensure clearing of the semaphore is to use the DosExitList
+function to identify a termination function to clean up the semaphore. The
+termination function first calls the DosFSRamSemRequest function. The
+<b>DosFSRamSemRequest</b> function checks the process identifier in the fast-safe
+RAM semaphore. If it is the identifier of the process terminating, the
+function changes the thread identifier to the current thread and sets the
+use count to 1. The termination function then completes the cleanup by
+calling DosFSRamSemClear to clear the semaphore.
+ 
+<b>Using Signals</b>
+ 
+When a full-screen program first starts, the system enables the SIG_CTRLC,
+SIG_CTRLBREAK, and SIG_KILLPROCESS signals for the process. You can disable
+these signals by using the DosHoldSignal function. The following code
+fragment disables all signals:
+ 
+DosHoldSignal(HLDSIG_DISABLE);
+ 
+When a signal is disabled, the system prevents the signal from interrupting
+the process that disabled it. The signal remains enabled for other
+processes, however, including other processes in the same session. You can
+restore signals by using the HLDSIG_ENABLE option in the DosHoldSignal
+function.
+ 
+You can disable individual signals by using the DosSetSigHandler function to
+specify that a signal should be ignored. The following code fragment
+disables the SIG_CTRLC signal:
+ 
+DosSetSigHandler(NULL, NULL, &amp;fAction, SIGA_IGNORE, SIG_CTRLC);
+ 
+In the preceding example, the variable fAction receives a value specifying
+whether the signal was previously enabled or disabled. You can use the value
+to restore the signal to its previous state.
+ 
+You can also replace the default signal handler with your own signal handler
+by using the DosSetSigHandler function. This is useful if your application
+creates many temporary files. Creating your own signal handler lets you
+clean up the files before a signal such as SIG_CTRLC terminates the
+application. The following code fragment defines a signal handler and sets
+it by using the DosSetSigHandler function:
+ 
+PFNSIGHANDLER pfnsig;
+ 
+VOID PASCAL FAR MySigHandler(usSigArg, usSigNum)
+USHORT usSigArg;    /* furnished by DosFlagProcess if appropriate */
+USHORT usSigNum;    /* number of signals being processed          */
+{
+    if (usSigNum == SIG_CTRLC) {
+        .
+        . /* delete files */
+        .
+    }
+    return;
+}
+    .
+    .
+    .
+DosSetSigHandler(MySigHandler, &amp;pfnsig, &amp;fAction,
+    SIGA_ACCEPT, SIG_CTRLC);
+ 
+In the preceding example, the DosSetSigHandler function copies the address
+of the previous signal handler (if any) to the variable pfnsig. You can use
+this address to call or restore the previous signal handler. If the previous
+handler was the default handler, the variable is set to zero.
+ 
+<b>Using Pipes</b>
+ 
+Pipes are useful in programs that need to pass a continuous stream of data
+between processes. Unlike other methods of interprocess communication, pipes
+let one process read from and write to another process as if it were a file.
+Processes can be related, unrelated, or even on different computers. The
+following sections show simple examples of how pipes can be used.
+ 
+<b>Sending Output to a Child Process</b>
+ 
+You can send output to a child process by using a pipe created by the
+<b>DosMakePipe</b> function, as shown in the following code fragment:
+ 
+DosMakePipe();
+DosDupHandle();
+DosExecPgm();
+DosWrite();
+ 
+<b>Creating a Server Process</b>
+ 
+You can create a server process for a named pipe by using the DosMakeNmPipe
+function. You need to supply a pipe name and specify the access modes, pipe
+type, and sizes of the input and output buffers for the pipe.
+ 
+In the following code fragment, DosMakeNmPipe creates a pipe named
+<i>\pipe\abc</i> and supplies a unique handle identifying the pipe:
+ 
+HPIPE hp;
+ 
+DosMakeNmPipe("\\pipe\\abc",   /* pipe name                         */
+              &amp;hp,             /* pipe handle                       */
+              PIPE_DUPLEX | PIPE_PRIVATE | PIPE_NOWRITETHROUGH,
+              3 | PIPE_READMODE_BYTE | PIPE_BYTE_TYPE | PIPE_WAIT,
+              512,             /* input-buffer size                 */
+              512,             /* output-buffer size                */
+              500L);           /* default timeout for DosWaitNmPipe */
+DosConnectNmPipe(hp);
+   .
+   .    /* read and write data to the pipe */
+   .
+DosDisConnectNmPipe(hp);
+DosClose(hp);
+ 
+Once the named pipe is created, you can immediately call the
+<b>DosConnectNmPipe</b> function to connect a client process to the pipe. In this
+example, the pipe is set to wait (PIPE_WAIT) if no client process is
+immediately available, so DosConnectNmPipe does not return until the
+connection is established.
+ 
+Once the server connects to the client, the process can read from and write
+to the pipe. In the preceding example, the pipe is byte type, so you can use
+the DosRead and DosWrite functions to read from and write to the pipe.
+ 
+After the client process finishes using the pipe, the server process can
+disconnect the pipe by using the DosDisConnectNmPipe function. The server
+can either connect again or close the named pipe for good by using the
+<b>DosClose</b> function.
+ 
+<b>Creating a Client Process</b>
+ 
+You can create a client process for a named pipe by using the DosOpen
+function. You simply supply the name of the pipe and use the appropriate
+access modes to open the pipe for reading, writing, or both, as shown in the
+following code fragment:
+ 
+HPIPE hp;
+ 
+DosOpen("\\pipe\\abc", &amp;hp, &amp;usAction, 0L, 0, 0x01, 0x42, 0L);
+    .
+    .   /* read and write data to the pipe */
+    .
+DosClose(hp);
+ 
+The client process should check the return value from DosOpen to be sure the
+pipe was actually opened. If the pipe has not yet been created by the server
+process, DosOpen returns an error.
+ 
+The client process can read data from the pipe, write data to the pipe, or
+both, depending on the access mode used when the pipe was created. To
+double-check the access mode, the client can call the DosQNmPHandState
+function to retrieve the current mode. If the pipe has byte type, the client
+process can use the DosRead and DosWrite functions to read from and write to
+the pipe. When the client process finishes using the pipe, it should close
+it by using the DosClose function.
+ 
+<b>Using Queues</b>
+ 
+Queues are useful in full-screen programs as a means for one process to
+manage input from many other processes. Named pipes also permit unrelated
+processes to pass data, but queues have the advantage of letting the owner
+process choose which data to read and process first.
+ 
+Note that Presentation Manager applications also have queues, called message
+queues. Message queues and the queues described in this topic are not the
+same.
+ 
+You can create a queue by using the DosCreateQueue function, supplying the
+queue name and the queue type as arguments. The following code fragment
+creates the first-in/first-out queue named \queues\sample.que:
+ 
+HQUEUE hqueue;
+ 
+DosCreateQueue(&amp;hqueue, QUE_FIFO, "\\queues\\sample.que");
+ 
+Once the owner of the queue has created it, each process that needs to use
+the queue must open it by using the DosOpenQueue function. The function
+retrieves the queue handle and the process identifier of the process that
+owns the queue. The following code fragment opens the queue for another
+process:
+ 
+PID pid;
+HQUEUE hqueue;
+ 
+DosOpenQueue(&amp;pid, &amp;hqueue, "\\queues\\sample.que");
+ 
+A process that has opened a queue can write to the queue by using the
+<b>DosWriteQueue</b> function. The format of the element written to the queue
+depends entirely on what the owner process needs. You should identify the
+process that owns the queue and create elements in a form that the process
+can read. The following code fragment writes an element consisting of a
+null-terminated string to a queue:
+ 
+DosWriteQueue(hqueue, 0, 12, "Hello, World", 0);
+ 
+The queue owner can read an element from the queue by using the
+<b>DosReadQueue</b> function. For a queue that has been created using the QUE_FIFO
+flag, the function reads the oldest element from the queue. The function
+retrieves a pointer to the element and the length of the element in bytes.
+It also retrieves the process identifier of the process that wrote the
+element to the queue. The following code fragment reads an element from the
+queue:
+ 
+QUEUERESULT qresc;
+USHORT cb;
+PVOID pv;
+ 
+DosReadQueue(
+    hqueue,      /* queue handle                                   */
+    &amp;qresc,      /* queue result, incl. process id and request     */
+    &amp;cb,         /* count of bytes in element                      */
+    &amp;pv,         /* address of element                             */
+    0,           /* element number (not used for QUE_FIFO)         */
+    DCWW_NOWAIT, /* don't wait for element                         */
+    &amp;bPrty,      /* recv. element priority (not used for QUE_FIFO) */
+    NULL);       /* semaphore handle (not used)                    */
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

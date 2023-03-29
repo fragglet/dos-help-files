@@ -1,0 +1,92 @@
+<html>
+
+<head>
+<title>GpiSetBackMix (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiSetBackMix (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='mix_mode_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Color and Mix Modes 1.2'>Overview</a><span class='grhilite'>►</span>                          <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiSetBitmap.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPIPRIMITIVES
+ 
+BOOL GpiSetBackMix(hps, lMixMode)
+HPS hps;          /* presentation-space handle */
+LONG lMixMode;    /* background-mix mode       */
+ 
+The GpiSetBackMix function sets the current background-mix mode for all
+primitive types. The background-mix mode specifies how the background color
+is combined with colors in underlying primitives. The available
+background-mix modes depend on the device associated with the presentation
+space, but all devices support the BM_LEAVEALONE and BM_OVERPAINT mix modes.
+If the mix mode specified by lMixMode is not supported, the function uses
+FM_LEAVEALONE instead. The DevQueryCaps function can be used to determine
+which mix modes are supported.
+ 
+If the attribute mode is AM_PRESERVE, the function saves the previous
+background-mix mode on the attribute stack when it sets the new mode. The
+previous background-mix mode can be retrieved by using the GpiPop function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>        Identifies the presentation space.
+ 
+<i>lMixMode</i>   Specifies the background-mix mode. It can be one of the following
+           values:
+ 
+           Value          Meaning
+           ─────────────────────────────────────────────────────────────────
+           BM_DEFAULT     The default value (BM_LEAVEALONE).
+ 
+           BM_LEAVEALONE  The background color is ignored. The existing
+                          color remains unchanged.
+ 
+           BM_OR          The individual pel colors are combined using the
+                          OR operator.
+ 
+           BM_OVERPAINT   The background color replaces the existing color.
+ 
+           BM_XOR         The individual pel colors are combined using the
+                          XOR operator.
+ 
+<b>Return Value</b>
+ 
+The return value is GPI_OK if the function is successful or GPI_ERROR if an
+error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+the following:
+ 
+     PMERR_INV_BACKGROUND_MIX_ATTR
+     PMERR_INV_HPS
+     PMERR_PS_BUSY
+ 
+<b>Comments</b>
+ 
+The background-mix mode is used when drawing areas, images, markers, and
+characters. For areas and images, the mix mode applies to pels that are not
+set by the shading pattern. For markers, the mix mode applies to pels not
+set by the marker pattern. For characters, the mix mode applies to pels not
+set by the character pattern.
+ 
+<b>See Also</b>
+ 
+<b>DevQueryCaps, GpiPop, GpiSetBackColor, WinGetLastError</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

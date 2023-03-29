@@ -1,0 +1,124 @@
+<html>
+
+<head>
+<title>DosRead (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosRead (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L80d2.html'>Changes</a><span class='grhilite'>►</span>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosReadAsync.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span></i>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosRead(hf, pvBuf, cbBuf, pcbBytesRead)
+HFILE hf;                /* file handle                                  */
+PVOID pvBuf;             /* pointer to buffer receiving data             */
+USHORT cbBuf;            /* number of bytes in buffer                    */
+PUSHORT pcbBytesRead;    /* pointer to variable for number of bytes read */
+ 
+The DosRead function reads up to a specified number of bytes of data from a
+file into a buffer. The function may read fewer than the specified number of
+bytes if it reaches the end of the file.
+ 
+The DosRead function is a family API function.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hf</i>            Identifies the file to be read. This handle must have been
+              created by using the DosOpen function.
+ 
+<i>pvBuf</i>         Points to the buffer that receives the data.
+ 
+<i>cbBuf</i>         Specifies the number of bytes to read from the file.
+ 
+<i>pcbBytesRead</i>  Points to the variable that receives the number of bytes read
+              from the file. This parameter is zero if the file pointer is
+              positioned at the end of the file prior to the call to the
+              DosRead function.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_ACCESS_DENIED
+     ERROR_BROKEN_PIPE
+     ERROR_INVALID_HANDLE
+     ERROR_LOCK_VIOLATION
+     ERROR_NOT_DOS_DISK
+ 
+<b>Comments</b>
+ 
+The DosRead function does not return an error if the file pointer is at the
+end of the file when the read operation begins.
+ 
+When DosRead is used to read a byte pipe, the pipe must be in byte-read
+mode, an error is returned if the pipe is in message-read mode. All
+currently available data, up to the size requested, is returned.
+ 
+For a message pipe in message-read mode, a read operation that is larger
+than the next available message returns only that message, with
+<i>pcbBytesRead</i> set to indicate the size of the returned message. A read
+operation that is smaller than the next available message returns with the
+number of bytes requested and an ERROR_MORE_DATA error code. Subsequent
+<b>DosRead calls will co</b>ntinue reading the message. The DosPeekNmPipe function
+can be used to determine how many bytes are left in the message.
+ 
+For a message pipe in byte-read mode, DosRead reads the pipe as if it were a
+byte stream, skipping over message headers. This is the same as reading a
+byte pipe in byte mode.
+ 
+When blocking mode is set, the read operation blocks until data is
+available. In this case, the read operation will never return with the
+<i>pcbBytesRead</i> parameter equal to zero except when it has read an end-of-file
+(EOF) character. Note that in message-read mode, messages are always read
+entirely, except in the case where the message is larger than the size
+specified for the read operation.
+ 
+When nonblocking mode is set, the read operation returns with the
+<i>pcbBytesRead</i> parameter equal to zero upon reading the EOF character. An
+error will be returned if no data is available.
+ 
+When resuming reading a message after an ERROR_MORE_DATA error occurs, the
+read operation always blocks until the next part of the message can be
+transferred. When nonblocking mode is set, the read operation can return
+with pcbBytesRead equal to zero if, upon attempting to read at the start of
+a message, it determines that no message is available.
+ 
+<b>Example</b>
+ 
+This example opens, reads, and displays the file abc:
+ 
+BYTE abBuf[512];
+HFILE hf;
+USHORT usAction, cbBytesRead, cbBytesWritten;
+DosOpen("abc", &amp;hf, &amp;usAction, 0L, FILE_NORMAL, FILE_OPEN,
+    OPEN_ACCESS_READONLY | OPEN_SHARE_DENYNONE, 0L);
+do {
+    DosRead(hf,           /* file handle                      */
+        abBuf,            /* address of buffer                */
+        sizeof(abBuf),    /* size of buffer                   */
+        &amp;cbBytesRead);    /* address for number of bytes read */
+    DosWrite(1, abBuf, cbBytesRead, &amp;cbBytesWritten);
+}
+while (cbBytesRead);
+ 
+<b>See Also</b>
+ 
+<b>DosChgFilePtr, DosOpen, DosPeekNmPipe, DosReadAsync, DosWrite, KbdStringIn</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

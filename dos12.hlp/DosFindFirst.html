@@ -1,0 +1,171 @@
+<html>
+
+<head>
+<title>DosFindFirst (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosFindFirst (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosFindFirst2.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosFindFirst(pszFileSpec, phdir, usAttribute, pfindbuf, cbBuf,
+    pusSearchCount, ulReserved)
+PSZ pszFileSpec;        /* pointer to string specifying directory or file */
+PHDIR phdir;            /* pointer to variable for handle                 */
+USHORT usAttribute;     /* search attribute                               */
+PFILEFINDBUF pfindbuf;  /* pointer to structure receiving result          */
+USHORT cbBuf;           /* length of result buffer                        */
+PUSHORT pusSearchCount; /* pointer to variable for file count             */
+ULONG ulReserved;       /* must be zero                                   */
+ 
+The DosFindFirst function searches a directory for the file or files whose
+filenames and attributes match the specified filename and attributes. The
+function copies the name and directory information of the file to the
+<b>FILEFINDBUF</b> structure. The information returned is as accurate as the most
+recent call to the DosClose or DosBufReset function.
+ 
+The DosFindFirst function is a family API function.
+ 
+<b>Parameter       Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pszFileSpec</i>     Points to a null-terminated string. This string must be a
+                valid MS OS/2 directory, or path and filename, and may
+                contain wildcard characters.
+ 
+<i>phdir</i>           Points to the variable that contains the handle of the
+                directory to search.
+ 
+                If the phdir parameter is HDIR_SYSTEM, the system default
+                search-directory handle is used, and any previous search
+                that used HDIR_SYSTEM will be terminated. If this parameter
+                is HDIR_CREATE, the search directory used by the process is
+                created and the function copies the handle of this search
+                directory to the variable pointed to by the phdir parameter.
+                If the handle was created by a previous call to the
+                DosFindFirst function, it can be used in subsequent calls to
+                the DosFindNext function.
+ 
+<i>usAttribute</i>     Specifies the file attribute(s) of the file to be located.
+                This parameter can be a combination of the following
+                values:
+ 
+                Value           Meaning
+                ────────────────────────────────────────────────────────────
+                FILE_NORMAL     Search for normal files.
+ 
+                FILE_READONLY   Search for read-only files.
+ 
+                FILE_HIDDEN     Search for hidden files.
+ 
+                FILE_SYSTEM     Search for system files.
+ 
+                FILE_DIRECTORY  Search for subdirectories.
+ 
+                FILE_ARCHIVED   Search for archived files.
+ 
+<i>pfindbuf        Points t</i>o the FILEFINDBUF structure that receives the result
+                of the search.
+ 
+<i>cbBuf</i>           Specifies the length (in bytes) of the structure pointed to
+                by the pfindbuf parameter.
+ 
+<i>pusSearchCount</i>  Points to a variable that specifies the number of matching
+                filenames to locate. Before returning, the DosFindFirst
+                function copies to this parameter the number of filenames
+                found.
+ 
+<i>ulReserved</i>      Specifies a reserved value; must be zero.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_BUFFER_OVERFLOW
+     ERROR_DRIVE_LOCKED
+     ERROR_FILE_NOT_FOUND
+     ERROR_INVALID_HANDLE
+     ERROR_INVALID_PARAMETER
+     ERROR_NO_MORE_FILES
+     ERROR_NO_MORE_SEARCH_HANDLES
+     ERROR_NOT_DOS_DISK
+     ERROR_PATH_NOT_FOUND
+ 
+<b>Comments</b>
+ 
+The pusSearchCount parameter specifies the number of files to search for.
+The number of files whose information is copied is the number of files
+requested, the number of files whose information fits in the structure, or
+the number of files that exist, whichever is smallest. To receive
+information for more than one file, the pfindbuf parameter must point to a
+buffer that consists of consecutive FILEFINDBUF structures──for example, an
+array of structures. If the DosFindFirst function fails to find a match or
+cannot copy all of the information about the file to the structure, it
+returns an error.
+ 
+The DosFindFirst function obtains a handle that can be used in subsequent
+calls to the DosFindNext function to specify the directory to search and the
+filename to search for. Each call to the DosFindFirst function closes the
+handle of the search directory, if it has not been closed previously by
+using the DosFindClose function.
+ 
+If the value specified for the cbBuf parameter is equal to the size of the
+<b>FILEFINDBUF</b> structure, then the maximum filename length that can be
+retrieved by the DosFindFirst function is 13 bytes: up to 8 characters in
+the filename; a separating period (.); 3 characters in the filename
+extension; and the terminating null character. To retrieve a longer
+filename, you must either use the DosFindFirst2 function or provide a buffer
+that is large enought for the FILEFINDBUF structure and the longer
+filename.
+ 
+A search for read-only files, hidden files, system files, archived files, or
+subdirectories includes all normal files in addition to those matching the
+specified attribute.
+ 
+<b>Restrictions</b>
+ 
+In real mode, the following restriction applies to the DosFindFirst
+function:
+ 
+♦  The phdir parameter must be set to HDIR_SYSTEM.
+ 
+<b>Example</b>
+ 
+This example uses the DosFindFirst function to find the file abc.ext. An
+error message is displayed if the file is not found.
+ 
+HDIR hdir = HDIR_CREATE;
+USHORT usSearchCount = 1;
+FILEFINDBUF findbuf;
+if (DosFindFirst("abc.ext",      /* filename to search for      */
+        &amp;hdir,                   /* address of directory handle */
+        FILE_NORMAL,             /* type of files to search for */
+        &amp;findbuf,                /* address of buffer           */
+        sizeof(findbuf),         /* size of buffer              */
+        &amp;usSearchCount,          /* number of matching entries  */
+        0L))                     /* reserved                    */
+    VioWrtTTY("File not found\r\n", 16, 0);
+else {
+ 
+<b>See Also</b>
+ 
+<b>DosBufReset, DosClose, DosFindClose, DosFindFirst2, DosFindNext,</b>
+<b>DosQFileMode, DosQFSInfo, FILEFINDBUF</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,105 @@
+<html>
+
+<head>
+<title>WinCatch (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinCatch (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinChangeSwitchEntry.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINCATCHTHROW
+ 
+SHORT WinCatch(pcatchbuf)
+PCATCHBUF pcatchbuf;    /* address of structure for execution environment */
+ 
+The WinCatch function captures the current execution environment and copies
+it to a buffer. The buffer can later be used by the WinThrow function to
+restore the execution environment. The execution environment includes the
+state of all system registers and the instruction counter.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pcatchbuf  Points to the CA</i>TCHBUF structure that receives the execution
+           environment.
+ 
+<b>Return Value</b>
+ 
+The WinCatch function returns immediately with a return value of zero. It
+returns again when the WinThrow function is called, this time with the
+return value specified in the sErrorReturn parameter of the WinThrow
+function.
+ 
+<b>Comments</b>
+ 
+The routine that calls WinCatch is responsible for freeing any resources
+allocated between the time WinCatch was called and the time WinThrow was
+called.
+ 
+<b>Example</b>
+ 
+This example calls WinCatch to save the current execution environment before
+calling a recursive sort function. The first return from WinCatch is zero.
+If the doSort function calls WinThrow, execution will again return to the
+<b>WinCatch function. This </b>time, WinCatch will return the STACKOVERFLOW error
+passed by the doSort function. The doSort function is recursive, that is, it
+calls itself. It maintains a variable, usStackCheck, that is used to check
+to see how much stack space has been used. If more then 3K of the stack has
+been used, it calls WinThrow to drop out of all the nested function calls
+back into the function that called WinCatch.
+ 
+USHORT usStackCheck
+CATCHBUF ctchbf;
+ 
+main() {
+    SHORT sErrorReturn;
+ 
+    sErrorReturn = WinCatch(&amp;ctchbf); /* save execution environment */
+    if (sErrorReturn) {
+        .
+        . /* error processing */
+        .
+    }
+    usStackCheck = 0;               /* initialize stack usage count  */
+    doSort(1, 1000);                /* call sort function            */
+}
+ 
+VOID doSort(sLeft, sRight)
+SHORT sLeft, sRight;
+{
+    SHORT i, sLast;
+ 
+    /*
+     * Check to see if more than 3K of the stack has been used, and if
+     * so, call WinThrow to drop back into the original calling program.
+     */
+ 
+    usStackCheck += 10;
+    if (usStackCheck &gt; (3 * 1024))
+        WinThrow(&amp;ctchbf, STACKOVERFLOW);
+    .
+    . /* sorting algorithm */
+    .
+    doSort(sLeft, sLast - 1);         /* note recursive call         */
+    usStackCheck -= 10;               /* update stack check variable */
+}
+ 
+<b>See Also</b>
+ 
+<b>WinThrow, CATCHBUF</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

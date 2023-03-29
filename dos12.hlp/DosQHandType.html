@@ -1,0 +1,96 @@
+<html>
+
+<head>
+<title>DosQHandType (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosQHandType (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosQNmPHandState.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosQHandType(hf, pfsType, pusDeviceAttr)
+HFILE hf;                 /* file handle                              */
+PUSHORT pfsType;          /* pointer to variable for handle type      */
+PUSHORT pusDeviceAttr;    /* pointer to variable for device attribute */
+ 
+The DosQHandType function retrieves information that specifies whether the
+given file handle identifies a file, device, or pipe.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hf</i>             Identifies the file. This handle must have been created
+               previously by using the DosOpen function.
+ 
+<i>pfsType</i>        Specifies the type of file or device associated with the file
+               handle. It can be one of the following:
+ 
+               Value            Meaning
+               ─────────────────────────────────────────────────────────────
+               HANDTYPE_DEVICE  The handle is to a device, such as a
+                                printer.
+ 
+               HANDTYPE_FILE    The handle is to a file.
+ 
+               HANDTYPE_PIPE    The handle is to a pipe.
+ 
+               If the file or device is located on a network, this parameter
+               is a combination of one of the values given above and the
+               value HANDTYPE_NETWORK (0x8000).
+ 
+<i>pusDeviceAttr</i>  Points to the variable that receives the device-driver
+               attribute word.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be the following:
+ 
+     ERROR_INVALID_HANDLE
+ 
+<b>Comments</b>
+ 
+The DosQHandType function allows some interactive or file-oriented programs
+to determine the source of their input. For example, the cmd.exe program
+suppresses the system prompt if the input is from a disk file.
+ 
+<b>Example</b>
+ 
+This example calls the DosQHandType function to determine if standard output
+has been redirected to a file. The LOBYTE macro is an important part of this
+example; it allows the handle type to be determined even if the handle is to
+a file or device on a network:
+ 
+USHORT fsType, usDeviceAttr;
+DosQHandType(1,                         /* file handle      */
+    &amp;fsType,                            /* type of handle   */
+    &amp;usDeviceAttr);                     /* device attribute */
+if (LOBYTE(fsType) == HANDTYPE_DEVICE)
+    VioWrtTTY("stdout is a device\r\n", 20, 0);
+else if (LOBYTE(fsType) &amp; HANDTYPE_FILE) {
+    if (fsType &amp; HANDTYPE_NETWORK)
+        VioWrtTTY("stdout is a networked file\r\n", 28, 0);
+    else
+        VioWrtTTY("stdout is a local file\r\n", 24, 0);
+}
+ 
+<b>See Also</b>
+ 
+<b>DosOpen, DosQFHandSta</b>te
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

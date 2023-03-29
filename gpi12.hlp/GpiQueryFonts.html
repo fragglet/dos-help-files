@@ -1,0 +1,120 @@
+<html>
+
+<head>
+<title>GpiQueryFonts (1.2) - gpi12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+gpi12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GpiQueryFonts (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='text_output.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Fonts and Character Primitives 1.2'>Overview</a><span class='grhilite'>►</span>                    </i>      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GpiQueryGraphicsField.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_GPILCIDS
+ 
+LONG GpiQueryFonts(hps, flOptions, pszFacename, pcFonts, cbMetrics,
+    pfm)
+HPS hps;             /* presentation-space handle                */
+ULONG flOptions;     /* type of fonts to retrieve                */
+PSZ pszFacename;     /* address of typeface name of the fonts    */
+PLONG pcFonts;       /* number of fonts to retrieve              */
+LONG cbMetrics;      /* length of the structure                  */
+PFONTMETRICS pfm;    /* address of structure(s) for font metrics */
+ 
+The GpiQueryFonts function retrieves the font metrics for loaded fonts. The
+function copies the font metrics for the fonts that have the typeface name
+specified by the pszFacename parameter to the structure or array of
+structures pointed to by the pfm parameter. The function retrieves font
+metrics for all fonts up to the number specified by the pcFonts parameters.
+If the function does not retrieve font metrics for all the fonts, it returns
+the number of remaining fonts.
+ 
+All sizes retrieved by the function are in world coordinates.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hps</i>          Identifies the presentation space.
+ 
+<i>flOptions</i>    Specifies the type of fonts to retrieve. It can be a
+             combination of the following values:
+ 
+             Value       Meaning
+             ───────────────────────────────────────────────────────────────
+             QF_PUBLIC   Retrieve public fonts. Public fonts were loaded by
+                         the system and are available to all applications.
+ 
+             QF_PRIVATE  Retrieve private fonts. Private fonts were loaded
+                         by the application and are available only to it.
+ 
+<i>pszFacename  Points to the typefa</i>ce name of the fonts. If the pszFacename
+             parameter is a NULL pointer, the function retrieves metrics for
+             all available fonts regardless of their typeface names.
+ 
+<i>pcFonts</i>      Points to a variable containing the number of fonts for which
+             to retrieve metrics. The function copies to this variable the
+             actual number of fonts it retrieved.
+ 
+<i>cbMetrics    Specifies the </i>length of one FONTMETRICS structure.
+ 
+<i>pfm      </i>    Points to one or more FONTMETRICS structures that receive the
+             metrics of the fonts. The number of structure required is
+             specified by the pcFonts parameter.
+ 
+<b>Return Value</b>
+ 
+The return value is the number of fonts not returned if the function is
+successful or GPI_ALTERROR if an error occurred.
+ 
+<b>Errors</b>
+ 
+Use the WinGetLastError function to retrieve the error value, which may be
+one of the following:
+ 
+     PMERR_INV_HPS
+     PMERR_INV_LENGTH_OR_COUNT
+     PMERR_PS_BUSY
+ 
+<b>Example</b>
+ 
+This example uses the GpiQueryFonts function to retrieve the font metrics
+for all private fonts having the "Helv" typeface name. The function is
+called twice, once to determine the number of fonts available, again to
+retrieve the font metrics for all the fonts.
+ 
+LONG cFonts, lTemp = 0L;
+SEL sel;
+PFONTMETRICS pfm;
+ 
+/* Determine the number of fonts. */
+ 
+cFonts = GpiQueryFonts(hps, QF_PRIVATE, "Helv", &amp;lTemp,
+    (LONG) sizeof(FONTMETRICS), (PFONTMETRICS) NULL);
+ 
+/* Allocate space for the font metrics. */
+ 
+DosAllocSeg((USHORT) (sizeof(FONTMETRICS) * cFonts),
+    &amp;sel, SEG_NONSHARED);
+pfm = MAKEP(sel, 0);
+ 
+/* Retrieve the font metrics. */
+ 
+cFonts = GpiQueryFonts(hps, QF_PRIVATE, "Helv", &amp;cFonts,
+    (LONG) sizeof(FONTMETRICS), pfm);
+ 
+<b>See Also</b>
+ 
+<b>GpiCreateLogFont, GpiQueryFontMetrics, FATTRS, FONTMETRICS</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

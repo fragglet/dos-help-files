@@ -1,0 +1,156 @@
+<html>
+
+<head>
+<title>WinCreateWindow (1.2) - win12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+win12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WinCreateWindow (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Frame_window_functions.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Frame Windows 1.2'>Overview</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='x_at_L812c.html'>Changes</a><span class='grhilite'>►</span>       </i>        <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WinDdeInitiate.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINMESSAGEMGR
+ 
+HWND WinCreateWindow(hwndParent, pszClass, pszName, flStyle, x, y, cx,
+    cy, hwndOwner, hwndInsertBehind, id, pCtlData, pPresParams)
+HWND hwndParent;          /* parent-window handle                    */
+PSZ pszClass;             /* pointer to registered class name        */
+PSZ pszName;              /* pointer to window text                  */
+ULONG flStyle;            /* window style                            */
+SHORT x;                  /* horizontal position of window           */
+SHORT y;                  /* vertical position of window             */
+SHORT cx;                 /* window width                            */
+SHORT cy;                 /* window height                           */
+HWND hwndOwner;           /* owner-window handle                     */
+HWND hwndInsertBehind;    /* handle to sibling window                */
+USHORT id;                /* window identifier                       */
+PVOID pCtlData;           /* pointer to buffer                       */
+PVOID pPresParams;        /* pointer to structure with pres. params. */
+ 
+The WinCreateWindow function creates a new window.
+ 
+<b>Parameter         Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwndParent</i>        Specifies the parent window of the new window. Any valid
+                  window handle can be used.
+ 
+<i>pszClass</i>          Points to the registered class name. This parameter can be
+                  an application-specified name (defined by the
+                  WinRegisterClass function), the name of a preregistered
+                  window class, or a window-class (WC) constant.
+ 
+<i>pszName</i>           Points to window text or other class-specific data. The
+                  actual structure of the data is class-specific. This data
+                  is usually a null-terminated string and is often displayed
+                  in the window.
+ 
+<i>flStyle</i>           Specifies the window style. It can be a combination of one
+                  or more of the following values:
+ 
+                  Value            Meaning
+                  ──────────────────────────────────────────────────────────
+                  WS_CLIPCHILDREN  Prevents a window from painting over its
+                                   child windows.
+ 
+                  WS_CLIPSIBLINGS  Prevents a window from painting over its
+                                   sibling windows.
+ 
+                  WS_DISABLED      Disables mouse and keyboard input to the
+                                   window. It is used to temporarily prevent
+                                   the user from using the window.
+ 
+                  WS_MAXIMIZED     Enlarges the window to the maximum size.
+ 
+                  WS_MINIMIZED     Reduces the window to the minimum size.
+ 
+                  WS_PARENTCLIP    Prevents a window from painting over its
+                                   parent window.
+ 
+                  WS_SAVEBITS      Saves the image under the window as a
+                                   bitmap. When the window is moved or
+                                   hidden, the system restores the image by
+                                   copying the bits.
+ 
+                  WS_SYNCPAINT     Causes the window to immediately receive
+                                   WM_PAINT messages after a part of the
+                                   window becomes invalid. Unless this style
+                                   is set, the window receives WM_PAINT
+                                   messages only when no other message is
+                                   waiting to be processed.
+ 
+                  WS_VISIBLE       Makes the window visible. This window is
+                                   drawn on the screen unless overlapping
+                                   windows completely obscure it. Windows
+                                   without this style are hidden.
+ 
+<i>x</i>                 Specifies the horizontal position of the window, relative
+                  to the origin of the parent window.
+ 
+<i>y</i>                 Specifies the vertical position of the window, relative to
+                  the origin of the parent window.
+ 
+<i>cx</i>                Specifies the window width, in pels.
+ 
+<i>cy</i>                Specifies the window height, in pels.
+ 
+<i>hwndOwner</i>         Identifies the owner window.
+ 
+<i>hwndInsertBehind</i>  Identifies the sibling window behind which the specified
+                  window is placed. If this parameter is HWND_TOP, the
+                  specified window is placed on top of all its sibling
+                  windows. If this parameter is HWND_BOTTOM, the specified
+                  window is placed behind all its sibling windows. If the
+                  hwndInsertBehind parameter is neither HWND_TOP nor
+                  HWND_BOTTOM, or it is not a child window of the window
+                  identified by hwndParent, NULL is returned.
+ 
+<i>id</i>                Specifies the window identifier (a value given by the
+                  application that allows a specific child window to be
+                  identified). For example, the controls of a dialog box
+                  have unique identifiers so that an owner window can
+                  distinguish which control has notified it. Window
+                  identifiers are also used for frame windows.
+ 
+<i>pCtlData</i>          Points to the buffer that contains class-specific
+                  information. This data is passed to the window procedure
+                  by the WM_CREATE message.
+ 
+<i>pPresParams       Points to a PRE</i>SPARAMS structure that contains
+                  presentation parameters for the window. This parameter is
+                  NULL if there are no presentation parameters.
+ 
+<b>Return Value</b>
+ 
+The return value is the handle of the window if the function is successful
+or NULL if an error occurs.
+ 
+<b>Comments</b>
+ 
+The WinCreateWindow function sends a WM_CREATE message to the window
+procedure of the window being created, and then sends the
+<b>WM_ADJUSTWINDOWPOS</b> message before the window is displayed. The values passed
+are those given to the WinCreateWindow function.
+ 
+The WM_SIZE message is not sent by WinCreateWindow while the window is being
+created. Any required size processing is performed during the processing of
+the WM_CREATE message.
+ 
+<b>See Also</b>
+ 
+<b>WinCreateStdWindow, WinQueryObjectWindow, WinRegisterClass,</b>
+<b>WM_ADJUSTWINDOWPOS, WM_CREATE, WM_SIZE</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

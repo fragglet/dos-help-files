@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<title>DosCallback (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosCallback (1.2)</div>
+<pre>                                                      <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosCallNmPipe.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSDEVICES
+ 
+VOID DosCallback(pfn)
+PFN pfn;    /* pointer to ring-3 function */
+ 
+The DosCallback function allows a process with ring-2 input/output privilege
+to call a ring-3 function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pfn</i>        Points to the ring-3 function to be called.
+ 
+<b>Return Value</b>
+ 
+This function does not return a value.
+ 
+<b>Comments</b>
+ 
+When a process with ring-2 input/output privileges uses the DosCallback
+function to call a ring-3 function, the target function executes at ring 3
+and returns to the ring-2 calling process. The ring-3 function need not
+conform to the ring-2 privilege level. The ring-3 function that is called by
+the DosCallback function may call a ring-2 segment before it returns.
+ 
+All registers except FLAGS will be passed intact across this call/return
+sequence and may be used to pass parameters or data back and forth between
+rings 2 and 3. Any addresses passed from ring 2 to ring 3 must be based on
+ring-3 selectors, because ring-3 code cannot address ring-2 data selectors.
+ 
+A ring-2 stack cannot be used to pass data to a ring-3 function.
+ 
+The following Dos functions are valid when issued from ring 2:
+ 
+    DosAllocHuge          DosGetHugeShift           DosReadAsync
+    DosAllocSeg           DosGetInfoSeg             DosReallocHuge
+    DosAllocShrSeg        DosGetMachineMode         DosReallocSeg
+    DosBeep               DosGetModHandle           DosResumeThread
+    DosBufReset           DosGetModName             DosRmDir
+    DosCallback           DosGetPID                 DosScanEnv
+    DosChDir              DosGetPPID                DosSearchPath
+    DosChgFilePtr         DosGetProcAddr            DosSelectDisk
+    DosCliAccess          DosGetPrty                DosSemClear
+    DosClose              DosGetResource            DosSemRequest
+    DosCloseSem           DosGetSeg                 DosSemSet
+    DosCreateCSAlias      DosGetShrSeg              DosSemSetWait
+    DosCreateSem          DosGetVersion             DosSemWait
+    DosCreateThread       DosGiveSeg                DosSendSignal
+    DosCwait              DosHoldSignal             DosSetCp
+    DosDelete             DosKillProcess            DosSetDateTime
+    DosDevConfig          DosLoadModule             DosSetFHandState
+    DosDevIOCtl           DosLockSeg                DosSetFileInfo
+    DosDupHandle          DosMakePipe               DosSetFileMode
+    DosEnterCritSec       DosMemAvail               DosSetFSInfo
+    DosErrClass           DosMkDir                  DosSetMaxFH
+    DosError              DosMove                   DosSetPrty
+    DosExecPgm            DosMuxSemWait             DosSetSigHandler
+    DosExit               DosNewSize                DosSetVec
+    DosExitCritSec        DosOpen                   DosSetVerify
+    DosExitList           DosOpenSem                DosSizeSeg
+    DosFileLocks          DosPhysicalDisk           DosSleep
+    DosFindClose          DosPortAccess             DosSubAlloc
+    DosFindFirst          DosQAppType               DosSubFree
+    DosFindNext           DosQCurDir                DosSubSet
+    DosFlagProcess        DosQCurDisk               DosSuspendThread
+    DosFreeModule         DosQFHandState            DosTimerAsync
+    DosFreeSeg            DosQFileInfo              DosTimerStart
+    DosFSRamSemClear      DosQFileMode              DosTimerStop
+    DosFSRamSemRequest    DosQFSInfo                DosUnlockSeg
+    DosGetCp              DosQHandType              DosWrite
+    DosGetDateTime        DosQVerify                DosWriteAsync
+    DosGetEnv             DosRead
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

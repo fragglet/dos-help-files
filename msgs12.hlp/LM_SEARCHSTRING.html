@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>LM_SEARCHSTRING (1.2) - msgs12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+msgs12.hlp (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> LM_SEARCHSTRING (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='list_boxes.html'>Message Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#list boxes 1.2'>Overview</a><span class='grhilite'>►</span>           </i>                <span class='grhilite'>◄</span><a href='messages.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='LM_SELECTITEM.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_WINLISTBOXES
+ 
+<b>LM_SEARCHSTRING</b>
+mp1 = MPFROM2SHORT((USHORT) usCmd, (SHORT) iItem); /* cmd and item  */
+mp2 = MPFROMP((PSZ) pszSearch);                    /* search string */
+ 
+An application sends an LM_SEARCHSTRING message to search the list for a
+match to the specified string, returning the first matching item. Match
+criteria can be set with flags for case-sensitivity and substring matching.
+All items are searched until a match is found. Searching wraps around at the
+end of the list, starting again at the first item.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>usCmd      Low </i>word of mp1. Specifies one of the following values that
+           determines how to find a match (these values can be combined by
+           using the OR operator):
+ 
+           Value              Meaning
+           ─────────────────────────────────────────────────────────────────
+           LSS_CASESENSITIVE  Matching occurs if the item contains the
+                              string exactly, as specified by the string in
+                              the message.
+ 
+           LSS_PREFIX         Matching occurs if the leading characters of
+                              the item match the string specified in the
+                              message. If this value is specified,
+                              LSS_SUBSTRING should not be specified.
+ 
+           LSS_SUBSTRING      Matching occurs if the item contains a
+                              substring that matches the string specified in
+                              the message. If this value is specified,
+                              LSS_PREFIX should not be specified.
+ 
+<i>iItem      High</i> word of mp1. Indicates the index of the item to begin
+           searching. A value of LIT_FIRST causes searching to begin with
+           the first item.
+ 
+<i>pszSearch  Low and high wor</i>d of mp2. Points to the search string.
+ 
+<b>Return Value</b>
+ 
+The return value is the item index of the next item whose text string
+matches the string specified by the pszSearch parameter, LIT_NONE if no item
+is found, or LIT_ERROR if an error occurs.
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

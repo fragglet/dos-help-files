@@ -1,0 +1,85 @@
+<html>
+
+<head>
+<title>DosBufReset (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosBufReset (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='files.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#file systems 1.2'>Overview</a><span class='grhilite'>►</span>           </i>               <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosCallback.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSFILEMGR
+ 
+USHORT DosBufReset(hf)
+HFILE hf;    /* file handle */
+ 
+The DosBufReset function flushes the file buffers for the specified file by
+writing the current contents of the file buffer to the corresponding device.
+If the file is a disk file, the function writes to the disk and updates the
+directory information for the file.
+ 
+Although DosBufReset flushes and updates information as if the file were
+closed, the file remains open.
+ 
+The DosBufReset function is a family API function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hf</i>         Identifies the file whose buffers are flushed. This handle must
+           have been created by using the DosOpen function. If this
+           parameter is set to 0xFFFF, the function flushes buffers for all
+           currently open files.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_ACCESS_DENIED
+     ERROR_FILE_NOT_FOUND
+     ERROR_INVALID_HANDLE
+ 
+<b>Comments</b>
+ 
+If the process has several open files on removable disks, the function may
+have the effect of requiring the user to repeatedly swap disks.
+ 
+For named pipes, DosBufReset blocks the caller until all data written by the
+caller has been successfully read by the other end of the pipe. This allows
+communicating processes to synchronize their access to the pipe.
+ 
+<b>Example</b>
+ 
+This example opens the file abc and writes the contents of the abBuf buffer
+to the file. It then writes the data to the disk by calling the DosBufReset
+function to flush the buffers.
+ 
+BYTE abBuf[512];
+HFILE hf;
+USHORT usAction, cbBytesWritten, usError;
+usError = DosOpen("abc", &amp;hf, &amp;usAction, 0L, FILE_NORMAL,
+    FILE_CREATE | FILE_OPEN,
+    OPEN_ACCESS_WRITEONLY | OPEN_SHARE_DENYWRITE, 0L);
+if (!usError) {
+    DosWrite(hf, abBuf, sizeof(abBuf), &amp;cbBytesWritten);
+    DosBufReset(hf);    /* flush buffers */
+ 
+<b>See Also</b>
+ 
+<b>DosClose, DosOpen, DosWrite</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

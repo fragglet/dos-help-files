@@ -1,0 +1,121 @@
+<html>
+
+<head>
+<title>DosMuxSemWait (1.2) - dos12.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+dos12.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DosMuxSemWait (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='semaphores.html'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Interprocess Communication 1.2'>Overview</a><span class='grhilite'>►</span>                  </i>        <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DosNewSize.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define INCL_DOSSEMAPHORES
+ 
+USHORT DosMuxSemWait(pisemCleared, pmsxl, lTimeOut)
+PUSHORT pisemCleared;   /* pointer to variable for cleared semaphore      */
+PVOID pmsxl;            /* pointer to structure containing semaphore list */
+LONG lTimeOut;          /* time-out value                                 */
+ 
+The DosMuxSemWait function waits for one or more of the specified semaphores
+to clear. The function first checks the semaphores specified in the list
+pointed to by the pmsxl parameter. If any of the semaphores in this list are
+clear, the function returns. Otherwise, the function waits until the time
+specified by the lTimeOut parameter elapses or until one of the semaphores
+in the list clears.
+ 
+The semaphore list can contain up to 16 semaphores.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>pisemCleared</i>  Points to the variable that receives the index number of the
+              most recently cleared semaphore.
+ 
+<i>pmsxl         P</i>oints to the MUXSEMLIST structure containing a semaphore list
+              that defines the semaphores to be cleared. The semaphore list
+              consists of one or more semaphore handles.
+ 
+<i>lTimeOut</i>      Specifies how long to wait for the semaphores to become
+              available. If the value is greater then zero, this parameter
+              specifies the number of milliseconds to wait before returning.
+              If it is SEM_IMMEDIATE_RETURN, the function returns
+              immediately. If it is SEM_INDEFINITE_WAIT, the function waits
+              indefinitely.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. Otherwise, it is an
+error value, which may be one of the following:
+ 
+     ERROR_EXCL_SEM_ALREADY_OWNED
+     ERROR_INTERRUPT
+     ERROR_INVALID_EVENT_COUNT
+     ERROR_INVALID_LIST_FORMAT
+     ERROR_SEM_TIMEOUT
+     ERROR_TOO_MANY_MUXWAITERS
+ 
+<b>Comments</b>
+ 
+Although it is declared with the PVOID type, the second parameter of the
+<b>DosMuxSemWait function must point to a </b>MUXSEMLIST structure. You can create
+the structure by using the DEFINEMUXSEMLIST macro.
+ 
+Unlike the other blocking semaphore functions (DosSemRequest, DosSemSetWait
+and DosSemWait), DosMuxSemWait returns whenever one of the semaphores on its
+list is cleared, regardless of how long that semaphore may remain cleared.
+It is possible that the semaphore could be reset before the DosMuxSemWait
+function returns.
+ 
+The DosMuxSemWait function does not set or claim any of the semaphores.
+ 
+The DosMuxSemWait function can be used in conjunction with one or more
+semaphores as a triggering or synchronizing device. One or more threads can
+use DosMuxSemWait to wait for a semaphore. When an event occurs, another
+thread can clear that semaphore and immediately set it again. Any threads
+that waited for that semaphore by using DosMuxSemWait will return. Threads
+that were waiting by using one of the "level-triggered" functions
+(DosSemRequest, DosSemSetWait, or DosSemWait) may or may not resume,
+depending on the scheduler's dispatch order and the activity of other
+threads in the system.
+ 
+<b>Example</b>
+ 
+This example creates a structure of system semaphore handles for use by the
+<b>DosMuxSemWait</b> function. It sets the first element of the structure to the
+number of handles stored and creates two semaphore handles. It then calls
+<b>DosMuxSemWait</b> to wait until one of the semaphores is cleared. It uses the
+value of the usSemIndex parameter to find out which semaphore is cleared,
+and if it is semaphore 1, the example sets that semaphore.
+ 
+DEFINEMUXSEMLIST(MuxList, 2)         /* creates structure array */
+USHORT usSemIndex;
+MuxList.cmxs = 2;
+DosCreateSem(CSEM_PUBLIC, &amp;MuxList.amxs[0].hsem,
+    "\\sem\\timer0.sem");
+DosCreateSem(CSEM_PUBLIC, &amp;MuxList.amxs[1].hsem,
+    "\\sem\\timer1.sem");
+    .
+    .
+    .
+DosMuxSemWait(&amp;usSemIndex, &amp;MuxList, 5000L);
+if (usSemIndex == 1) {
+    DosSemSet(MuxList.amxs[1].hsem);
+ 
+<b>See Also</b>
+ 
+<b>DosCreateSem, DosSemRequest, DosSemSet, DosSemSetWait, DosSemWait,</b>
+<b>WinMsgMuxSemWait, DEFINEMUXSEMLIST, MUXSEMLIST</b>
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

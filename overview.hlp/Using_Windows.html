@@ -1,0 +1,388 @@
+<html>
+
+<head>
+<title>Using Windows (1.2) - overview.hlp</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://duckduckgo.com/" method="GET">
+<input name="q" id="search-box" placeholder="Search">
+<input type="hidden" name="sites" value="fragglet.github.io">
+</form>
+overview.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Using Windows (1.2)</div>
+<pre><i><span class='grhilite'>◄</span><a href='Windows.html'>About Section</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#Window functions 1.2'>Function Group</a><span class='grhilite'>►</span>  <span class='grhilite'>◄</span><a href='unknown#control window messages 1.2'>Message Group</a><span class='grhilite'>►</span>    <span class='grhilite'>◄</span><a href='Window_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='areas.html'></i>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+                               Using Windows
+ 
+The following sections explain how to create and use windows in an
+application, how to manage ownership and parent-child window relationships,
+and how to move and size windows.
+ 
+<b>Creating a Window</b>
+ 
+You create windows by using the WinCreateWindow function.
+ 
+For all windows, the parent-child relationship is set when you create the
+window using the WinCreateWindow function or other window-creation function.
+You can set the ownership for a window at any time. (Note that a window does
+not need an owner window unless you want to establish a relationship other
+than the standard parent-child relationship for the window.)
+ 
+You can specify the initial size and position for a window when you create
+it. You can change these settings at any time.
+ 
+<b>Creating a Frame Window</b>
+ 
+Although WinCreateWindow can be used to create all windows, most
+applications do not call this function. Instead, they use the
+<b>WinCreateStdWindow function to create frame windows an</b>d the WinDlgBox or
+<b>WinCreateDlg</b> function to create dialog windows.
+ 
+<b>Destroying a Window</b>
+ 
+You can destroy a window by using the WinDestroyWindow function. The
+following code fragment shows how to create and then destroy an entry-field
+control:
+ 
+HWND hwndMain;   /* application's main window */
+HWND hwnd;
+ 
+hwnd = WinCreateWindow(...);
+ 
+/* Read from the control. */
+ 
+WinDestroyWindow(hwnd);
+ 
+<b>Setting and Querying Window Data</b>
+ 
+You can examine the data associated with a window by using the
+<b>WinQueryWindowUShort and WinQueryWindowULong functions.</b>
+ 
+Each of these functions specifies a field to examine. The index value can be
+an integer representing a zero-based index or a constant (QW_) that
+specifies a specific field.
+ 
+<b>Creating a Top-Level Window</b>
+ 
+You can create a top-level window by setting the desktop window as the
+window's parent window. Almost all main windows for applications are
+top-level windows; the desktop window is frequently given in calls to the
+<b>WinCreateStdWindow</b> function.
+ 
+The following code fragment creates a top-level window for an application:
+ 
+/* Set the creation flags. */
+ 
+ULONG flCreationFlags =
+    FCF_TITLEBAR |     /* title bar                     */
+    FCF_SIZEBORDER |   /* size border                   */
+    FCF_MINMAX |       /* minimize and maximize buttons */
+    FCF_MENU |         /* menu                          */
+    FCF_SYSMENU |      /* System menu                   */
+    FCF_HORZSCROLL |   /* horizontal scroll bar         */
+    FCF_VERTSCROLL; |  /* vertical scroll bar           */
+ 
+/*
+ * Create a frame window with a client window that belongs to the
+ * window class "MyPrivateClass"
+ */
+ 
+hwndFrame = WinCreateStdWindow(
+    HWND_DESKTOP,      /* parent is desktop window   */
+    0L,                /* no styles for frame window */
+    &amp;flCreationFlags,  /* frame controls             */
+    "MyPrivateClass",  /* window class for client    */
+    "Sample Window",   /* window title               */
+    0L,                /* no styles for client       */
+    NULL,              /* use application's module   */
+    1,                 /* resource id                */
+    &amp;hwndClient);      /* client handle              */
+ 
+<b>Creating an Object Window</b>
+ 
+You can create an object window by using the WinCreateWindow function and
+setting the desktop-object window as the parent window.
+ 
+The following code fragment creates an object window:
+ 
+hwndObject = WinCreateWindow(
+    HWND_OBJECT,       /* parent is object window       */
+    "MyPrivateClass",  /* window class for client       */
+    "Sample Window",   /* window title                  */
+    0L,                /* no styles for object window   */
+    0, 0,              /* lower-left corner             */
+    0, 0,              /* width and height              */
+    NULL,              /* no owner                      */
+    HWND_TOP,          /* insert at top of Z order      */
+    1,                 /* window id                     */
+    NULL,              /* no class-specific data        */
+    NULL);             /* no presentation data          */
+ 
+<b>Changing the Parent Window</b>
+ 
+You can change a window's parent window by using the WinSetParent function.
+For example, an application that uses child windows to display documents may
+want only the active-document window to show a System menu. One way to do
+this is to change that menu's parent window back and forth between the
+document window and the object window when WM_ACTIVATE messages are
+received. This is shown in the following code fragment:
+ 
+case WM_ACTIVATE:
+    hwndMenu = WinWindowFromID(hwnd, FID_MENU);
+    if (SHORT1FROMMP(mp1) == TRUE)
+        WinSetParent(hwndMenu, hwnd, TRUE);
+    else
+        WinSetParent(hwndMenu, HWND_OBJECT, TRUE);
+ 
+<b>Finding a Parent, Child, or Owner Window</b>
+ 
+You can determine the parent, child, and owner windows for any window by
+using the WinQueryWindow function. The function returns the window handle of
+the requested window. It can also lock that window. If a window is locked,
+it must be unlocked by using the WinLockWindow function.
+ 
+The following code fragment determines the parent window of the given window
+(it does not lock the parent window):
+ 
+HWND hwndParent;
+ 
+hwndParent = WinQueryWindow(hwnd, QW_PARENT, FALSE);
+ 
+The following code fragment determines the topmost child window and locks
+it. This child window is the immediate child window in the top Z-order
+position:
+ 
+HWND hwndChild;
+ 
+if (hwndChild = WinQueryWindow(hwnd, QW_TOP, TRUE)) {
+ 
+    /* Lock the child window. */
+ 
+    WinLockWindow(hwndChild, FALSE);
+}
+ 
+If a given window does not have an owner or child window, the function
+returns NULL.
+ 
+<b>Setting an Owner Window</b>
+ 
+You can set the owner for a window by using the WinSetOwner function. After
+setting the owner, a window typically notifies the owner window of the new
+relationship by sending a message.
+ 
+The following code fragment shows how to set the owner window and send it a
+message:
+ 
+#define NEW_OWNER   1
+HWND hwnd;                           /* window to get new owner    */
+HWND hwndOwner;                      /* window to become new owner */
+ 
+if (WinSetOwner(hwnd, hwndOwner)) {
+ 
+    /* Send a notification message. */
+ 
+    WinSendMsg(hwndOwner,       /* send to owner                    */
+        WM_CONTROL,             /* control message for notification */
+        MAKELONG(NEW_OWNER, 1), /* notification code and id         */
+        NULL);                  /* no extra data                    */
+}
+ 
+A window can have only one owner, so WinSetOwner removes any previous
+owner.
+ 
+<b>Finding a Child or Owned Window</b>
+ 
+A parent or owner window can retrieve the handle of a child or owned window
+by using the WinWindowFromID function and supplying the identifier of the
+child or owned window. WinWindowFromID searches all child and owned windows
+to locate the window having the given identifier. The window identifier is
+set when the application creates the child or owned window.
+ 
+An owner window typically uses the WinWindowFromID function to respond to a
+notification message from an owned window.
+ 
+The following code fragment retrieves the window handle of the owned window
+having the window identifier 1:
+ 
+hwndOwned = WinWindowFromID(hwndOwner, 1);
+WinSendMsg(hwndOwned, WM_ENABLE, MPFROM2SHORT(0, TRUE), NULL);
+ 
+You can also retrieve the handle of a child window by using the
+<b>WinWindowFromPoint</b> function and supplying a point in the corresponding
+parent window.
+ 
+<b>Enumerating Top-Level Windows</b>
+ 
+You can enumerate all top-level windows by using the WinBeginEnumWindows and
+<b>WinGetNextWindow</b> functions. An application can create a list of all child
+windows for a given parent window by using the WinBeginEnumWindows function.
+This list contains the window handles of immediate child windows. An
+application can retrieve, one at a time, the window handles from the list
+using the WinGetNextWindow function. When the application has finished using
+the list, it must release it by using the WinEndEnumWindows function.
+ 
+The following code fragment shows how to enumerate all top-level windows
+(all immediate child windows of the desktop window):
+ 
+/* Enumerate all top-level windows. */
+ 
+henum = WinBeginEnumWindows(HWND_DESKTOP);
+ 
+/*
+ * Loop through all enumerated windows, performing the desired task
+ * on each one.
+ */
+ 
+while (hwnd = WinGetNextWindow(henum)) {
+    .
+    . /* Lock the window. */
+    .
+    WinLockWindow(hwnd, FALSE); /* Unlock window when done. */
+}
+ 
+/* Return memory required for enumeration back to the system. */
+ 
+WinEndEnumWindows(henum);
+ 
+<b>Moving and Sizing a Window</b>
+ 
+You can move a window by using the WinSetWindowPos function and specifying
+the SWP_MOVE constant. The function changes the position of the window to
+the specified position. The position is always given as coordinates relative
+to the parent window.
+ 
+The following code fragment moves the window to the position (10,10):
+ 
+WinSetWindowPos(
+    hwnd,       /* window handle                  */
+    NULL,       /* not used for moving and sizing */
+    10, 10      /* new position                   */
+    0, 0,       /* not used for moving            */
+    SWP_MOVE);  /* move and size                  */
+ 
+You can set the size of a window by using the WinSetWindowPos function and
+specifying the SWP_SIZE constant. The function changes the width and height
+of the window to the specified width and height.
+ 
+You can combine moving and sizing in a single function call, as shown in the
+following code fragment:
+ 
+WinSetWindowPos(
+    hwnd,                 /* window handle                  */
+    NULL,                 /* not used for moving and sizing */
+    10, 10                /* new position                   */
+    200, 200,             /* width and height               */
+    SWP_MOVE | SWP_SIZE); /* move and size                  */
+ 
+You can retrieve the current size and position of a window by using the
+<b>WinQueryWindowPos</b> function. This function copies the current information to
+an SWP structure.
+ 
+The following code fragment uses the current size and position to change the
+height of the window, but leaves the width and position unchanged:
+ 
+SWP swpCurrent;
+ 
+WinQueryWindowPos(hwnd, &amp;swpCurrent);
+WinSetWindowPos(
+    hwnd,                 /* window handle                  */
+    NULL,                 /* not used for moving and sizing */
+    0, 0,                 /* not used for sizing            */
+    swpCurrent.cx,        /* current width                  */
+    swpCurrent.cy + 200,  /* new height                     */
+    SWP_SIZE);            /* change the size                */
+ 
+You can also move and change the size of several windows at once by using
+the WinSetMultWindowPos function. This function takes an array of SWP
+structures. Each structure specifies the window to be moved or changed.
+ 
+<b>Moving a Window in a Stack of Windows</b>
+ 
+You can move a window to the top or bottom of the Z order by passing the
+SWP_ZORDER constant to the WinSetWindowPos function. You specify where to
+move the window by specifying the HWND_TOP or HWND_BOTTOM constant.
+ 
+The following code fragment uses WinSetWindowPos to reorder a stack of child
+windows:
+ 
+HENUM henum;
+HWND hwndParent;
+HWND hwndNext;
+ 
+henum = WinBeginEnumWindows(hwndParent);
+ 
+while (hwndNext = WinGetNextWindow(henum)) {
+    WinSetWindowPos(
+        hwndNext,      /* next window to move  */
+        HWND_TOP,      /* put window on top    */
+        0, 0, 0, 0,    /* not used for Z order */
+        SWP_ZORDER);   /* change Z order       */
+ 
+    WinLockWindow(hwndNext, FALSE);    /* unlock window */
+    .
+    . /* Wait a little before doing the next window. */
+    .
+}
+ 
+WinEndEnumWindows(henum);
+ 
+You can also specify the window you want the given window to move behind. In
+this case, you specify the window handle instead of the HWND_TOP or
+HWND_BOTTOM constant.
+ 
+If you enumerate windows as shown in the previous code fragment, the
+following code fragment will reverse the order of every other pair of
+windows:
+ 
+hwndExchange = WinGetNextWindow(henum);
+ 
+/* hwndNext has top window, hwndExchange has window under the top */
+ 
+WinSetWindowPos(
+    hwndNext,      /* next window to move     */
+    hwndExchange,  /* put lower window on top */
+    0, 0, 0, 0,    /* not used for Z order    */
+    SWP_ZORDER);   /* change Z order          */
+ 
+<b>Showing and Hiding a Window</b>
+ 
+Moving and sizing a window still applies if a window is not visible. The
+effects of moving and sizing cannot be seen until the window is visible. You
+can show and hide a window by using the WinShowWindow function. This
+function changes the WS_VISIBLE style for a window to the specified setting.
+You can also use the WinIsWindowVisible function to check the visibility of
+a window. The function returns TRUE if the window is visible.
+ 
+<b>Maximizing, Minimizing, and Restoring a Window</b>
+ 
+You can maximize, minimize, or restore a frame window by using the
+<b>WinSetWindowPos</b> function and specifying the constant SWP_MAXIMIZE,
+SWP_MINIMIZE, or SWP_RESTORE. Only a frame window can maximize and minimize
+by default. For any other window, you must provide support for these actions
+in the corresponding window procedure.
+ 
+The following code fragment shows how to maximize a frame window:
+ 
+SWP swpCurrent;
+ 
+WinQueryWindowPos(hwnd, &amp;swpCurrent);
+WinSetWindowPos(
+    hwnd,                /* window handle               */
+    NULL,                /* not used to maximize        */
+    swpCurrent.x,
+    swpCurrent.y,        /* stored for restoring window */
+    swpCurrent.cx,
+    swpCurrent.cy,       /* stored for restoring window */
+    SWP_MAXIMIZE | SWP_SIZE | SWP_MOVE);    /* maximize */
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>
