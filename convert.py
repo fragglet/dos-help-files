@@ -44,9 +44,9 @@ HTML_TEMPLATE="""<html>
 
 <body>
 <div class="page-heading">
-<form action="https://duckduckgo.com/" method="GET">
-<input name="q" id="search-box" placeholder="Search">
-<input type="hidden" name="sites" value="fragglet.github.io">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
 </form>
 %(heading)s</div>
 <div class="page-title"> %(title)s</div>
