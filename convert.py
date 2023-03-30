@@ -197,7 +197,7 @@ class Topic(object):
 				if target_topic is not None:
 					dest = target_topic.filename()
 				else:
-					dest = "unknown#" + dest
+					dest = "../unknown.html#" + dest
 			else:
 				filename, context = dest.split("!", 1)
 				dest = "../%s/%s" % (
