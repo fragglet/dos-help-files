@@ -1,0 +1,109 @@
+<html>
+
+<head>
+<title>Miscellaneous Enhancements - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Miscellaneous Enhancements</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='tt.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+This sections describes the following display driver enhancements:
+ 
+♦  Transparent Block Transfers
+ 
+♦  Large Icons &amp; Cursors
+ 
+♦  Default System Colors
+ 
+♦  Grabber Extensions
+ 
+♦  Palette Management
+ 
+<b>Transparent Block Transfers</b>
+ 
+In Windows 3.1, display drivers can indicate that they support transparent
+block transfers by setting the C1_TRANSPARENT bit in the dpCaps1 member of
+the GDIINFO structure. In a transparent block transfer, a driver excludes
+source and brush pixels from a BitBlt or StretchBlt operation if those
+pixels have the same color as the current background color for the
+destination device.
+ 
+If a display driver supports transparent block transfers, the BitBlt
+function must check the bkMode member of the lpDrawMode parameter as well as
+the Rop3 parameter to determine how to carry out the transfer. If the
+<b>bkMode member spec</b>ifies the background mode TRANSPARENT1, BitBlt must not
+transfer source and brush bits that have the same color as the destination's
+background color (as specified by the bkColor member of lpDrawMode). In
+other words, the corresponding destination bits must be left unchanged.
+Other background modes do not affect the transfer.
+ 
+<b>Large Icons &amp; Cursors</b>
+ 
+In Windows 3.1, display drivers can use icons larger than 64-by-64 bits and
+cursors larger than 32-by-32 bits. Large icons and cursors can improve
+screen readability for high-resolution graphics adapters.
+ 
+Display drivers specify icon and cursor size in the IconXRatio, IconYRatio,
+<b>CurXRatio, and CurYRatio me</b>mbers of the CONFIG.BIN resource (that is, the
+resource having identifier 1 and type OEMBIN). In Windows 3.1, these members
+specify either a width and height in pixels or a compression ratio. In
+Windows 3.0, these members only specify compression ratios. For a complete
+description of the members, see the <span class='grhilite'>◄</span><a href='CONFIG_dot_BIN.html'>CONFIG.BIN</a><span class='grhilite'>►</span> resource.
+ 
+In all cases, each icon or cursor must have the same width and height in
+pixels.
+ 
+Display drivers which specify actual widths and heights in the OEMBIN
+resource can not be used with Windows 3.0. Drivers which specify compression
+factors work with both Windows 3.0 and 3.1. However, drivers cannot
+simultaneously specify compression factors and icons/cursors larger than
+32-by-32.
+ 
+<b>Default System Colors</b>
+ 
+The CONFIG.BIN resource specifies the default system colors (as well as
+several other OEM-specific values). For Windows 3.1, the recommended default
+system color values for 16- and 256-color displays are new. In particular,
+several system colors that were patterned (dithered) in Windows 3.0 have
+been changed to solids to improve performance and visibility on interlaced
+displays.
+ 
+In Windows 3.1, the CONFIG.BIN resource has been expanded to include the
+<b>clrInactiveCaptionText</b> member. This member specifies the color of the text
+in the title bar of an inactive window.
+ 
+For a complete description of the default system colors and the
+<b>clrInactiveCaptionText member, see the <span class='grhilite'>◄</span><a href='CONFIG_dot_BIN.html'>CONFIG.BIN</a><span class='grhilite'>►</span> resource.</b>
+ 
+<b>Grabber Extensions</b>
+ 
+Windows 3.1 grabber file extensions have been changed to .2GR for
+standard-mode grabbers, and .3GR for enhanced-mode grabbers. This change was
+necessitated by a new file compression and naming scheme used for the
+Windows 3.1 installation diskettes. This change should not affect the
+operation or installation of existing display drivers with Windows 3.1.
+ 
+<b>Palette Management</b>
+ 
+Graphics drivers that support color palettes must make sure that the index
+for the palette entry that corresponds to black must be the one's complement
+of the index for the palette entry for white. Black and white must be
+"static" palette entries meaning the driver sets the indexes for these
+colors during initialization and does not change the indexes.
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

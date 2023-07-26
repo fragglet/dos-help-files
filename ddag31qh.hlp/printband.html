@@ -1,0 +1,156 @@
+<html>
+
+<head>
+<title>Banding Drivers - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Banding Drivers</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printer_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='printesc.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+How the output functions are implemented depends on whether or not the
+device uses banding. Banding devices have their output stored in a metafile.
+This metafile is replayed for every band that is rendered (either by GDI or
+applications that wish to implement banding). Therefore, output coordinates
+must be mapped into the current band, and output outside of the band must be
+clipped.
+ 
+Nonbanding devices perform output to the device in one pass. Therefore, the
+device must have access to the entire display surface. Drivers must be able
+to perform all the output functions to both the display surface and to
+memory bitmaps. This restriction would make it very difficult for devices
+that supported complex drawing primitives if it were not for the help that
+GDI and the display driver supply.
+ 
+In the GDIINFO structure, banding color drivers should use the same
+bits-per-pixel and planes values used for band bitmaps.
+ 
+Devices choose numbers that match how they output color. Color printers that
+use the color dot-matrix libraries specify the same values as the bitmap
+format. The color library in this DDK uses one bit-per-pixel in three
+planes. The driver developer must modify the library to use another format.
+ 
+<b>Raster vs. Vector Devices</b>
+ 
+Many printers (such as dot-matrix and most laser printers) are raster
+printers, that is, they print out text and graphics as bitmaps or raster
+lines. Other devices (such as plotters and PostScript-based printers) are
+vector devices, which draw text and graphics as a sequence of vectors or
+lines. (Although PostScript printers are based on raster engines, the
+language itself is vector oriented except where bitmaps are concerned.)
+ 
+Raster devices usually have constraints that cause problems for implementing
+the full GDI device model. Raster devices, for example, do not implement any
+vector graphics operations. Therefore, all vector graphics must be drawn as
+a bitmap before printing. Some devices, such as dot-matrix printers, do not
+allow the driver to print anywhere on the page. They require that text and
+graphics be output in the order of the print direction position on the
+page.
+ 
+These bitmaps can be enormous for a device such as a 300 dpi laser printer.
+In such cases, the driver breaks up the page into smaller rectangles that
+are printed individually. For each of the rectangles, GDI or the application
+will draw all the graphics that fit in each rectangle into a bitmap and then
+print each individual bitmap.
+ 
+These rectangles are called bands, and the printing process that uses these
+bands is called banding. It is usually necessary to band raster printers;
+however, banding is not necessary for vector devices.
+ 
+For vector devices (that is, nonbanding devices), the application calls GDI
+graphics functions, which are translated into device-driver graphics
+primitives. After each page is printed, the application uses the NEWFRAME
+escape to eject the page.
+ 
+An application can either treat the driver as if it were a nonbanding device
+by calling the GDI functions and ending each page with the NEWFRAME escape,
+in which case GDI performs the banding, or it can handle the banding
+itself.
+ 
+<b>The NEXTBAND Escape</b>
+ 
+Before any graphics are drawn, the driver is called upon to perform the
+NEXTBAND escape. When the Control function is called for the NEXTBAND
+escape, lpInData points to a POINT structure, and lpOutData points to a
+<b>RECT</b> structure.
+ 
+The driver should initialize its band bitmap and set the RECT structure to
+the size, in device coordinates, of the rectangle that the band represents
+on the page.
+ 
+GDI adds the POINT structure to determine the scaling factor for graphics
+output. Some devices support the use of graphics at a lower resolution than
+text to allow for faster output. The x-coordinate of the POINT corresponds
+to horizontal scaling and the y-coordinate to vertical scaling.
+ 
+The value in the structure corresponds to a shift count. A point of (0,0)
+specifies graphics at the same density as text, whereas a point of (1,1)
+specifies half-density graphics in both directions, for example, a 300 dpi
+laser printer printing bitmaps at 150 dpi.
+ 
+GDI then calls the driver's Output function to draw text or graphics in the
+band bitmap. When all drawing for the band is finished, GDI calls the driver
+with another NEXTBAND escape. The driver draws the band in the band bitmap,
+reinitializes the bitmap, sets a new rectangle, and continues with the next
+band as it did with the first.
+ 
+When all the bands on the page are exhausted, and the driver receives a
+NEXTBAND escape, it should output the last graphics band and then set the
+rectangle pointed to by the lpOutData parameter to an empty rectangle to
+indicate that there are no more bands on the page. It should also perform
+all the processing necessary to eject the completed page. The next NEXTBAND
+escape will correspond to the first band of the next page.
+ 
+If the application performs banding, it will call the Escape function to get
+the band rectangles. If GDI is handling banding for an application, then GDI
+collects all the graphics functions on a page into a metafile, that is, a
+temporary file containing a list of the graphics functions and their
+parameters. When the application calls Escape to carry out the NEWFRAME
+escape, GDI turns this escape into a sequence of NEXTBAND calls to the
+<b>Control</b> function. GDI sets the clip region for the actual printer device
+context to the band rectangle and then plays back the metafile, which
+recreates all of the application's output in the band bitmap. GDI does this
+for each band until the band rectangle returned by the driver is empty.
+ 
+Some devices, such as raster laser printers, allow text to be placed
+anywhere on the page at any time. Furthermore, these printers do not place
+text into the band bitmap, since all the device fonts exist in printer or
+cartridge memory. To optimize text output, their drivers use a single,
+full-page band for all the text output and a sequence of smaller bands for
+bitmapped graphics.
+ 
+As an optimization, some of these drivers maintain a flag to detect whether
+or not any output, other than text, is attempted during the first, full-page
+band. If not, the driver skips the graphics bands.
+ 
+<b>The BANDINFO Escape</b>
+ 
+Some devices, such as laser printers, can print text and graphics anywhere
+on the page but still require banding support for vector graphics
+operations. Since these devices usually use their own internal device fonts,
+they can greatly improve their text printing performance by using a single,
+full-page band for text only as the first band. The driver ignores graphics
+calls during this band and handles only the ExtTextOut or StrBlt functions.
+Graphics are printed on subsequent, smaller bands.
+ 
+An application that is aware of this process can speed up its printing
+operation by determining whether text or graphics will be printed on the
+current band. It may do so using the BANDINFO escape. The application can
+also use BANDINFO to optimize the banding process.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

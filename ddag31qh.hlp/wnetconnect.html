@@ -1,0 +1,102 @@
+<html>
+
+<head>
+<title>Connection Functions - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Connection Functions</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Network_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='wnetprint.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+The network driver can provide a variety of connection functions to let File
+Manager and Print Manager connect to remote drives and devices.
+ 
+<b>Function               Description</b>
+────────────────────────────────────────────────────────────────────────────
+<b>WNetAddConnection</b>      Creates a connection to a network drive or device.
+ 
+<b>WNetCancelConnection</b>   Removes a connection to a network drive or device.
+ 
+<b>WNetGetConnections</b>     Retrieves a list of current connections.
+ 
+<b>WNetRestoreConnection</b>  Reconnects one or more permanently connected network
+                       drives.
+ 
+<b>Saved Network Connections</b>
+ 
+Saved network connections are connections which are always automatically
+connected when Windows starts. If the connection cannot be made, the drive
+is still treated as connected, as if it were in the error state. File
+Manager reconnects the drive if the user selects it. When the user connects
+to a drive or printer, that connection is remembered as a permanent
+connection. When the user disconnects a device through the disconnect dialog
+box, it is removed from the list of permanently connected devices.
+ 
+Although error state and permanent devices can be reconnected from File
+Manager, the drives may not (generally will not) be valid for other Windows
+applications. If Windows is unable to restore a permanent connection when
+starting, a dialog box will warn the user of this event.
+ 
+Network drivers which implement these functions will return a specification
+version of 3.1 (0x030A) from when the WNNC_SPEC_VERSION value is specified
+with the WNetGetCaps function.
+ 
+Drivers written for the Windows 3.0 level of functionality will be supplied
+with reasonable defaults for all 3.1 features. If a network does not require
+special support for any of the features the network driver may be written to
+the 3.0 specification.
+ 
+<b>Default Shell Behavior</b>
+ 
+If a network driver does not support the 3.1 functions (for example, it is a
+Windows 3.0 network driver), Windows and File Manager simulate a new method
+of supporting permanent connections.
+ 
+If the user makes a permanent connection, the device will be added to the
+[Network] section in the WIN.INI file. The keyword will be the local device
+and the value will be the network resource. For security, passwords will not
+be saved. The following example illustrates the new section:
+ 
+[Network]
+S:=\\USER2\SHELL
+T:=\\TOOLSVR\DOSENV
+U:=\\PYREX\USER
+LPT1=\\WINDEV\PRINTER
+ 
+When a device is disconnected, it is removed from the list of permanent
+devices. File Manager simulates the behavior of WNetGetConnection returning
+a connection with a special status when it is listed in the WIN.INI file,
+but is not connected. The default connection dialogs allows the user to
+reconnect a disconnected device which has a saved connection. The dialogs
+also support disconnecting and reconnecting a device in an error state.
+ 
+When Windows starts, it enumerates devices saved in the [Network] section
+and attempts to redirect them using WNetAddConnection. If a device is
+already redirected, the redirection will not be overridden. If
+<b>WNetAddConnection</b> returns the WN_BAD_PASSWORD value, the user will be
+prompted to supply the password.
+ 
+Network drivers which require their own connection dialog boxes or startup
+restore function should attempt to duplicate the functionality of the
+default behavior as closely as possible in order to provide consistency. To
+maintain this consistency, network drivers should use the [Network] section.
+The keywords A: through Z: and all common MS-DOS device names (LPT1, COM1,
+PRN, and so on) are reserved, including those not currently supported for
+redirection. The network driver may define additional keywords of its own.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

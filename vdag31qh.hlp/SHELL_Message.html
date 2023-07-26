@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>SHELL_Message - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> SHELL_Message</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_Shell_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='SHELL_Resolve_Contention.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include shell.inc
+ 
+VxDcall SHELL_Message
+ 
+The SHELL_Message service displays a message box using the Windows shell.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>EBX</i>        Specifies the handle of the virtual machine responsible for the
+           message.
+ 
+<i>EAX</i>        Specifies the message box flags. See the MB_ symbols in the
+           SHELL.INC file.
+ 
+<i>ECX</i>        Points to null-terminated string containing the message text.
+ 
+<i>EDI</i>        Points to null-terminated string containing the caption text. If
+           this prarameter is zero, the service uses the standard caption.
+           If this parameter points to an empty string, the message box has
+           no caption.
+ 
+<i>ESI</i>        Points to the callback procedure to call with response when the
+           message box returns. If this parameter is zero, no callback
+           procedure is called.
+ 
+<i>EDX</i>        Specifies reference data to pas to the callback procedure.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear and the EAX register contains the handle for the
+event if the service is successful.
+ 
+Otherwise, the carry flag is set to indicate an error such as insufficient
+memory to display the message.
+ 
+<b>Comments</b>
+ 
+The system calls the callback procedure after the message box is complete.
+The callback receives the following input parameters:
+ 
+EAX     ; response code from the message box
+EDX     ; points to reference data
+ 
+The response code in the EAX register is one of the ID symbols defined in
+the SHELL.INC file.
+ 
+The EBX register may or may not contain the current virtual machine handle
+when the callback is called. The callback must not rely on its value.
+ 
+If this service returns an error, a virtual device can use the
+<b>SHELL_Sysmodal_Message</b> service to force the system to display a message.
+ 
+<b>Uses</b>
+ 
+EAX, Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

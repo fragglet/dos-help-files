@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<title>Get_Next_Arena - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Get_Next_Arena</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Initialization_Information_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Get_Next_Profile_String.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     ecx, 0              ; must be zero
+VMMcall Get_Next_Arena
+ 
+mov     [Data], eax         ; data value
+mov     [Flags], ecx        ; high MS-DOS memory flags
+mov     [Memory], edx       ; points to array of Common_Memory_struc
+ 
+The Get_Next_Arena service returns a pointer to an MS-DOS data structure.
+ 
+Virtual devices must not use this service; it is intended for exclusive use
+by the virtual MS-DOS manager.
+ 
+This service has no parameters.
+ 
+<b>Return Value</b>
+ 
+The EAX, ECX, and EDX registers contain the following information:
+ 
+<b>Register  Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>EAX</i>       Specifies a data value.
+ 
+<i>ECX</i>       Specifies the high MS-DOS flags. It can be a combination of the
+          following values:
+ 
+          Value            Meaning
+          ──────────────────────────────────────────────────────────────────
+          GNA_HiDOSLinked  Set if high MS-DOS arenas were linked in when
+                           Windows was started.
+ 
+          GNA_IsHighDOS    Set if high MS-DOS arenas exist.
+ 
+<i>EDX      </i> Points to an array of Common_Memory_struc structures specifying
+          the addresses and sizes of high MS-DOS memory segments. Each
+          element of the list has the following form:
+ 
+              Common_Memory_struc struc
+                CM_seg    dw  ?   ; segment address of start
+                CM_size   dw  ?   ; size in paragraphs
+              Common_Memory_struc ends
+ 
+          The last element of array contains zero.
+ 
+<b>Uses</b>
+ 
+EAX, ECX, EDX, and Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

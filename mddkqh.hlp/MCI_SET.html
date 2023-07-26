@@ -1,0 +1,368 @@
+<html>
+
+<head>
+<title>MCI_SET - Windows Multimedia DDK</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows Multimedia DDK (mddkqh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MCI_SET</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MDDK_dot_h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+<b>MCI_SET</b>
+ 
+        This MCI command message sets device information. Support of
+        this message by a device is optional. The parameters and flags
+        for this message vary according to the selected device.
+ 
+<u>Parameters</u>
+        DWORD dwFlags
+            The following flags apply to all devices supporting MCI_SET:
+ 
+            MCI_NOTIFY
+                Specifies that MCI should post the MM_MCINOTIFY message
+                when this command completes. The window to receive this
+                message is specified in the <a href='MCI_SET_PARMS.html'>dwCallback</a> field of the data
+                structure identified by lpSet.
+ 
+            MCI_WAIT
+                Specifies that the set operation should finish before
+                MCI returns control to the application.
+ 
+            MCI_SET_AUDIO
+                Specifies an audio channel number is included in the
+                <a href='MCI_SET_PARMS.html'>dwAudio</a> field of the data structure identified by lpSet.
+                This flag must be used with MCI_SET_ON or MCI_SET_OFF.
+                Use one of the following constants to indicate the
+                channel number:
+ 
+                MCI_SET_AUDIO_ALL
+                    Specifies all audio channels.
+ 
+                MCI_SET_AUDIO_LEFT
+                    Specifies the left channel.
+ 
+                MCI_SET_AUDIO_RIGHT
+                    Specifies the right channel.
+ 
+            MCI_SET_DOOR_CLOSED
+                Instructs the device to close the media cover (if any).
+ 
+            MCI_SET_DOOR_OPEN
+                Instructs the device to open the media cover (if any).
+ 
+            MCI_SET_TIME_FORMAT
+                Specifies a time format parameter is included in the
+                <a href='MCI_SET_PARMS.html'>dwTimeFormat</a> field of the data structure identified by
+                lpSet. Specifying MCI_FORMAT_MILLISECONDS indicates
+                that subsequent commands that specify time will use
+                milliseconds for both input and output. Other units are
+                device dependent.
+ 
+            MCI_SET_VIDEO
+                Sets the video signal on or off. This flag must be used
+                with either MCI_SET_ON or MCI_SET_OFF. Devices that do
+                not have video return MCIERR_UNSUPPORTED_FUNCTION.
+ 
+            MCI_SET_ON
+                Enables the specified video or audio channel.
+ 
+            MCI_SET_OFF
+                Disables the specified video or audio channel.
+ 
+        LPMCI_SET_PARMS lpSet
+            Specifies a far pointer to the MCI_SET_PARMS data structure.
+            (Devices with extended command sets might replace this data
+            structure with a device-specific data structure.)
+ 
+        Animation Extensions
+ 
+        DWORD dwFlags
+            The following additional flags apply to animation devices:
+ 
+            MCI_SET_TIME_FORMAT
+                Specifies a time format parameter is included in the
+                <a href='MCI_SET_PARMS.html'>dwTimeFormat</a> field of the data structure identified by
+                lpSet. The following constants are defined for the time
+                format:
+ 
+                MCI_FORMAT_MILLISECONDS
+                    Changes the time format to milliseconds.
+ 
+                    MCIMMP returns MCIERR_UNSUPPORTED_FUNCTION
+                    if the time format is set to MCI_FORMAT_MILLISECONDS.
+ 
+                MCI_FORMAT_FRAMES
+                    Changes the time format to frames.
+ 
+        LPMCI_SET_PARMS lpSet
+            Specifies a far pointer to the MCI_SET_PARMS data structure.
+ 
+        Audio CD Extensions
+ 
+        DWORD dwFlags
+            The following additional flags apply to videodisc devices:
+ 
+            MCI_SET_TIME_FORMAT
+                Specifies a time format parameter is included in the
+                <a href='MCI_SET_PARMS.html'>dwTimeFormat</a> field of the data structure identified by
+                lpSet. The following constants are defined for the time
+                format:
+ 
+                MCI_FORMAT_MILLISECONDS
+                    Changes the time format to milliseconds.
+ 
+                MCI_FORMAT_MSF
+                    Changes the time format to minutes, seconds, and
+                    frames.
+ 
+                MCI_FORMAT_TMSF
+                    Changes the time format to tracks, minutes, seconds,
+                    and frames. (MCI uses continuous track numbers.)
+ 
+        LPMCI_SET_PARMS lpSet
+            Specifies a far pointer to the MCI_SET_PARMS structure.
+ 
+        MIDI Sequencer Extensions
+ 
+        DWORD dwFlags
+            The following additional flags apply to MIDI sequencer
+            devices:
+ 
+            MCI_SEQ_SET_MASTER
+                Sets the sequencer as a source of synchronization data
+                and indicates that the type of synchronization is
+                specified in the <a href='MCI_SEQ_SET_PARMS.html'>dwMaster</a> field of the data structure
+                identified by lpSet.
+ 
+                MCISEQ returns MCIERR_UNSUPPORTED_FUNCTION.
+ 
+                The following constants are defined for the
+                synchronization type:
+ 
+                MCI_SEQ_MIDI
+                    The sequencer will send MIDI format synchronization
+                    data.
+ 
+                MCI_SEQ_SMPTE
+                    The sequencer will send SMPTE format synchronization
+                    data.
+ 
+                MCI_SEQ_NONE
+                    The sequencer will not send synchronization data.
+ 
+            MCI_SEQ_SET_OFFSET
+                Changes the SMPTE offset of a sequence to that specified
+                by the <a href='MCI_SEQ_SET_PARMS.html'>dwOffset</a> field of the data structure identified by
+                lpSet. This only affects sequences with a SMPTE
+                division type.
+ 
+            MCI_SEQ_SET_PORT
+                Sets the output MIDI port of a sequence to that
+                specified by the MIDI device ID in the <a href='MCI_SEQ_SET_PARMS.html'>dwPort</a> field of
+                the data structure identified by lpSet. The device will
+                close the previous port (if any), and attempt to open
+                and use the new port. If it fails, it will return an
+                error and re-open the previously used port (if any). The
+                following constants are defined for the ports:
+ 
+                MCI_SEQ_NONE
+                    Closes the previously used port (if any). The
+                    sequencer will behave exactly the same as if a port
+                    were open, except no MIDI message will be sent.
+ 
+                MIDIMAPPER
+                    Sets the port opened to the MIDI Mapper.
+ 
+            MCI_SEQ_SET_SLAVE
+                Sets the sequencer to receive synchronization data and
+                indicates that the type of synchronization is specified
+                in the <a href='MCI_SEQ_SET_PARMS.html'>dwSlave</a> field of the data structure identified by
+                lpSet.
+ 
+                The following constants are defined for the
+                synchronization type:
+ 
+                MCI_SEQ_FILE
+                    Sets the sequencer to receive synchronization data
+                    contained in the MIDI file.
+ 
+                MCI_SEQ_SMPTE
+                    Sets the sequencer to receive SMPTE synchronization
+                    data.
+ 
+                    MCISEQ returns MCIERR_UNSUPPORTED_FUNCTION.
+ 
+                MCI_SEQ_MIDI
+                    Sets the sequencer to receive MIDI synchronization
+                    data.
+ 
+                    MCISEQ returns MCIERR_UNSUPPORTED_FUNCTION.
+ 
+                MCI_SEQ_NONE
+                    Sets the sequencer to ignore synchronization data in
+                    a MIDI stream.
+ 
+            MCI_SEQ_SET_TEMPO
+                Changes the tempo of the MIDI sequence to that specified
+                by the <a href='MCI_SEQ_SET_PARMS.html'>dwTempo</a> field of the structure pointed to by
+                lpSet. For sequences with division type PPQN, tempo is
+                specified in beats per minute; for sequences with
+                division type SMPTE, tempo is specified in frames per
+                second.
+ 
+            MCI_SET_TIME_FORMAT
+                Specifies a time format parameter is included in the
+                <a href='MCI_SEQ_SET_PARMS.html'>dwTimeFormat</a> field of the data structure identified by
+                lpSet. The following constants are defined for the time
+                format:
+ 
+                MCI_FORMAT_MILLISECONDS
+                    Changes the time format to milliseconds for both
+                    input and output.
+ 
+                MCI_FORMAT_SMPTE_24
+                    Sets the time format to 24 frame SMPTE.
+ 
+                MCI_FORMAT_SMPTE_25
+                    Sets the time format to 25 frame SMPTE.
+ 
+                MCI_FORMAT_SMPTE_30
+                    Sets the time format to 30 frame SMPTE.
+ 
+                MCI_FORMAT_SMPTE_30DROP
+                    Sets the time format to 30 drop-frame SMPTE.
+ 
+                MCI_SEQ_FORMAT_SONGPTR
+                    Sets the time format to song-pointer units.
+ 
+        LPMCI_SEQ_SET_PARMS lpSet
+            Specifies a far pointer to the MCI_SEQ_SET_PARMS data
+            structure.
+ 
+        Videodisc Extensions
+ 
+        DWORD dwFlags
+            The following additional flags apply to videodisc devices:
+ 
+            MCI_SET_TIME_FORMAT
+                Specifies a time format parameter is included in the
+                <a href='MCI_SET_PARMS.html'>dwTimeFormat</a> field of the data structure identified by
+                lpSet. The following constants are defined for the time
+                format:
+ 
+                MCI_FORMAT_CHAPTERS
+                    Changes the time format to chapters.
+ 
+                MCI_FORMAT_FRAMES
+                    Changes the time format to frames.
+ 
+                MCI_FORMAT_HMS
+                    Changes the time format to hours, minutes, and
+                    seconds.
+ 
+                MCI_FORMAT_MILLISECONDS
+                    Changes the time format to milliseconds for both
+                    input and output.
+ 
+                MCI_VD_FORMAT_TRACK
+                    Changes the time format to tracks. MCI uses
+                    continuous track numbers.
+ 
+        LPMCI_SET_PARMS lpSet
+            Specifies a far pointer to the MCI_SET_PARMS structure.
+            (Devices with additional parameters might replace this data
+            structure with a device-specific data structure.)
+ 
+        Waveform Audio Extensions
+ 
+        DWORD dwFlags
+            The following additional flags apply to waveform audio
+            devices:
+ 
+            MCI_WAVE_INPUT
+                Sets the input used for recording to the <a href='MCI_WAVE_SET_PARMS.html'>wInput</a> field of
+                the data structure identified by lpSet.
+ 
+            MCI_WAVE_OUTPUT
+                Sets the output used for playing to the <a href='MCI_WAVE_SET_PARMS.html'>wOutput</a> field of
+                the data structure identified by lpSet.
+ 
+            MCI_WAVE_SET_ANYINPUT
+                Specifies that any wave input compatible with the
+                current format can be used for recording.
+ 
+            MCI_WAVE_SET_ANYOUTPUT
+                Specifies that any wave output compatible with the
+                current format can be used for playing.
+ 
+            MCI_WAVE_SET_AVGBYTESPERSEC
+                Sets the bytes per second used for playing, recording,
+                and saving to the <a href='MCI_WAVE_SET_PARMS.html'>nAvgBytesPerSec</a> field of the data
+                structure identified by lpSet.
+ 
+            MCI_WAVE_SET_BITSPERSAMPLE
+                Sets the bits per sample used for playing, recording,
+                and saving to the <a href='MCI_WAVE_SET_PARMS.html'>nBitsPerSample</a> field of the data
+                structure identified by lpSet.
+ 
+            MCI_WAVE_SET_BLOCKALIGN
+                Sets the block alignment used for playing, recording,
+                and saving to the <a href='MCI_WAVE_SET_PARMS.html'>nBlockAlign</a> field of the data structure
+                identified by lpSet.
+ 
+            MCI_WAVE_SET_CHANNELS
+                Specifies the number of channels is indicated in the
+                <a href='MCI_WAVE_SET_PARMS.html'>nChannels</a> field of the data structure identified by
+                lpSet.
+ 
+            MCI_WAVE_SET_FORMATTAG
+                Sets the format type used for playing, recording, and
+                saving to the <a href='MCI_WAVE_SET_PARMS.html'>wFormatTag</a> field of the data structure
+                identified by lpSet. Specifying WAVE_FORMAT_PCM changes
+                the format to PCM.
+ 
+            MCI_WAVE_SET_SAMPLESPERSEC
+                Sets the samples per second used for playing, recording,
+                and saving to the <a href='MCI_WAVE_SET_PARMS.html'>nSamplesPerSec</a> field of the data
+                structure identified by lpSet.
+ 
+            MCI_SET_TIME_FORMAT
+                Specifies a time format parameter is included in the
+                <a href='MCI_WAVE_SET_PARMS.html'>dwTimeFormat</a> field of the data structure identified by
+                lpSet. The following constants are defined for the time
+                format:
+ 
+                MCI_FORMAT_BYTES
+                    Changes the time format to bytes for input or
+                    output.
+ 
+                MCI_FORMAT_MILLISECONDS
+                    Changes the time format to milliseconds for input or
+                    output.
+ 
+                MCI_FORMAT_SAMPLES
+                    Changes the time format to samples for input or
+                    output.
+ 
+        LPMCI_WAVE_SET_PARMS lpSet
+            Specifies a far pointer to the MCI_WAVE_SET_PARMS data
+            structure. This parameter replaces the standard default
+            parameter data structure identified by lpDefault.
+ 
+<u>Return value</u>
+        Returns zero if successful. Otherwise, it returns an MCI error
+        code.
+ 
+                                       -♦-
+</pre>
+</body>
+
+</html>

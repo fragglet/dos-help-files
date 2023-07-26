@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>Set_Time_Slice_Priority - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Set_Time_Slice_Priority</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Time-Slice_Scheduler_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Wake_Up_VM.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, Flags          ; status flags
+mov     ebx, VM             ; VM handle
+mov     ecx, Foreground     ; foreground priority
+mov     edx, Background     ; background priority
+VMMcall Set_Time_Slice_Priority
+ 
+The Set_Time_Slice_Priority service sets the time-slice execution flags and
+the foreground and background priorities for a specified virtual machine.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Flags       Spe</i>cifies status flags for the CB_VM_Status field in the virtual
+            machine's control block. It can be one of the following values:
+ 
+            Value                 Meaning
+            ────────────────────────────────────────────────────────────────
+            VMStat_Exclusive      Exclusive execution.
+ 
+            VMStat_Background     Background execution.
+ 
+            VMStat_High_Pri_Back  High-priority background execution.
+ 
+<i>VM</i>          Specifies a handle identifying the virtual machine to change.
+ 
+<i>Foreground</i>  Specifies the foreground time-slice priority. The high word must
+            be 0.
+ 
+<i>Background</i>  Specifies the background time-slice priority. The high word must
+            be 0.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the service successfully sets the time-slice
+priority. Otherwise, the carry flag is set.
+ 
+<b>Comments</b>
+ 
+To change the time-slice priority, a virtual should retrieve the current
+time-slice priority using the Get_Time_Slice_Priority service, modify the
+returned values, and use the modified values as input parameters to this
+service.
+ 
+<b>Example</b>
+ 
+The following example assigns a virtual machine to the background:
+ 
+mov     ebx, [VM]
+VMMcall Get_Time_Slice_Priority
+or      eax, VMStat_Background
+VMMcall Set_Time_Slice_Priority
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Get_Time_Slice_Priority, Set_Time_Slice_Granularity</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

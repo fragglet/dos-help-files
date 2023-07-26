@@ -1,0 +1,160 @@
+<html>
+
+<head>
+<title>Color Palettes - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Color Palettes</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='dispdibspalette.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+Display devices that are capable of displaying 256 or more simultaneous
+colors using a palette need to provide support for color palettes. A display
+driver specifies that it has palette support by setting the RC_PALETTE value
+in the dpRaster member in the GDIINFO structure. The display driver also
+must set the dpPalColors, dpPalReserved, and dpPalResolution members.
+ 
+The number of reserved colors on the palette is always 20, with 16
+corresponding to the VGA colors and 4 special colors. Half of the reserved
+palette colors are placed at the beginning and half at the end of the
+palette.
+ 
+If a display driver supports color palettes, it must export the SetPalette,
+<b>GetPalette, SetPalTrans, and GetPalTrans functions</b>.
+ 
+<b>Hardware-Palette Initialization</b>
+ 
+A display driver should initialize the hardware palette when the driver
+initializes the rest of the display hardware. The driver initializes the
+palette for static and nonstatic colors.
+ 
+Static colors are system colors that remain in the palette at all times and
+are used for old-style RGB support. The number of static colors to be used
+is specified in the dpPalReserved member in the GDIINFO structure. This
+number must always be even. The colors are placed in the hardware palette so
+that the first half is in the lowest entries, and the second half is in the
+highest entries.
+ 
+For Windows 3.x, 20 static colors should be set as follows:
+ 
+; Lowest ten palette entries
+ 
+db      0,   0,   0,   0        ; 0
+db      080h,0,   0,   0        ; 1
+db      0,   080h,0,   0        ; 2
+db      080h,080h,0,   0        ; 3
+db      0,   0,   080h,0        ; 4
+db      080h,0,   080h,0        ; 5
+db      0,   080h,080h,0        ; 6
+db      0C0h,0C0h,0C0h,0        ; 7
+db      192, 220, 192, 0        ; 8
+db      166, 202, 240, 0        ; 9
+ 
+; Highest ten palette entries
+ 
+db      255, 251, 240, 0        ; 10
+db      160, 160, 164, 0        ; 11
+db      080h,080h,080h,0        ; 12
+db      0FFh,0,   0,   0        ; 13
+db      0,   0FFh,0,   0        ; 14
+db      0FFh,0FFh,0,   0        ; 15
+db      0,   0,   0FFh,0        ; 16
+db      0FFh,0,   0FFh,0        ; 17
+db      0,   0FFh,0FFh,0        ; 18
+db      0FFh,0FFh,0FFh,0        ; 19
+ 
+These colors consist of the 16 standard VGA colors and four other special
+colors used by Windows.
+ 
+The nonstatic colors included in the hardware palette need not be
+initialized. GDI manages these and initializes them when needed.
+ 
+The RGBs for an 8bpp system palette should exactly match those reported to
+GDI by the 8514/a driver. Using these RGBs ensures that colors will be
+preserved when an image created with solid colors is viewed on a 4bpp
+display.
+ 
+An 8bpp display driver should not necessarily program the DAC with the exact
+RGBs as in the GDI system palette. Instead, DAC values should be used that
+result in on-screen system colors reasonably close to those shown by the
+Windows 8514/a display driver. This accounts for differences in color
+representation by DACs on different display adapters.
+ 
+<b>Palette-Translation Table</b>
+ 
+The driver has to maintain a palette-translation table to translate the
+logical color indexes, passed to it by GDI, into the actual physical color
+indexes. The translation has to occur before any raster operation (ROP) is
+performed. ROPs are always applied to physical colors.
+ 
+Whenever a display driver function receives a DRAWMODE, LPEN, PBRUSH, or
+<b>PBITMAP</b> structure, the driver may need to translate the logical colors in
+these structures to physical colors before using the colors.
+ 
+An application has to perform color translation only when the physical
+device is involved. In other words, if a line is drawn into a memory bitmap
+or a bitmap is block transferred into another memory device, no color
+translation is required. On the other hand, if a bitmap is transfered to or
+from the screen into a memory bitmap or a line is drawn directly onto the
+screen, color translation is required. In the case of a block transfer from
+the screen to the screen (where the physical device is both the source and
+destination of the block transfer), color translation is not needed since
+all the color indexes are already translated into physical indexes.
+ 
+Color specifications are passed to display drivers as either color indexes
+or RGB values. A color index is a 32-bit value in which the high 16-bits is
+set to 0xFF00 and the low 16-bits is the actual index. An RGB value is a
+32-bit value as specified by the RBGQUAD structure. When an RGB value is
+specified, it should match this color as closely as possible among the 20
+reserved colors. In the case of a brush, the color may be dithered with the
+16 VGA colors.
+ 
+A palette-translation table is an array of 16-bit indexes, each mapping a
+logical color index to a physical color index. A display driver uses the
+translation table to translate color indexes in physical pens and brushes
+and in the DRAWMODE structure to the actual color indexes used by the
+hardware palette.
+ 
+GDI calls the GetPalTrans and SetPalTrans functions to get and set the
+translation table. The translation table has the number of elements
+specified by the dpPalColors member. In constructing the inverse table, the
+driver may come across ambiguities because different logical colors can map
+to the same physical color. It is up to the driver to decide how to resolve
+these cases since the result will look the same no matter how such
+ambiguities have been resolved. The driver can also set accelerator bits to
+bypass the various translations. For BitBlt, bypassing color translation
+results in substantial performance improvements.
+ 
+<b>UpdateColors Function</b>
+ 
+If a display driver supports color palettes, it must include the
+<b>UpdateColors</b> function. GDI calls this function to direct the driver to
+redraw a region on screen using the translation table passed to the
+function. For each pixel in the region, the function retrieves the pixel's
+color index, translates the index, and writes the translated index back to
+the given pixel.
+ 
+<b>Black-and-White Palette Entries</b>
+ 
+Display drivers that support color palettes must make sure that the index
+for the palette entry that corresponds to black must be the one's complement
+of the index for the palette entry for white. Black and white must be static
+palette entries, meaning the driver sets the indexes for these colors during
+initialization and does not change the indexes.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

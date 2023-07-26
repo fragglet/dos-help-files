@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>Begin_Service_Table - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Begin_Service_Table</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='VMM_Macros.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Begin_Touch_1st_Meg.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+Begin_Service_Table DeviceName, DefSegment
+ 
+The Begin_Service_Table macro marks the start of the service table for a
+virtual device. A virtual device uses the service table to export the names
+and addresses of its services. Other virtual devices can use the VxDcall
+macro to call these services.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>DeviceName</i>  Specifies the name of the virtual device. This name is used to
+            create a macro, named DeviceName_Service, that is used in the
+            table to define each exported service. See the Comments section
+            for a description of the macro.
+ 
+<i>DefSegment</i>  Specifies the name of the data segment to place the table. This
+            parameter is optional. If given, the macro uses the
+            DefSegment_LOCKED_DATA_SEG macro to define the segment.
+            Otherwise, it uses the VxD_LOCKED_DATA_SEG macro.
+ 
+<b>Return Value</b>
+ 
+This macro has no return value.
+ 
+<b>Comments</b>
+ 
+A virtual device exports its services by defining the symbol
+<b>Create_DeviceName_Service_Table bef</b>ore using the Begin_Service_Table macro.
+Virtual devices that call these service also use the Begin_Service_Table
+macro but must not define the Create_DeviceName_Service_Table symbol.
+ 
+The complete service table has the following form:
+ 
+<b>Begin_Service_Table DeviceName, DefSegment</b>
+<i>DeviceName_Service Procedure, LocalSeg</i>
+    .
+    .
+    .
+<b>End_Service_Table DeviceName, DefSegment</b>
+ 
+The DeviceName_Service macro, created by Begin_Service_Table, adds the
+specified service to the table. A table may have any number of these
+macros.
+ 
+The Procedure parameter specifies the name of the service to add to the
+table. If RESERVED is given, the macro reserves an entry in the table
+instead adding a procedure.
+ 
+The LocalSeg parameter specifies which segment contains the procedure. This
+parameter is optional.
+ 
+<b>See Also</b>
+ 
+<b>End_Service_Table, VxD_LOCKED_DATA_SEG</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

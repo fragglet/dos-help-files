@@ -1,0 +1,84 @@
+<html>
+
+<head>
+<title>_PageOutDirtyPages - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _PageOutDirtyPages</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='System-Internal_Memory_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_SetLastV86Page.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _PageOutDirtyPages, &lt;nPages, flags&gt;
+ 
+mov     [DirtyPages], eax       ; count of dirty pages flushed
+ 
+The _PageOutDirtyPages service flushes dirty pages. The virtual pageswap
+device uses this service to prevent a large number of dirty pages from
+accumulating in the system.
+ 
+This service is intended for exclusive use by the virtual pageswap device.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>nPages</i>     Specifies the maximum number of dirty pages to flush.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter can be a
+           combination of the following values:
+ 
+           Value              Meaning
+           ─────────────────────────────────────────────────────────────────
+           PagePDPSetBase     Sets the base page number to the current
+                              starting point of the dirty-page scan.
+ 
+           PagePDPClearBase   Clears the base page number.
+ 
+           PagePDPQueryDirty  Returns a count of dirty pages without
+                              flushing the pages. The service ignores the
+                              nPages parameter and all other flags if this
+                              value is given.
+ 
+           All other values are reserved.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the actual count of dirty pages flushed by the
+service.
+ 
+<b>Comments</b>
+ 
+The virtual pageswap device typically flushes dirty pages in the system as
+part of a background activity. It uses this service to scan for and flush
+current page-out candidates. The virtual pageswap device can flush all the
+dirty pages by specifying a large value for the nPages parameter. The
+PagePDPSetBase and PagePDPClearBase values let the virtual pageswap device
+set and clear a variable that causes the scan for page-out candidates to
+stop at the given point, and return zero to indicate that the entire address
+space has been scanned.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_PageDiscardPages</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

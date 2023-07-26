@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>Get_Profile_Decimal_Int - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Get_Profile_Decimal_Int</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Initialization_Information_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Get_Profile_Fixed_Point.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, Default            ; default value
+mov     esi, OFFSET32 Profile   ; points to section name
+mov     edi, OFFSET32 Keyname   ; points to entry name
+VMMcall Get_Profile_Decimal_Int
+ 
+jc      not_found               ; carry set if entry not found
+jz      no_value                ; zero set if entry has no value
+ 
+mov     [Value], eax            ; entry value
+ 
+The Get_Profile_Decimal_Int service returns the value of a decimal-number
+entry in the SYSTEM.INI file. The Profile and Keyname parameters specify the
+section and entry to search for.
+ 
+This service is only available during initialization.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Default</i>    Specifies the default value to return if the entry is not found
+           or has no current value.
+ 
+<i>Profile</i>    Specifies a null-terminated string identifying the section in the
+           SYSTEM.INI file to search. If Profile is zero, the service
+           searches the [386Enh] section.
+ 
+<i>Keyname</i>    Points to a null-terminated string identifying the name of the
+           entry to search for.
+ 
+<b>Return Value</b>
+ 
+If the carry and zero flags are clear, the specified entry is found and is a
+valid decimal number. In this case, the EAX register is set to the value of
+the number.
+ 
+If the carry flag is clear and the zero flag is set, the specified entry
+exists but has no corresponding value. If the carry flag is set, the entry
+cannot be found or the entry does not represent a valid decimal number. In
+these cases, the EAX register is set to the Default value.
+ 
+<b>Comments</b>
+ 
+A valid decimal number consists of one or more decimal digits and contains
+no embedded spaces or decimal points. The decimal number can be preceded
+with a plus sign (+) or minus sign (-) to indicate a positive or negative
+number, respectively.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Get_Profile_Boolean, Get_Profile_Fixed_Point, Get_Profile_Hex_Int</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

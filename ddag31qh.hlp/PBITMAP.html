@@ -1,0 +1,126 @@
+<html>
+
+<head>
+<title>PBITMAP - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> PBITMAP</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Driver_Structures.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='BITMAPINFO.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+typedef struct tagPBITMAP {
+    short bmType;
+    short bmWidth;
+    short bmHeight;
+    short bmWidthBytes;
+    BYTE  bmPlanes;
+    BYTE  bmBitsPixel;
+    long  bmBits;
+    long  bmWidthPlanes;
+    long  bmlpPDevice;
+    short bmSegmentIndex;
+    short bmScanSegment;
+    short bmFillBytes;
+    short reserved1;
+    short reserved2;
+} PBITMAP;
+ 
+A PBITMAP structure specifies the dimensions, attributes, and bits of a
+physical bitmap.
+ 
+<b>Member          Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<b>bmType</b>          Specifies a physical bitmap. The member must be set to
+                zero.
+ 
+<b>bmWidth</b>         Specifies the width of the bitmap in pixels.
+ 
+<b>bmHeight</b>        Specifies the height of the bitmap in raster lines.
+ 
+<b>bmWidthBytes</b>    Specifies the number of bytes in each raster line of this
+                bitmap. The number of bytes must be even; all raster lines
+                must be aligned on 16-bit boundaries.
+ 
+<b>bmPlanes</b>        Specifies the number of color planes.
+ 
+<b>bmBitsPixel</b>     Specifies the number of color bits for each pixel.
+ 
+<b>bmBits</b>          Points to an array of bits specifying the pixels of the
+                bitmap. The array must be aligned on a 16-bit boundary.
+ 
+<b>bmWidthPlanes</b>   Specifies the size in bytes of each color plane. It is equal
+                to the product of bmWidthBytes*bmHeight.
+ 
+<b>bmlpPDevice     Points to the PDE</b>VICE structure specifying the device for
+                which this bitmap is compatible.
+ 
+<b>bmSegmentIndex</b>  Specifies the segment or selector offset for segments in the
+                bitmap array. If the bitmap is less than 64K bytes, this
+                member is zero.
+ 
+<b>bmScanSegment</b>   Specifies the number of raster lines contained in each
+                segment of the bitmap array. If the bitmap is less than 64K
+                bytes, this member is zero.
+ 
+<b>bmFillBytes</b>     Specifies the number of extra bytes in each segment.
+                Graphics-device interface (GDI) allocates storage for the
+                bitmap array in 16-byte multiples.
+ 
+<b>reserved1</b>       Reserved; do not use.
+ 
+<b>reserved2</b>       Reserved; do not use.
+ 
+<b>Comments</b>
+ 
+If the bitmap bits exceed 64K bytes, GDI allocates a two or more segments to
+store the bitmap. In such cases, the bmScanSegment member specifies the
+number of raster lines stored in each segment, with bmFillBytes specifying
+any additional bytes needed to round the segment size out to a multiple of
+16; no segment contains more than 64K bytes. The total number of segments is
+equal to the quotient of bmHeight divided by bmScanSegment rounded up by one
+if the remainder is not zero. The selector (or segment address) for each
+segment is a multiple of bmSegmentIndex.
+ 
+GDI stores the bits in the bitmap array as raster lines, with the raster
+line representing the top of the bitmap stored first. If the bitmap has more
+than one plane, GDI stores the first raster lines for all planes at the
+beginning of the array, stores the second raster lines next, and so on. The
+following shows the layout for a 4-plane bitmap:
+ 
+Plane 0, first raster line
+Plane 1, first raster line
+Plane 2, first raster line
+Plane 3, first raster line
+Plane 0, second raster line
+        .
+        .
+        .
+Plane 0, last raster line
+Plane 1, last raster line
+Plane 2, last raster line
+Plane 3, last raster line
+ 
+If the bitmap array exceeds 64K bytes, GDI splits the raster lines across
+several segments but retains the storage order, giving the first raster
+lines in the first segment and the last raster lines in the last segment.
+When GDI splits the raster lines, it ensures that matching raster lines from
+the various planes are always in the same segment. If necessary, GDI leaves
+a number of empty bytes (as specified by bmFillBytes) at the end of the
+segment to round out the segment size to a multiple of 16.
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,230 @@
+<html>
+
+<head>
+<title>LFONT - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> LFONT</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Driver_Structures.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='LPEN.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+typedef struct {
+    short lfHeight;
+    short lfWidth;
+    short lfEscapement;
+    short lfOrientation;
+    short lfWeight;
+    BYTE  lfItalic;
+    BYTE  lfUnderline;
+    BYTE  lfStrikeOut;
+    BYTE  lfCharSet;
+    BYTE  lfOutPrecision;
+    BYTE  lfClipPrecision;
+    BYTE  lfQuality;
+    BYTE  lfPitchAndFamily;
+    BYTE  lfFaceName [32];
+} LFONT;
+ 
+The LFONT structure contains the logical attributes for a font.
+ 
+<b>Member            Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<b>lfHeight</b>          Specifies the height of the font in device units. If this
+                  member is greater than zero, the driver should choose a
+                  font whose cell height matches the given height. If this
+                  member is zero, the driver should choose a font having a
+                  reasonable default size. If this member is less than zero,
+                  the driver should choose a font whose character height
+                  (that is, cell height less internal leading) matches the
+                  absolute value of this member. In all cases, the driver
+                  should choose the largest font that does not exceed the
+                  requested height and, if there is no such font, choose the
+                  next smallest font available.
+ 
+<b>lfWidth</b>           Specifies the average width of characters in the font in
+                  device units. If this member is zero, the driver should
+                  choose an available font whose digitization aspect ratio
+                  (the dfVertRes member of the FONTINFO structure) most
+                  closely matches the aspect ratio of the device (the
+                  dpAspectY member in the GDIINFO structure). When comparing
+                  fonts, the driver should compare the absolute values of
+                  the differences between the digitization aspect ratio and
+                  the device aspect ratio.
+ 
+<b>lfEscapement      Specifies the angl</b>e, counterclockwise from the x-axis in
+                  tenths of a degree, of the vector passing through the
+                  origin of all the characters in the string.
+ 
+<b>lfOrientation     Specifies the angle, </b>counterclockwise from the x-axis in
+                  tenths of a degree, of the baseline of the character.
+ 
+<b>lfWeight</b>          Specifies the weight of the font ranging from 1 to 1000,
+                  with 400 being the value for the standard font. If this
+                  member is zero, the driver should choose a reasonable
+                  weight.
+ 
+<b>lfItalic</b>          Specifies whether the font is to be italic. If the low bit
+                  is set, the font is to be italic. All other bits must be
+                  zero.
+ 
+<b>lfUnderline</b>       Specifies whether the font is to be underlined. If the low
+                  bit is set, the font is to be underlined. All other bits
+                  must be zero.
+ 
+<b>lfStrikeOut</b>       Specifies whether the font is to be struck out. If the low
+                  bit is set, the font is to be struck out. All other bits
+                  must be zero.
+ 
+<b>lfCharSet</b>         Specifies the character set to be used. It can be one of
+                  the following values.
+ 
+                  Value                  Meaning
+                  ──────────────────────────────────────────────────────────
+                  ANSI_CHARSET (0x00)    Indicates the ANSI character set.
+ 
+                  SYMBOL_CHARSET (0x02)  Indicates the Symbol character
+                                         set.
+ 
+                  OEM_CHARSET (0xFF)     Indicates an OEM-specific character
+                                         set. The characters and
+                                         corresponding character codes
+                                         depend on the computer.
+ 
+<b>lfOutPrecision</b>    Specifies the required output precision for text. This
+                  member can have one of the following values.
+ 
+                  Value                        Meaning
+                  ──────────────────────────────────────────────────────────
+                  OUT_DEFAULT_PRECIS (0x00)    Chooses a reasonable font.
+ 
+                  OUT_STRING_PRECIS (0x01)     Chooses the font whose size
+                                               (height and width) most
+                                               closely matches the requested
+                                               size. The driver may
+                                               disregard the requested
+                                               orientation and escapement,
+                                               but other attributes must
+                                               match.
+ 
+                  OUT_CHARACTER_PRECIS (0x02)  Chooses the font whose size
+                                               (height and width) most
+                                               closely matches the requested
+                                               size. The driver may
+                                               disregard the requested
+                                               orientation, but other
+                                               attributes must match.
+ 
+                  OUT_STROKE_PRECIS (0x03)     Chooses a font whose
+                                               attributes exactly match the
+                                               requested attributes.
+ 
+<b>lfClipPrecision</b>   Specifies the required clipping precision for text. This
+                  member can be one of the following values.
+ 
+                  Value                         Meaning
+                  ──────────────────────────────────────────────────────────
+                  CLIP_DEFAULT_PRECIS (0x00)    Chooses a reasonable font.
+ 
+                  CLIP_CHARACTER_PRECIS (0x01)  Chooses a font that allows
+                                                clipping of individual
+                                                characters. The driver must
+                                                be able to clip a character
+                                                if any portion of it lies
+                                                outside the clipping
+                                                rectangle.
+ 
+                  CLIP_STROKE_PRECIS (0x02)     Chooses a font that allows
+                                                clipping of portions of a
+                                                character. The driver must
+                                                be able to clip any portion
+                                                of a character that lies
+                                                outside the clipping
+                                                rectangle.
+ 
+<b>lfQuality</b>         Specifies the required quality for text. This member can
+                  have one of the following values.
+ 
+                  Value                   Meaning
+                  ──────────────────────────────────────────────────────────
+                  DEFAULT_QUALITY (0x00)  Chooses a reasonable font.
+ 
+                  DRAFT_QUALITY (0x01)    Chooses a font that generates the
+                                          most efficient, speediest output.
+                                          The driver can sacrifice
+                                          appearance if a speedier font has
+                                          lower quality. GDI synthesizes
+                                          bold, italic, underline, and
+                                          strikethrough characters if
+                                          needed.
+ 
+                  PROOF_QUALITY (0x02)    Chooses a font that generates the
+                                          highest-quality output. The driver
+                                          should sacrifice speedy output if
+                                          a slower font has higher quality.
+                                          The driver should sacrifice output
+                                          precision if a font that does not
+                                          exactly match the requested
+                                          attributes (such as size) is a
+                                          higher quality. GDI synthesizes
+                                          bold, italic, underline, and
+                                          strikethrough characters if
+                                          needed.
+ 
+<b>lfPitchAndFamily</b>  Specifies the font pitch and font family. This member is a
+                  combination of one pitch and one family value. The pitch
+                  value can be any one of the following values.
+ 
+                  Value                  Meaning
+                  ──────────────────────────────────────────────────────────
+                  DEFAULT_PITCH (0x00)   Chooses a reasonable font.
+ 
+                  FIXED_PITCH (0x01)     Chooses a fixed-pitch font.
+ 
+                  VARIABLE_PITCH (0x02)  Chooses a variable-pitch font.
+ 
+                  The font family, which describes in a general way the look
+                  of a font, can be any one of the following values.
+ 
+                  Value                 Meaning
+                  ──────────────────────────────────────────────────────────
+                  FF_DONTCARE (0x00)    Chooses a reasonable font.
+ 
+                  FF_ROMAN (0x10)       Chooses a variable-pitch font with
+                                        serifs.
+ 
+                  FF_SWISS (0x20)       Chooses a variable-pitch fonts
+                                        without serifs.
+ 
+                  FF_MODERN (0x30)      Chooses a fixed-pitch font.
+ 
+                  FF_SCRIPT (0x40)      Chooses a cursive or script font.
+ 
+                  FF_DECORATIVE (0x50)  Chooses a novelty font.
+ 
+<b>lfFaceName</b>        Specifies a null-terminated string specifying the name of
+                  the font. The driver should choose a font having the given
+                  name. If the string is empty (the first byte is zero), the
+                  driver should choose a reasonable font. The string,
+                  including the null terminator, does not exceed 32 bytes.
+ 
+<b>See Also</b>
+ 
+<b>EngineRealizeFont, RealizeObject</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

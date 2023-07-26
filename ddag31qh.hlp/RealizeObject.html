@@ -1,0 +1,184 @@
+<html>
+
+<head>
+<title>RealizeObject - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> RealizeObject</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ScanLR.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+DWORD RealizeObject(lpDestDev, wStyle, lpInObj, lpOutObj, lpTextXForm)
+LPPDEVICE lpDestDev;
+WORD wStyle;
+LPVOID lpInObj;
+LPVOID lpOutObj;
+LPTEXTXFORM lpTextXForm;
+ 
+The RealizeObject function creates or deletes a physical object. The
+function creates a physical object by filling a structure provided by GDI
+with device-specific data that corresponds to the attributes of a given
+logical pen, brush, bitmap, or font; it deletes the physical object by
+removing any memory or resources it allocated when creating the object. GDI
+may call this function when an application calls functions such as CreateDC
+(GDI.53), SelectObject (GDI.45), and DeleteObject (GDI.69).
+ 
+Every graphics driver must export the RealizeObject function.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpDestDev    Points to a PDEVICE or PBITMAP s</i>tructure specifying the device
+             or bitmap to create the physical object for.
+ 
+<i>wStyle</i>       Specifies the type of object to be realized. This parameter can
+             be one of the following values.
+ 
+             Value            Meaning
+             ───────────────────────────────────────────────────────────────
+             OBJ_PEN (1)      Realizes a physical pen.
+ 
+             OBJ_BRUSH (2)    Realizes a physical brush.
+ 
+             OBJ_FONT (3)     Realizes a device font. If the device has no
+                              device fonts or cannot realize the requested
+                              font, the RealizeObject function returns
+                              zero.
+ 
+             OBJ_PBITMAP (5)  Realizes a device bitmap. GDI passes this
+                              value only if the RC_DEVBITS value is set in
+                              the dpRaster member of the driver's GDIINFO
+                              structure.
+ 
+             If the wStyle parameter is negative, the function deletes the
+             specified object.
+ 
+<i>lpInObj      Points to a LPEN, LBRUSH, LFONT, or PBITMAP struct</i>ure specified
+             by the wStyle parameter. The structure describes the logical
+             attributes of the object to be realized.
+ 
+             If wStyle is negative, the lpInObj parameter points to the
+             PPEN, PBRUSH, FONTINFO, or PBITMAP structure, specifying the
+             physical object to be deleted.
+ 
+<i>lpOutObj</i>     Points to a buffer to receive the realized object, or points to
+             the physical object to delete. Its meaning depends on the value
+             of the wStyle parameter.
+ 
+             If wStyle is positive, the lpOutObj parameter points to a
+             buffer. The function fills the buffer with device-specific data
+             that defines a physical object corresponding to the logical
+             object pointed to by the lpInBuf parameter. If lpOutObj is
+             NULL, the function returns the size (in bytes) of the physical
+             object.
+ 
+             If wStyle is negative, lpOutBuf points to the physical object
+             to delete. Although GDI frees the memory pointed to by
+             lpOutBuf when the function returns, the RealizeObject function
+             must free any other memory or resources associated with the
+             physical object.
+ 
+<i>lpTextXForm  Points to a TEXTXFORM structure or specifi</i>es a POINT structure
+             as specified by the wStyle parameter.
+ 
+             If wStyle is OBJ_BRUSH, the lpTextXForm parameter is a POINT
+             structure containing the x- and y-coordinates (relative to an
+             8-bit boundary) on which to align the start of the brush's
+             pattern.
+ 
+             If wStyle is OBJ_FONT, lpTextXForm points to a TEXTXFORM
+             structure containing information about the appearance of a
+             realized font. Both the realized font and the contents of the
+             TEXTXFORM structure are later passed to the ExtTextOut
+             function, allowing more capable devices to make changes to the
+             standard font.
+ 
+<b>Return Value</b>
+ 
+The return value is the size, in bytes, of the physical object, if
+successful. Otherwise, it returns zero if it cannot realize the object.
+ 
+If wStyle is OBJ_PBITMAP, the return value can be zero to direct GDI to
+create a main memory bitmap instead of a device bitmap. The return value
+will be 0x80000000L to indicate an error, and prevent GDI from creating a
+main memory bitmap.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 10.
+ 
+GDI manages the physical object and makes the object available to the the
+device driver as needed to draw output. When GDI no longer needs the object,
+it directs RealizeObject to delete the object.
+ 
+To create an object, GDI calls this function twice. It first requests the
+size in bytes of the physical object, then it allocates space for the object
+and calls RealizeObject again passing a pointer to the allocated space. The
+<i>lpOutObj</i> parameter specifies which action to take. If it is NULL, the
+function returns the size; if it is not NULL, the function fills the
+corresponding structure.
+ 
+The format and content of a physical object depends entirely on the device
+driver. For pens and brushes, the recommended formats are the PPEN and
+<b>PBRUSH structures.</b> For fonts, the structure must contain the dfType through
+<b>dfFace members of the FONTINFO structure, </b>and dfDevice and dfFace must have
+valid pointers to device and font strings.
+ 
+When realizing pens, GDI may request a width or styled line even though the
+driver does not support such pens. (The dpCurves and dpLines members in the
+driver's GDIINFO structure specify whether the driver supports wide and
+styled lines.) In such cases, the RealizeObject function should create a
+nominal pen, that is, a physical pen that is solid and one-pixel wide. GDI
+uses this nominal pen to carry out its own styling and wide-line
+operations.
+ 
+When realizing brushes, RealizeObject sets the foreground and background
+colors for hatch and solid brushes, but not for patterned brushes if the
+patterned brush uses a monochrome bitmap. For these patterned brushes, GDI
+provides a DRAWMODE structure that specifies the foreground and background
+colors for the brush. If the color specified for a solid brush does not
+exactly match a physical color, the function can create a dithered color for
+the brush. The function realizes hollow brushes. When a hollow brush is
+passed to a drawing routine, the driver does no filling at all.
+ 
+If the lpTextXForm parameter specifies a POINT structure, it represents the
+physical object's pattern reference point. This reference point specifies
+where to start a patterned brush (relative to a 8-bit boundary) so that the
+brush pattern aligns with areas previously filled using the brush. The
+parameter contains values, in the range 0 to 7, that specify on which bits
+to start the pattern.
+ 
+Display drivers generally do not realize fonts. Instead, they require GDI to
+realize the fonts to be used with the display. In this case, the display
+driver's RealizeObject must returns zero whenever wStyle is OBJ_FONT.
+ 
+When realizing bitmaps, RealizeObject must create a device bitmap, storing
+the bitmap bits in device memory (such as RAM on the device adapter) rather
+than main memory. When GDI requests the size of the physical bitmap, the
+function must include space for at least a PBITMAP structure, but any
+additional space is up to the driver. Although no space for the bitmap bits
+is required, RealizeObject must include some value to indicate the location
+of the bitmap bits in device memory. GDI intercepts all requests to create
+monochrome bitmaps. This means RealizeObject is never called to create a
+monochrome device bitmap.
+ 
+<b>See Also</b>
+ 
+<b>PBITMAP, FONTINFO, LBRUSH, LFONT, LPEN, POINT, TEXTXFORM</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

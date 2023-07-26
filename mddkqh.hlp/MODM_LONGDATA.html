@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>MODM_LONGDATA - Windows Multimedia DDK</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows Multimedia DDK (mddkqh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MODM_LONGDATA</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MDDK_dot_h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+<b>MODM_LONGDATA</b>
+ 
+        This message is sent to a MIDI output device driver to output a
+        MIDI data block containing one or more MIDI events, including
+        system-exclusive events. If the data block contains more than one
+        MIDI event, the events are packed into the data block with no
+        padding.
+ 
+<u>Parameters</u>
+        DWORD dwParam1
+            Specifies a far pointer to MIDIHDR data structure
+            identifying the data block.
+ 
+        DWORD dwParam2
+            Specifies the size of the MIDIHDR structure.
+ 
+<u>Return value</u>
+        The return value is an error code, or zero (MMSYSERR_NOERROR) if
+        the operation is successful. Possible error codes are:
+ 
+        MMSYSERR_NOTENABLED
+            The driver failed to load or initialize.
+ 
+        MIDIERR_UNPREPARED
+            The data block has not been prepared.
+ 
+        MIDIERR_NOTREADY
+            The hardware is busy with other data.
+ 
+<u>Comments</u>
+        The driver should first check the MHDR_PREPARED bit in the
+        <a href='MIDIHDR.html'>dwFlags</a> field of the MIDIHDR structure. If the bit is not set,
+        the driver should return MIDIERR_UNPREPARED. The driver should
+        clear the MHDR_DONE bit and set the MHDR_INQUEUE bit and place
+        the data block in its output queue. Then the driver should
+        return control to the client by returning MMSYSERR_NOERROR.
+ 
+        Once the data block has been output, the driver should set the
+        MHDR_DONE bit and clear the MHDR_INQUEUE bit before notifying
+        the client by using DriverCallback to send a MOM_DONE message.
+ 
+        The driver can choose not to return until the message has been
+        sent to the output device, or the driver can return immediately
+        and output the MIDI data in the background. The driver should
+        maintain MIDI status across multiple MODM_DATA and
+        MODM_LONGDATA calls.
+ 
+<u>See also</u>
+        MODM_DATA
+ 
+                                       -♦-
+</pre>
+</body>
+
+</html>

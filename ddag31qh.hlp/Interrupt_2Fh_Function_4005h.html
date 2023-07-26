@@ -1,0 +1,54 @@
+<html>
+
+<head>
+<title>Interrupt 2Fh Function 4005h - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Interrupt 2Fh Function 4005h</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Windows_Interrupt_2Fh_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Interrupt_2Fh_Function_4006h.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+mov ax, 4005h       ; Save Video Register State
+int 2fh
+ 
+The Save Video Register State function notifies VM applications that the
+virtual-display device (VDD) requires access to the video hardware
+registers. The VDD calls this function, for example, when preparing to copy
+the entire screen to the clipboard.
+ 
+<b>Return Value</b>
+ 
+This function has no return value.
+ 
+<b>Comments</b>
+ 
+The VDD calls this function only if the VM application has called Enable
+VM-Assisted Save/Restore (Interrupt 2Fh Function 4000h). VM applications
+that receive Save Video Register State must save any data necessary to
+restore the current video state and must return within 1000ms. If the
+application fails to return in time, the virtual-display device accesses the
+video hardware anyway. After accessing the video hardware registers, the VDD
+calls Restore Video Register State (Interrupt 2Fh Function 4006h) to notify
+the application that it can restore its video state.
+ 
+The VDD calls Save Video Register State only at times when the hardware must
+be reprogrammed for what are essentially brief and nonvisible operations.
+For example, the VDD does not call this function prior to calling Notify
+Background Switch (Interrupt 2Fh Function 4001h).
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

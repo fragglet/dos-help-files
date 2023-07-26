@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>WODM_SETPLAYBACKRATE - Windows Multimedia DDK</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows Multimedia DDK (mddkqh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WODM_SETPLAYBACKRATE</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MDDK_dot_h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+<b>WODM_SETPLAYBACKRATE</b>
+ 
+        This message is sent to a waveform output device driver to set
+        the playback rate for a device.
+ 
+<u>Parameters</u>
+        DWORD dwParam1
+            Specifies the new playback rate setting. The rate is
+            specified as a fixed-point value. The high-order word
+            of the DWORD contains the signed integer part of the number,
+            and the low-order word contains the fractional part. The
+            fraction is expressed as a WORD in which a value of 0x8000
+            represents one-half, and 0x4000 represents one-quarter. For
+            example, the value 0x00010000 specifies a multiplier of 1.0
+            (no pitch change), and a value of 0x000F8000 specifies a
+            multiplier of 15.5.
+ 
+        DWORD dwParam2
+            Unused.
+ 
+<u>Return value</u>
+        The return value is an error code, or zero (MMSYSERR_NOERROR) if
+        the operation is successful. Possible error codes are:
+ 
+        MMSYSERR_NOTENABLED
+            The driver failed to load or initialize.
+ 
+        MMSYSERR_NOTSUPPORTED
+            The driver does not support changes to the playback rate.
+ 
+<u>Comments</u>
+        Driver support for playback rate changes is optional. When a
+        driver receives a WODM_GETDEVCAPS message, it should indicate
+        support for playback rate changes by setting or clearing the
+        WAVECAPS_PLAYBACKRATE bit in the <a href='WAVEOUTCAPS.html'>dwSupport</a> field of the
+        WAVEOUTCAPS data structure. If a driver supports the
+        WODM_SETPLAYBACKRATE message, then it must also support
+        WODM_GETPLAYBACKRATE.
+ 
+        Changes to the playback rate alter the pitch of a waveform
+        during playback and are usually implemented by the driver by
+        skipping or repeating samples. For example, if the playback
+        rate was 2.0, the driver would play every second sample, at the
+        original playback rate.
+ 
+<u>See also</u>
+        WODM_GETPLAYBACKRATE, WODM_SETPITCH
+ 
+                                       -♦-
+</pre>
+</body>
+
+</html>

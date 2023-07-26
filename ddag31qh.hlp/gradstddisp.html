@@ -1,0 +1,61 @@
+<html>
+
+<head>
+<title>Standard-Function Dispatch Table - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Standard-Function Dispatch Table</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Grabbers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='grabstdextdisp.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+Since a display grabber is a binary-image file, the grabber cannot export
+its standard functions. To give Windows access to the functions, the grabber
+includes a standard-function dispatch table, consisting of a series of jump
+instructions, at the start (offset 0) of its code segment. There is one
+3-byte jump instruction for each grabber function. Windows transfers control
+to a grabber function by computing the offset of the desired function's
+dispatch table entry and by making a FAR call to that entry. Although each
+dispatch table entry is a NEAR jump instruction to the corresponding
+function, the function itself must execute a FAR return instruction when it
+returns to Windows.
+ 
+The standard-function dispatch table has the following form:
+ 
+        org 0
+ 
+StdFuncTable label word
+        jmp     InquireGrab     ;function 00001h
+        jmp     Obsolete        ;function 00002h
+        jmp     Obsolete        ;function 00003h
+        jmp     Obsolete        ;function 00004h
+        jmp     InquireSave     ;function 00005h
+        jmp     SaveScreen      ;function 00006h
+        jmp     RestoreScreen   ;function 00007h
+        jmp     InitScreen      ;function 00008h
+ 
+The grabber must not modify or move the dispatch table after it has been
+loaded.
+ 
+The dispatch-table entry for the InitScreen function, an optional function,
+is at offset 015h. Windows checks for a jump instruction at offset 015h to
+determine whether the InitScreen function is present. If InitScreen is
+present, Windows calls the function whenever a non-Windows application
+starts up, and subsequently after every video-context switch to that
+application.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

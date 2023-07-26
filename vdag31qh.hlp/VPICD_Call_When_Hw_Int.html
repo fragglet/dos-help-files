@@ -1,0 +1,68 @@
+<html>
+
+<head>
+<title>VPICD_Call_When_Hw_Int - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VPICD_Call_When_Hw_Int</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_PIC_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VPICD_Clear_Int_Request.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vpicd.inc
+ 
+pushfd
+cli                                 ; disable interrupts
+mov     esi, OFFSET32 Callback      ; points to callback procedure
+VxDcall VPICD_Call_When_Hw_Int
+popfd
+mov     [Next_Callback], esi        ; address of next callback in chain
+ 
+The VPICD_Call_When_Hw_Int service installs a callback procedure for
+hardware interrupts. The system calls the callback procedure whenever a
+hardware interrupt occurs.
+ 
+The caller must disable interrupts before calling this service.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Callback</i>   Points to the callback procedure. When the system calls the
+           procedure, the EBX register contains the handle of the current
+           virtual machine.
+ 
+<b>Return Value</b>
+ 
+The ESI register contains the address of the next procedure in the callback
+chain.
+ 
+<b>Comments</b>
+ 
+Although any virtual device can use this service, the service is intended
+for use by the virtual DMA device to detect completion of DMA transfers. On
+systems with hardware devices that interrupt frequently, use of this service
+should be avoided. Installing a callback procedure to process every hardware
+interrupt can have a major impact on performance.
+ 
+The callback procedure is responsible for chaining to the next handler in
+the interrupt chain. It also must preserve the EBX register for the next
+handler.
+ 
+<b>Uses</b>
+ 
+ESI, Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

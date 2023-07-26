@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>V86MMGR_Allocate_Buffer - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> V86MMGR_Allocate_Buffer</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_V86_Mode_Memory_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='V86MMGR_Allocate_V86_Pages.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include v86mmgr.inc
+ 
+VxDcall V86MMGR_Allocate_Buffer
+ 
+The V86MMGR_Allocate_Buffer service allocates a portion of the current
+virtual machine's  translation buffer and optionally copies data from the
+protected-mode pointer in FS:ESI registers into the allocated buffer.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>EBX</i>        Specifies the current virtual machine handle. The current virtual
+           machine must be in protected mode.
+ 
+<i>EBP      </i>  Points to a Client_Reg_Struc structure containing the register
+           values of the current virtual machine.
+ 
+<i>ECX</i>        Specifies the number of bytes to allocate.
+ 
+<i>FS:ESI</i>     Specifies a pointer to the extended memory to copy. If the carry
+           flag is set, the service copies the source buffer into a V86
+           buffer; otherwise, it copies the source buffer into V86 memory.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the service is successful. The ECX register
+contains the actual number of bytes allocated ( less than or equal to the
+original ECX parameter). The high word of the EDI register contains the V86
+segment for the translation buffer and the low word of the EDI register
+contains the offset of the allocated buffer.
+ 
+If the carry flag is set, the service could not allocate buffer.
+ 
+<b>Comments</b>
+ 
+This service maps fewer bytes than the value specified in the ECX parameter
+if the length of the buffer would extend past the FS segment limit.
+Therefore, a virtual device needs to preserve the value returned in ECX from
+this service to use when deallocating the buffer using the
+<b>V86MMGR_Free_Buffer</b> service.
+ 
+The buffers are maintained as a stack. Therefore, the last buffer allocated
+must be the first buffer freed.
+ 
+<b>Uses</b>
+ 
+ECX, EDI, Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

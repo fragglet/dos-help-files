@@ -1,0 +1,133 @@
+<html>
+
+<head>
+<title>GetSetDetailedVMError - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GetSetDetailedVMError</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Miscellaneous_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Hook_Device_Service.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     ebx, VM       ; VM Handle or 0 if Create_VM error
+mov     ecx, GetSet   ; zero if get, nonzero zero if set
+mov     eax, Error    ; error code if ecx nonzero
+mov     edx, RefData  ; points to reference data if ecx nonzero
+VMMcall GetSetDetailedVMError
+ 
+jz      no_error_info   ; zero set if no error information
+ 
+mov     [Error], eax    ; error code
+mov     [RefData], edx  ; reference data for the error code
+ 
+The GetSetDetailedVMError service sets detailed error code for a virtual
+machine crash or start-up error.
+ 
+This service is only available for Windows 3.1 or later.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>VM</i>         Specifies a handle identifying the virtual machine. If this
+           parameter is zero, the service gets or sets error information for
+           the Create_VM message.
+ 
+<i>GetSet</i>     Specifies which action tot take. If zero, the service retrieves
+           error information. If nonzero, the service sets error
+           information.
+ 
+<i>Error</i>      Specifies the error code to set. This parameter is used only if
+           GetSet is nonzero. There are the following error code values:
+ 
+           Value               Meaning
+           ─────────────────────────────────────────────────────────────────
+           GSDVME_CrtNoMsg     Supress standard messages; the SHELL_Message
+                               service is used for custom messages.
+ 
+           GSDVME_DevNuke      Device-specific problem.
+ 
+           GSDVME_DevNukeHdwr  Device-specific problem caused by software
+                               running in the virtual machine.
+ 
+           GSDVME_InsMemEMS    Available EMS memory is less than requested;
+                               set by the virtual V86 mode memory manager.
+ 
+           GSDVME_InsMemV86    Insufficient V86 memory; set by the virtual
+                               V86 mode memory manager.
+ 
+           GSDVME_InsMemV86Hi  Insufficient high MS-DOS memory; set by the
+                               virtual MS-DOS manager.
+ 
+           GSDVME_InsMemVid    Insufficient base video memory; set by the
+                               virtual display device.
+ 
+           GSDVME_InsMemVM     Insufficient base virtual machine memory for
+                               control block or instance buffer.
+ 
+           GSDVME_InsMemXMS    Available XMS memory is less than requested;
+                               set by the virtual V86 mode memory manager.
+ 
+           GSDVME_InsV86Space  Available V86 address space is less than
+                               requested; set by the virtual V86 mode memory
+                               manager.
+ 
+           GSDVME_InvalFlt     Invalid fault.
+ 
+           GSDVME_InvalGpFlt   Invalid GP fault.
+ 
+           GSDVME_InvalInst    Attempt to execute an invalid instruction.
+ 
+           GSDVME_InvalPgFlt   Invalid page fault.
+ 
+           GSDVME_InsMemDev    Could not allocate base virtual machine
+                               memory for device.
+ 
+           GSDVME_NukeNoMsg    Suppress standard messages; the
+                               SHELL_Message service is used for custom
+                               messages.
+ 
+           GSDVME_OkNukeMask   Reserved for the exclusive use of the virtual
+                               MS-DOS manager.
+ 
+           GSDVME_PrivInst     Attempt to execute a privledged instruction.
+ 
+           GSDVME_UserNuke     User requested running virtual machine be
+                               terminated.
+ 
+           Error values that have the high word set to 2 are intended to be
+           used when a virtual machine fails on start up.
+ 
+<i>RefData</i>    Points to reference data to set. The reference data is an
+           additional doubleword of data associated with an error. This
+           parameter is used only if GetSet is nonzero. This parameter is
+           zero if there is no associated reference data.
+ 
+<b>Return Value</b>
+ 
+If the zero flag is clear, the EAX register contains the error code and the
+EDX register contains the address of the reference data associated with the
+error code. The zero flag is set if the service found no detailed error
+information.
+ 
+<b>Comments</b>
+ 
+<b>Uses</b>
+ 
+EAX, EDX, Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

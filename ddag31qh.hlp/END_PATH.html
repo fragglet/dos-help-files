@@ -1,0 +1,84 @@
+<html>
+
+<head>
+<title>END_PATH - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> END_PATH</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Escapes.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ENUMPAPERBINS.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define END_PATH 4098 
+short Control(lpDevice, END_PATH, lpInfo, NULL)
+LPPDEVICE lpDevice;
+LPPATH_INFO lpInfo;
+ 
+The END_PATH escape ends a path. A path is a connected sequence of
+primitives drawn in succession to form a single polyline or polygon. Paths
+enable applications to draw complex borders, filled shapes, and clipping
+areas by supplying a collection of other primitives defining the desired
+shape.
+ 
+Printer escapes that support paths enable applications to render images on
+sophisticated devices such as PostScript printers without generating huge
+polygons to simulate them.
+ 
+To draw a path, an application first issues the BEGIN_PATH escape. It then
+draws the primitives defining the border of the desired shape, and issues an
+END_PATH escape.
+ 
+The END_PATH escape takes a pointer to a structure as a parameter,
+specifying the manner in which the path is to be rendered. The structure
+specifies whether or not the path is to be drawn and whether or not it is
+open or closed. Open paths define polylines, and closed paths define
+polygons that can be filled.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<i>lpDevice   Points to a P</i>DEVICE structure specifying the destination device.
+ 
+<i>lpInfo     Points </i>to a PATH_INFO structure.
+ 
+<b>Return Value</b>
+ 
+This escape returns a short integer value specifying the current path
+nesting level. If the escape is successful, the number of BEGIN_PATH calls
+without a corresponding END_PATH call is the result. Otherwise, -1 is the
+result.
+ 
+<b>Comments</b>
+ 
+You may draw a path within another path. A path drawn within another path is
+treated exactly like a polygon (if the subpath is closed) or a polyline (if
+the subpath is open).
+ 
+You may use the CLIP_TO_PATH escape to define a clipping area corresponding
+to the interior or exterior of the currently open path.
+ 
+Device drivers that implement this escape must also implement the BEGIN_PATH
+and EXT_DEVICE_CAPS escapes and should also implement the SET_ARC_DIRECTION
+escape.
+ 
+<b>See Also</b>
+ 
+BEGIN_PATH, CLIP_TO_PATH, EXT_DEVICE_CAPS, SET_ARC_DIRECTION, PATH_INFO,
+<b>PDEVICE</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,68 @@
+<html>
+
+<head>
+<title>VTD_Begin_Min_Int_Period - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VTD_Begin_Min_Int_Period</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_Timer_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VTD_Disable_Trapping.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vtd.inc
+ 
+VxDcall VTD_Begin_Min_Int_Period
+ 
+The VTD_Begin_Min_Int_Period service is used by virtual devices to ensure a
+minimum accuracy for system timing. When this service is called, if the
+interrupt period specified is lower than the current timer interrupt
+frequency, the interrupt period will be set to the new frequency.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>EAX</i>        Specifies the desired interrupt period.
+ 
+<b>Return Value</b>
+ 
+If carry clear, the interrupt period is set. Otherwise, the specified
+interrupt period is not valid
+ 
+<b>Comments</b>
+ 
+Until a matching call to the VTD_End_Min_Int_Period service is made, the
+timer interrupt frequency is guaranteed to never be slower than the value
+specified.
+ 
+A virtual device should call this service only once before calling
+<b>VTD_End_Min_Int_Period</b>.
+ 
+Typically the Begin_Min_Int_Period and End_Min_Int_Period services are used
+by devices such as execution profilers that need extremely accurate timing.
+VMM system time out services rely on the VTD to keep time. Therefore, more
+frequent the timer interrupts, will allow the time-out services to be more
+accurate.
+ 
+Fast timer interrupt periods can be very, very expensive in terms of total
+system performance. For example, on some machines a timer interrupt of 1
+millisecond will degrade total machine throughput by 10% and disk I/O by up
+to 50%.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

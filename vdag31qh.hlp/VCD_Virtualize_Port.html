@@ -1,0 +1,149 @@
+<html>
+
+<head>
+<title>VCD_Virtualize_Port - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VCD_Virtualize_Port</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_Communications_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Virtual_Communications_Device.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vcd.inc
+ 
+VxDcall VCD_Virtualize_Port
+ 
+The VCD_Virtualize_Port service virtualizes a COM port. This service allows
+additional virtual devices to provide enhanced capabilities to COM port
+virtualization. An example virtual device is one which buffers high speed
+input data, and then simulates interrupts into the owner virtual machine, at
+a slower rate, so that the virtual machine can keep up with the data without
+losing input.
+ 
+This service can only be called during processing of the Sys_Critical_Init
+message.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>EAX</i>        Specifies the port number (1, 2, 3, or 4).
+ 
+<i>EBX</i>        Specifies the operation flags. It is 00000001h if the IRQ is
+           sharable. All other values are reserved.
+ 
+<i>ECX      </i>  Specifies the number of extra bytes needed in the VCD_COM_Struc
+           structure.
+ 
+<i>EDX      </i>  Specifies the number of extra bytes needed in the VCD_CB_Struc
+           structure.
+ 
+<i>ESI      </i>  Points to the VCD_ProcList_Struc a structure which contains a
+           list of callback procedures. The VCD saves the pointer to this
+           structure, so it must be placed in the VxD_DATA_SEG segment.
+ 
+<b>Return Value</b>
+ 
+If the carry is clear, the port can be virtualized and the EAX register
+contains the COM handle which points to the COM structure having the extra
+data allocated at its end.
+ 
+Otherwise, the carry flag is set if the port is not available and the EAX
+register contains one of the following values:
+ 
+<b>Value  Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>0</i>      Port does not exist
+ 
+<i>1</i>      Port already virtualized
+ 
+<b>Comments</b>
+ 
+Callback procedures are provided in the list pointed to by ESI.
+ 
+The VPS_Control_Proc callback is called when the virtualization state
+changes for a COM port. Currently the only call is for ownership changes.
+ 
+EAX     ; VCD_Control_Set_Owner
+EBX     ; virtual machine handle of new owner or 0,if virtualization
+        ; handled by a different device
+EDX     ; virtual machine handle of previous owner or 0
+ESI     ; points to a VCD_COM_Struc
+ 
+On entry, when the EBX register specifies a new owner, port trapping will be
+enabled for all I/O ports of the COM adapter. The control procedure can
+disable any I/O trapping that it desires.
+ 
+The IRQ virtualization procedures are the same as if the virtual device
+virtualized the IRQ directly using the VPICD, except that ESI points to the
+<b>VCD_COM_Struc</b> structure on entry. See the VPICD documentation for actual
+entry parameters and return values.
+ 
+EAX     ; IRQ handle
+EBX     ; virtual machine handle
+ESI     ; points to a VCD_COM_Struc
+ 
+The following callbacks have default actions, if the callback offset is set
+to 0:
+ 
+<b>Callback              Default Action</b>
+────────────────────────────────────────────────────────────────────────────
+<i>VPS_Hw_Int_Proc</i>       Assign an owner to the current virtual machine if not
+                      owned, and request an interrupt in the owner's virtual
+                      machine.
+ 
+<i>VPS_Virt_Int_Proc</i>     Not virtualized.
+ 
+<i>VPS_EOI_Proc</i>          Physically EOI and clear interrupt request.
+ 
+<i>VPS_Mask_Change_Proc</i>  Assign the owner to the current virtual machine if not
+                      owned.
+ 
+<i>VPS_IRET_Proc</i>         Not virtualized.
+ 
+The following callbacks deal with I/O for ports that have trapping enabled
+while the virtualizing virtual device owns a COM port.
+ 
+VPS_In_RxTxB
+VPS_Out_RxTxB
+VPS_In_IER
+VPS_Out_IER
+VPS_In_IIR
+VPS_Out_IIR
+VPS_In_LCR
+VPS_Out_LCR
+VPS_In_MCR
+VPS_Out_MCR
+VPS_In_LSR
+VPS_Out_LSR
+VPS_In_MSR
+VPS_Out_MSR
+ 
+These callbacks have the following parameters:
+ 
+EBX     ; virtual machine handle
+ESI     ; points to a VCD_COM_Struc
+EDX     ; port number
+ECX     ; Byte_Input or Byte_Output value
+AL      ; output data if ECX is Byte_Output
+ 
+These procedures should return the AL register set to the input data if the
+ECX register is equal to the Byte_Input value.
+ 
+<b>Uses</b>
+ 
+EAX, Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

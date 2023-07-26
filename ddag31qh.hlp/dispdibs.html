@@ -1,0 +1,120 @@
+<html>
+
+<head>
+<title>Device-Independent Bitmaps - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Device-Independent Bitmaps</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='dispdevbitmaps.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+A device-independent bitmap (DIB) is a color bitmap in a format that
+eliminates the problems that occur when transferring device-dependent
+bitmaps to devices having difference bitmap formats. DIBs provide color and
+bitmap information that any display or printer driver can translate into the
+proper format for its corresponding device.
+ 
+A display driver can support DIBs by providing the following
+device-independent bitmap functions.
+ 
+<b>Function           Description</b>
+────────────────────────────────────────────────────────────────────────────
+<b>DeviceBitmapBits</b>   Copies a DIB to a device-dependent bitmap or a
+                   device-dependent bitmap to a DIB.
+ 
+<b>SetDIBitsToDevice</b>  Copies any portion of a DIB to the screen. This function
+                   copies the bits directly without applying a raster
+                   operation.
+ 
+<b>StretchDIBits</b>      Moves a source rectangle into a destination rectangle,
+                   stretching or compressing the bitmap if necessary to fit
+                   the dimensions of the destination rectangle.
+ 
+These functions receive and operate on BITMAPINFO, BITMAPINFOHEADER, and
+<b>RGBQUAD</b> structures.
+ 
+A display driver that supports DIBs must provide the CreateDIBitmap function
+as well. The function should do nothing more than return zero indicating
+that the creation of a DIB is not supported at the driver level.
+ 
+If a display driver supports DIBs, it must set one or more of the
+RC_DI_BITMAP, RC_DIBTODEV, and RC_STRETCHDIB values in the dpRaster member
+of the GDIINFO structure. If a driver does not set the RC_DI_BITMAP value,
+GDI simulates DIB conversions using monochrome bitmaps.
+ 
+<b>Logical-Color Tables</b>
+ 
+A display driver creates a logical-color table when translating a
+device-specific bitmap into a DIB. The table resides in the DIB header
+block. The device driver, if it is not a palette device, can fill up the
+table with whatever color it supports and then, use the corresponding
+indexes in the bitmap. The driver must also set the number of colors it is
+using in the biClrUsed member of the header block.
+ 
+Consider an example in which the display device is a 4-plane EGA device, and
+in which the DIB has 8 bits-per-pixel. The logical color table for the DIB
+has provisions for 256 colors, but the 4-plane driver can deal with only 16
+colors. The driver would prepare a color table for the DIB that looked like
+the following:
+ 
+RGBQUAD ColorTable[] = {
+    {0,     0,   0, 0},
+    {128,   0,   0, 0},
+    {0,   128,   0, 0},
+    {128, 128,   0, 0},
+    {0,     0, 128, 0},
+    {128,   0, 128, 0},
+    {0,   128, 128, 0},
+    {128, 128, 128, 0},
+#ifdef VGA
+    {196, 196, 196, 0},
+#else /* EGA */
+    {64,   64,  64, 0},
+#endif
+    {255,   0,   0, 0},
+    {0,   255,   0, 0},
+    {255, 255,   0, 0},
+    {0,     0, 255, 0},
+    {255,   0, 255, 0},
+    {0,   255, 255, 0},
+    {255, 255, 255, 0}};
+ 
+The device driver may fill in just 16 colors and set biClrUsed to 16, or it
+may fill up entries 16 through 255 with zeros and set biClrUsed to 0.
+ 
+The color-mapping tables for each of the DIB formats can be predefined for a
+particular driver and should be copied into the DIB header during the
+format-specific initialization.
+ 
+<b>DIB to Device</b>
+ 
+A display driver can copy a DIB directly to the screen using the
+<b>SetDIBitsToDevice</b> function. This function saves the trouble of first
+converting the DIB into the device-dependent format and then, transferring
+it onto the screen. However, only a direct copy of the DIB is provided. For
+other raster operations that BitBlt supports, the driver must first convert
+the DIB into the internal format. Moreover, only one direction of copy (DIB
+to screen) is provided.
+ 
+The process of copying the bits is similar to the one adopted in the
+<b>SetDeviceBitmapBits</b> function except that for some devices, such as the
+EGA/VGA, the nature of the hardware might make it advantageous to copy one
+pixel at a time. The concept of having a color-translation table and
+format-specific initialization remains the same.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

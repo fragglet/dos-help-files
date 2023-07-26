@@ -1,0 +1,85 @@
+<html>
+
+<head>
+<title>WNetDirectoryNotify - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WNetDirectoryNotify</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Network_Driver_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WNetDisconnectDialog.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD WNetDirectoryNotify(hwnd, lpDir, wOper)
+HWND hwnd;
+LPSTR lpDir;
+WORD wOper;
+ 
+The WNetDirectoryNotify function is used by File Manager to notify the
+network driver of certain directory operations. Network drivers typically
+use this function to carry out special operations for certain directories.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwnd</i>       Identifies the owner of any dialog boxes displayed by this
+           function. Although no dialog box is required, this function can
+           display one if user input is needed.
+ 
+<i>lpDir</i>      Points to a null-terminated string specifying a directory name.
+           The names must be unambiguous, contain no wildcard characters and
+           be fully qualified.
+ 
+<i>wOper</i>      Specifies the operation. It can be one of the following values.
+ 
+           Value           Meaning
+           ─────────────────────────────────────────────────────────────────
+           WNDN_MKDIR (1)  File Manager will create a directory with the
+                           given name.
+ 
+           WNDN_RMDIR (2)  File Manager will remove the directory.
+ 
+           WNDN_MVDIR (3)  File Manager will rename the directory.
+ 
+<b>Return Value</b>
+ 
+The return value is one of the following values.
+ 
+<b>Value             Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>WN_CANCEL</i>         The user cancelled the operation. Cancel the operation.
+ 
+<i>WN_CONTINUE</i>       The network driver handled the operation. Proceed as if
+                  the operation has been successfully handled.
+ 
+<i>WN_NOT_SUPPORTED  The network driver does not ha</i>ndle the given wOper
+                  parameter in any special way. Treat the same as WN_SUCCESS
+                  return value.
+ 
+<i>WN_SUCCESS</i>        Success. Proceed with the operation.
+ 
+For any other error value, the network driver supports the given wOper
+parameter but some error occurred. In this case, File Manager reports the
+error to the user, and treats the return value as if it were the WN_CANCEL
+value.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 31.
+ 
+File Manager calls WNetDirectoryNotify for local directories as well as
+network directories.
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

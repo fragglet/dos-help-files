@@ -1,0 +1,161 @@
+<html>
+
+<head>
+<title>Networks in Standard-Mode Windows - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Networks in Standard-Mode Windows</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Network_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Keyboard_Drivers.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+Standard-mode Windows does not provide the same multitasking environment as
+386 enhanced-mode Windows, so the potential impact on existing network
+software is not as great. Nevertheless, network software may need
+modification or additional software to accommodate the following:
+ 
+♦  Asynchronous network requests
+ 
+♦  Application Programming Interface (API) mapping
+ 
+♦  Expanded Memory Specification (EMS) memory
+ 
+The following sections discuss these topics.
+ 
+<b>Asynchronous Network Requests</b>
+ 
+Asynchronous network requests can corrupt data or code if the user switches
+away from the non-Windows application that initiated the request before the
+network has completed to it. Standard-mode Windows automatically prevents
+the user from switching away from an application that uses asynchronous
+NetBIOS calls.
+ 
+This may require changes to both the MS-DOS Extender and the non-Windows
+application support module (that is, WINOLDAP.) Both the MS-DOS Extender and
+WINOLDAP include support specifically for NetBIOS. Unfortunately, these
+modules are not easily adapted to support other network API.
+ 
+Standard-mode Windows prevents switches from occurring during critical
+sections. By default, MS-DOS functions, including network functions, are
+considered critical sections.
+ 
+<b>API Mapping</b>
+ 
+Windows applications in standard-mode use protected-mode addresses. Network
+drivers that rely on real-mode network software to carry out network
+requests must translate protected-mode addresses in the requests to
+real-mode addresses before passing the request on to the network software.
+ 
+Windows translates the following APIs:
+ 
+♦  Standard MS-DOS functions, including network-related functions
+ 
+♦  Standard BIOS functions
+ 
+♦  Standard NetBIOS functions
+ 
+If the network driver uses other real-mode functions to carry out a network
+request, the driver or related software must translate the protected-mode
+addresses to real-mode addresses.
+ 
+Since many networks use additional functions, code to support the address
+translation is required.
+ 
+<b>Expanded Memory</b>
+ 
+Some network software uses expanded memory to store portions of its own code
+and data. This helps minimize conventional memory usage, but may be
+incompatible with standard-mode use of memory.
+ 
+On machines with expanded memory specification (EMS) hardware, standard-mode
+Windows does not alter the EMS hardware. This means the EMS memory continues
+to function and is available for use by Windows applications and non-Windows
+applications. Furthermore, starting or terminating standard-mode Windows
+does not disrupt the state of the EMS memory, so memory-resident
+applications, such as network software, can continue uninterrupted use of
+EMS memory.
+ 
+On 80386 machines however, protected-mode EMS emulators are typically used
+to provide EMS memory. Since EMS emulators are often protected-mode
+software, standard-mode Windows cannot run unless it can turn the emulator
+off. Standard-mode Windows can turn off certain expanded memory emulators
+(including all the versions of Microsoft EMM386 and Compaq CEMM) provided
+they have no open handles. In such cases, there will be no EMS memory
+available while standard-mode Windows is running. Windows turns on the EMS
+emulator when Windows exits.
+ 
+<b>Exported Functions</b>
+ 
+File Manager, Control Panel, and Print Manager use network driver functions.
+To fully support these Windows applications, the network driver should
+provide as many network functions as are applicable to the network.
+ 
+The network driver must export all the functions defined in this topic,
+including the Enable and Disable functions. If there is no appropriate
+action for a function to take, then the function should just return the
+WN_NOT_SUPPORTED value. However, the Enable and Disable functions are
+exceptions and return nothing.
+ 
+The driver must export a WEP function. This should be exported by name only,
+not by ordinal value. Windows calls this function when Windows is about to
+remove the driver when closing down.
+ 
+<b>Reserved Ordinals</b>
+ 
+If the driver exports functions that are not on this list, then those
+functions should have export ordinals greater than 500. The numbers below
+500 are reserved for functions with prescribed ordinal values. For example,
+the WNetDeviceMode dialog box callback function should have an ordinal value
+above 500 so as not to conflict with any required ordinals defined in future
+versions.
+ 
+<b>String Handling</b>
+ 
+All strings passed to the network driver may be assumed to be ANSI strings.
+Similarly, all strings returned by the network driver should be ANSI
+strings.
+ 
+<b>Passing Buffers</b>
+ 
+Functions, such as WNetGetConnection, WNetGetErrorText, and WNetGetUser,
+copy data to a buffer supplied by Windows. Since Windows can not know the
+size of the data before making the call, these functions return the
+WN_MORE_DATA value if the complete data does not fit in the buffer.
+ 
+To make a call, Windows allocates a buffer and passes its address to the
+function. Windows also passes the address of a 16-bit variable containing
+the buffer size. The function then copies as much of the requested data
+structure as it can into the buffer. If it all fits, the function returns
+successfully. However, if it does not, the data may be left incomplete, and
+the function returns the WN_MORE_DATA value. In both cases, the function
+sets the 16-bit variable to the number of bytes actually required by the
+data structure. This way, if the buffer passed in was too small and the
+function failed, the caller may allocate a new buffer of the required size
+and call the function again.
+ 
+<b>Data Structures</b>
+ 
+All the data structures are a fixed size. They are allocated to a contiguous
+array starting at the beginning of the buffer. When they need to refer to
+variable-length strings, the data structures will contain pointers in the
+form of WORD offsets into the buffer. All strings should be null-terminated.
+The driver should allocate space in the buffer to store these strings,
+starting at the end of the buffer and growing downward. When there is
+insufficient room in the middle for one more structure and its attendant
+strings, the driver stops adding data and returns the WN_MORE_DATA value.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

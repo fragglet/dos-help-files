@@ -1,0 +1,145 @@
+<html>
+
+<head>
+<title>Bitmaps - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Bitmaps</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='dispdibs.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+GDI requires a display driver to support bit-block transfers by providing
+the BitBlt and related bitmap functions. At the very least, a display driver
+should provide a BitBlt function that can carry out bitmap operations on the
+screen and in monochrome bitmaps. The brute functions provided by GDI and
+used by many printer drivers require monochrome bitmap support.
+ 
+GDI checks the dpRaster member in the GDIINFO structure to determine whether
+the display driver supports bitmaps. If the driver does, GDI checks the
+<b>dpBitsPixel and dpPlanes members </b>to determine the format of the screen
+bitmap.
+ 
+<b>Bitmap Format</b>
+ 
+Most display devices are either planar or packed-pixel devices. A planar
+device stores screen bits in separate bitmap planes, each representing a
+distinct color. A packed-pixel device stores screen bits in a single plane,
+but each pixel on the screen has a set of two or more corresponding bits
+that define the pixel color.
+ 
+A display driver specifies the type of display device by setting the
+<b>dpBitsPixel and dpPlanes members </b>to appropriate values. For a planar device,
+<b>dpBitsPixel is 1 and dpPlanes spe</b>cifies the number of planes. For a
+packed-pixel device, dpPlanes is 1 and dpBitsPixel specifies the number of
+bits per pixel.
+ 
+These values also help determine the number of nondithered colors available
+for the screen. A device with 4 planes is capable of 16 colors. A device
+with 8 bits per pixel is capable of 256 colors. However, the exact color
+specified by a combination of bits depends on whether the device supports a
+color palette.
+ 
+<b>Pixel Output</b>
+ 
+A display driver must support setting and getting individual pixels by
+providing the Pixel function. GDI uses Pixel to support a variety of
+simulations. It also calls the function whenever an application calls
+<b>SetPixel (GDI.31) and Ge</b>tPixel (GDI.83).
+ 
+<b>Bit-Block Transfers</b>
+ 
+A display driver can support bit-block transfers by providing a BitBlt
+function. GDI uses BitBlt to copy a rectangular block of bits from bitmap to
+bitmap, possibly applying a raster operation to the source and destination
+bits as it copies. GDI checks the RC_BITBLT value in the dpRaster member to
+determine whether the display driver supports the function. If it does, GDI
+calls BitBlt whenever an application calls GDI functions such as BitBlt
+(GDI.34) and PatBlt (GDI.29).
+ 
+A display driver can provide additional bit-block transfers by providing a
+<b>StretchBlt function. GDI uses </b>StretchBlt to stretch or compress a block of
+bits to fit a given rectangle in a bitmap. Stretching and compressing
+requires either adding or removing bits as defined by a stretching mode. GDI
+checks the RC_STRETCHBLT value in dpRaster to determine whether the driver
+provides the StretchBlt function. GDI calls the function whenever an
+application calls StretchBlt (GDI.35).
+ 
+If a display driver can carry out bit-block transfers on bitmaps that are
+larger than 64K, it should set the RC_BITMAP64 value in the dpRaster member.
+GDI checks this bit to determine whether large bitmaps are permitted.
+ 
+<b>Transparent-Block Transfers</b>
+ 
+In Windows 3.1, display drivers can indicate that they support
+transparent-block transfers by setting the C1_TRANSPARENT value in the
+<b>dpCaps1 member of the</b> GDIINFO structure. In a transparent-block transfer, a
+driver excludes source and brush pixels from a BitBlt or StretchBlt
+operation if those pixels have the same color as the current background
+color for the destination device.
+ 
+If a display driver supports transparent block transfers, the BitBlt
+function must check the bkMode member of the DRAWMODE structure as well as
+the Rop3 parameter of the BitBlt function to determine how to carry out the
+transfer. If the bkMode member specifies the background mode TRANSPARENT1,
+<b>BitBlt</b> must not transfer source and brush bits that have the same color as
+the destination's background color (as specified by the bkColor member of
+the DRAWMODE structure pointed to by the lpDrawMode parameter). In other
+words, the corresponding destination bits must be left unchanged. Other
+background modes do not affect the transfer.
+ 
+Although a display driver may support transparent-block transfers, GDI does
+not currently provide access to this support for Windows applications.
+ 
+<b>Fast Borders</b>
+ 
+A display driver can support fast-border drawing by providing a FastBorder
+function. Windows uses the function to quickly draw borders for windows and
+dialog boxes. GDI checks the RC_GDI20_OUTPUT value in the dpRaster member to
+determine whether a display driver provides the FastBorder function. If it
+does, GDI calls the function to draw the borders. Otherwise, it returns an
+error value to direct Windows to use some other means to draw the borders.
+ 
+A display driver also uses the RC_GDI20_OUTPUT value to specify whether it
+supports the ExtTextOut function. In some cases, a display driver may
+support ExtTextOut but not FastBorder. To account for this, the display
+driver must provide a FastBorder function, but the function can immediately
+return an error value to direct Windows to use some other means to draw
+borders.
+ 
+<b>Saved Bitmaps</b>
+ 
+A display driver can permit Windows to temporarily save bitmaps in
+off-screen video memory by providing the SaveScreenBitmap function. This
+function allows the driver to take advantage of unused video memory and to
+speed up drawing operations that require restoring a portion of the screen
+that was previously overwritten.
+ 
+GDI checks the RC_SAVEBITMAP value in the dpRaster member to determine
+whether the driver supports SaveScreenBitmap.
+ 
+<b>Flood Fill</b>
+ 
+A display driver can support flood-fill operations by providing a FloodFill
+function. GDI uses the function to quickly fill a region on the screen or in
+a bitmap with a specified color. GDI calls the function whenever an
+application calls FloodFill (GDI.25).
+ 
+GDI checks the RC_FLOODFILL value in dpRaster to determine whether the
+driver provides the function.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

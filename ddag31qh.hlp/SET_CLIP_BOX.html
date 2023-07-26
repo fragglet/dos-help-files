@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>SET_CLIP_BOX - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> SET_CLIP_BOX</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Escapes.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='SETCOLORTABLE.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define SET_CLIP_BOX 4108 
+short Control(lpDevice, SET_CLIP_BOX, lpClipBox, NULL)
+LPPDEVICE lpDevice;
+LPRECT lpClipBox;
+ 
+The SET_CLIP_BOX escape sets the clipping rectangle or restores the previous
+clipping rectangle. The SET_CLIP_BOX escape is required of any device driver
+that implements the coordinate transformation escapes.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpDevice   Points to a P</i>DEVICE structure specifying the destination device.
+ 
+<i>lpClipBox  Points to a RECT</i> structure that contains the bounding rectangle
+           of the desired clipping area. If the lpClipBox parameter is not
+           NULL, the previous clipping rectangle is saved, and the current
+           clipping rectangle is set to the specified bounds. If lpClipBox
+           is NULL, the previous clipping rectangle is restored.
+ 
+<b>Return Value</b>
+ 
+The return value is a Boolean value specifying whether or not the clipping
+rectangle was properly set.
+ 
+<b>Comments</b>
+ 
+Drivers that implement the TRANSFORM_CTM, SAVE_CTM, and RESTORE_CTM escapes
+must also implement this escape.
+ 
+When an applications calls a GDI output function, GDI calculates a clipping
+rectangle that bounds the primitive, and then passes both the primitive and
+the clipping rectangle to the driver. The driver is expected to clip the
+primitive to the specified bounding rectangle. However, when an application
+uses the coordinate transformation escapes, the clipping rectangle that was
+calculated by GDI is generally invalid.
+ 
+The application can use the SET_CLIP_BOX escape to specify the correct
+clipping rectangle when coordinate transformations are used.
+ 
+<b>See Also</b>
+ 
+RESTORE_CTM, SAVE_CTM, TRANSFORM_CTM, PDEVICE
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

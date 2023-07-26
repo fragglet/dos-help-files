@@ -1,0 +1,140 @@
+<html>
+
+<head>
+<title>Lines, Curves, and Polygons - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Lines, Curves, and Polygons</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='disptext.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+GDI requires all display drivers to provide an Output function that supports
+a minimum set of line, curve, and polygon drawing capabilities. In
+particular, a display driver must be able to draw scan lines and polylines.
+A scan line is a solid or styled, horizontal line that is exactly one pixel
+wide. A polyline is a sequence of solid lines, each one pixel wide and each
+connected at an endpoint to the next line in the sequence.
+ 
+GDI may call the Output function whenever an application calls a function
+that draws lines, curves, or polygons. If the display driver supports all
+capabilities, GDI calls the Output function for each request. Otherwise, GDI
+simulates output that the driver does not support by combining scan lines
+and polylines.
+ 
+Since GDI can use scan lines and polylines to simulate all other line,
+curve, and polygon output, many display drivers do not support additional
+capabilities unless the display hardware can produce faster and
+higher-quality results than GDI. The only drawback to using display hardware
+is that the display driver must be able to produce the same results in
+memory bitmaps as on the screen.
+ 
+GDI checks the dpCurve, dpLines, and dpPolygonals members of the GDIINFO
+structure to determine what line, curve, and polygon capability the display
+driver has.
+ 
+<b>Curves</b>
+ 
+GDI checks the dpCurve member to determine whether the display driver
+supports circles, ellipses, pie wedges, and chord arcs. This member also
+specifies whether the display driver can draw wide or styled borders for
+curves and fill the interiors of curves.
+ 
+If a display driver does not support circles, GDI can use an ellipse to draw
+a circle. If the display hardware can fill ellipses, the display driver
+should set the interiors bit. GDI can use an alternate-fill polygon to draw
+wide borders (both solid and styled) just as efficiently as if the driver
+supported them correctly.
+ 
+<b>Polylines</b>
+ 
+GDI checks the dpLines member to determine whether the display driver
+support polylines. This member also specifies whether the display driver can
+draw wide or styled lines and fill the interiors of wide lines. A display
+driver must support polylines.
+ 
+If a display driver supports styled lines, the line segments drawn by the
+display hardware must be as specified by the dpStyleLen member. Although
+wide, styled lines are used infrequently, the display driver should support
+them if the display hardware can draw them and the effort to support memory
+bitmaps is not too great. If necessary, GDI can simulate wide, styled
+lines.
+ 
+<b>Polygons</b>
+ 
+GDI checks the dpPolygonals member to determine whether the display driver
+supports rectangles, scan lines, alternate-fill polygons, and
+winding-number-fill polygons. This member also specifies whether the display
+driver can draw wide or style borders for polygons, and fill the interiors
+of polygons. The display driver must support scan lines.
+ 
+If the display driver does not draw its own wide borders, GDI simulates wide
+borders using alternate-fill polygons. Some display drivers intentionally
+take advantage of this by supporting alternate-fill polygons, but not wide
+borders.
+ 
+If the display hardware provides support for styled borders, the driver
+should use the hardware to draw the borders. Although GDI can simulate
+styled borders, such simulations are always slower than using hardware.
+ 
+<b>Hardware Capabilities</b>
+ 
+The hardware for some displays supports many of the line, curve, and polygon
+capabilities that Windows itself supports or expects the display driver to
+support. A display driver should take advantage of display hardware whenever
+possible because it often dramatically improves performance.
+ 
+The only disadvantage to using display hardware is if the hardware cannot
+produce its output both on the screen and in memory bitmaps. Windows
+requires that for any figure drawn on the screen, the display driver must
+also be able to draw it in a memory bitmap. If the hardware cannot access
+memory bitmaps, the display driver must include code that emulates the
+algorithms used by the display hardware. Depending on the complexity of the
+hardware code, this may be a difficult and costly task.
+ 
+One alternative to emulating the display hardware is to use video memory as
+a temporary bitmap. The driver copies the memory bitmap from system memory
+to unused video memory, uses the display hardware to carry out the requested
+graphic operations, and then copies the results back to system memory. The
+efficiency of this method depends on the relative speed of the graphics
+hardware, and the size of the bitmap. This method is not appropriate under
+386 enhanced-mode Windows if the display driver does not have full access to
+the hardware capabilities or to offscreen video memory while running in the
+background, that is, while the user is running a non-Windows application in
+text mode. This method is not appropriate if the display driver cannot
+support monochrome bitmaps. (All display drivers must support output to
+monochrome bitmaps regardless of whether the display adapter is color or
+monochrome.) Finally, this method is not appropriate for device-independent
+bitmaps (DIBs).
+ 
+<b>Partial Support for Capabilities</b>
+ 
+A display driver does not have to provide complete support for a given
+capability. Instead, a driver's Ouput function can provide support for a few
+specific cases and return all others to GDI for simulation. In such cases,
+the display driver sets bits in the GDIINFO structure as if it provided
+complete support, but the driver's Output function returns -1 to GDI for all
+cases that need simulation.
+ 
+For example, if display hardware can draw polygons with 256 vertices but not
+with 257, the Output function can use the display hardware to draw the
+smaller polygons and return -1 to let GDI simulate the rest.
+ 
+GDI does not simulate styled lines. If the display driver specifies support
+for styled lines, it must provide complete support.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

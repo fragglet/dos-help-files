@@ -1,0 +1,100 @@
+<html>
+
+<head>
+<title>Mouse_Event - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Mouse_Event</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Mouse_Driver_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MouseGetIntVect.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+    mov     ax, [Status]        ; mouse motion and button status
+    mov     bx, [deltaX]        ; change in x
+    mov     cx, [deltaY]        ; change in y
+    mov     dx, [ButtonCount]   ; number of buttons
+    xor     di,di               ; DI must be zero
+    xor     si,si               ; SI must be zero
+    call    [Mouse_Event]       ; mouse-event function address
+ 
+The Mouse_Event function records the mouse motion or button click. The
+mouse-interrupt handler calls this function when it has a new mouse event to
+report.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Status</i>       Specifies whether the user moved the mouse, pressed a mouse
+             button, or released a mouse button. The bits in this parameter
+             can be a combination of the following values.
+ 
+             Value                Meaning
+             ───────────────────────────────────────────────────────────────
+             SF_MOVEMENT (0001h)  Movement occured.
+ 
+             SF_B1_DOWN (0002h)   Button 1 (SW1) changed to down.
+ 
+             SF_B1_UP (0004h)     Button 1 (SW1) changed to up.
+ 
+             SF_B2_DOWN (0008h)   Button 2 (SW3) changed to down.
+ 
+             SF_B2_UP (0010h)     Button 2 (SW3) changed to up.
+ 
+             SF_ABSOLUTE (8000h)  The BX and CX registers contain normalized
+                                  absolute coordinates.
+ 
+             The bits specifying the button status are set to indicate a
+             change in status on an ongoing condition. For example, if
+             button 1 is pressed and held down, SF_B1_DOWN is set only when
+             button 1 is first pressed but not for subsequent motions.
+             Similarly, SF_B1_UP is set only when the button is first
+             released.
+ 
+<i>deltaX       Speci</i>fies the amount of motion along the x-axis. This parameter
+             is either the number of mickeys moved (for relative devices),
+             or the actual x-coordinate (for absolute devices).
+ 
+<i>deltaY       Speci</i>fies the amount of motion along the y-axis. This parameter
+             is either the number of mickeys moved (for relative devices),
+             or the actual y-coordinate (for absolute devices).
+ 
+<i>ButtonCount</i>  Specifies the number of buttons.
+ 
+<b>Return Value</b>
+ 
+This function has no return value.
+ 
+<b>Comments</b>
+ 
+If there has been mouse motion (bit 0 of AX is set), the BX and CX registers
+hold the integer values of motion since the last mouse interrupt was
+generated for x and y, respectively.
+ 
+If the SF_ABSOLUTE value is not specified in the Status parameter, the BX
+and CX registers specify relative motions from the last reported position.
+If this value is specified in Status, BX and CX contain normalized absolute
+coordinates between 0 and 65535, which will be mapped by the event procedure
+onto the display surface.
+ 
+The DI and SI registers must be set to zero to ensure compatibility with
+Microsoft Windows for Pen Computing.
+ 
+<b>See Also</b>
+ 
+<b>Enable</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

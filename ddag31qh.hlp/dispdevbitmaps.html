@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>Device Bitmaps - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Device Bitmaps</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='disppalette.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+A device bitmap is any bitmap whose bitmap bits are stored in device memory
+(such as RAM on a display adapter) instead of main memory. Device bitmaps
+can significantly increase the performance of a graphics driver as well as
+free main memory for other uses. To realize these benefits, the
+corresponding graphics device must have ample video memory in addition to
+the video memory used to generate the current display. The device should
+also have efficient routines for copying bits to video memory.
+ 
+Graphics drivers that set the RC_DEVBITS value in the dpRaster member of the
+<b>GDIINFO</b> structure support device bitmaps. GDI checks this bit to determine
+how to carry out requests to create and select bitmaps. If a driver sets the
+RC_DEVBITS value, it must export the following functions:
+ 
+♦  BitmapBits
+ 
+♦  RealizeObject
+ 
+♦  SelectBitmap
+ 
+<b>BitmapBits</b> copies bitmap data to and from device bitmaps. GDI calls this
+function when initializing the bitmap bits after creating the bitmap. It
+also calls the function when an application calls the functions such as
+<b>GetBitmapBits (GDI.74) and SetBitmapBit</b>s (GDI.106).
+ 
+<b>RealizeObject</b> creates or deletes a device bitmap. GDI calls this function
+when creating the bitmap, specifying the OBJ_BITMAP style. RealizeObject is
+responsible for allocating memory to the device as well as filling a
+physical PBITMAP structure that GDI will use to identify the device bitmap.
+If the bitmap is to be deleted, RealizeObject must free the device memory.
+ 
+<b>SelectBitmap associates a device bit</b>map with the given PDEVICE structure.
+GDI passes the physical PBITMAP structures of both the currently selected
+bitmap and the new bitmap so that SelectBitmap can carry out any special
+processing to enable or disable access to the device bitmaps.
+ 
+Device bitmaps cannot be monochrome bitmaps. GDI intercepts all requests to
+create monochrome bitmaps and creates main memory bitmaps instead. This
+means a graphics driver that supports device bitmaps must also be able to
+support main memory bitmaps.
+ 
+<b>Note:</b>  If the display driver supports device bitmaps, it must not fail any
+       calls to the SelectBitmap, BitmapBits, or RealizeObject functions. If
+       the driver cannot allocate more video memory for a requested bitmap,
+       it must use GlobalAlloc to allocate system memory instead.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

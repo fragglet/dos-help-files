@@ -1,0 +1,92 @@
+<html>
+
+<head>
+<title>WNetConnectionDialog - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WNetConnectionDialog</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Network_Driver_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WNetDeviceMode.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD WNetConnectionDialog(hwndParent, iType)
+HWND hwndParent;
+WORD iType;
+ 
+The WNetConnectionDialog function displays the dialog box used to both
+connecting and disconnecting devices.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwndParent</i>  Identifies the owner of the dialog box.
+ 
+<i>iType</i>       Specifies the type of device to be connected. The parameter can
+            be one of the following values.
+ 
+            Value                    Meaning
+            ────────────────────────────────────────────────────────────────
+            WNTYPE_DRIVE (0x0001)    A disk device.
+ 
+            WNTYPE_FILE (0x0002)     A file.
+ 
+            WNTYPE_PRINTER (0x0003)  A printer device.
+ 
+            WNTYPE_COMM (0x0004)     A communications port. Reserved; do not
+                                     use.
+ 
+<b>Return Value</b>
+ 
+The return value is one of the following values.
+ 
+<b>Value             Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>WN_CANCEL</i>         User cancelled (no new drives).
+ 
+<i>WN_NOT_SUPPORTED</i>  Function not supported.
+ 
+<i>WN_OUT_OF_MEMORY</i>  Not enough memory to display the dialog.
+ 
+<i>WN_SUCCESS</i>        Success.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 27.
+ 
+The difference between this function and the WNetConnectDialog and
+<b>WNetDisconnectDialog</b> functions is seen in the interfaces of Control Panel
+and File Manager. Control Panel's Printer Setup dialog box contains a
+Network button which displays the connection dialog box which may be used to
+both create and delete network connections.
+ 
+For Windows 3.1, File Manager calls WNetConnectDialog and
+<b>WNetDisconnectDialog</b> for disks, and Control Panel calls
+<b>WNetConnectionDialog</b> for printers. The network driver should nonetheless
+check the iType parameter in case one or the other component is redesigned.
+(The network driver does not need to implement support for both types of
+devices in both dialogs; a capability bit will be reserved for indicating
+support for additional device types).
+ 
+If the driver returns WN_NOT_SUPPORTED, File Manager carries out the same
+default operations as it would if the driver did not have the capability bit
+set for this dialog box.
+ 
+<b>See Also</b>
+ 
+<b>WNetConnectDialog, WNetDisconnectDialog</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

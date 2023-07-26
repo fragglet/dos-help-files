@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>SETLINEJOIN - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> SETLINEJOIN</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Escapes.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='SETMITERLIMIT.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define SETLINEJOIN 22 
+short Control(lpDevice, SETLINEJOIN, lpInData, lpOutData)
+LPPDEVICE lpDevice;
+LPWORD lpInData;
+LPWORD lpOutData;
+ 
+The SETLINEJOIN escape specifies how to join two lines that meet at an
+angle.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<i>lpDevice   Points to a P</i>DEVICE structure specifying the destination device.
+ 
+<i>lpInData</i>   Points to a 16-bit variable that specifies the newline join type.
+           If this parameter is NULL, the escape does not change the line
+           join. The variable can contain one of the following values.
+ 
+           Value  Meaning
+           ─────────────────────────────────────────────────────────────────
+           0      Miter join. The outer edges of the strokes for the two
+                  segments are extended until they meet at an angle, as in a
+                  picture frame. If the segments meet at too sharp of an
+                  angle, a bevel join is used instead; this is controlled by
+                  the miter limit established by the SETMITERLIMIT escape.
+ 
+           1      Round join. A circular arc with a diameter equal to the
+                  line width is drawn around the point where the segments
+                  meet, and is filled in, producing a rounded corner. The
+                  stroke actually draws a full circle at this point. If path
+                  segments shorter than one-half the line width meet at
+                  sharp angles, an unintentional "wrong side" of this circle
+                  may appear.
+ 
+           2      Bevel join. The meeting path segments are finished with
+                  butt-end caps (same as set by the SETLINECAP escape);
+                  then, the resulting notch beyond the ends of the segments
+                  is filled with a triangle.
+ 
+<i>lpOutData</i>  Points to a 16-bit variable that receives the previous line-join
+           type. If this parameter is NULL, the escape does not return the
+           previous line-join type.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the escape is successful. Otherwise, it is
+FALSE.
+ 
+<b>Comments</b>
+ 
+Join styles are significant only at points at which consecutive segments of
+a path connect at an angle. Curved lines are actually rendered as sequences
+of straight line segments, and the current line join is applied to the
+"corners" between those segments. However, for typical values of the
+flatness parameter, the corners are so shallow that the difference between
+join styles is not visible.
+ 
+<b>See Also</b>
+ 
+SETLINECAP, SETMITERLIMIT, PDEVICE
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

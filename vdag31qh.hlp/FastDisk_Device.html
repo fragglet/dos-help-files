@@ -1,0 +1,478 @@
+<html>
+
+<head>
+<title>FastDisk Device - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> FastDisk Device</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='FastDisk_Device.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+<b>Introduction</b>
+ 
+FastDisk is the name for a group of Windows Virtual Devices (VxDs) that
+allow for direct, asynchronous I/O to hard disks or other block devices such
+as optical disks or tape backup devices. This technology improves
+performance by supporting such features as true read-ahead and write-behind
+paging and file caching. Also, since FastDisk can be called at ring 0,
+MS-DOS programs running in virtual machines can be paged while they run.
+ 
+At the heart of FastDisk is a virtual device named BLOCKDEV. This virtual
+device replaces the Windows 3.0 VHD (Virtual Hard Disk Device) and provides
+a new set of services to support multiple block device drivers. BlockDev
+performs all of the functions that VHD supported in Windows 3.0. This
+includes entering critical sections during Int 13h calls to the BIOS disk
+interface, allocating DMA buffers when DMA hard disks are detected, and
+improving the performance of hard disks that do not have FastDisk device
+drivers.
+ 
+BlockDev is also responsible for providing a common interface between the
+FastDisk block devices and their clients. Under a default Windows 3.1
+configuration there will be at most two users of a FastDisk device: the BIOS
+Int 13h translation virtual device, and PageFile, the device that is
+responsible for performing demand paging I/O.
+ 
+The Int 13h BIOS API translation virtual device is responsible for
+translating disk I/O requests for drives that have a FastDisk device driver
+into commands that the FastDisk device driver can understand.
+ 
+For the sake of this discussion, we will call block device drivers
+FastDisks, the BlockDev virtual device is BlockDev, and device drivers that
+send commands to FastDisks are clients.
+ 
+The FastDisk device drivers themselves can be very simple. They are only
+required to support multiple sector read and write commands. Commands are
+always submitted in arbitrarily long chains of command blocks, but FastDisk
+device drivers can choose to have BlockDev queue the commands and send them
+the FastDisk virtual device one command at a time. This greatly reduces the
+amount of work needed to support a new hardware controller.
+ 
+<b>Initialization Sequence</b>
+ 
+During the Sys_Critical_Init phase of Win386 initialization, BlockDev
+initializes and prepares for FastDisk device drivers to register themselves.
+Each FastDisk then identifies itself by calling the
+<b>BlockDev_Register_Device</b> service during initialization. This is usually done
+during the Sys_Critical_Init phase of initialization, but can be done during
+the Device_Init phase if necessary. However, FastDisks must be careful to
+initialize before any client attempts to locate them. For example, any
+FastDisk that will be used by the standard PageFile virtual device must
+either initialize during Sys_Critical_Init or must initialize during
+<b>Device_Init</b> and have an initialization order that is less than PageFile's.
+Note that the Int 13h translation virtual device is an exception to this
+rule since BlockDev notifies Int13.386 every time an Int 13h FastDisk
+initializes.
+ 
+Clients usually will attempt to locate a FastDisk's BDD during either the
+<b>Device_Init or Init_Complete phas</b>e of device initialization. However, it is
+possible for a client to search the BDD chain at any point in time. Client's
+may attempt to locate a FastDisk either by examining the Int 13h drive
+number in the BDD or by searching for a particular device name.
+ 
+<b>Establishing Communication With a FastDisk Device Driver</b>
+ 
+Every FastDisk is identified by a unique <span class='grhilite'>◄</span><a href='BlockDev_Device_Descriptor.html'>Block Device Descriptor</a><span class='grhilite'>►</span>. This
+data structure contains fields used to identify the type of device, it's
+name, it's physical characteristics such as number of heads, cylinders, and
+sectors per track, and various code entry points. Most of the information in
+the BDD is reserved for use by BlockDev, however, clients are allowed to
+scan a list of BDDs for all installed FastDisks and examine the name, flags,
+and Int 13h drive number fields.
+ 
+The BDD_Major_Ver and BDD_Minor_Ver fields define the version of BlockDev
+support that is required by this FastDisk, not the FastDisk's version
+number.
+ 
+<b>BDD_Device_Type</b> identifies the FastDisk as a fixed disk, floppy, tape, and
+so on.
+ 
+<b>BDD_Int_13h_Number</b> identifies the FastDisk's Int 13h drive number if it has
+one. Note that this field is ignored unless the BDF_Int13_Drive flag is set
+in the BDD_Flags field.
+ 
+<b>BDD_Flags</b> is a bit field that defines various properties about the
+FastDisk's capabilities.
+ 
+<b>BDD_Name_Ptr</b> points to a null terminated string that is used to uniquely
+identify the FastDisk.
+ 
+<b>BDD_Max_Sector</b> defines the highest valid sector number for this FastDisk.
+Sector numbers start at 0 and the max sector value is inclusive. Therefore,
+a max sector number of 1000h would mean that the drive has 1001h sectors,
+numbered 0 through 1000h.
+ 
+<b>BDD_Sector_Size</b> specifies the size of a single sector in bytes. Note that
+for Int 13h drives this value must by 200h (512 decimal).
+ 
+The BDD_Num_Heads, BDD_Num_Cylinders, and BDD_Num_Sectors_Per_Track specify
+the physical characteristics of the drive. The Int 13h translation virtual
+device will use these values to convert Int 13h calls from virtual mode into
+FastDisk commands. Other virtual devices, such as disk caches, may also use
+this information to optimize I/O. Block devices that are not disk drives do
+not need to fill in these fields.
+ 
+<b>BDD_Sync_Command_Proc</b> specifies the address for synchronous commands to be
+sent to a FastDisk. Note that clients should never call this address
+directly. Clients must always call BlockDev_Synchronous_Command to
+communicate with a FastDisk.
+ 
+<b>BDD_Command</b> specifies the address for asynchronous commands to be sent to a
+FastDisk. Note that clients should never call this address directly. Clients
+must always call BlockDev_Send_Command to communicate with a FastDisk.
+ 
+The BDD_Hw_Int_Proc is called whenever a hardware interrupt occurs on IRQ
+14. If this field is 0 then BlockDev will not call the FastDisk when
+interrupts occur. This allows devices to be written that use an interrupt
+other than IRQ 14.
+ 
+The procedure must return with the carry flag clear if the fastdisk has
+serviced the hardware interrpt, carry set if it has not seviced the
+interrupt. FastDisk device drivers must call VPICD_Phys_EOI to end the
+physical interrupt before returning with carry clear. FastDisks may not use
+any of the VPICD services related to virtual interrupts. They may only call
+the following VPICD services:
+ 
+<b>VPICD_Get_Version</b>
+<b>VPICD_Phys_EOI</b>
+<b>VPICD_Get_Complete_Status</b>
+<b>VPICD_Get_Status</b>
+<b>VPICD_Test_Phys_Request</b>
+<b>VPICD_Physically_Mask</b>
+<b>VPICD_Physically_Unmask</b>
+<b>VPICD_Get_IRQ_Complete_Status</b>
+ 
+It is important to only rely on the state of the actual physical interrupt
+controller so that these virtual devices can be used in future environments
+that do not have virtual interrupt support.
+ 
+<b>FastDisk Commands</b>
+ 
+A pointer to a BDD is used to identify which FastDisk the command is to be
+sent to. A second pointer points to the head of a linked list of command
+blocks to be sent to the device. The  client  then  calls  the  service
+<b>BlockDev_Send_Command</b> to send the command to the FastDisk.
+ 
+Because all commands are asynchronous, the send command service will not
+return any status information about the command(s) sent. When a command
+completes, the caller will be called back at an address specified in the
+command block.
+ 
+The basic commands are read, write, and cancel. Any command that has been
+sent to a FastDisk but has not yet completed can be canceled (although
+commands that are in progress usually can not be canceled).
+ 
+<b>Client Interfaces to FastDisks</b>
+ 
+<b>Locating a FastDisk</b>
+ 
+During initialization, clients must identify the FastDisk(s) with which they
+will need to communicate. The Int 13h virtual device is notified by BlockDev
+whenever an Int 13h FastDisk is installed, but other clients, such as
+PageFile, will need to request information from BlockDev to locate their
+block devices. BlockDev supports this through two services:
+ 
+<b>BlockDev_Find_Int13_Drive</b> (can only be called during initialization)
+<b>BlockDev_Get_Device_List</b>
+ 
+The BlockDev_Find_Int13_Drive service is provided as a convenience for
+clients that  only understand how to communicate with FastDisks that are
+standard Int 13h drives. The default PageFile's swap partition is created
+only on Int 13h drives by the SwapFile utility. Therefore, PageFile knows
+that it will always be communicating with a FastDisk that is also an Int 13h
+drive.
+ 
+However, this is just a restriction of the default Windows 3.1 PageFile
+virtual device. PageFile could easily be extended to use other block device
+drivers such as dedicated hard disks that are used only for paging and can
+not be accessed through the standard Int 13h BIOS interface. Also, other
+virtual devices may need to communicate with block device drivers, such as
+tape drives, which do not use the Int 13h BIOS disk interface. To locate
+these device drivers, the client must call BlockDev_Get_Device_List to
+obtain a pointer to the head of a list of all currently installed block
+device drivers. The client can then scan this list, checking the name field
+of each BDD, until the appropriate device driver is located.
+ 
+Once the address of a BDD of a FastDisk is located, that address is used to
+indicate the destination for commands when calling BlockDev_Send_Command.
+ 
+<b>Sending Asynchronous Commands to a FastDisk virtual device</b>
+ 
+<b>BlockDev_Send_Command Service Interface</b>
+ 
+All commands are sent to FastDisk virtual devices by calling the service
+<b>BlockDev_Send_Command</b> with the following parameters:
+ 
+EDI -&gt; Block Device Descriptor
+ESI -&gt; First command block in list of commands to send
+ 
+This service has no return values. Each command in a command chain  will
+call a command complete callback procedure when the command has been
+completed or if an error is detected.
+ 
+Command blocks contain a field CB_Reserved_Client that can be used by the
+client to uniquely identify the command block when it completes. BlockDev
+will not use or modify any data in the portion of the command block.
+ 
+This service can be called from an interrupt handler. This allows clients to
+submit a new command to a FastDisk from a command complete callback
+procedure.
+ 
+<b>Command Block Structure</b>
+ 
+   BlockDev_Command_Block STRUC
+   BD_CB_Next       dd   ?
+   BD_CB_Command      dw   ?
+   BD_CB_Cmd_Status    dw   ?
+   BD_CB_Flags       dd   ?
+   BD_CB_Cmd_Cplt_Proc   dd   ?
+   BD_CB_Sector      dq   ?
+   BD_CB_Count       dd   ?
+   BD_CB_Buffer_Ptr    dd   ?
+   BD_CB_Reserved_Client  dd   ?
+   BD_CB_Reserved_BlockDev dd   ?
+   BD_CB_Reserved_FastDisk dd   ?
+   BlockDev_Command_Block ENDS
+ 
+<b>Priorities</b>
+ 
+Commands have one of two priorities: High priority, or not high priority. A
+high priority command is indicated by setting the appropriate flag in the
+command block. All high priority commands will be processed before non-high
+priority commands. However, if a low priority command is in progress when a
+high priority command is submitted, the command that is in progress will
+usually be completed before the high priority command begins. Any queued low
+priority commands will not be processed until all high priority commands
+have completed.
+ 
+<b>Command Complete CallBack</b>
+ 
+When a command execution completes, the command complete callback procedure
+will be called to notify the caller of the status of the operation. The
+callback procedure will be called with the following parameters:
+ 
+   EDI -&gt; Block Device Descriptor
+   ESI -&gt; Command Block
+ 
+Interrupts will be disabled; client is allowed to enable interrupts.
+ 
+The client  must examine the command status field to determine wether or not
+the command has succeeded. Once the command complete callback has been
+called, the command block is no longer busy, and may be used again
+immediately. It is valid to call BlockDev_Send_Command from a command
+complete callback procedure. Note, however, that the callback will be called
+at interrupt time and so only Async services may be called. If the virtual
+device needs to call any other services then it should schedule an event and
+complete the processing of  the command  completion when the event procedure
+is called.
+ 
+Upon command completion the following fields may have been modified in the
+command block:
+ 
+BD_CB_Next
+BD_CB_Cmd_Status
+BD_CB_Reserved_BlockDev
+BD_CB_Reserved_FastDisk
+ 
+All other fields will remain unmodified. This allows clients to easily
+re-submit the same command block without having to completely reinitialize
+it each time.
+ 
+<b>Standard Commands</b>
+ 
+<b>Read/Write Sectors</b>
+ 
+The read and write commands take identical parameters except for the command
+word. These commands use every parameter in the BlockDev_Command_Block
+structure. The caller specifies the address of a buffer and the starting
+sector at which the I/O should begin. If the scatter/gather option is not
+selected then the buffer pointer points to a buffer large enough to accept
+the entire transfer, and the count field contains the number of sectors to
+transfer. If the scatter/gather option flag is set then the count field is
+ignored and the buffer pointer points to an array of transfer addresses and
+counts. The scatter/gather table has the following format:
+ 
+   Dword count of sectors for memory region 1
+   Dword linear address for transfer of region 1 sectors
+   Dword count of sectors for memory region 2
+   Dword linear address for transfer of region 2 sectors
+     .
+     .
+     .
+   Dword count of sectors for memory region x
+   Dword linear address for transfer of region x sectors
+   Dword 0 to terminate list
+ 
+It is the client's responsibility to ensure that all memory that is passed
+to this service is page locked.
+ 
+The priority of the command is indicated in the flag word as either high
+priority or not high priority. High priority commands will be serviced
+before all other commands.
+ 
+When  the  command  completes, the address in BD_CB_Cmd_Cplt_Proc will be
+called with the following parameters:
+ 
+EDI -&gt; Block Device Descriptor
+ESI -&gt; Command block for command that has completed
+ 
+Interrupts are disabled. The client may enable interrupts and may return
+with interrupts enabled if desired.
+ 
+The caller is allowed to modify EAX, EBX, ECX, EDX, ESI, EDI, and flags.
+ 
+<b>Verify Sectors</b>
+ 
+The verify command is similar to a read command except that no data is
+transferred. The caller must fill in the command, flags, starting sector,
+and sector count fields. There is no need to fill in the buffer pointer
+field since no data will be transferred. Obviously, scatter/gather is not
+supported for verify commands. Some FastDisk device drivers may not support
+this command and will complete the command with a status of
+<b>BDS_Invalid_Command</b>.
+ 
+<b>Cancel</b>
+ 
+Commands that have been sent to a FastDisk, but have not yet completed, can
+be canceled by sending a cancel command. The client specifies the command to
+cancel by placing a pointer to the command in the BC_CB_Buffer_Ptr field of
+the cancel command block.
+ 
+If it is possible to cancel the command, the canceled command's command
+complete callback will be executed and the command will complete with a
+status of BDS_Canceled. After the canceled command has been canceled, then
+the cancel command will be completed, and it's callback will be executed
+with a status of BDS_Success. In all cases, if a command is canceled, the
+canceled command's command complete callback will be called before the
+cancel command's callback is called.
+ 
+If the command that was to be canceled is already in progress or is not in
+the current command queue for the FastDisk, the cancel command will fail
+with a status of either BDS_Cmd_In_Progress, or BDS_Invalid_Cmd_Ptr.
+ 
+<b>Invalid and Unsupported Commands</b>
+ 
+Any command that is not supported by a FastDisk will complete with a status
+of BDS_Invalid_Command.
+ 
+<b>FastDisk Interfaces With BlockDev</b>
+ 
+<b>Block Device Descriptor</b>
+ 
+Every FastDisk is identified by a unique Block Device Descriptor (BDD). The
+BDD identifies the device's name, physical characteristics, several entry
+points, and other information. FastDisks register their presence by calling
+BlockDev_Register_Device  during  system  initialization (usually during the
+Sys_Critical_Init control call). Note that a single virtual device may
+register more than one BDD. This may be the case, for example, with a
+controller that supports multiple hard disk drives. A single virtual device
+would support more than one FastDisk.
+ 
+One important consideration when writing a FastDisk is wether or not the
+device will support chained commands. All clients may submit multiple
+commands, however a FastDisk has the option  of requesting that BlockDev
+serialize all commands so that the FastDisk is only required to execute one
+command at a time. This is accomplished by setting the BDF_Serial_Cmd flag
+in the BDD flag dword. If this option is selected then BlockDev will queue
+all commands and only present the FastDisk with a single command at a time.
+BlockDev will also validate sector ranges for read and write commands.
+FastDisks will never need to test for invalid sectors on these commands if
+BDF_Serial_Cmd is selected. Also, BlockDev will handle all cancel commands.
+The FastDisk will never see either the command that was canceled or the
+cancel command itself.
+ 
+FastDisk device drivers for controllers that can handle multiple commands
+may not want commands serialized by BlockDev. In this case, the FastDisk is
+responsible for queueing commands and performing all error checking for
+every command. BlockDev will simply pass all command chains through to the
+FastDisk block device driver.
+ 
+<b>Command Procedures</b>
+ 
+Two fields that are required to be supplied in every BDD are the
+<b>BDD_Sync_Cmd_Proc and BDD_Command_Proc callback ent</b>ry points. These fields
+specify a procedures to be called whenever a client sends commands to the
+FastDisk. Clients never call the entry points directly. Instead, clients
+send command chains to a FastDisk by calling the
+<b>BlockDev_Synchronous_Command and BlockDev_Send_Command services.</b>
+ 
+<b>Synchronous Commands</b>
+ 
+Synchronous commands are passed directly to the FastDisk. These commands
+behave like normal procedure calls in that the result of the command is
+returned to the caller when the procedure call returns
+(BlockDev_Send_Command has no return results). Currently, the  only defined
+command is BD_SC_Get_Version. This command has the following entry and exit
+parameters:
+ 
+ENTRY:
+ 
+AX = BD_SC_Get_Version
+EDI -&gt; Block Device Descriptor (required for all commands)
+ 
+EXIT:
+ 
+Carry flag is clear (this call always succeeds)
+AH = FastDisk major version number
+AL = FastDisk minor version number
+ 
+All fastdisks must support this command. The synchronous command ID is
+always placed in the AX register. ISVs may support device-dependent APIs
+using commands 8000h-FFFFh. Microsoft reserves commands 0000h-7FFFh for
+future expansion of the standard FastDisk API.
+ 
+On return, the carry flag is always used to indicate an error. In case of an
+error, the error number will be returned in AX. All synchronous commands
+that are not recognized by a FastDisk should return with carry set and
+AX=BD_SC_Err_Invalid_Cmd.
+ 
+<b>Asynchronous Commands</b>
+ 
+BlockDev then does one of two things depending upon the BDF_Serial_Cmd flag
+in the fastdisk's BDD. If the flag is clear (the FastDisk can handle
+multiple, chained commands), the fastdisk's command procedure is called with
+the original client command chain. In this case, BlockDev will do no error
+checking or processing of the command list in any way.
+ 
+If the serial command option is set in the fastdisk's BDD then BlockDev will
+process the entire command chain before sending the commands to the
+FastDisk. In this case, BlockDev will queue commands so that high priority
+commands will be processed ahead of all non-high priority commands
+regardless of the client that submitted them. It will also check for invalid
+sector ranges and any invalid command blocks will be completed without the
+FastDisk ever seeing them. If a command is canceled that is in the command
+queue, BlockDev will handle the cancel without the FastDisk ever seeing the
+command. Commands will be sent to the FastDisk one  at a  time. When the
+FastDisk calls BlockDev_Command_Complete for the current command, BlockDev
+will immediately submit the next command in the queue if any are pending.
+ 
+<b>Command Completion</b>
+ 
+When a command completes, the FastDisk must call the
+<b>BlockDev_Command_Complete</b> service with the following parameters:
+ 
+EDI -&gt; Fastdisk's BDD
+ESI -&gt; Command block for command that completed
+ 
+The FastDisk is responsible for updating the BD_CB_Cmd_Status field as well
+as changing any other fields that should be modified for the command.
+BlockDev will then call the command complete callback address specified in
+the command. FastDisk virtual device should never call the command complete
+address directly. They should always call BlockDev_Command_Complete. If
+BlockDev is serializing commands for the FastDisk then a new command may be
+send to the fastdisk's command procedure before this service returns.
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>_Assign_Device_V86_Pages - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _Assign_Device_V86_Pages</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Device_V86_Page_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_DeAssign_Device_V86_Pages.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _Assign_Device_V86_Pages, &lt;VMLinrPage, nPages, VM, flags&gt;
+ 
+or      eax, eax            ; nonzero if assigned, zero if error
+jz      not_assigned
+ 
+The _Assign_Device_V86_Pages service assigns to a virtual device one or more
+pages of the V86 address space.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>VMLinrPage</i>  Specifies the linear page number of the first page of V86
+            address space to assign. The page number must be in the range 0
+            through 10Fh.
+ 
+<i>nPages</i>      Specifies the number of pages to assign. All pages to assign
+            must be within the V86 address space. If any a page is already
+            assigned, this service returns an error value.
+ 
+<i>VM</i>          Specifies a handle identifying a virtual machine. If this
+            parameter is a valid handle, the assignments apply only to the
+            specified virtual machine. If this parameter is zero, the
+            assignments apply to all virtual machines.
+ 
+<i>flags</i>       Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero value if the service is successful.
+Otherwise, EAX contains zero to indicate an error such as a specified page
+already assigned or an invalid page range.
+ 
+<b>Comments</b>
+ 
+A virtual device can make global assignments at any time, including during
+device initialization. For global assignments, the VM parameter must be
+zero. The virtual device must not attempt to assign a page that is already
+assigned. A virtual device can make local assignments only after device
+initialization is complete.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_DeAssign_Device_V86_Pages</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

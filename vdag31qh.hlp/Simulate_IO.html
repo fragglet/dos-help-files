@@ -1,0 +1,114 @@
+<html>
+
+<head>
+<title>Simulate_IO - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Simulate_IO</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='I_sl_O_Trapping_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='I_sl_O_Trapping_Services.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, Data           ; data for output operations
+mov     ebx, VM             ; current VM handle
+mov     ecx, IOType         ; type of I/O (as passed to I/O trap routine)
+mov     edx, Port           ; I/O port number
+mov     ebp, OFFSET32 crs   ; points to a Client_Reg_Struc
+VMMjmp  Simulate_IO
+ 
+mov     [Data], eax         ; data for input operation
+ 
+The Simulate_IO service reduces complex I/O instructions to simpler I/O
+operations. An I/O callback procedure typically jumps to this service
+whenever the procedure receives a type of I/O that it does not directly
+support.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Data</i>       Specifies the data for an output operation. This parameter is
+           used only if the IOType parameter specifies an output operation.
+ 
+<i>VM</i>         Specifies a handle identifying the current virtual machine.
+ 
+<i>IOType</i>     Specifies the type of I/O operation. This parameter can be a
+           combination of the following values:
+ 
+           Value         Meaning
+           ─────────────────────────────────────────────────────────────────
+           Byte_Input    Input a single byte; place in AL if String_IO not
+                         given.
+ 
+           Byte_Output   Output a single byte from AL if String_IO not
+                         given.
+ 
+           Word_Input    Input a word; place in AX if String_IO not given.
+ 
+           Word_Output   Output a word from AX if String_IO not given.
+ 
+           Dword_Input   Input a double word; place in EAX if String_IO not
+                         given.
+ 
+           Dword_Output  Output a double word from EAX if String_IO not
+                         given.
+ 
+           String_IO     Input or output a string. The high 16-bits
+                         specifies segment address of buffer containing the
+                         string to output or to receive the string input.
+ 
+           Rep_IO        Repeat the input or output string operation the
+                         number of times specified by the Client_CX field in
+                         the Client_Reg_Struc structure.
+ 
+           Addr_32_IO    Use 32-bit address offsets for input or output
+                         string operations. If this value is not given, the
+                         16-bit offsets are used.
+ 
+           Reverse_IO    Decrement string address on each input or output
+                         operation. If this value is not given, the string
+                         address is incremented on each operation.
+ 
+<i>Port</i>       Specifies the number of the I/O port through which to carry out
+           the operation.
+ 
+<i>crs      </i>  Points to a Client_Reg_Struc structure containing the register
+           contents for the current virtual machine.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains input data if the IOType parameter specifies an
+input operation. IOType also specifies the size of the data in EAX.
+ 
+<b>Comments</b>
+ 
+The parameters to this service are identical to the parameters passed to an
+I/O callback procedure. A callback procedure should jump to this service
+using the VMMjmp macro with all of the registers in the same state as when
+the procedure was called. The procedure may modify the ESI and EDI register
+before jumping, if necessary.
+ 
+<b>Uses</b>
+ 
+EAX, EBX, ECX, EDX, ESI, EDI, Flags
+ 
+<b>See Also</b>
+ 
+<b>Dispatch_Byte_IO, Emulate_Non_Byte_IO</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

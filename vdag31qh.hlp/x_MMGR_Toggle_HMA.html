@@ -1,0 +1,126 @@
+<html>
+
+<head>
+<title>_MMGR_Toggle_HMA - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _MMGR_Toggle_HMA</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='System-Internal_Memory_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_PageOutDirtyPages.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _MMGR_Toggle_HMA, &lt;VM, flags&gt;
+ 
+cmp     flags, MMGRHMAQuerry
+jne     did_toggle
+mov     [HMAState], eax     ; 0 if disabled, 1 if enabled
+ 
+did_toggle:
+or      eax, eax           ; nonzero if enabled/disabled, zero if error
+jz      error
+ 
+The _MMGR_Toggle_HMA service enables or disables the high memory area (HMA).
+The V86MMGR XMS device uses this service to control the state of the HMA for
+a specified virtual machine and to notify the instance data manager that the
+state is changing.
+ 
+This service is for exclusive use by the V86MMGR XMS device.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>VM</i>         Specifies a handle identifying the virtual machine.
+ 
+<i>flags</i>      Specifies the operation flags. It can be one of the following
+           values:
+ 
+           Value            Meaning
+           ─────────────────────────────────────────────────────────────────
+           MMGRHMAPhysical  Specifies whether the service maps physical
+                            pages 100h through 10Fh into the HMA or expects
+                            the virtual device to map some other physical
+                            pages into the area. The value is used only if
+                            the MMGRHMAEnable value is also given.
+ 
+           MMGRHMAEnable    Enables the HMA, allowing addresses greater than
+                            1 megabyte to access pages 100h through 10Fh. If
+                            the MMGRHMAPhysical value is given, the service
+                            maps physical pages 100h through 10Fh into the
+                            linear pages 100h through 10Fh for the virtual
+                            machine, enabling the global HMA for this
+                            virtual machine and which all virtual machines
+                            share.
+ 
+                            If the MMGRHMAPhysical value is not given, the
+                            service marks the linear pages 100h through 10Fh
+                            as not present system pages. To prevent a system
+                            crash when these pages are accessed, the virtual
+                            device must provide its own physical pages to
+                            map into these linear pages. This effectively
+                            creates a local HMA that is specific to the
+                            given virtual machine.
+ 
+           MMGRHMADisable   Disables the HMA, causing addresses greater than
+                            1 megabyte to be wrapped back to addresses in
+                            pages 0 through 0Fh.
+ 
+           MMGRHMAQuerry    Returns the current state of the HMA for the
+                            virtual machine.
+ 
+           The MMGRHMAEnable, MMGRHMADisable, MMGRHMAQuerry values are
+           mutually exclusive.
+ 
+           All other values are reserved.
+ 
+<b>Return Value</b>
+ 
+If MMGRHMAEnable or MMGRHMADisable are given, the EAX register contains a
+nonzero if the service is successful. Otherwise, EAX contains zero to
+indicate an error.
+ 
+If the MMGRHMAQuerry value is given, the EAX register contains a nonzero
+value if the HMA is enabled and zero if the HMA is disabled.
+ 
+<b>Comments</b>
+ 
+This service can fail if the MMGRHMAEnable and MMGRHMAPhysical values are
+given but the system is already using the physical pages 100h through 10Fh
+for some other purpose.
+ 
+A virtual device must not call this service unless it has already used the
+<b>_Assign_Device_V86_Pages</b> service to assign the pages 100h through 10Fh to
+itself. For this reason, this service is intended to be used by one and only
+one virtual device.
+ 
+When the system creates a virtual machine, it disables the HMA and causes
+the virtual machine to operate like an 8086 processor. To override this
+default, the virtual device responsible for the HMA must enable the HMA
+while processing the VM_Critical_Init message.
+ 
+Virtual devices must not identify instance data in the HMA.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_Assign_Device_V86_Pages, VM_Critical_Init</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

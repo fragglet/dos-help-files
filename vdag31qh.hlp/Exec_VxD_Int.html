@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>Exec_VxD_Int - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Exec_VxD_Int</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Nested_Execution_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Restore_Client_State.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+push    dword ptr Interrupt     ; number of interrupt to execute
+VMMcall Exec_VxD_Int
+ 
+The Exec_VxD_Int service executes the specified software interrupt. Virtual
+devices uses this service to call MS-DOS or BIOS functions outside the
+context of a nested execution block.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Interrupt</i>  Specifies the number of the interrupt to execute.
+ 
+<b>Return Value</b>
+ 
+One or more registers may contain return values depending the function of
+the specified interrupt.
+ 
+<b>Comments</b>
+ 
+Before calling this service, a virtual device must set registers to values
+that are appropriate for the specified software interrupt. This service
+supports all MS-DOS and BIOS functions that are supported in protected mode
+programs.
+ 
+This service does not change the client registers and flags, so there is no
+need for the virtual device to save and restore the client register
+structure. This service also pops the interrupt number from the stack.
+ 
+<b>Example</b>
+ 
+The following examples calls the MS-DOS function Get Version (Interrupt 21h,
+Function 30h):
+ 
+mov     ax, 3000h
+push    dword ptr 21h
+VMMcall Exec_VxD_Int
+mov     [Major], al     ; major MS-DOS version
+mov     [Minor], al     ; minor MS-DOS version
+ 
+<b>See Also</b>
+ 
+<b>VxDint</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

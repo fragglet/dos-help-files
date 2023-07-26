@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>SaveScreenBitmap - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> SaveScreenBitmap</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display-Specific_Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='SetCursor.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD SaveScreenBitmap(lpRect, wCommand)
+LPRECT lpRect;
+WORD wCommand;
+ 
+The SaveScreenBitmap function saves a single bitmap from the display or
+restores a single (previously stored) bitmap to the display. It is used, for
+example, when a menu is pulled down, to store the part of the screen that is
+"behind" the menu until the menu is closed.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpRect     Points </i>to a RECT structure containing the rectangle to use.
+ 
+<i>wCommand</i>   Specifies the action to take. It can be one of the following
+           values:
+ 
+           Value  Meaning
+           ─────────────────────────────────────────────────────────────────
+           0      Saves the rectangle.
+ 
+           1      Restores the rectangle.
+ 
+           2      Discards previous save, if there was one.
+ 
+<b>Return Value</b>
+ 
+The return value is AX=1 if successful. Otherwise, AX=0 for any of the
+following error conditions:
+ 
+♦  "Shadow memory" does not exist (save, restore, ignore).
+ 
+♦  "Shadow memory" is already in use (save).
+ 
+♦  "Shadow memory" is not in use (restore).
+ 
+♦  "Shadow memory" has been stolen or trashed (restore).
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 92.
+ 
+Because SaveScreenBitmap can save only one bitmap at a time, the device
+driver must maintain a record of whether or not the save area is currently
+in use.
+ 
+The bitmap is stored in "shadow memory" (that is, memory for which the
+device has control of allocation). Therefore, the device can save the bitmap
+in whatever form is most convenient for it, without the rest of Windows
+worrying about where it goes.
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

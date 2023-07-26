@@ -1,0 +1,158 @@
+<html>
+
+<head>
+<title>TEXTXFORM - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> TEXTXFORM</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Driver_Structures.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Graphics_Driver_Structures.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+typedef struct tagTEXTXFORM {
+    short  txfHeight;
+    short  txfWidth;
+    short  txfEscapement;
+    short  txfOrientation;
+    short  txfWeight;
+    char   txfItalic;
+    char   txfUnderline;
+    char   txfStrikeOut;
+    char   txfOutPrecision;
+    char   txfClipPrecision;
+    short  txfAccelerator;
+    short  txfOverhang;
+} TEXTXFORM;
+ 
+The TEXTXFORM structure contains information describing the actual
+appearance of text as displayed by the device. The StrBlt and ExtTextOut
+functions check the the TEXTXFORM structure to determine what additional
+actions are required to generate the desired text from the specified
+physical font.
+ 
+<b>Member            Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<b>txfHeight</b>         Specifies the height of characters (ascent + descent) in
+                  device units.
+ 
+<b>txfWidth</b>          Specifies the width in device units of the bounding box of
+                  the letter "X."
+ 
+<b>txfEscapement</b>     Specifies the angle in tenths of a degree counterclockwise
+                  from the x-axis of the vector passing through the origin
+                  of all the characters in the string.
+ 
+<b>txfOrientation</b>    Specifies the angle in tenths of a degree counterclockwise
+                  from the x-axis of the baseline of the character.
+ 
+<b>txfWeight</b>         Specifies the weight of the font ranging from 1 to 1000,
+                  with 400 being the value for the standard font.
+ 
+<b>txfItalic</b>         Specifies whether the font is to be italic. If the low bit
+                  is set, the font is to be italic. All the other bits must
+                  be zero.
+ 
+<b>txfUnderline</b>      Specifies whether the font is to be underlined. If the low
+                  bit is set, the font is to be underlined. All the other
+                  bits must be zero.
+ 
+<b>txfStrikeOut</b>      Specifies whether to strike out the font. If the low bit
+                  is set, the font is to be struck out. All the other bits
+                  must be zero.
+ 
+<b>txfOutPrecision</b>   Specifies the required output precision for text. This
+                  member can have one of the following values.
+ 
+                  Value                        Meaning
+                  ──────────────────────────────────────────────────────────
+                  OUT_DEFAULT_PRECIS (0x00)    Chooses a reasonable font.
+ 
+                  OUT_STRING_PRECIS (0x01)     Chooses the font whose size
+                                               (height and width) most
+                                               closely matches the requested
+                                               size. The driver may
+                                               disregard the requested
+                                               orientation and escapement,
+                                               but other attributes must
+                                               match.
+ 
+                  OUT_CHARACTER_PRECIS (0x02)  Chooses the font whose size
+                                               (height and width) most
+                                               closely matches the requested
+                                               size. The driver may
+                                               disregard the requested
+                                               orientation, but other
+                                               attributes must match.
+ 
+                  OUT_STROKE_PRECIS (0x03)     Chooses a font whose
+                                               attributes exactly match the
+                                               requested attributes.
+ 
+<b>txfClipPrecision</b>  Specifies the required clipping precision for text. This
+                  member can have one of the following values.
+ 
+                  Value                         Meaning
+                  ──────────────────────────────────────────────────────────
+                  CLIP_DEFAULT_PRECIS (0x00)    Chooses a reasonable font.
+ 
+                  CLIP_CHARACTER_PRECIS (0x01)  Chooses a font that allows
+                                                clipping of individual
+                                                characters. The driver must
+                                                be able to clip a character
+                                                if any portion of it lies
+                                                outside the clipping
+                                                rectangle.
+ 
+                  CLIP_STROKE_PRECIS (0x02)     Chooses a font that allows
+                                                clipping of portions of a
+                                                character. The driver must
+                                                be able to clip any portion
+                                                of a character that lies
+                                                outside the clipping
+                                                rectangle.
+ 
+<b>txfAccelerator</b>    Specifies the requested text modifications using the same
+                  format as the the dpText member in the GDIINFO structure.
+                  Each bit in this member is set if the corresponding
+                  ability is required to modify the physical font into the
+                  requested font.
+ 
+<b>txfOverhang       Specifies same </b>information as the tmOverhang member in the
+                  TEXTMETRIC structure. This member is set by the device for
+                  device-realized fonts and is in device units. GDI uses
+                  additional overhang if it makes the font bold.
+ 
+<b>Comments</b>
+ 
+Although most of the members in the TEXTXFORM structure correspond to the
+members in the LFONT structure, these members may not always exactly match.
+For example, if the logical font specified a 19-unit font at string
+precision and the closest available was a 9-unit font on a device capable of
+doubling, then the txfHeight member in the structure is 18.
+ 
+A driver should check the dpText member in its GDIINFO structure to
+determine whether the driver can carry out the requested text modifications.
+In particular, the driver should check the bitwise difference between the
+<b>txfAccelerator member and the dpText membe</b>r to determine what abilities it
+should simulate. If the driver can not carry out the modifications, GDI is
+responsible for simulating the required modifications.
+ 
+<b>See Also</b>
+ 
+<b>EngineRealizeFont, ExtTextOut, StrBlt</b>
+ 
+ 
+                                      ♦
+</pre>
+</body>
+
+</html>

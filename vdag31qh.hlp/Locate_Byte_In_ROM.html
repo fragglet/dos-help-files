@@ -1,0 +1,58 @@
+<html>
+
+<head>
+<title>Locate_Byte_In_ROM - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Locate_Byte_In_ROM</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Initialization_Information_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='OpenFile.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     al, Byte            ; byte to locate
+VMMcall Locate_Byte_In_ROM
+ 
+jc      not_found           ; carry set if byte not found
+mov     [Location], eax     ; linear address of byte
+ 
+The Locate_Byte_In_ROM service scans the system ROM for a specified byte.
+Virtual devices use this service to locate single byte instructions, such as
+the iret instruction, that must be protected from modification by programs
+running in a virtual machine.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Byte</i>       Specifies the value of the byte to search for.
+ 
+<b>Return Value</b>
+ 
+If the carry flag is clear, the EAX register contains the linear address of
+the byte. This address will be less than 1 megabyte. If the carry flag is
+set, the byte was not found or the user has disabled the service.
+ 
+<b>Comments</b>
+ 
+Users can disable this service by setting to false the SystemROMBreakpoint
+setting in the [386Enh] section of the SYSTEM.INI file.
+ 
+<b>Uses</b>
+ 
+EAX, Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

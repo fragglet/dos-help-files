@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<title>BITMAPINFO - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> BITMAPINFO</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Driver_Structures.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='BITMAPINFOHEADER.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+typedef struct tagBITMAPINFO {
+    BITMAPINFOHEADER    bmiHeader;
+    RGBQUAD             bmiColors[1];
+} BITMAPINFO;
+ 
+The BITMAPINFO structure fully defines the dimensions and color information
+for a Windows 3.x device-independent bitmap.
+ 
+<b>Member     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<b>bmiHeader  Specifies a BITM</b>APINFOHEADER structure that contains information
+           about the dimensions and color format of a device-independent
+           bitmap.
+ 
+<b>bmiColors  Specifies an arr</b>ay of RGBQUAD structures that define the colors
+           in the bitmap.
+ 
+<b>Comments</b>
+ 
+A Windows 3.x device-independent bitmap consists of two distinct parts: a
+<b>BITMAPINFO</b> data structure that describes the dimensions and colors of the
+bitmap, and an array of bytes that define the pixels of the bitmap. The bits
+in the array are packed together, but each scan line must be padded with
+zeros to end on a 32-bit boundary. Segment boundaries can appear anywhere in
+the bitmap, however. The origin of the bitmap is the lower-left corner.
+ 
+The biBitCount member of the BITMAPINFOHEADER structure determines the
+number of bits which define each pixel and the maximum number of colors in
+the bitmap. This member may be set to any of the following values.
+ 
+<b>Value  Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>1  </i>    The bitmap is monochrome, and the bmiColors member must contain two
+       entries. Each bit in the bitmap array represents a pixel. If the bit
+       is clear, the pixel is displayed with the color of the first entry in
+       the bmiColors member; if the bit is set, the pixel has the color of
+       the second entry in the table.
+ 
+<i>4  </i>    The bitmap has a maximum of 16 colors, and the bmiColors member
+       contains up to 16 entries. Each pixel in the bitmap is represented by
+       a 4-bit index into the color table.
+ 
+       For example, if the first byte in the bitmap is 0x1F, then the byte
+       represents two pixels. The first pixel contains the color in the
+       second table entry, and the second pixel contains the color in the
+       sixteenth table entry.
+ 
+<i>8  </i>    The bitmap has a maximum of 256 colors, and the bmiColors member
+       contains up to 256 entries. In this case, each byte in the array
+       represents a single pixel.
+ 
+<i>24    </i> The bitmap has a maximum of 2**24 colors. The bmiColors member is
+       NULL, and each three bytes in the bitmap array represents the
+       relative intensities of blue, green, and red, respectively, of a
+       pixel.
+ 
+Alternatively, for functions that use device-independent bitmaps, the
+<b>bmiColors</b> member can be an array of 16-bit unsigned integers that specify an
+index into the currently realized, logical palette instead of explicit RGB
+values. In this case, an application using the bitmap must call
+device-independent bitmap functions with the wColorUse parameter set to
+DIB_PAL_COLORS.
+ 
+<b>See Also</b>
+ 
+<b>DeviceBitmapBits, SetDIBitsToDevice, StretchDIBits, BITMAPINFOHEADER,</b>
+<b>RGBQUAD</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

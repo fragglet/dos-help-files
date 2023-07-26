@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>EngineRealizeFont - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> EngineRealizeFont</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='TrueType_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='EngineSetFontContext.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD EngineRealizeFont(lplf, lpTextXForm, lpFont)
+LPLOGFONT lplf;            /* points to logical font information        */
+LPTEXTXFORM lpTextXForm;   /* points to text appearance information     */
+LPFONT lpFont;             /* points to a buffer for physical font info */
+ 
+The EngineRealizeFont function creates an engine font having attributes and
+an appearance that matches those specified by the given logical font and
+text appearance information. A driver calls this function, while processing
+calls to its RealizeObject function, to determine whether a suitable
+TrueType font exists.
+ 
+<b>Import Module.Ordinal</b>: GDI.302.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lplf        </i> Points to a LOGFONT structure specifying the attributes of the
+             font to create.
+ 
+<i>lpTextXForm  Points to a TEXTXFOR</i>M structure specifying additional
+             attributes of the font to create.
+ 
+<i>lpFont       Point</i>s to a FONTINFO structure or is NULL. If this parameter
+             points to a structure, the function fills the structure with
+             information about the engine font. Otherwise, the function
+             returns the size (in bytes) of this information but does not
+             return the information.
+ 
+<b>Return Value</b>
+ 
+This function returns either a size or a Boolean value, depending on the
+value of the lpFont parameter.
+ 
+If lpFont is NULL, the function returns the size (in bytes) of the FONTINFO
+structure and any additional information needed to describe the engine font.
+If the return value is 0, the driver should not attempt to realize the
+engine font.
+ 
+If lpFont points to a FONTINFO structure, the function returns TRUE if it
+successfully realizes the engine font. Otherwise, it returns FALSE.
+ 
+<b>Comments</b>
+ 
+A driver must call this function twice: first to retrieve the size (in
+bytes) of font information to be returned, and second to realize the engine
+font and retrieve the corresponding FONTINFO structure. The driver should
+then compare its own device fonts with the realized engine font (if any) to
+determine which font must closely matches the given logical font
+attributes.
+ 
+A driver can use the high byte of the dfType field and the dfBitsOffset and
+<b>dfBitsPointer</b> fields for its own purpose. For example, a driver can set the
+<b>dfBitsOffset</b> field to point to additional information after the end of the
+<b>FONTINFO structure and s</b>et bits in the high byte of the dfType field to
+specify whether the font passed is an engine or device font. A driver can
+use this information when GDI returns the FONTINFO structure in a call to
+the StrBlt or ExtTextOut function.
+ 
+<b>See Also</b>
+ 
+<b>EngineDeleteFont, ExtTextOut, RealizeObject, StrBlt</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

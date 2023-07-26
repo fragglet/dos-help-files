@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>MODM_OPEN - Windows Multimedia DDK</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows Multimedia DDK (mddkqh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MODM_OPEN</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MDDK_dot_h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+<b>MODM_OPEN</b>
+ 
+        This message is sent to a MIDI output driver to allocate a
+        specified device for use by a client application.
+ 
+<u>Parameters</u>
+        DWORD dwParam1
+            Specifies a far pointer to a MIDIOPENDESC structure. This
+            structure contains additional information for the driver
+            such as instance data from the client and a callback for
+            the client.
+ 
+        DWORD dwParam2
+            Specifies option flags for opening the device.
+ 
+            CALLBACK_WINDOW
+                If this flag is specified, dwCallback in the
+                MIDIOPENDESC structure is assumed to be a window handle.
+ 
+            CALLBACK_FUNCTION
+                If this flag is specified, dwCallback in the
+                MIDIOPENDESC structure is assumed to be the address of
+                a callback function.
+ 
+            CALLBACK_TASK
+                If this flag is specified, dwCallback in the
+                MIDIOPENDESC structure is assumed to be a handle to a
+                task.
+ 
+<u>Return value</u>
+        The return value is an error code, or zero (MMSYSERR_NOERROR) if
+        the operation is successful. Possible error codes are:
+ 
+        MMSYSERR_NOTENABLED
+            The driver failed to load or initialize.
+ 
+        MMSYSERR_ALLOCATED
+            The device is already allocated by the maximum number of
+            clients the driver supports or the device cannot be opened
+            because of system resource limitations other than memory.
+ 
+        MMSYSERR_NOMEM
+            The device cannot be opened because of a failure allocating
+            or locking memory.
+ 
+<u>Comments</u>
+        It is up to the driver to determine the number of clients
+        allowed to use a particular device. Once a device is opened for
+        the maximum number of clients the driver supports, the driver
+        should return MMSYSERR_ALLOCATED for any additional open
+        requests. If the open operation is successful, the driver should
+        use the DriverCallback function to send the client a MOM_OPEN
+        message.
+ 
+<u>See also</u>
+        MODM_CLOSE, MIDIOPENDESC
+ 
+                                       -♦-
+</pre>
+</body>
+
+</html>

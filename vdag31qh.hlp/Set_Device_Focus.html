@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>Set_Device_Focus - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Set_Device_Focus</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='VMM_Control_Messages.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Sys_Critical_Exit.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     ebx, VM         ; VM handle
+mov     edx, VID        ; ID of virtual device to receive focus
+mov     esi, Flags      ; flags for device-critical focus
+mov     edi, AssocVM    ; handle of associated VM
+mov     eax, Set_Device_Focus
+VMMcall System_Control
+ 
+The Set_Device_Focus message sets the focus of the specified virtual device
+to the specified virtual machine.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>VM</i>         Specifies a handle identifying the virtual machine.
+ 
+<i>VID</i>        Specifies the identifier for the virtual device to receive the
+           focus. If this parameter is zero, all virtual devices receive the
+           focus.
+ 
+<i>Flags      Spec</i>ifies how to set the focus if the VID parameter is zero. This
+           parameter can have the following value:
+ 
+           Value  Meaning
+           ─────────────────────────────────────────────────────────────────
+           1      Used by the virtual shell device to determine which
+                  virtual machine to set focus for. If this value is given,
+                  the AssocVM parameter may specify a virtual machine.
+ 
+           All other values are reserved.
+ 
+<i>AssocVM</i>    Specifies a handle identifying a virtual machine associated with
+           a problem. This parameter is zero if there is no such virtual
+           machine. This parameter is used only if the Flags parameter is
+           set to 1.
+ 
+<b>Return Value</b>
+ 
+The carry flag must be clear.
+ 
+<b>Comments</b>
+ 
+A virtual device that receives the focus should take steps, such as
+disabling I/O trapping, to allow the virtual machine to run as fast as
+possible.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

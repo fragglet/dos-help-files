@@ -1,0 +1,262 @@
+<html>
+
+<head>
+<title>Fonts - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Fonts</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='dispclip.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+A font is a collection of glyphs that define the size and appearance of
+individual characters in a character set. A display driver uses physical
+fonts when it draws text. A physical font is a structure that contains all
+the information the driver needs to draw the glyphs on the screen. GDI
+supplies these physical fonts whenever it calls the ExtTextOut function.
+ 
+GDI supports a variety of font types but lets each display driver determine
+which fonts it supports. A display driver can choose to support any
+combination of the fonts.
+ 
+<b>Type      Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Device</i>    A font supplied by the display device. The display driver must
+          provide complete support for device fonts, including realizing the
+          fonts and using display hardware to draw the fonts.
+ 
+<i>Raster</i>    A font containing glyph bitmaps that is intended to be used by
+          raster device. GDI supplies a variety of raster fonts, but Windows
+          applications and even display drivers can supply additional fonts.
+          GDI realizes raster fonts as needed, but display drivers that
+          support the fonts must be able to draw the fonts using the data in
+          the physical font format.
+ 
+<i>TrueType</i>  A font containing sophisticated glyph definitions that is intended
+          to be used in conjunction with a rasterizer to produce a
+          corresponding raster font. GDI supplies a variety of TrueType
+          fonts as well as the TrueType rasterizer.
+ 
+<i>Vector</i>    A font containing glyph definitions that is intended to be used by
+          a vector device. GDI supplies a variety of vector fonts, but
+          Windows applications and even display drivers can supply
+          additional fonts. GDI realizes vector fonts as needed, but display
+          drivers that support the fonts must be able to draw the fonts
+          using the data in the physical font.
+ 
+<b>Note:</b>  Display drivers that support raster fonts can also use TrueType
+       fonts.
+ 
+Although display drivers generally do not use device fonts, a display driver
+can realize device fonts if the display hardware support them. Most display
+drivers return zero when GDI calls the RealizeObject function requesting a
+realized font. Returning zero directs GDI to realize the font using existing
+raster or vector fonts.
+ 
+Fonts, like other graphics objects, must be realized before the display
+driver can use them. The format of the realized font depends on the font
+type. For more information about raster- and vector-font format, see Chapter
+13, "Font Files."
+ 
+For more information about characters within a specific character set, see
+Appendix B, "Character Tables."
+ 
+<b>Raster Fonts</b>
+ 
+GDI checks the TC_RA_ABLE value in the dpText member to determine whether a
+display driver supports raster fonts. A raster font is a set of glyph
+bitmaps, each defining the size and appearance of a character in the font. A
+display driver that supports raster fonts uses the glyph bitmap to generate
+the character image on the screen.
+ 
+Windows provides the following raster fonts.
+ 
+<b>Font           Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Courier(R)</i>     A fixed-width font with serifs in the ANSI character set.
+ 
+<i>Fixedsys       The Windo</i>ws 2.x fixed-width system font in the ANSI character
+               set.
+ 
+<i>MS Sans Serif</i>  A proportional-width font without (sans) serifs in the ANSI
+               character set.
+ 
+<i>MS Serif</i>       A proportional-width font with serifs in the ANSI character
+               set.
+ 
+<i>Symbol</i>         A representation of math symbols in the Symbol character
+               set.
+ 
+<i>System</i>         A proportional-width font without serifs in the ANSI
+               character set.
+ 
+<i>Small</i>          A set of raster fonts used for displaying characters of 8
+               points or below with greater readability.
+ 
+<i>Terminal</i>       A fixed-width font with serifs in the OEM character set.
+ 
+<b>Vector Fonts</b>
+ 
+GDI checks the TC_VA_ABLE value in the dpText member to determine whether a
+display driver supports vector fonts. A vector font is a set of glyph
+definitions, each containing a sequence of points respresenting the start
+and endpoints of the line segments that define the appearance of a character
+in the font. A display driver that supports vector fonts uses the glyph
+definitions to generate the character image on the screen.
+ 
+<b>Big Fonts</b>
+ 
+GDI checks the RC_BIGFONT value in the dpRaster member to determine whether
+the display driver supports big fonts (also called Windows 3.x fonts). A big
+font is any font in which the font and glyph information can exceed 64K
+bytes. Big fonts are primarily designed for use on systems with more than
+average memory and a microprocessor (such as an 80386) that has instructions
+that use 32-bit address offsets.
+ 
+When GDI realizes a font for a driver supporting big fonts, GDI includes
+additional members (dfFlags through dfReserved1) in the the physical font's
+<b>FONTINFO</b> structure. Furthermore, since font and glyph information may exceed
+64K, the display driver must use 32-bit offsets to access this information.
+This means the driver should make use of the extended registers of the
+80386, such as ESI and EDI.
+ 
+All display drivers must support standard fonts whether or not they support
+big fonts.
+ 
+For big fonts, GDI sets the dfVersion member in the font structure to
+0x0300. Standard fonts are set to 0x0200. Also, GDI never mixes fonts for a
+device. If the display driver registers RC_BIGFONT capability, GDI will
+always give the driver big fonts──not a mixture of standard and big fonts.
+ 
+<b>TrueType Fonts</b>
+ 
+Display drivers that handle raster fonts can also handle TrueType fonts
+without modification. GDI supports TrueType in display drivers by building
+<b>FONTINFO</b> structures that contain rasterized glyph bitmaps. GDI passes a
+pointer to this structure to the driver's ExtTextOut or StrBlt function
+along with the string to be displayed.
+ 
+An important difference between TrueType and standard fonts is that TrueType
+fonts are "sparse" in their glyph definitions, that is, the FONTINFO
+structure may only contain those characters in the string to be displayed.
+For this reason, display drivers cannot cache the font in private memory and
+later reference glyphs not previously displayed. The display driver,
+however, can build up a cache of glyphs as they are displayed. Such a "glyph
+cache" can boost performance on some display adapters that have hardware
+text and blit support.
+ 
+<b>Overlapping Glyphs</b>
+ 
+Display drivers can handle text in TrueType fonts almost identically to text
+in regular raster fonts. One important difference, however, is that TrueType
+glyphs are designed to be more readable by minimizing the gaps between
+glyphs──in fact, some glyphs overlap. To take full advantage of the design
+and maintain performance, display drivers may need some modification to
+allow for overlapping glyphs.
+ 
+TrueType fonts may affect the performance of display drivers since many
+TrueType glyphs are designed to overlap neighboring glyphs. Overlapping
+makes text more readable, but complicates the process used by a display
+driver to draw the text. A display driver can improve its performance by
+handling overlapping glyphs using the technique described in this section.
+ 
+The most important performance improvement is to revise a driver's code to
+handle background opaquing (in the case of opaque text) and overlapping
+glyphs in a single pass. If a display driver sets the RC_OP_DX_OUTPUT value
+in the dpRaster member of the GDIINFO structure, GDI assumes that the
+<b>ExtTextOut</b> function can do background opaquing at the same time the glyphs
+are drawn. If this value is not set, GDI will split the text output
+operation into two steps, with the first step being an opaque rectangle that
+fills the text bounding box. The second operation will then draw the text
+transparently on top of the previously filled rectangle.
+ 
+GDI passes the text string and a width array to either the ExtTextOut or
+<b>StrBlt function in</b> the driver. The width array contains n-1 entries for a
+string of n characters. Each entry contains a pixel offset from the origin
+of one character to the origin of the next character. For example, if the
+third width element is 20, the fourth character should be drawn 20 pixels to
+the right of the third character.
+ 
+Handling kerning (glyph overlap) efficiently can be a problem on display
+adapters with relatively slow video memory access times (such as the EGA and
+VGA). The algorithm described below is appropriate for such displays. A
+different approach may be necessary for other display architectures.
+ 
+The idea behind this algorithm is to never access a video memory location
+more than once, and, where possible, do word-aligned, 16-bit memory
+accesses. Ideally, this algorithm should be small, simple, and efficient for
+text strings with or without kerning.
+ 
+<b>Note:</b>  The following discussion assumes some familiarity with the
+       implementation of the ExtTextOut function in the sample EGA/VGA
+       driver provided with the DDK. For complete details, please see the
+       EGA/VGA source code.
+ 
+For each character that is partially or completely within the string's
+clipping rectangle, the stack builder pushes a phase, width, and glyph
+pointer onto the stack. If kerning occurs in the text string, the stack
+builder will recognize this and push a "backup" sentinel along with a word
+that contains the number of pixels to backup before rendering subsequent
+stack entries. When the entire string has been processed, the stack builder
+pushes a sentinel word on the stack to mark the end of the entries.
+ 
+The format of a stack entry is a word containing the phase of the bit
+pattern (high byte) and the width of the bit pattern (low byte). Following
+this word, a pointer to a glyph pattern is stored on the stack. For fonts
+that are less than 64K bytes in size, this is a word value representing an
+offset from the base of the font segment to the bit patterns for a given
+glyph. For fonts greater than 64K bytes, this glyph pointer is 2 words which
+forms a 32-bit offset from the current font segment base.
+ 
+As an example:
+ 
+Stack Entries     Meaning
+--------------    ------
+0308, Glyph_ptr   8-bit wide column, starting 3 bits into a byte.
+0308, Glyph_ptr   Next column, 8 bits wide, phase is again 3.
+8000, FFFE        Backup by 2 pixels.
+0108, Glyph_ptr   Next column (overlaps previous column), phase is 1.
+FFFF              End of stack entries.
+ 
+After the stack has been built, control is passed to a routine which
+unstacks each entry and composes an image of the string into a memory
+buffer. This string image is called a "SuperGlyph" because the format of the
+memory buffer is identical to the glyph format in the raster font (that is,
+column major ordering). Each stack entry is processed by fetching up to 4
+bytes worth of glyph bit pattern from the font structure, phase aligning
+with respect to the final destination, and ORing into the compose buffer.
+This process continues until all stack entries have been processed.
+ 
+Once complete, the SuperGlyph is then passed to a destination specific
+output routine which copies the SuperGlyph to the final destination (either
+video memory, a color bitmap or a monochrome bitmap). Each output routine is
+optimized for word-aligned, 16-bit accesses to the final destination.
+ 
+In some cases, the size of the compose buffer may not be big enough to hold
+a complete image of the string. The VGA/EGA code handles this case with
+restart logic that composes as much of the SuperGlyph as possible, and then
+outputs it to the destination. The compose buffer is then cleared and the
+process repeats until the entire string has been rendered.
+ 
+<b>Font Caching for TrueType Fonts</b>
+ 
+Display drivers that do their own font caching may encounter conflicts with
+the new TrueType font technology provided with Windows 3.1. Display drivers
+that use glyph caching rather than caching the entire character set should
+work without problems.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

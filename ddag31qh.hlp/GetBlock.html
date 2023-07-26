@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<title>GetBlock - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GetBlock</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='stdgrab.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GetInfo.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+The GetBlock function copies a rectangular area of the screen to a specified
+buffer.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>DS</i>         Specifies the segment address of the grabber (CS and DS registers
+           are equal).
+ 
+<i>ES:DI      Poin</i>ts to a GRABREQUEST structure defining the size and format of
+           the block to capture.
+ 
+<b>Return Value</b>
+ 
+The return value is the number of bytes transferred and is set in the AX
+register if successful. The carry flag is cleared as well. Otherwise, the
+return value is one of the following error values.
+ 
+<b>Value                   Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>ERR_UNSUPPORTED (0FFh)</i>  Block operation not supported.
+ 
+<i>ERR_BOUNDARY (0FEh)</i>     Source or destination range in error.
+ 
+<b>Comments</b>
+ 
+If the grlpData member is NULL, GetBlock returns the number of bytes to copy
+without actually copying the bytes.
+ 
+<b>GetBlock uses only the F</b>ormat value of the grStyle member. If the Format
+value in grStyle is FMT_NATIVE, GetBlock copies the data in the native
+screen format for the current video context. Thus, text screens result in
+character and attribute pairs being copied, while graphics screens result in
+a bitmap. Since the native format is screen dependent, use it for saving and
+restoring; don't attempt to interpret the data.
+ 
+If the Format value is FMT_OTHER, GetBlock copies the data in a variant of
+the Windows clipboard format defined by the grabber-buffer structure,
+<b>GRABST</b>. This buffer has GT_TEXT type for text screens and GT_NEWBITMAP type
+for graphics screens.
+ 
+<b>GetBlock does not use the grChar and grA</b>ttr members.
+ 
+In text mode, the display adapter may contain multiple character sets or
+allow downloadable character sets. The data returned in clipboard format
+will be translated to the standard OEM set if it can be determined that
+another set is in use, which character set it is, and whether or not a
+translation table is available for the job. The EGA is an example of an
+adapter that makes it hard to determine that a set has been downloaded and
+practically impossible to determine which one it is.
+ 
+<b>See Also</b>
+ 
+<b>GRABREQUEST, GRABST</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

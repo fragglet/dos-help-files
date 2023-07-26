@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>_CopyPageTable - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _CopyPageTable</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Page_Allocation_and_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_GetAppFlatDSAlias.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _CopyPageTable, &lt;LinPgNum, nPages, &lt;OFFSET32 PageBuf&gt;, flags&gt;
+ 
+mov     [Copied], eax           ; nonzero if copied, zero otherwise
+ 
+The _CopyPageTable service copies one or more page-table entries to the
+specified buffer. Virtual devices, such as the virtual DMA device, use this
+service to analyze the mapping of linear to physical addresses.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>LinPgNum</i>   Specifies the number of the first page table entry to copy. This
+           parameter must be in the range 0 through 0FFFFFh. Numbers in the
+           range 0 through 10Fh specify pages in the 1 megabyte V86 address
+           space of the current virtual machine. Page numbers for other
+           virtual machines can be computed using the CB_High_Linear field
+           in the control block of each virtual machine.
+ 
+<i>nPages</i>     Specifies the number of page table entries to copy.
+ 
+<i>PageBuf</i>    Points to buffer to receive the page table entries. This buffer
+           must be large enough to receive the specified number of entries.
+           Each entry is 4 bytes.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero value if the copy is successful.
+Otherwise, it contains zero indicating that at least one of the specified
+page table entries was in a region where the corresponding page directory
+entry is not present.
+ 
+<b>Comments</b>
+ 
+This service copies the page table, so writing to the buffer does not affect
+the content of the actual page table. The system does not update the buffer
+when changes to the actual page table are made, so no guarantees are made
+about the length of time the information in the buffer remains accurate.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

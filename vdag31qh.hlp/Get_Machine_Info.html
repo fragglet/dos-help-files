@@ -1,0 +1,84 @@
+<html>
+
+<head>
+<title>Get_Machine_Info - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Get_Machine_Info</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Initialization_Information_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Get_Name_Of_Ugly_TSR.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall Get_Machine_Info
+mov     [Major], AH         ; MS-DOS major version number
+mov     [Minor], AL         ; MS-DOS minor version number
+mov     [OEM], BH           ; MS-DOS OEM serial number
+mov     [Model], BL         ; machine model byte
+mov     [Type], EBX         ; machine type flags (high-order 16-bits)
+mov     [SysConf], ECX      ; points to System Configuration Parameters
+mov     [Equip], EDX        ; equipment flags
+ 
+The Get_Machine_Info service returns information about the computer system
+that Windows is running on.
+ 
+This service has no parameters.
+ 
+<b>Return Value</b>
+ 
+The AX, EBX, ECX, and EDX registers contain the following information:
+ 
+<b>Register  Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>AH</i>        MS-DOS major version number
+ 
+<i>AL</i>        MS-DOS minor version number
+ 
+<i>BH</i>        MS-DOS OEM serial number
+ 
+<i>BL</i>        Machine model byte (from address F000:FFFE in system ROM)
+ 
+<i>EBX</i>       Machine type flags (in the high-order 16-bits) as follows:
+ 
+          Value       Meaning
+          ──────────────────────────────────────────────────────────────────
+          GMIF_80486  80486 processor
+ 
+          GMIF_PCXT   PCXT accelerator
+ 
+          GMIF_MCA    Micro Channel
+ 
+          GMIF_EISA   EISA
+ 
+<i>ECX</i>       Ring 0 linear address to System Configuration Parameters (as
+          returned from BIOS service Interrupt 15h, AH=C0h) Applies only to
+          PS/2 or computers with extended BIOS. See the PS/2 BIOS
+          documentation for details.
+ 
+<i>EDX</i>       Equipment flags (as returned from Interrupt 11h)
+ 
+<b>Comments</b>
+ 
+The address returned in the ECX register points to a copy of the system
+configuration parameters because the actual parameters may have been moved
+into a buffer which is subject to page remapping.
+ 
+<b>Uses</b>
+ 
+EAX, EBX, ECX, EDX, Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

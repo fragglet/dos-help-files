@@ -1,0 +1,140 @@
+<html>
+
+<head>
+<title>SET_POLY_MODE - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> SET_POLY_MODE</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Escapes.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='SETPRINTERDC.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define SET_POLY_MODE 4104 
+short Control(lpDevice, SET_POLY_MODE, lpMode, NULL)
+LPPDEVICE lpDevice;
+LPINT lpMode;
+ 
+The SET_POLY_MODE escape enables a device driver to draw shapes (such as
+Bezier curves) that are not supported directly by GDI. This permits
+applications that draw complex curves to send the curve description directly
+to a device without having to simulate the curve as a polygon with a large
+number of points.
+ 
+The SET_POLY_MODE escape sets the poly mode for the device driver. The poly
+mode is a state variable indicating how to interpret calls to the Polygon
+(GDI.63) and Polyline (GDI.37) functions.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<i>lpDevice   Points to a P</i>DEVICE structure specifying the destination device.
+ 
+<i>lpMode</i>     Points to a 16-bit variable that specifies the desired poly mode.
+           The parameter can be one of the following values.
+ 
+           Value                   Meaning
+           ─────────────────────────────────────────────────────────────────
+           PM_POLYLINE (1)         The points define a conventional polygon
+                                   or polyline.
+ 
+           PM_BEZIER (2)           The points define a sequence of 4-point
+                                   Bezier spline curves. The first curve
+                                   passes through the first four points,
+                                   with the first and fourth points as end
+                                   points, and the second and third points
+                                   as control points. Each subsequent curve
+                                   in the sequence has the end point of the
+                                   previous curve as its start point, the
+                                   next two points as control points, and
+                                   the third as its end point.
+ 
+                                   The last curve in the sequence is
+                                   permitted to have fewer than four points.
+                                   If the curve has only one point, it is
+                                   considered a point. If it has two points,
+                                   it is a line segment. If it has three
+                                   points, it is a parabola defined by
+                                   drawing a Bezier curve with the end
+                                   points equal to the first and third
+                                   points and the two control points equal
+                                   to the second point.
+ 
+           PM_POLYLINESEGMENT (3)  The points specify a list of coordinate
+                                   pairs. Line segments are drawn connecting
+                                   each successive pair of points.
+ 
+           The device driver need not support all the possible modes. It is
+           expected to return zero if it does not support the specified
+           mode.
+ 
+<b>Return Value</b>
+ 
+The return value is the previous poly mode if the escape is successful.
+Otherwise, the return value is zero.
+ 
+<b>Comments</b>
+ 
+An application should issue the SET_POLY_MODE escape before it draws a
+complex curve. It should then call Polyline or Polygon with the desired
+control points defining the curve. After drawing the curve, the application
+should reset the driver to its previous state by reissuing the SET_POLY_MODE
+escape.
+ 
+Calls to the Polyline function are drawn using the currently selected pen.
+ 
+Calls to the Polygon function are drawn using the currently selected pen and
+brush. If the start and end points are not equal, a line is drawn from the
+start point to the end point before filling the polygon (or curve).
+ 
+Calls to the Polygon function using PM_POLYLINESEGMENT mode are treated
+exactly the same as calls to Polyline.
+ 
+A Bezier curve is defined by four points. The curve is generated by
+connecting the first and second, second and third, and third and fourth
+points. The midpoints of these consecutive line segments are then connected.
+Then the midpoints of the lines connecting the midpoints are connected.
+ 
+The line segments drawn in this way converge to a curve defined by the
+following parametric equations, expressed as a function of an independent
+variable t.
+ 
+X(t) = (1-t)**3x1 + 3(1-t)**2tx2 + 3(1-t)t**2x3 + t**3x4
+ 
+Y(t) = (1-t)**3y1 + 3(1-t)**2ty2 + 3(1-t)t**2y3 + t**3y4
+ 
+The points (x1,y1), (x2,y2), (x3,y3), and (x4,y4) are the control points
+defining the curve. The independent variable t varies from 0 to 1.
+ 
+A second-degree Bezier curve may be expressed as a third-degree Bezier using
+the following parameterization:
+ 
+Cx1 = 1/3X1 + 2/3X2    Cy1 = 1/3Y1 + 2/3Y2
+Cx2 = 2/3X2 + 1/3X3    Cy2 = 2/3Y2 + 1/3Y3
+ 
+(Cx1, Cy1) and (Cx2, Cy2) are third-degree control points of the
+second-degree Bezier specified by the points (x1, y1), (x2, y2), and (x3,
+y3).
+ 
+Applications are expected to check the return value from this escape to
+determine whether or not the driver supports the specified poly mode.
+ 
+<b>See Also</b>
+ 
+<b>Polygon, Polyline, PDEVICE</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,67 @@
+<html>
+
+<head>
+<title>V86MMGR_SetAvailMapPgs - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> V86MMGR_SetAvailMapPgs</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_V86_Mode_Memory_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='V86MMGR_SetLocalA20.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include v86mmgr.inc
+ 
+VxDcall V86MMGR_SetAvailMapPgs
+ 
+The V86MMGR_SetAvailMapPgs service relinquishes regions above the last V86
+page to the V86MMGR's mapper services for use as a mapper region.
+ 
+This service is only available for Windows 3.1 and later.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>EAX</i>        Specifies the starting page number of the region.
+ 
+<i>ECX</i>        Specifies the size of the region in pages.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the service adds the region. Otherwise, the carry
+flag is set to indicate an error such as an invalid region.
+ 
+<b>Comments</b>
+ 
+Virtuals devices other than the V86MMGR (DOSMGR) can relinquish regions
+above the last V86 page to the V86MMGR's mapper services for use as a mapper
+region. These regions usually overlap with V86MMGR XMS UMB import pages, but
+this is not required. A virtual device can hand over a page that it has
+already marked as owned by the device in the Device_V86_Pages array. The
+V86MMGR marks the page as one it owns (even though it did not actually do
+the _Assign_Device_V86_Pages for it).
+ 
+Once a region is relinquished, the virtual device must not attempt to access
+it. it. These regions may only be marked as in-use by the V86MMGR XMS
+driver. This happens when the region overlaps XMS UMB import pages.
+ 
+This routine has a global effect, it does not take a virtual machine handle
+argument.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,103 @@
+<html>
+
+<head>
+<title>BANDINFO - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> BANDINFO</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Escapes.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='BEGIN_PATH.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define BANDINFO 24 
+short Control(lpDevice, BANDINFO, lpInData, lpOutData)
+LPPDEVICE lpDevice;
+LPBANDINFOSTRUCT lpInData;
+LPBANDINFOSTRUCT lpOutData;
+ 
+The BANDINFO escape copies information about a device with banding
+capabilities to a structure pointed at by the lpInData parameter.
+ 
+Banding is a property of an output device that allows a page of output to be
+stored in a metafile and divided into bands, each of which is sent to the
+device to create a complete page. Use banding with devices that cannot
+scroll backwards.
+ 
+The information copied to the structure pointed at by lpInData includes a
+flag indicating whether or not there are graphics in the next band, a flag
+indicating whether or not there is text on the page, and a rectangle
+structure that contains a bounding rectangle for all graphics on the page.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<i>lpDevice   Points to a P</i>DEVICE structure specifying the destination device.
+ 
+<i>lpInData   Points to a B</i>ANDINFOSTRUCT structure containing information about
+           the graphics band.
+ 
+<i>lpOutData  Points to a BAND</i>INFOSTRUCT structure containing information about
+           the graphics band.
+ 
+<b>Return Value</b>
+ 
+The return value is 1 if the escape is successful. Otherwise, it is 0.
+ 
+<b>Comments</b>
+ 
+This escape should only be implemented for devices that use banding. It
+should be called immediately after each call to the NEXTBAND escape. If the
+<i>lpOutData</i> parameter is not NULL and graphics will be printed in the current
+band, the driver will set the fGraphics member in the output structure. If
+text will be printed, the fText member will be nonzero. The rcGraphics
+member is not used for output.
+ 
+Therefore, on the first band, the driver would set the rectangle returned by
+NEXTBAND to the whole page. If it receives a BANDINFO escape, it will set
+the fText member and clear fGraphics.
+ 
+On subsequent bands, it will band the page in small rectangles and handle
+only graphics calls. Additionally, if the application calls BANDINFO, clears
+the fText member and sets fGraphics.
+ 
+The application can also optimize the banding process somewhat by describing
+the page with the structure passed by lpInData. The application sets the
+<b>fGraphics member, if there </b>are any graphics on the page, and the fText
+member if there is any text. If there are no graphics, the driver may be
+able to skip the graphics bands. The application should also set rcGraphics
+to the rectangle bounding all nontext graphics on the page. The driver has
+the option of banding only the specified graphics rectangle rather than the
+whole page.
+ 
+Vector fonts complicate the process somewhat. Since vector devices using
+banding generally cannot print vector fonts, these fonts are simulated using
+polylines or scan lines. Therefore, they appear to the driver to be graphics
+in the text band. Since vector fonts can appear anywhere on the page and
+require graphics banding support, the driver must band graphics on the whole
+page even if the BANDINFOSTRUCT passed by the application specifies
+otherwise.
+ 
+If the application never calls BANDINFO, the driver can decide whether or
+not to band graphics by maintaining a flag that is set if any graphics calls
+are seen during the text band.
+ 
+<b>See Also</b>
+ 
+NEXTBAND, BANDINFOSTRUCT
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

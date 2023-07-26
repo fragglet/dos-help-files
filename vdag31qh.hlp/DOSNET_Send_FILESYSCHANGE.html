@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<title>DOSNET_Send_FILESYSCHANGE - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DOSNET_Send_FILESYSCHANGE</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_MS-DOS_Network_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Virtual_MS-DOS_Network_Device.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include dosnet.inc
+ 
+VxDcall DOSNET_Send_FILESYSCHANGE
+ 
+The DOSNET_Send_FILESYSCHANGE service specifies whether the given drive is
+local to the virtual machine. If the drive is local, the WM_FILESYSCHANGE
+message can be broadcast to Windows applications when changes to the drive
+are made by MS-DOS applications.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>AL</i>         Specifies the drive number (0 = A, 1 = B, etc.)
+ 
+<i>EBX</i>        Specifies the handle of the virtual machine to check.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the WM_FILESYSCHANGE message will be sent for the
+specified drive. Otherwise, the carry flag is set to prevent messages for
+the drive.
+ 
+<b>Comments</b>
+ 
+This service is designed exclusively for the virtual DOSNET device. Other
+virtual devices should not provide their own implementations, however, they
+can hook this service. Since the virtual DOSNET device does not install if
+there is no redirector, a virtual device which hooks this service must ship
+with a modified DOSNET device which always loads.
+ 
+A virtual device must not send a WM_FILESYSCHANGE message for a drive that
+this service has not acknowledged. Sending a message incorrectly can result
+in unexpected errors in Windows applications.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

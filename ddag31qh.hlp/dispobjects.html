@@ -1,0 +1,108 @@
+<html>
+
+<head>
+<title>Physical Objects - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Physical Objects</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='dispcolors.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+Physical objects define the attributes (such as color, width, and style) of
+lines, patterns, and characters drawn by a display driver. Physical objects
+correspond to the logical pens, brushes, and fonts that Windows applications
+create but contain device-dependent information that the display driver
+needs to generate output. A display driver creates physical objects when GDI
+calls the RealizeObject function. The driver uses physical objects when GDI
+calls output functions such as Output, BitBlt, and ExtTextOut.
+ 
+The dpNumPens, dpNumBrushes, and dpNumFonts members in the GDIINFO structure
+specify the number of pens, brushes, and fonts a display driver supports. A
+display driver must supply information about these objects whenever GDI
+requests it. GDI calls the EnumObj function to request information about
+pens and brushes; it calls the EnumDFonts function to request information
+about device fonts. For each pen, brush, or font, the display driver calls
+the callback function. GDI pass a LPEN, LBRUSH, or LFONT structure to the
+callback function. These structures specify the attributes of the object.
+ 
+Although a display driver can use display hardware to support objects, the
+driver must be able to generate the same output both on the screen and in
+memory bitmaps.
+ 
+<b>Physical Pens</b>
+ 
+A physical pen specifies the color, style, and width of polylines and
+borders drawn by a display driver. A display driver realizes a physical pen
+by filling a PPEN structure with information about the pen. The content and
+format of the PPEN structure depends entirely on the display driver. In
+general, the driver copies all the information the Output function need to
+draw lines.
+ 
+A display driver should support the standard GDI pen styles: Solid, dashed,
+dotted, dot-dashed, dash-dot-dotted, and empty. A display driver must
+support the empty style although it is not required to supply information
+about it when GDI calls EnumObj. When drawing with a empty pen, the pen
+itself does not contribute to the output, but the driver may still draw a
+line if, for example, the raster operation combines the destination with
+itself using the XOR operator (DDx) or inverts the destination (Dn).
+ 
+A display driver that supports wide and styled lines must use the same
+drawing algorithms for lines drawn on the screen and in memory bitmaps.
+Because GDI efficiently synthesizes both wide and styled lines, some display
+drivers do not support them.
+ 
+Under certain conditions, GDI may pass the display driver a request to
+realize a wide or styled line even though the display driver has specified
+that it does not support them. In such cases, the driver should realize a
+solid, one-pixel wide (or nominal) pen. GDI will use this pen to simulate
+styled and wide lines.
+ 
+<b>Physical Brushes</b>
+ 
+A physical brush specifies the color and style of patterns used to fill
+figures drawn by the Output function and to combine with bitmaps drawn by
+the BitBlt function. A display driver realizes a physical brush by filling a
+<b>PBRUSH</b> structure with information about the brush. The content and format of
+the PBRUSH structure depends entirely on the display driver.
+ 
+A display driver should support the standard GDI brush styles: solid,
+hatched, patterned, and hollow. A display driver must support hollow brushes
+although it is not required to provide information about it when GDI calls
+the EnumObj function. When drawing with a hollow brush, the brush itself
+does not contribute to the output, but other factors, such as a raster
+operation that combines the destination with itself or inverts the
+destination, can cause the driver to generate output.
+ 
+The display driver can dither solid brushes if the specified color does not
+exactly match a physical color. Otherwise, it should choose the closest
+available color for the brush.
+ 
+The display driver should support the standard hatched brush styles:
+horizontal, vertical, forward diagonal, backward diagonal, cross, and
+diagonal crosshatch. On raster displays, a driver typically implements these
+styles as predefined, 8-by-8 bit patterns.
+ 
+On color displays, the display driver should support both monochrome and
+color bitmaps for patterned brushes. When drawing monochrome bitmaps, the
+driver sets 1 bit to the current text color and 0 bits to the current
+background color. The text and background colors are specified in the
+<b>DRAWMODE</b> structure passed to these functions. A display driver is not
+required to provide information about patterned brushes when GDI calls the
+<b>EnumObj</b> function.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

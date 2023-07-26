@@ -1,0 +1,218 @@
+<html>
+
+<head>
+<title>Text - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Text</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='dispfonts.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+GDI requires all display drivers to provide an ExtTextOut function that
+provides a minimum set of text-drawing capabilities. At the very least, a
+driver must be able to draw a string of characters at a specified location
+on the screen and clip any portion of a character that extends beyond the
+bounding box for the string.
+ 
+GDI calls the ExtTextOut function whenever an application calls a function
+that draws text or computes text widths. The ExtTextOut function receives a
+string of character values, a count of characters in the string, a starting
+position, a physical font, and a DRAWMODE structure. The function uses these
+values to create the individual glyph images on the screen.
+ 
+GDI checks the RC_GDI20_OUTPUT value in the dpRaster member of the GDIINFO
+structure to determine whether the driver supports this function. In earlier
+versions of Windows, the StrBlt function supported text drawing, but StrBlt
+is now obsolete. For compatibility with early versions of Windows
+applications, however, the display driver must provide the StrBlt function.
+In most drivers, StrBlt does nothing more than call or fall through to
+<b>ExtTextOut</b>.
+ 
+GDI checks the dpText member of the GDIINFO structure to determine which
+text capabilities the display driver supports. Although Windows requires few
+text capabilities for a display driver, all display drivers should support
+as many capabilities as possible so that Windows applications have the
+greatest flexibility when drawing text. The following are the text
+capabilities.
+ 
+<b>Capability        Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Clipping</i>          Specifies whether the display driver can clip whole or
+                  partial characters.
+ 
+<i>Cosmetics</i>         Specifies whether the display driver can generate bold,
+                  italic, underlined, or strikethrough characters from
+                  existing characters.
+ 
+<i>Fonts</i>             Specifies whether the display driver supports raster and
+                  vector fonts.
+ 
+<i>Output precision</i>  Specifies which font attributes the display driver uses
+                  when drawing text.
+ 
+<i>Rotation</i>          Specifies whether the display driver can rotate
+                  characters.
+ 
+<i>Scaling</i>           Specifies whether the display driver can generate new
+                  sizes by scaling an existing size.
+ 
+<i>Scaling freedom</i>   Specifies whether the display driver can scale
+                  independently along the x- and y-axes.
+ 
+<b>Output Precision</b>
+ 
+GDI checks the TC_OP_CHARACTER and TC_OP_STROKE values in the dpText member
+to determine the output precision of the driver. Output precision specifies
+which font attributes the ExtTextOut function must use when it draws text.
+Font attributes include width, height, intercharacter spacing, interword
+spacing, escapement, orientation, and other attributes specified in the
+<b>TEXTXFORM and DRAWMODE stru</b>ctures. These structures are passed to the
+<b>ExtTextOut</b> function.
+ 
+A display driver sets the TC_OP_STROKE value if it can draw characters as a
+set of line segments. When drawing with stroke precision, the driver must
+adhere to all font attributes, and use the current transformations to
+compute the starting point of the string.
+ 
+A display driver sets the TC_OP_CHARACTER value if it can draw characters at
+any given escapement. Character precision ensures the placement of
+individual characters without guaranteeing the exact size requested. With
+character precision, the driver must:
+ 
+♦  Use the width and height to determine a "best-fit" character size. If no
+   font matches exactly, the driver should use either the largest font that
+   does not exceed the requested size or the smallest available font.
+ 
+♦  Use the current transformations to compute the starting point of the
+   string.
+ 
+♦  Use the current intercharacter and interword spacing to position the
+   individual characters in the string.
+ 
+♦  Use the current escapement.
+ 
+The driver can ignore all other attributes. If possible, the display driver
+should use the display's character generation hardware to draw individual
+characters.
+ 
+If a display driver does not set the TC_OP_STROKE and TC_OP_CHARACTER
+values, GDI requires the driver to support string precision. String
+precision is identical to character precision except that the current
+escapement can be ignored.
+ 
+Output precision does not affect the bold, italic, underline, or
+strikethrough capabilities. If a driver registers these abilities, it must
+perform them when requested.
+ 
+<b>Clipping</b>
+ 
+GDI checks the TC_CP_STROKE value in the dpText member to determine the clip
+precision of the driver. A display driver sets the TC_CP_STROKE value if it
+can clip any portion of a character that is outside the clip region and draw
+the rest of the character. If the driver does not set this value, GDI
+requires that the driver clips the entire character if any portion of the
+character is outside the clip region.
+ 
+A display driver must support stroke clip precision.
+ 
+<b>Rotation</b>
+ 
+GDI checks the TC_CR_90 and TC_CR_ANY values in the dpText member to
+determine whether the display driver can rotate characters. A display driver
+sets the TC_CR_ANY value if it can rotate characters to any angle. The
+driver sets the TC_CR_90 value it can rotate characters at 90 degree
+increments only. If a display driver does not set either bit, GDI assumes
+that the driver cannot rotate characters.
+ 
+<b>Scaling and Scaling Freedom</b>
+ 
+GDI checks the TC_SA_DOUBLE, TC_SA_INTEGER, and TC_SA_CONTIN values to
+determine whether the display driver can scale characters. GDI also checks
+the TC_SF_X_YINDEP value to determine whether the driver can scale
+characters independently on the x- and y-axes.
+ 
+A display driver sets the TC_SA_CONTIN value if it can scale existing
+characters to any size, sets the TC_SA_INTEGER value if it can scale
+characters by any integer multiple, or sets the TC_SA_DOUBLE value if it can
+double the size of existing characters. If a display driver sets none of
+these values, GDI assumes that the driver can not scale characters.
+ 
+A display driver sets the TC_SF_X_YINDEP value if the driver can scale
+characters independently in each direction. If this bit is not set but the
+driver specifies that it can scale characters, GDI assumes that the driver
+always scales characters the same amount in the each direction.
+ 
+Whenever a display driver cannot match a requested size exactly, GDI
+requires the driver to use the largest size available that will not exceed
+the requested size in either direction.
+ 
+<b>Cosmetics</b>
+ 
+GDI checks the TC_EA_DOUBLE, TC_IA_ABLE, TC_UA_ABLE, and TC_SO_ABLE values
+to determine whether the display driver can generate bold, italic,
+underlined, or strikethrough characters from existing characters.
+ 
+A display driver sets TC_EA_DOUBLE if it can generate a bold character by
+doubling the existing character's weight. A typical method is to overstrike
+the existing character after moving one device unit to the right.
+ 
+A display driver sets the TC_IA_ABLE value if it can generate italic
+characters. A typical method is to skew the gylph information, drawing the
+the character as if it were contained by a parallelogram rather than a
+rectangle.
+ 
+A display driver sets the TC_UA_ABLE value if it can generate underlined
+characters, and sets the TC_SO_ABLE value if it can generate strikethrough
+characters.
+ 
+<b>Raster and Vector Fonts</b>
+ 
+GDI checks the TC_RA_ABLE and TC_VA_ABLE values in the dpText member to
+determine whether the display driver supports raster and vector fonts,
+respectively. A display driver must set at least one of these bits.
+ 
+<b>Orientation and Escapement</b>
+ 
+Whenever either the character orientation or the difference between the
+character orientation and the escapement angle is a multiple of 90 degrees,
+the intercharacter and interword spacing will be the standard intercharacter
+spacing used for bounding boxes plus the spacing specified by the
+<b>CharacterExtra and BreakExtra members in the DRAWMODE structure.</b>
+ 
+The standard intercharacter spacing at a given escapement angle and
+character orientation is defined as the minimum spacing along the escapement
+vector, such that the character origins are on the escapement vector, and
+the character bounding boxes touch. Variable pitch fonts are achieved by
+using variable width bounding boxes. This model applies to all attribute
+values. When the sides of the bounding boxes touch, extra space is added in
+<i>x a</i>nd, when the tops touch, it is added in y.
+ 
+In all other escapement and orientation cases, the standard intercharacter
+spacing is device dependent. The preferred implementation is for the
+90-degree cases. In all cases, it is required that all character origins lie
+on the escapement vector.
+ 
+It is assumed that arbitrary escapement angles can be achieved, if by no
+other means than, by placing each character as a separate entity. Many
+devices are able to do arbitrary character rotation only if the character
+orientation matches the escapement angle. For such devices, it is assumed
+that the driver will place each character individually at the proper
+orientation and escapement, when escapement and character orientation do not
+match.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

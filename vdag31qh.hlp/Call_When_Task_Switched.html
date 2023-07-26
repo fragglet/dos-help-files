@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<title>Call_When_Task_Switched - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Call_When_Task_Switched</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Primary_Scheduler_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Claim_Critical_Section.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     esi, TaskSwitchCallback    ; points to callback procedure
+VMMcall Call_When_Task_Switched
+ 
+The Call_When_Task_Switched service installs a task-switched callback
+procedure. The system calls this procedure whenever it carries out a task
+switch. This service should be used sparingly and the callback procedure
+should be optimized for speed.
+ 
+<b>Parameter           Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>TaskSwitchCallback</i>  Points to the callback procedure to install. See the
+                    Comments section for more information about the
+                    procedure.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Comments</b>
+ 
+Some virtual devices must save the state of a hardware device every time a
+task switch occurs and restore the hardware state for the virtual machine
+that is about to be run. However, virtual machine events can often be used
+in place of using this service.
+ 
+Virtual devices can install any number of callback procedures. The system
+calls each one in the order installed, until all procedures have been
+called.
+ 
+The system calls the callback procedure as follows:
+ 
+mov     eax, OldVM              ; previous VM handle
+mov     ebx, VM                 ; current VM handle
+call    [CritSecCallback]
+ 
+The OldVM parameter specifies a handle identifying the previous virtual
+machine (just prior to the task switch), and VM specifies a handle
+identifying the current virtual machine.
+ 
+The callback procedure can carry out any operation and can modify EAX, EBX,
+ECX, EDX, ESI, EDI, and Flags.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Call_When_Idle, Call_When_Not_Critical</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

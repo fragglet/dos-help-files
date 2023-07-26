@@ -1,0 +1,269 @@
+<html>
+
+<head>
+<title>[netname.versions] - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> [netname.versions]</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Setup_Information.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='[pointing_dot_device].html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+[netname.versions]
+<i>ooMMmmrr=description,search-file,work-section,work-section2</i>
+ 
+The [netname.versions] section contains a list identifying the different
+version of a network that can be installed. The netname in the section title
+must be the same as a netname given in the [network] section of the
+information file.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<i>oo</i>             Specfies a two-digit option code. For example, Microsoft LAN
+               Manager uses option code 00 to indicate the basic
+               configuration and 01 to indicate the 386 enhanced
+               configuration. The option can be an number or xx if an option
+               code is not needed.
+ 
+<i>MM</i>             Specifies a two-digit major version number.
+ 
+<i>mm</i>             Specifies a two-digit minor version number.
+ 
+<i>rr</i>             Specifies the revision number.
+ 
+<i>description</i>    Specifies an ASCII string that describes the version for the
+               corresponding network driver. This parameter must be enclosed
+               in double quotation marks (").
+ 
+<i>search-file</i>    Specifies the name of a file. This parameter can be left
+               blank. If it is not, Setup searches for the specified file
+               and uses the result of the search to determine whether to use
+               the work-section or work-section2 parameter to complete the
+               installation. If search-file is left blank, Setup uses the
+               work-section parameter to complete the installation.
+ 
+<i>work-section</i>   Specifies the name of the section that defines how to install
+               support for the network. Setup uses this section only if the
+               search-file parameter is empty or the file specified by
+               search-file could not be found.
+ 
+<i>work-section2</i>  Specifies the name of the section that defines how to install
+               support for the network. Setup uses this section only if the
+               file specified by search-file is found.
+ 
+<b>Comments</b>
+ 
+For an OEM-supplied OEMSETUP.INF file, the version number used on the left
+side of the equal sign is not critical; the values are important only when
+Setup performs detection for the network during a first-time install. Setup
+defaults to the highest numbered version in SETUP.INF that is less than or
+equal to the detected version, provided that the option field matches or is
+xx.
+ 
+Each work section has the following form:
+ 
+[work-section]
+<i>line</i>
+    .
+    .
+    .
+ 
+Each line may define a file or initialization setting for the network. For a
+complete description of the lines, see the "Work Section Lines" section.
+ 
+<b>Example</b>
+ 
+The following example supports three versions of the network. Each version
+has a version-specific work section. The last version specifies a a file
+(V2ENH.EXE) to search for and also two work sections.
+ 
+[networks]
+mynet=,"My Network"
+ 
+[mynet.versions]
+00010000="Version 1.00",,my ver1
+00020000="Version 2.00",,my ver2
+01020000="Version 2.00 ENHANCED",v2enh.exe,my_ver2,my_ver2_plus
+ 
+When installing with this example, the user will choose from:
+ 
+My Network (Version 1.00)
+My Network (Version 2.00)
+My Network (Version 2.00 ENHANCED)
+ 
+<b>Work section lines</b>
+ 
+A work section may contain any of the following lines, in any order:
+ 
+<i>section,tag,value</i>
+system.ini=section,tag,value
+win.ini=section,tag,value
+driver=drive:filename
+vxd=drive:filename,...
+sysdir=drive:filename,...
+windir=drive:filename,...
+update=drive:filename,...
+warning=level
+ 
+Each line is described in detail in subsequent sections.
+ 
+The drive specifier refers to one of the disks defined in the OEMSETUP.INF
+file. Filenames should appear without a path. In all such lines (except
+driver), all files listed in all sections are copied. For example, a vxd
+line in the version-specific section will add VxDs to any VxD listed in
+another work-section, or the [networks] section. In general, when using
+version-specific work sections, all files copied should be defined in that
+section, and the other sections and [networks] section line should be
+empty.
+ 
+Setup carries out standard Windows version checking when copying files if
+the specified files are Windows-format executables.
+ 
+<b>Initialization line</b>
+ 
+<i>section,tag,value</i>
+ 
+This line updates one of two initialization files. If the work-section is
+specified by the WinIniSect of the network line in the [network] section,
+the modification is applied to WIN.INI. Otherwise, the modification is
+applied to SYSTEM.INI.
+ 
+If this line specifies the load setting in the [windows] section of WIN.INI
+or the drivers setting in the [boot] section of SYSTEM.INI, Setup appends
+the value to the current setting value. All other tags are replaced.
+ 
+In the case of the device setting in the [386Enh] section of SYSTEM.INI,
+settings are not replaced; a new line will be added. In general, VxDs should
+always appear on the VXD=command setting so that Setup can remove them
+correctly should the network installation be modified using Maintenance Mode
+Setup.
+ 
+The following example puts the setting "TimerCriticalSection=1000" in the
+[386Enh] section of SYSTEM.INI.
+ 
+386Enh,TimerCriticalSection,1000
+ 
+<b>SYSTEM.INI line</b>
+ 
+system.ini=section,tag,value
+ 
+This line modifies a setting in SYSTEM.INI. For example, the following line
+adds the setting "UniqueDOSPSP=1" to the [386Enh] section of SYSTEM.INI.
+ 
+system.ini=386Enh,UniqueDOSPSP,1
+ 
+<b>WIN.INI line</b>
+ 
+win.ini=section,tag,value
+ 
+This line modified a setting in WIN.INI. For example, the following line
+appends "mybcast.exe" to the load setting in the [windows] section of
+WIN.INI.
+ 
+win.ini=windows,load,mybcast.exe
+ 
+<b>DRIVER line</b>
+ 
+driver=drive:filename
+ 
+This line sets the network driver in the [boot] section in SYSTEM.INI, and
+copies the file from the disk to the SYSTEM directory. If a driver is
+defined in more than one place in the OEMSETUP.INF file, Setup checks each
+of the following sections or parameters (in the given order) until it finds
+the name of a driver to copy:
+ 
+♦  The work-section specified by the [netname.versions] section.
+ 
+♦  The section specified by the SysIniSect parameter in the [network]
+   section.
+ 
+♦  The section specified by the WinIniSect parameter in the [network]
+   section.
+ 
+♦  The Filename specified by the [network] section.
+ 
+The following example copies MYNET.DRV from the [disks] section of
+OEMSETUP.INF to the SYSTEM directory, and adds the setting
+"network.drv=mynet.drv" to the [boot] section of SYSTEM.INI.
+ 
+driver=9:mynet.drv
+ 
+<b>VXD line</b>
+ 
+vxd=drive:filename,...
+ 
+This line adds one or more VxDs to SYSTEM.INI and copies the files to the
+SYSTEM directory, unless the VxD is internal to WIN386. For example, the
+following line copies MYNET.386 from the [disks] section of OEMSETUP.INF to
+the SYSTEM directory, and adds the setting
+"network=mynet.386,*dosnet,*vnetbios" to the [386Enh] section of
+SYSTEM.INI.
+ 
+vxd=9:mynet.386,x:*dosnet,x:*vnetbios
+ 
+<b>SYSDIR line</b>
+ 
+sysdir=drive:filename,...
+ 
+This line copies one or more files to the SYSTEM directory. For example, the
+following line copies MYNETLIB.DLL to the SYSTEM directory from disk as
+defined in the OEMSETUP.INF file.
+ 
+sysdir=9:mynetlib.dll
+ 
+<b>WINDIR line</b>
+ 
+windir=drive:filename,...
+ 
+This line copies one or more files from disk to the WINDOWS directory. For
+example, the following line copies the Help file for the driver to the
+WINDOWS directory.
+ 
+windir=9:mynet.hlp
+ 
+<b>UPDATE line</b>
+ 
+update=drive:filename,...
+ 
+This line replaces a file found on the path, or, if not found, copies it to
+the Windows directory. This allows Setup to update a network component
+shipped with the network software in place. The following example searches
+for V2ENH.EXE on the path. If found, a new version of the file is copied.
+ 
+update=9:v2enh.exe
+ 
+<b>WARNING line</b>
+ 
+warning=level
+ 
+This setting produces a warning dialog box. The level can be one of the
+following values.
+ 
+<b>Value  Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>1</i>      Indicates that the network is not compatible with Windows.
+ 
+<i>2</i>      Indicates the network software is compatible, but updated software
+       may be available.
+ 
+<i>3</i>      Indicates that the network software is compatible, but some part of
+       it is missing. Level 3 is generally used in a work-section when a
+       search file is not found, so the user can be notified that they are
+       missing that file.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

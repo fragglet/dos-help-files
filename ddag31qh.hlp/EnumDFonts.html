@@ -1,0 +1,121 @@
+<html>
+
+<head>
+<title>EnumDFonts - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> EnumDFonts</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='EnumObj.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD EnumDFonts(lpDestDev, lpFaceName, lpCallbackFunc, lpClientData)
+LPPDEVICE lpDestDev;      /* points to physical device or bitmap       */
+LPSZ lpFaceName;          /* points to name of font face               */
+FARPROC lpCallbackFunc;   /* points to user-supplied callback function */
+LPVOID lpClientData;      /* points to user-supplied data              */
+ 
+The EnumDFonts function returns information about device fonts by passing
+the information to the specified callback function. GDI calls this function
+when processing the EnumFonts function (GDI.70) to determine what device
+fonts are available.
+ 
+Every graphics driver must export an EnumDFonts function.
+ 
+<b>Parameter       Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpDestDev       Points to a PDEVICE or PBITMA</i>P structure.
+ 
+<i>lpFaceName</i>      Points to the null-terminated string specifying the name of
+                a font. If lpFaceName points to a name, EnumDFonts calls the
+                callback function with information for the fonts having the
+                same font name. If there are no fonts of that name, the
+                function returns 1.
+ 
+                If lpFaceName is NULL, EnumDFonts randomly selects one font
+                of each name and calls the callback function with
+                information for these fonts. If there are no fonts, the
+                function returns 1.
+ 
+<i>lpCallbackFunc</i>  Points to a user-supplied callback function. For more
+                information about the callback function, see the following
+                "Comments" section.
+ 
+<i>lpClientData</i>    Points to a buffer containing user-supplied data.
+                EnumDFonts does not use this data; instead it passes the
+                data back to application through the callback function.
+ 
+<b>Return Value</b>
+ 
+The return value is the last value returned by the callback function. The
+function returns 1 if there are no fonts having the specified font name.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 6.
+ 
+<b>EnumDFonts</b> calls the callback function once for each font. It continues to
+call the callback function until there are no more fonts, or the callback
+function returns zero.
+ 
+The callback function has the following form:
+ 
+<b>WORD CallbackFunction(lpLogFont, lpT</b>extMetrics,
+                          wFontType, lpClientData)
+<b>LPLFONT lpLogFont;</b>
+<b>LPTEXTMETRICS lpTextMetrics;</b>
+<b>WORD wFontTy</b>pe;
+<b>LPVOID lpClientDat</b>a;
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>lpLogFont      Points to a </i>LFONT structure defining the logical attributes
+               of a font. All sizes are in device units.
+ 
+<i>lpTextMetrics  Points to a TEXTMETRIC s</i>tructure containing the same values
+               that would be returned by the GetTextMetrics (GDI.93)
+               function. All sizes are in device units.
+ 
+<i>wFontType</i>      Specifies the type of the font. It can be one of the
+               following values.
+ 
+               Value                Meaning
+               ─────────────────────────────────────────────────────────────
+               RASTER_FONTTYPE (1)  Font consists of raster bitmaps rather
+                                    than vector strokes.
+ 
+               DEVICE_FONTTYPE (2)  Font is provided by the device rather
+                                    than GDI.
+ 
+               ENGINE_FONTTYPE (4)  Font is provided by TrueType rather than
+                                    GDI or device.
+ 
+               Bit 3 in the wFontType parameter is reserved; must be zero.
+ 
+<i>lpClientData   Points to the user-su</i>pplied data passed to EnumDFonts.
+ 
+The callback function must return a nonzero value to continue to receive
+information about the fonts. If the callback function returns zero,
+<b>EnumDFonts</b> stops enumerating the fonts and returns to GDI.
+ 
+If the device can generated scaled, bold, or italicized fonts, EnumDFonts
+should pass only the information about the base font to the callback
+function. EnumDFonts should then leave it to the application to inquire
+about the device's text transformation abilities.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

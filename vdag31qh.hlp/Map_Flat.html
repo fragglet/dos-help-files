@@ -1,0 +1,85 @@
+<html>
+
+<head>
+<title>Map_Flat - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Map_Flat</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Miscellaneous_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Map_Lin_To_VM_Addr.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     ah, SegOffset    ; offset in Client_Reg_Struc to segment reg
+mov     al, OffOffset    ; offset in Client_Reg_Struc to offset reg
+VMMcall Map_Flat
+ 
+cmp     eax, -1         ; -1 if error
+je      error
+mov     [LinAddr], eax  ; ring-0 linear address
+ 
+The Map_Flat service converts a segment:offset or selector:offset pair into
+a linear address. This service works only for the current virtual machine.
+It determines whether the value passed to it is a V86 segment or a
+protected-mode selector by the execution mode of the current virtual
+machine.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>SegOffset</i>  Specifies the offset in bytes from the start of the
+           Client_Reg_Struc structure to the segment register that contains
+           the segment address or selector to convert.
+ 
+<i>OffOffset</i>  Specifies the offset in bytes from the start of the
+           Client_Reg_Struc structure to the register that contains the
+           address offset to convert. If this parameter is -1, this service
+           uses 0 as the address offset to convert.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the ring-0 linear address that corresponds to the
+specified V86 or protected-mode address. The EAX register contains -1 if if
+the specified selector is invalid.
+ 
+<b>Comments</b>
+ 
+Before converting an address, Map_Flat checks the current execution mode
+and, for protected-mode applications, the segment granularity (16- or 32-bit
+offsets). If the virtual machine is running a 32-bit protected mode
+application, it uses 32-bit address offsets. For V86 and 16-bit
+protected-mode applications, it uses 16-bit address offsets and ignores the
+high word if the OffOffset parameter specifies a 32-bit register.
+ 
+<b>Example</b>
+ 
+The following example converts the address Client_DS:Client_DX and returns
+the linear address in EAX:
+ 
+mov     ax, (Client_DS SHL 8) + Client_DX
+VMMcall Map_Flat
+ 
+<b>Uses</b>
+ 
+EAX, Flags
+ 
+<b>See Also</b>
+ 
+<b>Client_Ptr_Flat</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>VDMAD_Get_Virt_State - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VDMAD_Get_Virt_State</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_DMA_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VDMAD_Lock_DMA_Region.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vdmad.inc
+ 
+VxDcall VDMAD_Get_Virt_State
+ 
+The VDMAD_Get_Virt_State service allows a channel owner to determine the
+current virtual state of the channel. The virtual state consists of all the
+information necessary to physically program the DMA channel for a DMA
+transfer (linear address of target region, byte length of region, mode of
+transfer, and state of mask bit and software request bit)
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>EAX</i>        Specifies the DMA handle.
+ 
+<i>EBX</i>        Specifies the virtual machine handle.
+ 
+<b>Return Value</b>
+ 
+If translation is enabled, the ESI register contains the high linear address
+of the user's DMA region. The high linear address is used so that the DMA
+can proceed even if a different virtual machine is actually running at the
+time of the transfer.
+ 
+If translation is not enabled, the ESI register contains the physical byte
+address programmed (shifted left 1, for word ports).
+ 
+The ECX register contains count in bytes.
+ 
+The DL register contains the mode. This is the same as the 8237 mode byte
+with channel number removed and the following DMA_masked and DMA_requested
+values set as appropriate:
+ 
+<b>Value          Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>DMA_masked</i>     Channel masked and not ready for a transfer
+ 
+<i>DMA_requested</i>  Software request flag set
+ 
+The DH register contains the extended mode (ignored on non-PS2 machines that
+do not have extended DMA capabilities).
+ 
+<b>Uses</b>
+ 
+ESI, ECX, EDX, Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>Allocate_PM_Call_Back - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Allocate_PM_Call_Back</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Break_Point_and_Callback_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Call_When_VM_Returns.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     edx, OFFSET32 RefData   ; reference data (any doubleword)
+mov     esi, OFFSET32 Callback  ; callback procedure to call
+VMMcall Allocate_PM_Call_Back
+ 
+jc      error
+mov     [CallbackAddr], eax     ; selector:offset for callback
+ 
+The Allocate_PM_Call_Back service installs a callback procedure that
+protected-mode applications can call to execute code in a virtual device.
+The service returns a callback address, specified as selector:offset pair.
+When protected-mode applications call this address, the system passes
+control to the callback procedure specified by the Callback parameter.
+ 
+Virtual devices typically use this service to allow software running in a
+virtual machine to call APIs provided by the virtual device.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>RefData</i>    Points to reference data to be passed to the callback procedure.
+ 
+<i>Callback</i>   Points to the callback procedure to install. See the Comments
+           section for more information about the procedure.
+ 
+<b>Return Value</b>
+ 
+If the carry flag is clear, the EAX register contains the address of the
+callback procedure. Otherwise, the carry flag is set to indicate that the
+callback procedure could not be installed.
+ 
+<b>Comments</b>
+ 
+The system calls the callback procedure as follows:
+ 
+mov     ebx, VM                 ; current VM handle
+mov     edx, OFFSET32 RefData   ; points to reference data
+mov     ebp, OFFSET32 crs       ; points to Client_Reg_Struc
+call    [Callback]
+ 
+The VM parameter is a handle identifying the current virtual machine. The
+<i>RefData</i> parameter points to the reference data supplied when the callback
+procedure was installed, and crs points to a Client_Reg_Struc structure
+containing the register values for the virtual machine.
+ 
+<b>Uses</b>
+ 
+EAX, Flags
+ 
+<b>See Also</b>
+ 
+<b>Allocate_V86_Call_Back</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

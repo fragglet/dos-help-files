@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>Call_When_Not_Critical - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Call_When_Not_Critical</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Primary_Scheduler_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Call_When_Task_Switched.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     esi, CritSecCallback    ; points to callback procedure
+mov     edx, RefData            ; points to data to pass to callback
+VMMcall Call_When_Not_Critical
+ 
+The Call_When_Not_Critical service installs a critical-section callback
+procedure. The system calls this procedure whenever a virtual device
+releases the critical section.
+ 
+<b>Parameter        Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>CritSecCallback</i>  Points to the callback procedure to install. See the
+                 Comments section for more information about the procedure.
+ 
+<i>RefData</i>          Points to reference data to pass to the callback
+                 procedure.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Comments</b>
+ 
+The system does not execute the callback until the current virtual machine's
+execution priority is less than the Critical_Section_Boost value even if the
+current virtual machine is not in a critical section. This allows a virtual
+device to release the critical section and process any simulated interrupts
+before the system calls the callback procedure.
+ 
+Virtual devices can install any number of callback procedures, but the
+system calls only the most recent procedure on the list when the critical
+section is released. The system removes the callback procedure from the list
+as it calls the procedure.
+ 
+The system calls the callback procedure as follows:
+ 
+mov     ebx, VM                 ; current VM handle
+mov     edx, OFFSET32 RefData   ; points to reference data
+mov     ebp, OFFSET32 crs       ; points to a Client_Reg_Struc structure
+call    [CritSecCallback]
+ 
+The VM parameter specifies a handle identifying the current virtual machine,
+<i>RefData</i> points to reference data from the virtual device that installed the
+callback, and the csr parameter points to a Client_Reg_Struc structure
+containing the registers of the current virtual machine.
+ 
+The callback procedure can carry out any operation and can modify EAX, EBX,
+ECX, EDX, ESI, EDI, and Flags.
+ 
+It is more convenient to use the Call_Priority_VM_Event service than to call
+this service directly.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Call_When_Idle, Call_When_Task_Switched</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

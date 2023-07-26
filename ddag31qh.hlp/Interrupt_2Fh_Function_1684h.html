@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>Interrupt 2Fh Function 1684h - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Interrupt 2Fh Function 1684h</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Windows_Interrupt_2Fh_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Interrupt_2Fh_Function_1685h.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+mov     bx, [DeviceID]  ; Device identifier
+ 
+mov     ax, 1684h       ; Get Device Entry Point Address
+int     2Fh             ; multiplex interrupt
+ 
+mov     word ptr [DevAddr], di
+mov     word ptr [DevAddr+2], es    ; es:di contains entry point address
+ 
+Get Device Entry Point Address (Interrupt 2Fh Function 1684h) retrieves the
+entry point address for a virtual device's service functions. MS-DOS device
+drivers or TSRs typically use this function to communicate with virtual
+devices they have explicitly loaded.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>DeviceID</i>   Identifies a virtual device.
+ 
+<b>Return Value</b>
+ 
+The return value is the entry-point address contained in the ES:DI register
+pair if the function is supported. Otherwise, ES:DI contain zero.
+ 
+<b>Comments</b>
+ 
+Any virtual device can provide service functions to be used by MS-DOS
+programs. For example, the virtual-display device provides services that the
+Windows old application program uses to display MS-DOS programs in a window.
+It is the responsibility of the MS-DOS program to provide the appropriate
+virtual-device identifier. The function returns a valid address if the
+virtual device supports the entry point.
+ 
+MS-DOS programs call the entry point using a far call instruction. The
+services provided by the virtual device depend on the device. It is the
+responsibility of the MS-DOS program to set registers to values that are
+appropriate to the specific virtual device.
+ 
+For versions of Windows prior to version 3.0, the program must set the ES:DI
+register pair to zero before calling this function.
+ 
+<b>Example</b>
+ 
+The following retrieves the entry point address for the virtual device
+identified by My_Device_ID:
+ 
+xor     di, di              ; set es:di to zero for version 2.x
+mov     es, di
+mov     bx, My_Device_ID
+ 
+mov     ax, 1684h
+int     2Fh
+ 
+mov     ax, es
+or      ax, di
+jz      API_Is_Not_Supported
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

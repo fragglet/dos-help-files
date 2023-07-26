@@ -1,0 +1,251 @@
+<html>
+
+<head>
+<title>Metrics File Formats - Printers and Fonts Kit(3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Printers and Fonts Kit(3.1) (pfk31qh.hlp) (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Metrics File Formats</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printers_and_Fonts_Kit(3_dot_1).html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DRIVERINFO.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+Microsoft Windows printer drivers provide lists of the fonts available on
+the printer. Although most drivers have the text metrics for a few
+device-resident fonts built in as resources, the majority of the
+printer-font metrics are external to the drivers and are in the form of
+Microsoft Windows printer font metrics files. This topic describes the
+format of the font metrics files for Windows printer drivers.
+ 
+<b>Printer Font Metrics Files</b>
+ 
+A printer font metrics (PFM) file has the following general form:
+ 
+PFMHEADER       Header;          /* font header */
+WORD            WidthTable[];    /* character widths */
+PFMEXTENSION    Extensions;      /* extensions */
+char            DeviceName[];    /* printer-device name */
+char            FaceName[];      /* font name */
+EXTTEXTMETRIC   ExtTextMetrics;  /* extended-text metrics */
+WORD            ExtentTable[];   /* unscaled-character widths */
+DRIVERINFO      DriverInfo;      /* driver-specific information */
+PAIRKERN        KerningPairs[];  /* pair-kerning table */
+KERNTRACK       KerningTracks[]; /* track-kerning table */
+ 
+The PFMHEADER structure, the PFMEXTENSION structure, and font name must be
+present in every PFM file. Whether a PFM file contains any of the other
+structures and arrays depends on the printer driver and the font vendor's
+preferences.
+ 
+The PFMHEADER and PFMEXTENSION structures must be, respectively, the first
+and second structures in the file. The remaining structures and arrays may
+appear in any order. Their locations are indicated by the offsets in the
+<b>PFMHEADER and PFMEXTENSION </b>structures.
+ 
+The following sections describe the arrays in the file, such as the width
+table. For more information about the structures, see Section 2.4,
+"Structure Reference," later in this topic.
+ 
+<b>Width Table</b>
+ 
+The width table in the PFM file is an array of 16-bit values containing the
+width of each character in the font. The number of elements in the array is
+computed as dfLastChar - dfFirst + 2. Since the last entry is extra, it is
+set to zero.
+ 
+The width table is optional. For example, fixed-pitch fonts do not require
+the table since all characters have the same width. If the table is
+provided, it must be placed between the PFMHEADER and PFMEXTENSION
+structures.
+ 
+<b>Device and Font Names</b>
+ 
+The device and font names are null-terminated strings specifying the name of
+the printer device and font face, respectively.
+ 
+<b>Extent Table</b>
+ 
+The extent table is an array of 16-bit values containing the width of each
+character in the font at the default point size.
+ 
+<b>Printer-Cartridge Metrics Files</b>
+ 
+A printer-cartridge metrics (PCM) file has the following general form:
+ 
+PCMHEADER   Header;             /* font header           */
+char        CartridgeTitle[];   /* title for cartridge   */
+BYTE        PFMFiles[];         /* an array of PFM files */
+ 
+The PCMHEADER structure contains information about the PCM files, such as
+its size and the location of the cartridge title. For more information about
+structures, see Section 2.4, "Structure Reference" later in this topic.
+ 
+The PCMHEADER structure must contain a nonzero offset to the cartridge
+title. This string must be nonempty and null-terminated. This title is used
+in the cartridge list box in the Printer Setup dialog box.
+ 
+The PCM file must contain one PFM file for each font in the cartridge. The
+files must be appended together. Since each PFM file contains its own size
+in bytes, the location of each PFM file is calculated as an offset from the
+previous PFM file. All file positions in a PFM file itself are offsets from
+the beginning of the individual PFM file and the PCM file.
+ 
+<b>Font Scaling: etmMasterHeight and etmMasterUnits</b>
+ 
+Printer drivers use the values in the etmMasterHeight and etmMasterUnits
+members of the EXTTEXTMETRIC structure to scale the character width values
+in the extent table. A driver allows two methods for measuring character
+widths:
+ 
+♦  Device units or "pixels"
+ 
+♦  Font units
+ 
+Device units are the number of dots in the physical device (dots-per-inch);
+<b>etmMasterHeight</b> is expressed in device units. It may be converted to points
+using the formula:
+ 
+                   etmMasterHeight device units * 72 points-per-inch
+height in points = ---------------------------------------------------
+                           dfVertRes device units-per-inch
+ 
+In this case, 72 represents the number of points-per-inch. The dfVertRes
+member contains the number of dots-per-inch in device units.
+ 
+Font units may differ from device units as a convenience to the font vendor.
+If the font is intended for devices that differ in resolution, there
+typically is no benefit from mapping the resolution of the font to the
+resolution of a particular printer. The vendor uses the units that are most
+convenient for designing the font. For example, 1000 units-per-cell (or em)
+is the Adobe standard for PostScript fonts; etmMasterUnits is expressed in
+font units-per-em where an em equals etmMasterHeight.
+ 
+A number may be converted from device units to font units using the
+formula:
+ 
+ 
+value in font units =
+         value in device units * etmMasterUnits font units
+         -------------------------------------------------
+                   etmMasterHeight device units
+ 
+ 
+The formula for the inverse operation is:
+ 
+ 
+value in device units =
+         value in font units * etmMasterHeight device units
+         --------------------------------------------------
+                  etmMasterUnits font units
+ 
+<b>Determining Character Widths</b>
+ 
+The values in the extent table are the widths of the characters when the
+font height equals etmMasterHeight. When the font height does not equal
+<b>etmMasterHeight</b>, the driver must scale the values from the extent table.
+Always assume linear scaling fonts.
+ 
+The values in the extent table are in font units. The width of a character
+for a particular font height may be computed as follows:
+ 
+ 
+character width      value from extent table in font units
+---------------   =  -------------------------------------
+  fontheight            etmMasterUnits font units
+ 
+By multiplying font height through the equation, we have the formula for
+computing character width:
+ 
+                  font height * value from extent table in font units
+character width = ---------------------------------------------------
+                               etmMasterUnits font units
+ 
+Character width takes on the units of font height. If the font height is in
+device units, the resulting width will be in device units. If the font
+height is in font units, the resulting width will be in font units.
+ 
+In its normal mode of operation, the driver simply plugs the font height
+into the above equation to compute the character width. Font height is
+normally in device units, so the resulting width is normally in device
+units.
+ 
+For example, assume the device resolution is 300 dpi and the font units are
+expressed as 1000 units-per-em. Assuming that the etmMasterHeight member
+represents a 72-point font, the values would look like this:
+ 
+<b>dfVertRes</b> = 300
+ 
+<b>etmMasterHeight</b> = 300
+ 
+<b>etmMasterUnits</b> = 1000
+ 
+Additionally, assume the value in the width table for a capital H is 500
+font units, or half the em height. Assume the height of the font for which
+you want the character width is 12 points, or 50 device units. With relative
+widths disabled, the character width would be computed using the first width
+formula:
+ 
+50 device units * 500 font units
+--------------------------------  = 25 device units
+     1000 font units
+ 
+<b>Using the ENABLERELATIVEWIDTHS Escape</b>
+ 
+When the application calls the ENABLERELATIVEWIDTHS escape, the driver
+expects the application to request a font height in device units, but will
+return the character width in font units. The application may want to obtain
+widths in font units to alleviate any error that may result from rounding
+widths to device units. It is the responsibility of the driver to correct
+this error when relative widths are disabled, but the application may choose
+to enable relative widths and perform its own error correction.
+ 
+The driver converts the font height (in device units) to font units prior to
+computing the character width. The resulting formula is:
+ 
+character width in font units =
+     font height in device units * character extent in font units
+     ------------------------------------------------------------
+                     etmMasterHeight device units
+ 
+This formula was computed by replacing the "font height" from the first
+formula for character width with the formula for converting a value from
+device units to font units, and then simplifying the equation.
+ 
+Using the same assumptions provided in the previous section, you can now
+work through some more examples. You know that the width of the character is
+25 device units (that is, dots or pixels) or half the height of 50 device
+units. With relative widths enabled, the character width would be computed
+using the second width formula:
+ 
+50 device units * 500 font units
+-------------------------------- = 83.333 font units
+    300 device units
+ 
+The width of the character is 83.333 font units. The driver will round
+noninteger results.
+ 
+To demonstrate that the width in font units is equivalent to the width in
+device units, it can be converted to device units using the formula provided
+in the previous section:
+ 
+83.333 font units  * 300 device units
+------------------------------------- = 25 device units
+   1000 font units
+ 
+For more information about the restrictions imposed by drivers, see Chapter
+3, "The PFM Editor," and Chapter 4, "PCL/HP LaserJet Printer Driver."
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

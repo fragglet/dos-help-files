@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>VPICD_Set_Int_Request - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VPICD_Set_Int_Request</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_PIC_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VPICD_Test_Phys_Request.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vpicd.inc
+ 
+mov     eax, IRQHand    ; IRQ handle
+mov     ebx, VM         ; current VM handle
+VxDcall VPICD_Set_Int_Request
+ 
+The VPICD_Set_Int_Request service sets a virtual interrupt request for the
+specified IRQ and virtual machine. Setting the request causes the system to
+simulate an interrupt. Although the simulation may occur immediately, in
+many cases it may not until a later point in time.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>IRQHand</i>    Specifies the handle identifying the IRQ to set.
+ 
+<i>VM</i>         Specifies the handle identifying the virtual machine.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Comments</b>
+ 
+The interrupt is not simulated immediately if any of the following
+conditions are present:
+ 
+♦  The virtual machine has interrupts disabled
+ 
+♦  The virtual machine has masked the IRQ
+ 
+♦  A higher priority virtual IRQ is in service
+ 
+♦  The virtual machine is suspended, or not able to run
+ 
+However, since the interrupt may be simulated immediately, a virtual device
+that has a virtual interrupt handler must be able to handle a call to the
+handler before this service returns.
+ 
+Setting an interrupt request does not guarantee that the interrupt will be
+simulated. For example, if the VM has masked the interrupt and never unmasks
+it, the interrupt is never simulated. Also, a call to the
+<b>VPICD_Clear_Int_Request</b> service made before the virtual interrupt is
+simulated prevents the interrupt simulation.
+ 
+The virtual VPIC device simulates a level-triggered PIC. This means that
+once a virtual EOI occurs, another interrupt will be simulated immediately
+unless the virtual interrupt request is cleared.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>VPICD_Clear_Int_Request</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

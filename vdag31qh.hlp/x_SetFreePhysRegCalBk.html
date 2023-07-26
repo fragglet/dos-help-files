@@ -1,0 +1,122 @@
+<html>
+
+<head>
+<title>_SetFreePhysRegCalBk - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _SetFreePhysRegCalBk</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Free_Physical_Memory_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_UnmapFreePhysReg.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _SetFreePhysRegCalBk, &lt;Callback, flags&gt;
+ 
+or      eax, eax            ; nonzero if installed, zero if error
+jz      not_installed
+ 
+The _SetFreePhysRegCalBk service installs a callback procedure for managing
+the free list for a free physical region. The system calls the callback
+procedure whenever the memory manager puts a page on the free list or wants
+to obtain a physical page.
+ 
+Any number of callback procedures can be installed.
+ 
+This service is only available during initialization.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Callback</i>   Points to the callback procedure to install. See the Comments
+           section for more information about this procedure.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero value if the service is successful.
+Otherwise, EAX contains zero to indicate an error such as insufficient
+memory to define the callback procedure.
+ 
+<b>Comments</b>
+ 
+When the system places a page on the free list, the system gives a callback
+procedure the option to take the page and map it in a free physical region
+using the _MapFreePhysReg service. When the system needs a page, the system
+requests pages from the callback procedures. They provide pages by using the
+<b>_UnmapFreePhysReg</b> service to unmap the pages from the free physical region
+and put it back on the free list.
+ 
+The system calls the callback procedure as follows:
+ 
+mov     eax, Request    ; 0 for pages available, 1 for pages needed
+mov     ecx, Pages      ; count of pages available or needed
+call    [Callback]
+ 
+jc      dont_chain      ; carry set if request satisfied
+ 
+The Request parameter specifies whether the call is a notification of free
+pages or a request for free pages. This parameter is 0 if the pages are
+available and 1 if the pages are needed. All other values are reserved.
+ 
+The Pages parameter specifies the count of page either currently available
+in the free list, or requested by the memory manager to be placed on the
+free list.
+ 
+The callback procedure sets the carry flag to indicate that it carried out
+the request, and to prevent the system from calling the next callback
+procedure in the chain. If the callback procedure cannot complete the entire
+request, it must clear the carry flag.
+ 
+The callback procedure can modify all registers except the segment registers
+and EBP.
+ 
+If more than one callback procedure is installed, the system calls each
+procedure in the chain unless a procedure returns with the carry flag set.
+The system varies the order in which it calls the procedures, ensuring that
+every procedure is periodically the first to be called.
+ 
+When Request is 1, the callback procedure must release pages for regions
+which were mapped without the PageFixed value.
+ 
+The callback procedure must release all free physical region pages which
+were mapped without the PageFixed value.
+ 
+The callback procedure can release more pages than requested. The extra
+pages remain on the free list until the next operation places pages on the
+free list. At this point, the system sends a notification (Request is 0) to
+the callback procedure for all of the pages currently on the free list.
+ 
+In general, a callback procedure should not call any services other than the
+<b>_MapFreePhysReg and _UnmapFreePhysReg service</b>s. Calling other services,
+particularly nonasynchronous services, may cause the system to be
+re-entered.
+ 
+The system does not begin calling the free-physical-region callback
+procedures until after the Init_Complete message has been processed by all
+virtual devices.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_MapFreePhysReg, _PageAllocate</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

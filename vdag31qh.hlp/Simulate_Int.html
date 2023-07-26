@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>Simulate_Int - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Simulate_Int</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Interrupts_and_Callback_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Simulate_Iret.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, Interrupt      ; interrupt number
+VMMcall Simulate_Int
+ 
+The Simulate_Int service simulates an interrupt in the current virtual
+machine. The service first calls any hook procedures set by the
+<b>Hook_V86_Int_Chain</b> service. If no hook procedure services the interrupt,
+this service pushes the Client_Flags, Client_CS, and Client_IP registers on
+the stack of the current virtual machine. When the virtual machine resumes
+execution (such as when an Resume_Exec service is called), the system
+carries out the simulated interrupt and executes the corresponding V86 mode
+interrupt routine.
+ 
+The virtual PIC device uses this service to simulate hardware interrupts.
+Other virtual devices use the Exec_Int service to simulate interrupts.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Interrupt</i>  Specifies the number of the interrupt to simulate.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Comments</b>
+ 
+If the virtual machine is currently in V86 mode, this service simulates a
+V86 interrupt. Otherwise, the service simulates a protected-mode interrupt.
+Simulating an interrupt in a virtual machine running a protected-mode
+application can have undesirable effects if the corresponding interrupt
+attempts to reflect the interrupt to V86 mode.
+ 
+Virtual devices that need immediate execution of an interrupt should use the
+<b>Exec_Int</b> service in a nested execution block.
+ 
+<b>Uses</b>
+ 
+Client_CS, Client_EIP, Client_Flags, Flags
+ 
+<b>See Also</b>
+ 
+<b>Exec_Int</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

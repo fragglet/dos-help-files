@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>ColorInfo - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ColorInfo</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Control.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+COLORREF ColorInfo(lpDestDev, dwColorin, lpPColor)
+LPPDEVICE lpDestDev;
+DWORD dwColorin;
+LPPCOLOR lpPColor;
+ 
+The ColorInfo function converts a logical color (an RGB value) to a physical
+color ( a physical color value) or converts a physical to a logical color,
+depending on the value of the lpPColor parameter.
+ 
+Every graphics device driver must export a ColorInfo function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpDestDev  Points to a PDEVICE or PBITMAP str</i>ucture specifying the
+           destination device or bitmap.
+ 
+<i>dwColorin</i>  Specifies either a logical or physical color, depending on the
+           value of lpPColor parameter.
+ 
+<i>lpPColor   Points to a PCOLOR structure </i>or is NULL. If lpPColor points to a
+           PCOLOR structure, the function assumes that dwColorin specifies a
+           logical color (an RGB value) and copies the physical color value
+           that most closely matches the logical color to this structure. If
+           lpPColor is NULL, the function assumes that dwColorin specifies a
+           physical color and returns the logical color that matches the
+           physical color.
+ 
+<b>Return Value</b>
+ 
+The return value is the logical color (RGB value) that most closely matches
+the physical color either specified by dwColorin, or copied to the PCOLOR
+structure pointed to by lpPColor.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 2.
+ 
+When converting a logical color, ColorInfo chooses the best possible
+physical color to match the logical color and return the RGB color value
+that corresponds to this physical color.
+ 
+GDI uses the physical colors returned by ColorInfo to set text colors,
+background colors, and pixel colors using the Pixel function.
+ 
+If dwColorin is a logical color, it may specify either an RGB value or a
+color index. If dwColorin specifies a color index (high-order byte is 0xFF),
+<b>ColorInfo</b> should return the index without carrying out a conversion. If
+<i>dwColorin is a physical col</i>or, ColorInfo should return an RGB value only for
+static colors and return color indexes for all other colors. If GDI receives
+a color index from ColorInfo, it uses other functions to determine the
+corresponding logical color.
+ 
+<b>See Also</b>
+ 
+<b>Pixel</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

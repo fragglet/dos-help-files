@@ -1,0 +1,160 @@
+<html>
+
+<head>
+<title>ExtDeviceMode - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ExtDeviceMode</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ExtTextOut.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+int ExtDeviceMode(hWnd, hDriver, lpDevModeOutput, lpDeviceName, lpPort,
+                  lpDevModeInput, lpProfile, wMode)
+HWND hWnd;
+HANDLE hDriver;
+LPDEVMODE lpDevModeOutput;
+LPSTR lpDeviceName;
+LPSTR lpPort;
+LPDEVMODE lpDevModeInput;
+LPSTR lpProfile;
+WORD wMode;
+ 
+The ExtDeviceMode function retrieves or modifies device-initialization
+information for a given graphics driver, or displays a driver-supplied
+dialog box for configuring the graphics driver. Applications call the
+<b>ExtDeviceMode</b> function when the user requests setting up the printer as part
+of preparing for a print job.
+ 
+All printer drivers must export the ExtDeviceMode function. Display drivers
+that permit the user to change operating modes must export the
+<b>ExtDeviceMode</b> function.
+ 
+<b>Parameter        Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hWnd</i>             Identifies the parent window for the dialog box.
+ 
+<i>hDriver</i>          Identifies the module instance of the device driver.
+ 
+<i>lpDevModeOutput  Points to a DEVMODE structur</i>e. The driver writes the
+                 initialization information supplied in the lpDevModeInput
+                 parameter to this structure.
+ 
+<i>lpDeviceName</i>     Points to a null-terminated string that contains the name
+                 of the device, such as PCL/HP LaserJet.
+ 
+<i>lpPort</i>           Points to a null-terminated string that contains the name
+                 of the port to which the device is connected, such as
+                 LPT1.
+ 
+<i>lpDevModeInput   Points to a DEVMODE struc</i>ture containing initialization
+                 information set by the application.
+ 
+<i>lpProfile</i>        Points to a null-terminated string that contains the name
+                 of the initialization file in which initialization
+                 information is recorded and read from. If this parameter is
+                 NULL, the [Model Name, Port] section of the WIN.INI file is
+                 the default.
+ 
+<i>wMode</i>            Specifies which operations the function will perform. If
+                 the wMode parameter is zero, ExtDeviceMode returns the
+                 number of bytes required by the device driver's DEVMODE
+                 structure. Otherwise, wMode can be a combination of the
+                 following values.
+ 
+                 Value          Meaning
+                 ───────────────────────────────────────────────────────────
+                 DM_UPDATE (1)  Writes the driver's current settings to the
+                                environment and the WIN.INI initialization
+                                file.
+ 
+                 DM_COPY (2)    Writes the driver's current settings to the
+                                DEVMODE structure identified by the
+                                lpDevModeOutput parameter. The calling
+                                application must allocate a buffer
+                                sufficiently large to contain the
+                                information. If this bit is clear,
+                                lpDevModeOutput can be NULL.
+ 
+                 DM_PROMPT (4)  Presents the driver's dialog box and then
+                                changes the current settings according to
+                                user specifications.
+ 
+                 DM_MODIFY (8)  Changes the printer driver's current
+                                settings to match the partial initialization
+                                data in the DEVMODE structure identified by
+                                lpDevModeInput before prompting, copying, or
+                                updating the printer driver's setting.
+ 
+<b>Return Value</b>
+ 
+If the wMode parameter is zero, the return value is the size of the DEVMODE
+structure required to contain the printer-driver initialization data. If the
+function displays the initialization-dialog box, the return value is either
+IDOK or IDCANCEL, depending on which button the user chose. If the function
+does not display the dialog box and was successful, the return value is
+IDOK. The return value is less than zero if the function failed.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 90.
+ 
+If wMode includes DM_PROMPT, the ExtDeviceMode function creates an
+application-modal dialog box using the DialogBox function (USER.240). The
+dialog box must provide options for the user to set the various settings of
+the device. ExtDeviceMode does the following:
+ 
+1  Initializes the dialog box settings by using the environment specified by
+   lpDevModeInput, by retrieving the current environment using the
+   GetEnvironment function (GDI.133), or by reading the environment from the
+   corresponding, device-specific section in the WIN.INI file.
+ 
+2  Calls the DialogBox box to display the dialog box, then waits for the
+   user to complete their changes. When the value returns from DialogBox,
+   check the return value. Make subsequent updates only if the return value
+   is IDOK.
+ 
+3  Updates the current device environment by using the SetEnvironment
+   function (GDI.132). Also, it updates the corresponding device-specific
+   section in the WIN.INI file (or specified initialization file) if wMode
+   includes DM_UPDATE.
+ 
+4  Sends a WM_DEVMODE message to all applications informing them of a change
+   to the device's operating modes.
+ 
+The dialog box must provide at least a title bar and OK and Cancel buttons
+in addition to controls for the various operating modes. The title bar
+should contain the name of the current printer model (if the driver supports
+several models), but no other printer model information should be presented
+in the dialog box. (The ExtDeviceMode dialog box cannot permit the user to
+change device models.)
+ 
+If a device has too many options to fit in a single dialog box,
+<b>ExtDeviceMode</b> can provide nested dialog boxes, using buttons in the first
+dialog box to access the others. In all cases, a dialog function for a
+<b>ExtDeviceMode</b> dialog box must close the dialog box if it receives a
+<b>WM_COMMAND message with the wP</b>aram parameter set to IDCANCEL. This message
+occurs when the user presses the ESC key, chooses the Cancel button in the
+dialog box, or when Windows Help needs to close the dialog box in order to
+respond to a request for help from another application.
+ 
+<b>See Also</b>
+ 
+<b>AdvancedSetUpDialog, DeviceMode, DEVMODE</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,116 @@
+<html>
+
+<head>
+<title>_SetResetV86Pageable - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _SetResetV86Pageable</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Memory_Management_for_Protected-Mode.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Miscellaneous_Memory_Management.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _SetResetV86Pageable, &lt;VM, VMLinPgNum, nPages, flags&gt;
+ 
+or      eax, eax    ; nonzero if set or reset, zero if error
+jz      error
+ 
+The _SetResetV86Pageable service modifies the locking and unlocking behavior
+associated with a specific range of V86 memory.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>VM</i>          Specifies a handle identifying the virtual machine for which the
+            behavior is modified.
+ 
+<i>VMLinPgNum</i>  Specifies the linear page number of the first page in 1 megabyte
+            V86 address space to modify. This parameter must not be below
+            the page number for the first V86 page or above 100h.
+ 
+<i>nPages</i>      Specifies the number of pages to modify.
+ 
+<i>flags</i>       Specifies the operation flags. This parameter can be one of the
+            following values:
+ 
+            Value                   Meaning
+            ────────────────────────────────────────────────────────────────
+            PageSetV86Pageable      Disable normal locking behavior of
+                                    _MapIntoV86 and let V86 memory be
+                                    paged.
+ 
+            PageClearV86Pageable    Enable normal locking behavior.
+ 
+            PageSetV86IntsLocked    Enable locking of all V86 memory that is
+                                    not pageable regardless of whether the
+                                    virtual pageswap device uses MS-DOS or
+                                    BIOS functions.
+ 
+            PageClearV86IntsLocked  Disable locking of all V86 memory that
+                                    is not pageable regardless of whether
+                                    the virtual pageswap device uses MS-DOS
+                                    or BIOS functions.
+ 
+            All other values are reserved.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero value if the service is successful.
+Otherwise, EAX contains zero to indicate an error, such as an invalid
+virtual machine handle or an invalid address range.
+ 
+<b>Comments</b>
+ 
+This service is intended to be used to support protected-mode applications
+running in a virtual machine. Virtual devices must not use this service for
+any other purpose.
+ 
+This service returns an error if the VMStat_PageableV86 or
+VMStat_V86IntsLocked state is inconsistent with the specified
+PageSetV86Pageable, PageClearV86Pageable, PageSetV86IntsLocked, or
+PageClearV86IntsLocked values.
+ 
+This service returns an error if the PageClearV86Pageable or
+PageSetV86IntsLocked values are given, but the service cannot lock the
+specified memory.
+ 
+The V86MMGR device uses the PageSetV86IntsLocked value for virtual machines
+which are created with their base memory specified as locked.
+ 
+Virtual device should avoid manipulating the locking and unlocking behavior
+of regions above page 0A0h. A virtual device should not modify these pages
+unless it owns a global or local region set by the _Assign_Device_V86_Pages
+service.
+ 
+If the PageSetV86IntsLocked or PageClearV86IntsLocked value is given, the
+service applies the modification to every page that that is not pageable.
+For this reason the HLinPgNum and nPages parameters should be set to zero.
+ 
+By default, the _MapIntoV86 service locks the memory it maps. For a virtual
+machine running a protected-mode application, it is desirable change this
+default behavior.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_Assign_Device_V86_Pages</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

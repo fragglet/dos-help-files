@@ -1,0 +1,121 @@
+<html>
+
+<head>
+<title>_PageReAllocate - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _PageReAllocate</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Page_Allocation_and_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_PageUnLock.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _PageReAllocate, &lt;hMem, nPages, flags&gt;
+ 
+mov     ecx, eax                ; zero in eax and edx if error
+or      ecx, edx
+jz      error
+ 
+mov     [Handle], eax           ; memory handle
+mov     [Address], edx          ; physical address of start of memory block
+ 
+The _PageReAllocate service reallocates and optionally reinitializes an
+existing memory block. The service can increase or decrease the number of
+pages in the memory block.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hMem</i>       Specifies a handle identifying the memory block to reallocate.
+           This handle must have been previously created using the
+           _PageAllocate or _PageReAllocate service.
+ 
+<i>nPages</i>     Specifies the number of pages in the reallocated memory block.
+           This parameter must not be set to zero. To free a memory block,
+           use the _PageFree service.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter can be a
+           combination of the following values:
+ 
+           Value           Meaning
+           ─────────────────────────────────────────────────────────────────
+           PageZeroInit    Fills any new pages with zeros. All existing
+                           pages remain unchanged.
+ 
+           PageZeroReInit  Fills all pages, new and existing, with zeros.
+ 
+           PageNoCopy      Does not preserve contents of existing pages. If
+                           this value is not given, the service preserves
+                           the contents of each existing page by copying the
+                           contents of the old memory block into the
+                           corresponding pages of the new block.
+ 
+           PageLocked      Locks the allocated pages in the memory. The
+                           pages can be subsequently unlocked using the
+                           _PageUnLock service. The service locks the memory
+                           block regardless of the type of virtual pageswap
+                           device present.
+ 
+           PageLockedIfDP  Locks the allocated pages in the memory only if
+                           the virtual pageswap device uses MS-DOS or BIOS
+                           functions to write to the hardware. If the pages
+                           are locked, they can be subsequently unlocked
+                           using the _PageUnLock service.
+ 
+                           A virtual device must not specify the
+                           PageLockedIfDP value until after the
+                           Init_Complete message has been processed by all
+                           virtual devices.
+ 
+           All other values are reserved.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the memory handle of the new memory block, and the
+EDX register contains the ring-0 linear address of the block. Otherwise, the
+EAX and EDX registers both contain zero to indicate an error such as
+insufficient memory, an invalid memory handle, or wrong memory type.
+ 
+<b>Comments</b>
+ 
+If successful, this service frees the old memory block, making the old
+memory handle and starting address invalid. If this service returns an
+error, the old memory handle and starting address remain valid.
+ 
+If the specified memory handle identifies a fixed memory block (allocated
+using the PageFixed value), this service implicitly allocates fixed pages
+for the new memory block.
+ 
+If the specified handle identifies an aligned memory block (allocated using
+the PageUseAlign value), this service returns an error.
+ 
+Virtual devices must never rely on the new and old memory handles being the
+same, or the new and old starting addresses being equal.
+ 
+The action specified by the PageLockedIfDP value is available only after the
+virtual pageswap device has been initialized.
+ 
+<b>Uses</b>
+ 
+EAX, EDX
+ 
+<b>See Also</b>
+ 
+<b>_PageAllocate, _PageFree, _PageLock, _PageUnLock</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

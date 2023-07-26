@@ -1,0 +1,217 @@
+<html>
+
+<head>
+<title>[display] - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> [display]</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Setup_Information.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='[fonts].html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+[display]
+<i>Devicename = Filename,</i>
+               "Description",
+               "AspectRatio",
+               Grabber,
+               LogoCode,
+               VirtualDisplayDevice,
+               386Grabber,
+               [EGADOSDriver],
+               LogoData,
+               [AdditionalInfo]
+ 
+The [display] section specifies the files and information required to
+install a display driver.
+ 
+<b>Parameter             Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Devicename</i>            Specifies the name of the display device. This name
+                      must be unique in the SETUP.INF file, or any other
+                      information file.
+ 
+<i>Filename</i>              Specifies the MS-DOS filename of the display-driver
+                      file.
+ 
+<i>Description</i>           Specifies an ASCII string describing the display
+                      driver. The string can be up to 47 characters long,
+                      but should be as concise as possible. It is placed in
+                      the display setting of the [boot.description] section
+                      of SYSTEM.INI. This parameter must be enclosed in
+                      double quotation marks (").
+ 
+<i>AspectRatio</i>           Specifies the aspect ratio (relative dimensions) of
+                      the display device's pixels as well as the number of
+                      pixels-per-inch in both horizontal and vertical
+                      directions. This parameter must have the form:
+ 
+                      AspectXY,LogPixelsX,LogPixelsY
+ 
+                      The parameters AspectXY, LogPixelsX, and LogPixelsY
+                      are decimal values that are equal to the values of the
+                      dpAspectXY, dpLogPixelsX, and dpLogPixelsY members in
+                      the GDIINFO structure for the display driver.
+ 
+                      Setup uses this information to determine which raster
+                      fonts to install for the device. Setup searches for
+                      matching fonts in the [sysfonts], [fixedfonts],
+                      [oemfonts], or [fonts] sections of the information
+                      file, then installs any matching fonts in the [fonts]
+                      section of the WIN.INI file. This parameter must be
+                      enclosed in double quotation marks ("), exactly match
+                      the text in the [fonts] section, and not include
+                      spaces.
+ 
+<i>Grabber</i>               Specifies the MS-DOS filename of the standard-mode
+                      grabber for the display. Standard-mode grabbers for
+                      Windows 3.0 have the extension .GR2. For 3.1, the
+                      extension is .2GR.
+ 
+<i>LogoCode</i>              Specifies the MS-DOS filename of the logo display code
+                      Setup uses to build the WIN.COM file. Logo display
+                      code files have the extension .LGO. Include the
+                      appropriate .LGO files for Windows 3.1 on your
+                      driver-installation disks.
+ 
+<i>VirtualDisplayDevice</i>  Specifies the MS-DOS filename of the virtual-display
+                      device (VDD) that 386 enhanced-mode Windows uses. The
+                      standard naming convention for VDD files is to either
+                      begin or end the filename with "VDD," for example
+                      VDDVGA.386. VDD filename extensions are ".386" as is
+                      the case with all other virtual devices.
+ 
+<i>386Grabber</i>            Specifies the MS-DOS filename of the 386 enhanced-mode
+                      grabber for the display. The 386Grabber parameter also
+                      specifies the name of the 386-grabber fonts section.
+                      These fonts are found in the same information file as
+                      the grabbers. This section identifies the font files
+                      used by the grabber to draw text in MS-DOS application
+                      Windows. Enhanced-mode grabbers for Windows 3.0 have a
+                      .GR3 extension. For Windows 3.1, the extension is 3GR.
+                      For more information about the 386 grabber fonts
+                      section, see the following "Comments" section.
+ 
+<i>EGADOSDriver</i>          Specifies the MS-DOS filename of an MS-DOS installable
+                      device driver used to virtualize the write-only
+                      registers on EGA display cards so that they can be
+                      read. This parameter is optional.
+ 
+<i>LogoData</i>              Specifies the MS-DOS filename of the logo module Setup
+                      uses to build the WIN.COM file. Logo data files have
+                      the extension .RLE. Include the appropriate .RLE files
+                      from Windows 3.1 on your driver installation disks.
+ 
+<i>AdditionalInfo</i>        Specifies the name of the additional information
+                      section (in the same information file) that contains
+                      additional commands for the Setup program to carry out
+                      when installing this display device. For example, this
+                      parameter is used for multiple-resolution displays.
+                      For more information about the additional-information
+                      section, see the following "Comments" section.
+ 
+<b>Comments</b>
+ 
+After installing the 386 enhanced-mode grabber specified by the 386Grabber
+parameter, Setup searches the same information file for a section having the
+same name as 386Grabber. This section lists the font files required to
+support the given grabber and has the form:
+ 
+[386Grabber]
+<i>ANSIFont,AlternateFont</i>
+ 
+The section contains one or more entries, each specifying two fonts: one for
+the ANSI character set, and another for an alternate character set (usually
+the International English character set, code page 850). A grabber may have
+more than one set of fonts if the display supports more than one display
+mode.
+ 
+If the display driver supports multiple resolutions, the AdditionalInfo
+parameter can be used to direct Setup to add additional-specific information
+to an initialization file such as SYSTEM.INI, or to install files on which
+the display driver is dependent. During initialization, multiple-resolution
+display drivers examine the SYSTEM.INI file to determine how to respond to
+calls to the GetDriverResourceID function.
+ 
+If the AdditionalInfo parameter is given, the information file must contain
+a resolution information section having the name specified by
+<i>AdditionalInfo</i>. This section has the form:
+ 
+[AdditionalInfo]
+<i>Filename,Destination,INI-Filename,Section,"DeleteLine","AddLine"</i>
+ 
+The following list outlines the parameters and provides a brief description
+of each.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Filename</i>      Specifies the MS-DOS filename of the driver-support file such
+              as a dynamic-link file required to operate this display
+              driver. This parameter must have the form id:filename where
+              id specifies a disk identifier. This parameter is optional.
+ 
+<i>Destination</i>   Specifies the Windows directory to receive the file specified
+              by Filename. This parameter can be 0: or 0:system specifying
+              the Windows root directory or the SYSTEM directory. This
+              parameter is required only if a Filename parameter is given.
+ 
+<i>INI-Filename</i>  Specifies either WIN.INI or SYSTEM.INI. Use SYSTEM.INI for all
+              device-specific initialization settings. This parameter is
+              optional.
+ 
+<i>Section</i>       Specifies the name of the section to modify in the given
+              initialization file. This parameter, usually the same as the
+              display driver's filename, is required only if an
+              INI-Filename parameter is given.
+ 
+<i>DeleteLine</i>    Specifies a line of text to delete from the specified section
+              in the initialization file. Setup uses the parameter as a
+              regular expression to search for, and delete the first
+              matching line. This search is not case sensitive. The
+              parameter must be enclosed in double quotation marks (").
+ 
+<i>AddLine</i>       Specifies a line of text to add to the specified section in
+              the initialization file. The text must have the form
+              keyname=value and must be enclosed in double quotation marks
+              (").
+ 
+<b>Example</b>
+ 
+This example defines a single display device (zga). The sections [ZGA.GR3],
+and [ZGAHI] define the screen-grabber fonts and display-resolution
+information, respectively.
+ 
+[display]
+zga = 1:zga.drv,      "OEM ZGA Color",   "133,96,72",
+      1:zgacolor.gr2, 1:zgalogo.lgo,     1:vddzga.386,
+      1:zga.gr3,      1:zga.sys,         1:zgalogo.rle,
+      zgahi
+ 
+ 
+[ZGA.GR3]
+1:CGA40WOA.FON,1:CGA40850.FON
+1:CGA80WOA.FON,1:CGA80850.FON
+1:EGA40WOA.FON,1:EGA40850.FON
+1:EGA80WOA.FON,1:EGA80850.FON
+ 
+[ZGAHI]
+1:zgahi.dll,0:system,system.ini,zga.drv,"ZGARes=800x600","ZGAmode=HI"
+ 
+<b>See Also</b>
+ 
+[disks]
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

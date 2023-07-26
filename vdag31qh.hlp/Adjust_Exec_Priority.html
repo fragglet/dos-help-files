@@ -1,0 +1,114 @@
+<html>
+
+<head>
+<title>Adjust_Exec_Priority - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Adjust_Exec_Priority</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Primary_Scheduler_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Begin_Critical_Section.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, PriorityBoost    ; signed integer specifying priority boost
+mov     ebx, VM               ; VM handle
+VMMcall Adjust_Exec_Priority
+ 
+The Adjust_Exec_Priority service raises or lowers the execution priority of
+the specified virtual machine. The service adds the specified boost to the
+virtual machine's current execution priority.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>PriorityBoost</i>  Specifies a positive or negative priority boost for the
+               virtual machine. This parameter must be a value such that
+               when added to the current execution priority, the result is
+               within the range Reserved_Low_Boost to Reserved_High_Boost.
+ 
+               The following lists some common priority boost values:
+ 
+               Value                   Meaning
+               ─────────────────────────────────────────────────────────────
+               Reserved_Low_Boost      Reserved for use by system.
+ 
+               Cur_Run_VM_Boost        The time-slice scheduler uses this
+                                       value to force a virtual machine to
+                                       run for its allotted time-slice.
+ 
+               Low_Pri_Device_Boost    Virtual devices use this value for
+                                       events that need timely processing
+                                       but are not time critical.
+ 
+               High_Pri_Device_Boost   Virtual devices use this value for
+                                       events that need timely processing
+                                       but should not circumvent operations
+                                       that have a critical section boost.
+ 
+               Critical_Section_Boost  The system uses this value for
+                                       virtual machines specified in a call
+                                       to the Begin_Critical_Section
+                                       service.
+ 
+               Time_Critical_Boost     Virtual devices use this value for
+                                       events that must be processed even
+                                       when another virtual machine is in a
+                                       critical section. For example, VPICD
+                                       uses this when simulating hardware
+                                       interrupts.
+ 
+               Reserved_High_Boost     Reserved for use by system.
+ 
+<i>VM</i>             Specifies the handle identifying the virtual machine.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Comments</b>
+ 
+Since the nonsuspended virtual machine with the highest execution priority
+is always the current virtual machine, this service causes a task switch
+under two circumstances:
+ 
+1  The execution priority of the current virtual machine is lowered (EAX is
+   negative), and there is another virtual machine with a higher priority
+   that is not suspended.
+ 
+2  The execution of a nonsuspended virtual machine which is not the current
+   virtual machine is raised (EAX is positive) higher than the current
+   virtual machine's execution priority.
+ 
+Even if the current virtual machine is in a critical section, a task switch
+will still occur if the priority of another nonsuspended virtual machine is
+raised higher than the current virtual machine's priority. However, this
+will only occur when a virtual machine is given a time-critical boost, for
+example, to simulate a hardware interrupt.
+ 
+It is often more convenient to call the Call_Priority_VM_Event service than
+to call this service directly.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Begin_Critical_Section, Call_Priority_VM_Event</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

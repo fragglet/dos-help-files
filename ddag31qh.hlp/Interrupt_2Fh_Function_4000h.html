@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>Interrupt 2Fh Function 4000h - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Interrupt 2Fh Function 4000h</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Windows_Interrupt_2Fh_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Interrupt_2Fh_Function_4001h.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+mov ax, 4000h             ; Enable VM-Assisted Save/Restore
+int 2fh
+ 
+mov [ModesSupported], al  ; video modes supported while in background
+ 
+Enable VM-Assisted Save/Restore directs the virtual-display device (VDD) to
+notify the virtual machine (VM) application whenever the VDD needs to access
+the video hardware registers. The VDD returns a value specifying the number
+and type of video modes the VDD supports when the VM application is in the
+background.
+ 
+A VM application calls this function during its initialization.
+ 
+<b>Return Value</b>
+ 
+The return value is one of the following values, if successful.
+ 
+<b>Value  Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>01h</i>    No modes virtualized in background.
+ 
+<i>02h</i>    Only text modes virtualized in background.
+ 
+<i>03h</i>    Only text and single-plane graphics modes virtualized.
+ 
+<i>04h</i>    Only text, single-plane, and VGA multiplane graphics modes
+       virtualized.
+ 
+<i>0FFh</i>   All supported video modes virtualized.
+ 
+Otherwise, the function returns zero in the AL register if virtualization is
+not supported.
+ 
+<b>Comments</b>
+ 
+When a VM application calls this function, the VDD disables I/O trapping of
+unreadable registers. Thereafter, the VDD calls Save Video Register State
+and Restore Video Register State (Interrupt 2Fh Functions 4005h and 4006h)
+if it needs to access the video registers. The VM application must provide
+an appropriate interrupt handler to process these functions.
+ 
+When an VM application calls this function, the VDD saves the current state
+of the video registers. The VDD uses this saved state later to restore video
+registers before it calls Notify Foreground Switch and Restore Video
+Register State (Interrupt 2Fh Functions 4002h and 4006h).
+ 
+After a VM application calls Enable VM-Assisted Save/Restore, the VDD no
+longer saves video memory across screen switches; it becomes the
+application's responsibility to completely reinitialize video memory after a
+Notify Foreground Switch request.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

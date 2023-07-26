@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>VDMAD_Scatter_Unlock - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VDMAD_Scatter_Unlock</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_DMA_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VDMAD_Set_EISA_Adr_Mode.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vdmad.inc
+ 
+VxDcall VDMAD_Scatter_Unlock
+ 
+The VDMAD_Scatter_Unlock service attempts to unlock all pages locked by a
+previous call to the VDMAD_Scatter_Lock service.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>EBX</i>        Specifies the virtual machine handle.
+ 
+<i>AL</i>         Specifies the operation flags. The parameter can be one of the
+           following values:
+ 
+           Value  Meaning
+           ─────────────────────────────────────────────────────────────────
+           0      Fills the DDS table with physical addresses and sizes of
+                  the physical regions that make up the DMA region.
+ 
+           1      Fills the DDS table with the actual page table entries.
+ 
+           2      Prevents not-present pages from being locked. This value
+                  is ignored if bit 0 is not set.
+ 
+           4      Prevents pages from being marked as dirty. If bits 0 and 1
+                  are set but 2 is clear, then not-present pages are not
+                  marked.
+ 
+<i>EDI</i>        Points to the extended DDS (DMA Descriptor Structure) to receive
+           the information.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the lock counts have been decremented. If no
+other virtual devices had pages locked, the pages have been unlocked. The
+carry flag is set if the memory was not locked.
+ 
+<b>Comments</b>
+ 
+If Bits 0 and 1 in the AL register are set, the table at the end of the DDS
+is not required to unlock the previously locked pages; otherwise the table
+is not used and caller need not maintain the table after the lock call.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,233 @@
+<html>
+
+<head>
+<title>StretchBlt - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> StretchBlt</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='StretchDIBits.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD StretchBlt(lpDestDev, wDestX, wDestY, wDestXext, wDestYext, lpSrcDev,
+                wSrcX, wSrcY, wSrcXext, wSrcYext, Rop3, lpPBrush,
+                lpDrawMode, lpClip)
+LPPDEVICE lpDestDev;
+WORD wDestX;
+WORD wDestY;
+WORD wDestXext;
+WORD wDestYext;
+LPPDEVICE lpSrcDev;
+WORD wSrcX;
+WORD wSrcY;
+WORD wSrcXext;
+WORD wSrcYext;
+DWORD Rop3;
+LPBRUSH lpPBrush;
+LPDRAWMODE lpDrawMode;
+LPRECT lpClip;
+ 
+The StretchBlt function transfers bits from a source-device rectangle to a
+destination-device rectangle. The function stretches or compresses the
+source bits to fit the destination rectangle. The transfer is controlled by
+a ternary raster operation value that specifies how corresponding bits from
+the source, destination, and pattern in a brush are combined to form the
+final bits in the destination.
+ 
+A graphics device driver must export the StretchBlt function if the
+RC_STRETCHBLT value is set in the dpRaster member of the GDIINFO structure.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpDestDev   Points to a PDEVICE or PBITMAP st</i>ructure specifying the
+            destination device or bitmap.
+ 
+<i>wDestX      Specif</i>ies the x-coordinate of the upper-left corner of the
+            destination rectangle.
+ 
+<i>wDestY      Specif</i>ies the y-coordinate of the upper-left corner of the
+            destination rectangle.
+ 
+<i>wDestXext</i>   Specifies the width (in device units) of the destination
+            rectangle.
+ 
+<i>wDestYext</i>   Specifies the height (in device units) of the destination
+            rectangle.
+ 
+<i>lpSrcDev    Points to a PDEVICE or PBITM</i>AP structure specifying the source
+            device or bitmap.
+ 
+<i>wSrcX       Spe</i>cifies the x-coordinate of the upper-left corner of the
+            source rectangle.
+ 
+<i>wSrcY       Spe</i>cifies the y-coordinate of the upper-left corner of the
+            source rectangle.
+ 
+<i>wSrcXext</i>    Specifies the width (in device units) of the source rectangle.
+ 
+<i>wSrcYext</i>    Specifies the width (in device units) of the source rectangle.
+ 
+<i>Rop3</i>        Specifies a ternary raster operation value. This value
+            determines how StretchBlt combines corresponding pixels from the
+            source, destination, and brush to produce the final pixels in
+            the destination rectangle. The Rop3 parameter can be any one of
+            256 ternary raster-operation values; the following lists the
+            most common values.
+ 
+            Value                     Meaning
+            ────────────────────────────────────────────────────────────────
+            SRCCOPY (0x00CC0020)      Copies source bits to the destination
+                                      rectangle: Destination = Source.
+ 
+            SRCPAINT (0x00EE0086)     Combines the source and destination
+                                      bits using the bitwise OR operator:
+                                      Destination = Source | Destination.
+ 
+            SRCAND (0x008800C6)       Combines the source and destination
+                                      bits using the bitwise AND operator:
+                                      Destination = Source &amp; Destination.
+ 
+            SRCINVERT (0x00660046)    Combines the source and destination
+                                      bits using the bitwise exclusive OR
+                                      operator: Destination = Source ^
+                                      Destination.
+ 
+            SRCERASE (0x00440328)     Combines the source and inverse of
+                                      destination bits using the bitwise AND
+                                      operator: Destination = Source &amp; (~
+                                      Destination).
+ 
+            NOTSRCCOPY (0x00330008)   Copies the inverse of the destination
+                                      bits to the destination rectangle:
+                                      Destination = ~ Destination.
+ 
+            NOTSRCERASE (0x001100A6)  Combines the inverse of the source and
+                                      destination bits using the bitwise AND
+                                      operator: Destination = (~ Source) &amp;
+                                      (~ Destination).
+ 
+            MERGECOPY (0x00C000CA)    Combines the source and brush bits
+                                      using the bitwise AND operator:
+                                      Destination = Source &amp; Pattern.
+ 
+            MERGEPAINT (0x00BB0226)   Combines the destination and inverse
+                                      of the source bits using the bitwise
+                                      OR operator: Destination = (~ Source)
+                                      | Destination.
+ 
+            PATCOPY (0x00F00021)      Copies the brush bits to the
+                                      destination rectangle: Destination =
+                                      Pattern.
+ 
+            PATPAINT (0x00FB0A09)     Combines the destination, pattern, and
+                                      the inverse of source bits using the
+                                      bitwise OR operator: Destination = (~
+                                      Source) | Pattern | Destination.
+ 
+            PATINVERT (0x005A0049)    Combines the pattern and destination
+                                      bits using using the bitwise exclusive
+                                      OR operator: Destination = Pattern ^
+                                      Destination.
+ 
+            DSTINVERT (0x00550009)    Copies the inverse of the destination
+                                      bits: Destination = ~ Destination.
+ 
+            BLACKNESS (0x00000042)    Set all destination bits to black.
+ 
+            WHITENESS (0x00FF0062)    Set all bits to white.
+ 
+<i>lpPBrush    Points to a </i>PBRUSH structure specifying a physical brush.
+            StretchBlt uses this brush only if Rop3 specifies a
+            ternary-raster operation that requires the brush to be combined
+            with source or destination or both.
+ 
+<i>lpDrawMode  Points to a DRAWMO</i>DE structure specifying the color information
+            StretchBlt needs to determine patterned brush colors and to
+            carry color conversions and transparent copy operations.
+ 
+<i>lpClip      Points</i> to a RECT structure specifying the clipping rectangle (in
+            destination-device units).
+ 
+<b>Return Value</b>
+ 
+The return value is 1 if successful. Otherwise, it is zero if an error was
+encountered or -1 if GDI should carry out the requested operation.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 27.
+ 
+Graphics device drivers that support some StretchBlt operations, but not
+others, can return -1 to direct GDI to carry out the unsupported operations.
+This also applies to operations in which the StretchBlt mode can affect the
+final output, such as when StretchBlt compresses a bitmap to fit a rectangle
+in a monochrome bitmap. Although the StretchBlt function must use the
+current bitmap-stretching mode when compressing or stretching bitmaps, GDI
+does not make the current mode available to drivers. In such cases, the
+function should assume that the current mode is COLORONCOLOR or it should
+return -1 to direct GDI use the proper mode when compressing bitmaps.
+ 
+The lpDestDev and lpSrcDev parameters can specify the same device that is
+transferring bits from one part of a device to another is a valid operation.
+If the source and destination rectangle overlap, StretchBlt transfers bits
+carefully so that the transfer does not inadvertently overwrite source bits
+before they have been transferred to the destination.
+ 
+The Rop3 parameter specifies whether bits from the source, destination, and
+brush are used in the transfer. If the ternary raster operation specified by
+<i>Rop3 does no</i>t include the source, StretchBlt ignores the source bits. If it
+does not include the destination, StretchBlt replaces the destination bits
+without using them to form the final bits.
+ 
+If Rop3 does not include the brush, StretchBlt ignores the brush. If Rop3
+includes the brush, StretchBlt must determine whether the brush is solid or
+patterned (that is, has an associated bitmap). If the brush has a bitmap,
+<b>StretchBlt</b> must combine the corresponding bits of the bitmap with the source
+and destination bits (as specified by the raster operation) to form the
+final destination bits.
+ 
+If the source and bitmap associated with the brush do not have the same
+color format as the destination, StretchBlt must convert the source and
+brush bitmap to the destination's color format before transferring bits.
+<b>StretchBlt</b> uses the text (foreground) and background colors specified by the
+<i>lpDrawMode</i> parameter to convert colors.
+ 
+To convert a monochrome bitmap to a color bitmap, StretchBlt converts white
+bits (1) to the background color and converts black bits (0) to the text
+(foreground) color.
+ 
+To convert a color bitmap to a monochrome bitmap, StretchBlt converts all
+pixels that match the background color to white (1), and converts all other
+pixels to black (0).
+ 
+In some device drivers, StretchBlt must check the bkMode member of the
+<i>lpDrawMode parameter as well a</i>s the Rop3 parameter to determine how to carry
+out the transfer. If the bkMode member specifies the background mode
+TRANSPARENT1, StretchBlt must not transfer source and brush bits that have
+the same color as the destination's background color (as specified by the
+<b>bkColor member of lpD</b>rawMode). In other words, the corresponding destination
+bits must be left unchanged. Other background modes do not affect the
+transfer. Only device drivers that have set the C1_TRANSPARENT value in the
+<b>dpCaps1 member of the</b> GDIINFO structure are required to check the background
+mode.
+ 
+<b>See Also</b>
+ 
+<b>BitBlt, DRAWMODE, GDIINFO</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

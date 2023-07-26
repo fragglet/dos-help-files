@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>VPICD_Virtualize_IRQ - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VPICD_Virtualize_IRQ</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_PIC_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VPICD_API_Get_Ver.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vpicd.inc
+ 
+mov     edi, OFFSET32 vid       ; points to a VPICD_IRQ_Descriptor
+VxDcall VPICD_Virtualize_IRQ
+ 
+jc      error                   ; carry set if IRQ can't be virtualized
+mov     [IRQHand], eax          ; IRQ handle
+ 
+The VPICD_Virtualize_IRQ service assigns a virtual interrupt request to the
+calling virtual device.
+ 
+This is not an asynchronous service.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>vid      </i>  Points to a VPICD_IRQ_Descriptor structure containing information
+           about the virtual IRQ. The VID_IRQ_Number and VID_Hw_Int_Proc
+           fields in the VPICD_IRQ_Descriptor structure must be set before
+           calling this service.
+ 
+<b>Return Value</b>
+ 
+If the carry flag is clear, the EAX register contains the handle for the
+virtual IRQ. This handle is used for all subsequent communication with the
+virtual PIC device.
+ 
+The carry flag is set to indicate an error such as the IRQ has already been
+virtualized or the IRQ number is not valid.
+ 
+<b>Comments</b>
+ 
+The IRQ can be shared by up to 32 virtual devices if every virtual device
+specifies the VPICD_Opt_Can_Share value in the VID_Options field of the
+<b>VPICD_IRQ_Descriptor</b> structure.
+ 
+<b>Uses</b>
+ 
+EAX, Flags
+ 
+<b>See Also</b>
+ 
+<b>VPICD_Force_Default_Behavior</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

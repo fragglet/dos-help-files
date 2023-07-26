@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>Wait_Semaphore - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Wait_Semaphore</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Primary_Scheduler_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Primary_Scheduler_Services.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, Semaphore      ; semaphore handle
+mov     ecx, Flags          ; flags for servicing interrupts
+VMMcall Wait_Semaphore
+ 
+The Wait_Semaphore service blocks the current virtual machine until the
+semaphore is signaled using the Signal_Semaphore service.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Semaphore</i>  Specifies a handle identifying the semaphore on which to wait.
+ 
+<i>Flags</i>      Specifies actions to take when interrupts occur while the virtual
+           machine is blocked waiting for the semaphore. This parameter can
+           be a combination of the following values:
+ 
+           Value                     Meaning
+           ─────────────────────────────────────────────────────────────────
+           Block_Svc_Ints            Service interrupts in the virtual
+                                     machine even if the virtual machine is
+                                     blocked.
+ 
+           Block_Svc_If_Ints_Locked  Service interrupts in the virtual
+                                     machine even if the virtual machine is
+                                     blocked and the VMStat_V86IntsLocked
+                                     flag is set.
+ 
+           Block_Enable_Ints         Service interrupts in the virtual
+                                     machine even if the virtual machine
+                                     does not currently have interrupts
+                                     enabled. This forces interrupts to be
+                                     enabled. This value is only relevant if
+                                     either Block_Svc_Ints or
+                                     Block_Svc_If_Ints_Locked is set.
+ 
+           Block_Poll                Do not switch away from the blocked
+                                     virtual machine unless another virtual
+                                     machine has higher priority.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Comments</b>
+ 
+This service blocks if the semaphore's unblock count is zero and the token
+count is zero or less. Otherwise, it decrements the token count and returns
+immediately. If the unblock count is not zero (meaning the Signal_Semaphore
+service has been called), Wait_Semaphore decrements the unblock count and
+returns immediately.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Create_Semaphore, Signal_Semaphore</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<title>_PhysIntoV86 - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _PhysIntoV86</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='V86_Address_Space_Mapping_and_Allocation.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_TestGlobalV86Mem.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _PhysIntoV86, &lt;PhysPage, VM, VMLinPgNum, nPages, flags&gt;
+ 
+or      eax, eax                ; nonzero if mapped, zero if an error
+jz      not_mapped
+ 
+The _PhysIntoV86 service maps the specified physical pages in the V86
+address space. This service is similar to the _MapIntoV86 service, but takes
+physical page numbers instead of memory handles. Virtual devices use this
+service to associate physical device memory (such as the video memory) with
+a particular virtual machine.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>PhysPage</i>    Specifies the physical page number of the start of the region to
+            map. A physical page number is a physical address shifted right
+            by 12 bits.
+ 
+<i>VM</i>          Specifies a handle identifying the virtual machine for which the
+            memory is mapped.
+ 
+<i>VMLinPgNum</i>  Specifies the linear page number of a page in the 1 megabyte V86
+            address space. This service maps the physical pages starting at
+            the associated given V86 address. This parameter must not
+            specify page number below 10h or above 10Fh.
+ 
+<i>nPages</i>      Specifies the number of pages to map.
+ 
+<i>flags</i>       Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero value if the service is successful.
+Otherwise, EAX contains zero to indicate an error, such as an invalid
+virtual machine handle or an illegal map range.
+ 
+<b>Comments</b>
+ 
+If more than one physical page is specified, this service maps the pages
+contiguously. If the physical memory is not contiguous, the virtual device
+must make individual calls for each page.
+ 
+Virtual devices must not map physical pages that do not contain actual
+memory, or that belong to some other device.
+ 
+For each mapped page, this service sets the P_USER, P_PRES, and P_WRITE
+bits, but clears the P_DIRTY and P_ACC bits. The service sets the page type
+to be identical to the type for the specified protected-mode linear address.
+This service sets the page type to PG_SYS.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_MapIntoV86</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

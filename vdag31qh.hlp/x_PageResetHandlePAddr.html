@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<title>_PageResetHandlePAddr - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _PageResetHandlePAddr</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Free_Physical_Memory_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_SetFreePhysRegCalBk.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _PageResetHandlePAddr, &lt;hMem, PgOff, nPages, PhysPgNum, flags&gt;
+ 
+or      eax, eax                ; nonzero if substituted, zero if error
+jz      not_substituted
+ 
+The _PageResetHandlePAddr service substitutes one or more pages in a memory
+block with physical pages not previously available to the system. This
+service is similar to the _AddFreePhysPage service, but allows memory to be
+used in a slightly different way.
+ 
+This service is only available for Windows version 3.1 and later.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hMem</i>       Specifies a handle identifying a memory block. This handle must
+           have been previously created using the _PageAllocate or
+           _PageReAllocate service.
+ 
+<i>PgOff</i>      Specifies the offset in pages from the start of the memory block
+           to the first page to be substituted.
+ 
+<i>nPages</i>     Specifies the number of pages to substitute.
+ 
+<i>PhysPgNum</i>  Specifies the number of the first physical page to substitute
+           into the memory block. The page number must be greater than or
+           equal to 110h; only extended memory pages may be added to the
+           block. The specified pages must be read/write physical memory
+           pages, and must be available for use at any time.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero if the service is successful. Otherwise,
+EAX contains zero to indicate an error, such as an invalid memory handle, an
+invalid range of pages, or an invalid physical page number.
+ 
+<b>Comments</b>
+ 
+This service returns an error if the sum of the PgOff and nPages is greater
+than the size of the memory block.
+ 
+A virtual device must not attempt to use pages once it has added them to the
+free pool, or attempt to add pages that are already available to the
+system.
+ 
+This service returns an error if the number of pages to add exceeds the
+limit of the internal data structure the system uses the manage the free
+pool. The internal data structure is allocated during initialization and
+cannot be modified.
+ 
+This service converts pages that are substituted into the block to fixed
+pages. These pages are always locked, and cannot be unlocked.
+ 
+This service maps a new physical page in at the specified locations and puts
+the existing physical memory in the free list. The contents of the freed
+pages are not preserved.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_AddFreePhysPage</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

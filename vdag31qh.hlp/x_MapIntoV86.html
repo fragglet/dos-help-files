@@ -1,0 +1,122 @@
+<html>
+
+<head>
+<title>_MapIntoV86 - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _MapIntoV86</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='V86_Address_Space_Mapping_and_Allocation.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_PhysIntoV86.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _MapIntoV86, &lt;hMem, VM, VMLinPgNum, nPages, PageOff, flags&gt;
+ 
+or      eax, eax            ; nonzero if pages mapped, zero if error
+jz      not_mapped
+ 
+The _MapIntoV86 service maps one or more pages of a memory block into the
+V86 address space of the specified virtual machine.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hMem</i>        Specifies the handle identifying the memory block to map. This
+            handle must have been previously created using the PageAllocate
+            or PageReAllocate service.
+ 
+<i>VM</i>          Specifies a handle identifying the virtual machine for which to
+            map the memory.
+ 
+<i>VMLinPgNum</i>  Specifies the linear page number of a V86 address. The service
+            maps the specified pages to this address. This parameter must be
+            a page number in the range 10h through 10Fh.
+ 
+<i>nPages</i>      Specifies the number of pages to map.
+ 
+<i>PageOff</i>     Specifies the offset in pages from the beginning of the memory
+            block to the first page to map.
+ 
+<i>flags</i>       Specifies the operation flags. This parameter can be the
+            following value:
+ 
+            Value              Meaning
+            ────────────────────────────────────────────────────────────────
+            PageDEBUGNulFault  Enables page faults for system nul pages. If
+                               the memory block contains system nul pages, a
+                               page fault occurs whenever a nul page is
+                               accessed. This value only applies when
+                               running the debugging version of the Windows
+                               virtual machine manager. If this value is not
+                               given or the debugging version is not
+                               running, no page faults occur.
+ 
+            All other values are reserved.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero value if the map is successful.
+Otherwise, EAX contains zero to indicate an error such as an invalid memory
+handle, an invalid virtual machine handle, an illegal map range, a size
+discrepancy, or insufficient memory for locking.
+ 
+<b>Comments</b>
+ 
+A virtual device typically uses this service to map buffers having
+protected-mode addresses into the V86 address space. This gives software
+running in the virtual machine a means of passing data to and receiving data
+from the virtual device.
+ 
+The service returns an error if the sum of the PageOff and nPages parameters
+is greater than the size of the memory block.
+ 
+Although a virtual device can map the same page into multiple addresses in
+the V86 address space, this is not recommended.
+ 
+For each mapped page, this service sets the P_USER, P_PRES, and P_WRITE bits
+but clears the P_DIRTY and P_ACC bits. The service sets the page type to be
+identical to the page type for the pages at the specified protected-mode
+linear address. Although the memory block to be mapped can have PG_SYS page
+type, it is not recommended.
+ 
+If the virtual pageswap device uses MS-DOS or BIOS functions to write to the
+hardware, _MapIntoV86 automatically locks the mapped pages and unlocks any
+previously mapped pages. If the virtual pageswap device writes directly to
+the hardware, this service neither lock nor unlocks the pages.
+ 
+If a virtual device no longer needs the mapped region, it should map the
+system nul page into the V86 address space using the _MapIntoV86 service. A
+virtual device can retrieve the handle for the system nul page using the
+<b>_GetNulPageHandle</b> service.
+ 
+This service accepts V86 page numbers between 10h and the page number
+returned by the _GetFirstV86Page service. This supports virtual devices that
+use the _Allocate_Global_V86_Data_Area service. Mapping a region which spans
+across the first V86 page is not allowed. Mapping pages in this region to
+other addresses can easily crash the system and should be avoided.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_Allocate_Global_V86_Data_Area, _GetFirstV86Page, _GetNulPageHandle,</b>
+<b>_LinMapIntoV86</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

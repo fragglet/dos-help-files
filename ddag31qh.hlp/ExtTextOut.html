@@ -1,0 +1,218 @@
+<html>
+
+<head>
+<title>ExtTextOut - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ExtTextOut</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GetCharWidth.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+DWORD ExtTextOut(lpDestDev, wDestXOrg, wDestYOrg, lpClipRect, lpString,
+                 wCount, lpFontInfo, lpDrawMode, lpTextXForm, lpCharWidths,
+                 lpOpaqueRect, wOptions)
+LPPDEVICE lpDestDev;
+WORD wDestXOrg;
+WORD wDestYOrg;
+LPRECT lpClipRect;
+LPSZ lpString;
+int wCount;
+LPFONTINFO lpFontInfo;
+LPDRAWMODE lpDrawMode;
+LPTEXTXFORM lpTextXForm;
+LPSHORT lpCharWidths;
+LPRECT lpOpaqueRect;
+WORD wOptions;
+ 
+The ExtTextOut function writes text strings by converting characters in a
+given string into raster, vector, or outline glyphs and copying the glyphs
+to the given device or bitmap. Depending on the value of its parameters,
+<b>ExtTextOut also computes the x and y extents of th</b>e bounding rectangle of
+the displayed string, clips the text to fit a given clipping rectangle,
+fills a given rectangle with the specified background color before copying
+glyphs, and overrides the default spacing of the glyphs using values
+specified in an array of character widths. GDI may call ExtTextOut if an
+application calls the TextOut function (GDI.33), the ExtTextOut function
+(GDI.351), or GetTextExtent function (GDI.91).
+ 
+A graphics driver must export the ExtTextOut function if the RC_GDI20_OUTPUT
+value is set in the dpRaster member of the driver's GDIINFO structure.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpDestDev     Points to a PDEVICE or PBITMAP </i>structure specifying the device
+              or bitmap to receive the text output.
+ 
+<i>wDestXOrg     Specifies the</i> x-coordinate (in device units) of the starting
+              point for the string.
+ 
+<i>wDestYOrg     Specifies the</i> y-coordinate (in device units) of the starting
+              point for the string.
+ 
+<i>lpClipRect    Points to a RECT</i> structure specifying the clipping rectangle.
+ 
+<i>lpString</i>      Points to a null-terminated character string specifying the
+              characters to display.
+ 
+<i>wCount</i>        Specifies which action to carry out. It can be one of the
+              following values.
+ 
+              Value     Meaning
+              ──────────────────────────────────────────────────────────────
+              Negative  Compute the x and y extents of the smallest
+                        rectangle that completely encloses the displayed
+                        string, but do not generate output. In this case,
+                        the absolute value of wCount specifies the number of
+                        characters in the string. The function uses the
+                        current font, text justification, and other factors
+                        to compute the bounding rectangle, but does not
+                        apply the clipping rectangle. The function must
+                        update the BreakErr member specified by the
+                        lpDrawMode parameter.
+ 
+              0         Fill the rectangle specified by lpOpaqueRect but
+                        only if wOptions is ETO_OPAQUE. In this case, the
+                        function does not generate text output.
+ 
+              Positive  Draw the characters in the string. wCount specifies
+                        the number of characters to draw. The function uses
+                        the current font, text justification, escapement,
+                        rotation, and other factors to draw the characters,
+                        and it applies the clipping and opaque rectangles if
+                        specified. If the function modifies the BreakErr
+                        member specified by the lpDrawMode parameter, it
+                        must restore the member to its original value.
+ 
+<i>lpFontInfo    Points to a FONT</i>INFO structure specifying the physical font to
+              use.
+ 
+<i>lpDrawMode    Points to a DRAW</i>MODE structure specifying the current text
+              color, background mode, background color, text justification,
+              and character spacing.
+ 
+<i>lpTextXForm   Points to a TEXTXFO</i>RM structure specifying additional
+              information about the appearance of the characters when
+              drawn.
+ 
+<i>lpCharWidths</i>  Points to an array of character widths. If this parameter is
+              not NULL, each element in the array is the advance width (in
+              device units) of the corresponding character in the string.
+              The function uses these widths (instead of the default
+              character widths) to compute the position of the next
+              character in the string. There must be one advance width for
+              each character in the string.
+ 
+<i>lpOpaqueRect  Points to a RECT struc</i>ture specifying the opaquing rectangle.
+              This parameter can be NULL.
+ 
+<i>wOptions</i>      Specifies which action to carry out. It can be a combination
+              of the following values.
+ 
+              Value            Meaning
+              ──────────────────────────────────────────────────────────────
+              ETO_OPAQUE (2)   Fills the rectangle specified by the
+                               lpOpaqueRect parameter (and clipped to the
+                               lpClipRect parameter) with the background
+                               color specified by the lpDrawMode parameter.
+                               The function fills the rectangle regardless
+                               of the whether lpDrawMode specifies opaque or
+                               transparent background mode.
+ 
+              ETO_CLIPPED (4)  Creates a new clipping rectangle by
+                               intersecting the rectangles specified by
+                               lpOpaqueRect and lpClipRect.
+ 
+<b>Return Value</b>
+ 
+If the wCount parameter is nonzero, this function returns the x and y
+extents of the string's bounding rectangle; the x extent is in the low-order
+16 bits and the y extent in the high-order 16 bits. If the x extent exceeds
+the maximum value for an extent (0x7FFF), the function returns 0x7FFF in the
+low-order 16 bits and wDestXorg in the high-order 16 bits.
+ 
+If wCount is zero, the return value is TRUE if the specified rectangle was
+filled with the background color. In all other cases, the return value is
+0x80000000L if an error occurred or no output was generated.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 14.
+ 
+<b>ExtTextOut</b> places the upper-left corner of the string at the point defined
+by the DestYOrg parameter. This means that the characters in the string
+appear below and to the right of the starting point. In some cases,
+character glyphs may overlap, especially if widths specified in
+<i>lpCharWidths</i> are less than the default widths or are negative.
+ 
+<b>ExtTextOut uses the drawing mo</b>de specified by lpDrawMode to determine the
+current text color, the background mode, and the background color. The
+background mode determines whether ExtTextOut draws an opaque bounding box
+before drawing the characters. The background color determines what color
+that box must be. The text color determines the color of the text in the
+box. For raster glyphs, all 1 bits must be the text color; for vector and
+outline glyphs, lines and filled areas must be the text color. ExtTextOut
+does not use the binary-raster operation mode (specified by the Rop2 member
+in the DRAWMODE structure pointed to by the lpDrawMode parameter) when
+drawing text.
+ 
+<b>ExtTextOut clips text to the r</b>ectangle specified by lpClipRect, or to the
+intersection of lpClipRect and lpOpaqueRect if wOptions specifies
+ETO_CLIPPED. Only pixels within the rectangle are drawn. (Pixels that have
+the same x-coordinate as the rectangle's right edge, or the same
+<i>y</i>-coordinate as the rectangle's bottom edge are not in the rectangle.) For
+example, no pixels are drawn if the clipping rectangle is empty (zero width
+and height), and only one pixel is drawn if it has a width and height of 1.
+ 
+<b>ExtTextOut uses the lpTextXFor</b>m parameter only if the device supports the
+additional text transformation capabilities. For example, if lpTextXForm
+specifies a point size different from the one specified by lpFontInfo,
+<b>ExtTextOut should ignore the l</b>pTextXForm point size unless the function can
+size characters. Text transformation capabilities are specified in the
+<b>dpText member of t</b>he driver's GDIINFO structure.
+ 
+If the TBreakExtra or CharExtra members in the DRAWMODE structure pointed to
+by the lpDrawMode parameter is nonzero, ExtTextOut must adjust widths of
+break characters or other characters using the following or similar
+algorithm:
+ 
+int width;  /* width of character */
+ 
+for (i=0; i&lt;wCount; i++) {
+ 
+    /* Set width here using the default character for lpString[i]. */
+    /* The default width and how to retrieve it depends */
+    /* on the font. */
+ 
+  if ((lpDrawMode-&gt;TBreakExtra != 0) &amp;&amp;
+      (lpString[i]==lpFont-&gt;dfBreakChar)) {
+      width = width + lpDrawMode-&gt;BreakExtra;
+      lpDrawMode-&gt;BreakErr=lpDrawMode-&gt;BreakErr-lpDrawMode-&gt;BreakRem;
+      if (lpDrawMode-&gt;BreakErr &lt;= 0) {
+              width = width ++
+              BreakErr = BreakErr + BreakCount
+      }
+  }
+  width = width + lpDrawMode-&gt;CharExtra;
+}
+ 
+<b>See Also</b>
+ 
+<b>StrBlt, DRAWMODE, FONTINFO, RECT, TEXTXFORM</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,196 @@
+<html>
+
+<head>
+<title>Declare_Virtual_Device - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Declare_Virtual_Device</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='VMM_Macros.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Dispatch_Byte_IO.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+Declare_Virtual_Device Name, MajorVer, MinorVer, CtrlProc, DeviceNum,
+                       InitOrder, V86Proc, PMProc
+ 
+The Declare_Virtual_Device macro defines the name, device number, control
+procedure, and other attributes of a virtual device. Every virtual device
+must use the Declare_Virtual_Device macro.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Name</i>       Specifies the name of the virtual device.
+ 
+<i>MajorVer</i>   Specifies the major version number for the virtual device.
+ 
+<i>MinorVer</i>   Specifies the minor version number for the virtual device.
+ 
+<i>CtrlProc</i>   Specifies the control procedure for the virtual device. The
+           control procedure handles all system control messages sent to the
+           virtual device. For most virtual devices, this parameter is the
+           name of the procedure created by the Begin_Control_Dispatch
+           macro.
+ 
+<i>DeviceNum</i>  Specifies the device identifier for the virtual device. If the
+           virtual device replaces an existing virtual device, the device
+           identifier must be one of the following:
+ 
+           Value                Meaning
+           ─────────────────────────────────────────────────────────────────
+           APM_Device_ID        Power management
+ 
+           BiosHook_Device_ID   BIOS interrupt hook
+ 
+           BIOSXlat_Device_ID   BIOS translation
+ 
+           BlockDev_Device_ID   Block devices
+ 
+           Debug_Device_ID      Debug device
+ 
+           DOSMGR_Device_ID     MS-DOS manager
+ 
+           DOSNET_Device_ID     MS-DOS networks
+ 
+           EBIOS_Device_ID      EBIOS
+ 
+           Int13_Device_ID      Interrupt 13h hook
+ 
+           MCA_POS_Device_ID    MCA_POS device
+ 
+           PageFile_Device_ID   Paging file
+ 
+           PageSwap_Device_ID   Page swap
+ 
+           Parity_Device_ID     Parity
+ 
+           Reboot_Device_ID     Reboot
+ 
+           SCSI_Device_ID       SCSI device
+ 
+           SCSIFD_Device_ID     SCSI FastDisk device
+ 
+           SHELL_Device_ID      386-enhanced mode Windows shell
+ 
+           TSRLoad_Device_ID    TSR instance utility
+ 
+           Undefined_Device_ID  Reserved
+ 
+           V86MMGR_Device_ID    V86 mode memory manager
+ 
+           VCD_Device_ID        Communications ports
+ 
+           VDD2_Device_ID       Secondary display adapter
+ 
+           VDD_Device_ID        Display adapter
+ 
+           VDMAD_Device_ID      DMA
+ 
+           VFD_Device_ID        Floppy disk
+ 
+           VKD_Device_ID        Keyboard
+ 
+           VMCPD_Device_ID      Math coprocessor
+ 
+           VMD_Device_ID        Mouse or pointing device
+ 
+           VMM_Device_ID        Reserved; do not use
+ 
+           VMPoll_Device_ID     Virtual machine polling
+ 
+           VNETBIOS_Device_ID   Network BIOS
+ 
+           VPD_Device_ID        Printer ports
+ 
+           VPEND_Device_ID      Pen device
+ 
+           VPICD_Device_ID      Programmable interrupt controller
+ 
+           VPROD_Device_ID      Profiling
+ 
+           VSD_Device_ID        Sound adapter
+ 
+           VTD_Device_ID        Timer
+ 
+           WINDEBUG_Device_ID   Windows debugging
+ 
+           WINLOAD_Device_ID    Windows loader
+ 
+           If the type of virtual device is new, a new OEM virtual device
+           identifier must be explictly requested from Microsoft. For more
+           information, see the Installation and Update Guide.
+ 
+<i>InitOrder</i>  Specifies when the virtual device should be initialized relative
+           to other virtual devices. For an existing device type, this
+           parameter can be one of the following values:
+ 
+           APM_Init_Order
+           BiosHook_Init_Order
+           BIOSXlat_Init_Order
+           BlockDev_Init_Order
+           Debug_Init_Order
+           DOSMGR_Init_Order
+           DOSNET_Init_Order
+           EBIOS_Init_Order
+           Int13_Init_Order
+           MCA_POS_Init_Order
+           PageFile_Init_Order
+           PageSwap_Init_Order
+           Parity_Init_Order
+           Reboot_Init_Order
+           SCSIFD_Init_Order
+           SCSIMaster_Init_Order
+           SHELL_Init_Order
+           Undefined_Init_Order
+           V86MMGR_Init_Order
+           VCD_Init_Order
+           VDD_Init_Order
+           VDMAD_Init_Order
+           VFD_Init_Order
+           VKD_Init_Order
+           VMCPD_Init_Order
+           VMD_Init_Order
+           VMM_Init_Order
+           VMPoll_Init_Order
+           VNETBIOS_Init_Order
+           VPD_Init_Order
+           VPICD_Init_Order
+           VPROD_Init_Order
+           VSD_Init_Order
+           VTD_Init_Order
+           WINDEBUG_Init_Order
+           WINLOAD_Init_Order
+ 
+<i>V86Proc</i>    Specifies the V86-mode API procedure. This procedure processes
+           any calls to the virtual device made by V86-mode applications
+           running in a virtual machine. This parameter is optional.
+ 
+<i>PMProc</i>     Specifies the protected-mode API procedure. This procedure
+           processes any calls to the virtual device made by protected-mode
+           applications running in a virtual machine. This parameter is
+           optional.
+ 
+<b>Return Value</b>
+ 
+This macro has no return value.
+ 
+<b>See Also</b>
+ 
+<b>Begin_Control_Dispatch</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

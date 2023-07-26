@@ -1,0 +1,110 @@
+<html>
+
+<head>
+<title>WNetGetPropertyText - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WNetGetPropertyText</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Network_Driver_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WNetGetUser.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD WNetGetPropertyText(iButton, nPropSel, lpszName, lpButtonName,
+                         cbButtonName, nType)
+WORD iButton;
+WORD nPropSel;
+LPSTR lpszName;
+LPSTR lpButtonName;
+WORD cbButtonName;
+WORD nType;
+ 
+The WNetGetPropertyText function specifies the names of buttons to add to a
+property dialog. The function copies the name of the button specified by the
+<i>iButton parameter to </i>the buffer pointed to by the lpButtonName parameter. If
+the function copies an empty string to the buffer, the system removes the
+corresponding button and all succeeding buttons from the dialog box.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<i>iButton</i>       Specifies the zero-based button index. The index must be in
+              the range 0 through 5, that is, the Windows 3.1 File Manager
+              supports at most six buttons.
+ 
+<i>nPropSel</i>      Specifies which items to focus on. In Windows 3.1, the
+              parameter can be one of the following values.
+ 
+              Value          Meaning
+              ──────────────────────────────────────────────────────────────
+              WNPS_FILE (0)  Single file.
+ 
+              WNPS_DIR (1)   Single directory.
+ 
+              WNPS_MULT (2)  Multiple selection of files and/or
+                             directories.
+ 
+<i>lpszName</i>      Points to a zero-terminated string specifying one or more item
+              names. In Windows 3.1, the items are files and directories, so
+              item names are always filenames. The files must be
+              unambiguous, contain no wildcard characters and be fully
+              qualified.
+ 
+<i>lpButtonName</i>  Points to the buffer to receive the name of the property
+              button.
+ 
+<i>cbButtonName</i>  Specifies the size (in bytes) of the buffer pointed to by the
+              lpButtonName parameter.
+ 
+<i>nType</i>         Specifies the item type. In Windows 3.1, only WNTYPE_FILE will
+              be used.
+ 
+<b>Return Value</b>
+ 
+The return value is one of the following values.
+ 
+<b>Value             Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>WN_BAD_VALUE      The lpszName param</i>eter takes an unexpected form.
+ 
+<i>WN_MORE_DATA</i>      The given buffer is too small to fit the text of the
+                  button.
+ 
+<i>WN_NOT_SUPPORTED</i>  Property dialogs are not supported for the given object
+                  type (the nType parameter).
+ 
+<i>WN_OUT_OF_MEMORY</i>  Couldn't load string from resources.
+ 
+<i>WN_SUCCESS        The lpButton</i>Name parameter can be used. If it points to
+                  the empty string, no button corresponds to an index as
+                  high as the iButton parameter.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 32.
+ 
+In Windows 3.1, only File Manager calls this function. File Manager calls
+the function just prior to each time it displays the dialog. After File
+Manager displays the property dialog, File Manager calls the
+<b>WNetPropertyDialog</b> function whenever the user chooses one of the added
+buttons.
+ 
+<b>See Also</b>
+ 
+<b>WNetPropertyDialog</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

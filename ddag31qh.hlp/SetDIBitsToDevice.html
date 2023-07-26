@@ -1,0 +1,102 @@
+<html>
+
+<head>
+<title>SetDIBitsToDevice - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> SetDIBitsToDevice</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='SetPalette.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD SetDIBitsToDevice(lpDestDev, X, Y, iScan, cScans, lpClipRect,
+                       lpDrawMode, lpDIBits, lpBitmapInfo, lpTranslate)
+LPPDEVICE lpDestDev;         /* points to device                       */
+WORD X;                      /* top left corner &lt;x&gt;-coordinate           */
+WORD Y;                      /* top left corner &lt;y&gt;-coordinate           */
+WORD iScan;                  /* start scan line in the DIB buffer      */
+WORD cScans;                 /* number of scans to copy                */
+LPRECT lpClipRect;           /* points to clip rectangle on screen     */
+LPDRAWMODE lpDrawMode;       /* points to drawing mode information     */
+LPSTR lpDIBits;              /* points to the DIB buffer               */
+LPBITMAPINFO lpBitmapInfo;   /* points to bitmap information           */
+LPINT lpTranslate;           /* points to conversion-translation table */
+ 
+The SetDIBitsToDevice function copies device-independent bitmap data
+directly to the given device. The function converts the bitmap data to the
+appropriate device-specific format and copies the resulting bits to the
+device. GDI calls this function whenever an application calls the
+<b>SetDIBitsToDevice</b> function (GDI.443).
+ 
+A graphics device driver must export the SetDIBitsToDevice function if the
+RC_DIBTODEV value is set in the dpRaster member of the driver's GDIINFO
+structure.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpDestDev     Points to a P</i>DEVICE structure specifying the device to receive
+              the device-independent bitmap.
+ 
+<i>X  </i>           Specifies the x-coordinate (in device units) to receive the
+              top left corner of the device-independent bitmap.
+ 
+<i>Y  </i>           Specifies the y-coordinate (in device units) to receive the
+              top left corner of the device-independent bitmap.
+ 
+<i>iScan</i>         Specifies the starting scan line.
+ 
+<i>cScans</i>        Specifies the number of scan lines to copy.
+ 
+<i>lpClipRect    Points to a RECT</i> structure specifying the clip rectangle.
+ 
+<i>lpDrawMode    Points to a DRAW</i>MODE structure specifying the background mode
+              and background color to use while copying the bitmap.
+ 
+<i>lpDIBits</i>      Points to a buffer containing the device-independent bitmap
+              bits.
+ 
+<i>lpBitmapInfo  Points to a BITMAPINFO</i> structure specifying the dimensions and
+              format of the device-independent bitmap.
+ 
+              If the RLE_FORMAT_4 or RLE_FORMAT_8 values are set in the
+              biCompression member, the bitmap is in run-length-encoded
+              (RLE) format. In this case, the function must decode the data
+              as it retrieves it from the buffer pointed to by the lpDIBits
+              parameter.
+ 
+<i>lpTranslate</i>   Points to an array of color-translation values for converting
+              palette colors to actual device colors. This parameter is
+              ignored by devices that do not use color palettes.
+ 
+<b>Return Value</b>
+ 
+The return value is the number of scan lines actually copied, if successful.
+Otherwise, it is zero if there is an error or no scan lines are copied.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 21.
+ 
+The function removes the cursor before copying the bitmap bits to the
+display device and restores the cursor after copying.
+ 
+<b>See Also</b>
+ 
+<b>DeviceBitmapBits, StretchDIBits, BITMAPINFO, DRAWMODE, PDEVICE, RECT</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,60 @@
+<html>
+
+<head>
+<title>WODM_WRITE - Windows Multimedia DDK</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows Multimedia DDK (mddkqh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WODM_WRITE</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MDDK_dot_h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+<b>WODM_WRITE</b>
+ 
+        This message is sent to a waveform output device driver to write
+        a waveform data block to the device.
+ 
+<u>Parameters</u>
+        DWORD dwParam1
+            Specifies a far pointer to a WAVEHDR structure identifying
+            the data block.
+ 
+        DWORD dwParam2
+            Specifies the size of the WAVEHDR structure.
+ 
+<u>Return value</u>
+        The return value is an error code, or zero (MMSYSERR_NOERROR) if
+        the operation is successful. Possible error codes are:
+ 
+        MMSYSERR_NOTENABLED
+            The driver failed to load or initialize.
+ 
+        WAVERR_UNPREPARED
+            The data block has not been prepared.
+ 
+<u>Comments</u>
+        The driver should first check the WHDR_PREPARED bit in the
+        <a href='WAVEHDR.html'>dwFlags</a> field of the WAVEHDR structure. If the bit is not set,
+        the driver should return WAVERR_UNPREPARED. The driver should
+        clear the WHDR_DONE bit and set the WHDR_INQUEUE bit and place
+        the data block in its play queue. Then the driver should
+        return control to the client by returning MMSYSERR_NOERROR.
+        Unless the device has been paused with a WODM_PAUSE message,
+        playback should begin when the first data block is received.
+ 
+        Once the data block has been played, the driver should set the
+        WHDR_DONE bit and clear the WHDR_INQUEUE bit before notifying
+        the client by using DriverCallback to send a WOM_DONE message.
+ 
+                                       -♦-
+</pre>
+</body>
+
+</html>

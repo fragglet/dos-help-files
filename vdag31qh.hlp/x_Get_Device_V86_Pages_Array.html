@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>_Get_Device_V86_Pages_Array - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _Get_Device_V86_Pages_Array</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Device_V86_Page_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Hook_V86_Page.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _Get_Device_V86_Pages_Array, &lt;VM, &lt;OFFSET32 ArrayBuf&gt;, flags&gt;
+ 
+or      eax, eax        ; nonzero if retrieved, zero if error
+jz      not_retrieved
+ 
+The _Get_Device_V86_Pages_Array service retrieves a copy of the assignment
+array used by the _Assign_Device_V86_Pages and _DeAssign_Device_V86_Pages
+services. Virtual devices use the assignment array to determine which
+regions of the V86 address space are currently assigned, and which are
+available.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>VM</i>         Specifies a handle identifying the virtual machine to retrieve
+           the assignment array for. If this parameter is zero, the service
+           retrieves the global assignment array.
+ 
+<i>ArrayBuf</i>   Points to the 36-byte buffer that receives the assignment array.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero value if the service is successful.
+Otherwise, it contains zero to indicate an error such as an invalid virtual
+machine handle.
+ 
+<b>Comments</b>
+ 
+The assignment array consists of 110h bits with each bit representing a
+single page in the V86 address space. If a bit is 1, the corresponding page
+is assigned. If a bit is 0, the corresponding page is not assigned.
+ 
+The global assignment array does not indicate which pages are available. A
+page is available for global assignment only if it is neither globally nor
+locally assigned. To determine whether a page is available for global
+assignment, a virtual device must check the global assignment array, and
+then check the assignment arrays for each virtual machine.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_Assign_Device_V86_Pages, _DeAssign_Device_V86_Pages</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,291 @@
+<html>
+
+<head>
+<title>Customizing the Mouse Dialog Box in Control Panel - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Customizing the Mouse Dialog Box in Control Panel</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Mouse_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='mousepen.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+In the past, users have had to use separate applications to set the extended
+features of the mouse. In Windows 3.1, separate applications are no longer
+necessary. Instead, users can now view and set the extended features using
+Control Panel, and the mouse driver's custom mouse-settings dialog box.
+ 
+The following sections explain how to create an custom mouse-settings dialog
+box for a mouse driver.
+ 
+<b>Mouse-Settings Dialog Box</b>
+ 
+The custom mouse-settings dialog box serves as a replacement for Control
+Panel's standard mouse dialog box. When a mouse driver has a custom
+mouse-settings dialog box, Control Panel displays it instead of the standard
+dialog box when the user chooses the mouse icon in Control Panel.
+ 
+To display the custom dialog box, Control Panel checks for the CplApplet
+function in the mouse driver. If the function is present, Control Panel
+calls CplApplet with the NEWINQUIRE function value. If this call fails,
+Control Panel calls the CplApplet function with the INQUIRE function value.
+This gives the driver two chances to display its custom dialog box. If
+<b>CplApplet</b> does not contain the NEWINQUIRE or INQUIRE values, Control Panel
+displays the standard dialog box.
+ 
+Because Windows loads the mouse driver before USER.EXE, the driver must not
+contain implicit links to USER functions such as DialogBox. This means that
+if the mouse driver calls the DialogBox function, it must use the
+<b>GetProcAddress</b> function to retrieve the address of the function. The mouse
+driver cannot rely on Windows to automatically create the dynamic link when
+Windows loads it.
+ 
+One recommendation is to place all code required to display the custom
+dialog box in a separate dynamic-link library. In this case, the CplApplet
+function in the mouse driver loads the library and calls the function in the
+library that displays the dialog box. One benefit of this approach is that
+the dynamic-link library can also be used with Windows 3.0.
+ 
+<b>Control Panel Icon</b>
+ 
+Mouse vendors will be able to create their own pointing-device icon and
+corresponding text title for display in the Control Panel window. This will
+allow the mouse driver to display a graphic more appropriate to the pointing
+device than the default icon.
+ 
+When Control Panel runs, it calls the CplApplet function in the mouse driver
+as follows:
+ 
+#define INQUIRE     3
+#define NEWINQUIRE  8
+ 
+if (CplApplet(hwndControlPanel, NEWINQUIRE, NULL, &amp;newcplinfo)!=TRUE)
+    if (CplApplet(hwndControlPanel, INQUIRE, NULL, &amp;cplinfo)!=TRUE)
+        /* Display standard dialog box */
+ 
+Control Panel first calls CplApplet with a NEWINQUIRE function value, giving
+a pointer to a NEWCPLINFO structure. This call allows the driver to specify
+the help file or icon to use. In this case, the icon does not have to reside
+as a resource in the driver as it does with the INQUIRE function value. This
+call fails if the size member within the NEWCPLINFO structure has an
+incorrect value.
+ 
+If the CplApplet function with the NEWINQUIRE value fails, Control Panel
+calls CplApplet with an INQUIRE function value, giving a pointer to a
+<b>CPLINFO</b> structure that has the following form:
+ 
+typedef struct tag CPLINFO {
+        int idIcon;
+        int idName;
+        int idInfo;     // not used
+        LONG lData;     // not used
+} CPLINFO;
+ 
+The driver fills in the CPLINFO structure with the resource identifiers of
+its icon and description, and returns to Control Panel. Control Panel loads
+the resource data specified by the icon and description identifiers, and
+uses these in the Control Panel window instead of the icon. Note that the
+<b>idInfo and lData m</b>embers are not used.
+ 
+<b>Standard Mouse Settings</b>
+ 
+The custom dialog box lets users set extended mouse features, but it also
+must let users view and set the following standard mouse features:
+ 
+♦  Mouse-tracking speed
+ 
+♦  Double-click speed
+ 
+♦  Button swapping
+ 
+During initialization, the dialog procedure for the custom dialog box uses
+the SystemParametersInfo function to retrieve the current values for these
+settings. If the user changes the settings, the dialog procedure uses the
+<b>SystemParametersInfo</b> function to change the settings for the current Windows
+session and update the corresponding settings in the WIN.INI file.
+ 
+<b>Note:  The Syst</b>emParametersInfo function is not available with Windows 3.0.
+       If the custom dialog box is also intended for Windows 3.0, the mouse
+       driver must use functions such as ControlPanelInfo,
+       SetDoubleClickSpeed, and SwapMouseButton to change the standard mouse
+       settings. Since these functions do not modify the mouse setting in
+       the WIN.INI file, the mouse driver must use the WriteProfileString
+       function to preserve these changes for subsequent Windows sessions.
+ 
+<b>Mouse-Tracking Speed</b>
+ 
+The mouse-tracking speed defines how quickly the cursor moves relative to
+the speed of the mouse. Windows uses three values to control mouse tracking:
+<b>MouseSpeed, MouseThreshold1, and MouseThreshold2. </b>These values, described in
+detail in the WININI.WRI file, define how and when to accelerate the cursor
+motion. The cursor speed can remain constant, or it can double or quadruple
+depending on the current mouse thresholds and speed.
+ 
+Control Panel uses a 7-position scroll bar to set the mouse-tracking value.
+The 7 settings are as follows:
+ 
+<b>Scroll           MouseSpeed  MouseThreshold1  MouseThreshold2</b>
+<b>position</b>
+───────────────────────────────────────────────────────────────────────────
+ 
+0                0           0                0
+ 
+1                1           10               0
+ 
+2                1           7                0
+ 
+3                1           4                0
+ 
+4                2           4                12
+ 
+5                2           4                9
+ 
+6                2           4                6
+ 
+Control Panel calculates these settings using to the following algorithm:
+ 
+switch (scrollPos) {
+case 0:
+    MouseSpeed      = 0;
+    MouseThreshold1 = 0;
+    MouseThreshold2 = 0;
+    break;
+case 1: case 2: case 3:
+    MouseSpeed      = 1;
+    MouseThreshold1 = 13 - 3 * scrollPos;
+    MouseThreshold2 = 0;
+    break;
+case 4: case 5: case 6:
+    MouseSpeed      = 2;
+    MouseThreshold1 = 4;
+    MouseThreshold2 = 24 - 3 * scrollPos;
+    break;
+}
+ 
+When Control Panel displays the mouse dialog box, it calculates the initial
+scroll bar position from the system values as follows:
+ 
+switch (MouseSpeed) {
+case 0:
+    scrollPos = 0;
+    break;
+case 1:
+    scrollPos = (13 - MouseThreshold1) / 3;
+    break;
+case 2:
+    scrollPos = (24 - MouseThreshold2) / 3;
+    break;
+}
+ 
+If the user changes the mouse-tracking settings directly in the WIN.INI file
+instead of through the dialog box, Control Panel checks for out-of-bounds
+values and adjusts the values accordingly.
+ 
+<b>Double-Click Speed</b>
+ 
+The double-click time is the maximum number of milliseconds that may occur
+between the first and second clicks of a double-click of the mouse button.
+Control Panel uses a scroll bar to set double-click speed. The range is from
+100 to 900 milliseconds, with line-up and line-down increments 1/50 of this
+range, and page-up and page-down increments 1/5 of this range. Windows
+records the double-click speed using the DoubleClickSpeed setting in the
+[Windows] section of the WIN.INI file.
+ 
+A mouse driver can use the GetDoubleClickTime function to determine the
+current double-click speed, and use the SystemParametersInfo function and
+SPI_SETDOUBLECLICKSPEED option to change double-click time.
+ 
+<b>Swapping Left and Right Mouse Buttons</b>
+ 
+Button swapping lets Windows generate right-button mouse messages when the
+left button is pressed, and left-button messages when the right button is
+pressed. Control Panel uses a check box to switch mouse buttons. Windows
+records the state of the buttons using the SwapMouseButtons setting in the
+[Windows] section of the WIN.INI file.
+ 
+A mouse driver can use the GetSystemMetrics function with the SM_SWAPBUTTON
+option to determine whether the mouse buttons are currently reversed, and
+use the SystemParametersInfo function and the SPI_SETMOUSEBUTTONSWAP option
+to swap the mouse buttons.
+ 
+<b>Mouse Dialog Help</b>
+ 
+Control Panel displays Help information when the user presses the F1 key, or
+chooses the Help button while viewing the Mouse dialog box. If the user
+presses F1 or chooses Help while the driver's dialog box is displayed, the
+mouse driver is responsible for displaying its own online Help.
+ 
+To display Help, the dialog procedure for the mouse driver must register a
+private message called "ShellHelp" during initialization. When the dialog
+procedure receives this message, it can call the WinHelp function specifying
+the appropriate Help file.
+ 
+The following sample code illustrates how to incorporate Help support in the
+dialog procedure:
+ 
+LONG FAR PASCAL AddOnDlgProc(HWND hDlg, WORD msg, WORD wParam,
+                             LONG lParam)
+{
+    static WORD wHelpMessage;
+ 
+    switch (msg) {
+ 
+    case WM_INITDIALOG:
+            .
+            .
+            .
+        wHelpMessage = RegisterWindowMessage("ShellHelp");
+        break;
+ 
+    case WM_COMMAND:
+        switch (wParam) {
+        case IDD_HELP:          // from "Help..." button
+            goto DoHelp;
+            .
+            .
+            .
+        case IDOK:
+        case IDCANCEL:
+                .
+                .
+                .
+            WinHelp(hDlg, szHelpFile, HELP_QUIT, 0L);
+            EndDialog(hDlg, wParam);
+            break;
+            .
+            .
+            .
+        }
+        .
+        .
+        .
+ 
+    default:
+        if (msg == wHelpMessage) {
+DoHelp:
+            WinHelp(hDlg, szHelpFile, HELP_CONTEXT, context_value);
+            return TRUE;
+        } else
+            return FALSE;
+    }
+    return FALSE;
+}
+ 
+The dialog procedure calls the WinHelp function with the HELP_QUIT option
+just before calling the EndDialog function. This is required to ensure that
+Help is shut down before the dialog box closes.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

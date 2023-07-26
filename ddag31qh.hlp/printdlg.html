@@ -1,0 +1,103 @@
+<html>
+
+<head>
+<title>Device Mode Dialog Boxes - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Device Mode Dialog Boxes</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printer_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='printdevmode.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+The DEVMODE structure is used for the environment and the initialization
+data (which are the same). By convention, all drivers place the device name
+in the first 32 bytes of DEVMODE as a null-terminated string. All the other
+data is device dependent.
+ 
+For Windows 3.x, a new convention has been adopted that defines an
+additional number of members. These members enable the application to
+perform device-independent manipulations of the device environment.
+ 
+When Enable is called, the device driver should first check the lpInitData
+parameter to see if the application has supplied valid initialization data.
+If it is valid, then the driver should use that environment to initialize
+the GDIINFO and PDEVICE structures and not use or modify the default
+environment information.
+ 
+If the environment cannot be found or if the data obtained is invalid or
+intended for another device, the device driver should extract user settings
+from the WIN.INI file, by using the profile string functions, such as
+<b>GetProfileInt</b>.
+ 
+However, the driver should contain useful defaults for all strings, so that
+it can create a valid environment even if the WIN.INI file is empty.
+ 
+The driver should use the device name string at the beginning of the
+<b>DEVMODE</b> structure to determine whether or not the environment obtained from
+<b>GetEnvironment</b> is correct.
+ 
+A driver may also maintain additional information in its DEVMODE structure
+to determine validity if the device name matches one the driver supports.
+ 
+The printer driver can set or delete the environment by using the
+<b>SetEnvironment</b> function (GDI.132). It can retrieve the current environment
+using the GetEnvironment function (GDI.133).
+ 
+The driver should always set up the default environment if it is not
+present, except when the driver is initialized with a non-default
+environment (that is, the lpInitData parameter to Enable points to
+application-supplied data).
+ 
+<b>New Members in the DEVMODE Structure</b>
+ 
+The dmYResolution and dmTTOption members in the DEVMODE structure are new
+for Windows 3.1. The DEVMODE structure returned by the ExtDeviceMode
+function contains one or both of these members if the dmField member
+includes the following values:
+ 
+DM_YRESOLUTION  0x0002000L
+DM_TTOPTION     0x0004000L
+ 
+The dmYResolution member specifies the vertical resolution of the printer in
+dots per inch. In this case, the dmPrintQuality member specifies the
+horizontal resolution in dots per inch. If the DM_YRESOLUTION bit is not set
+in dmFields, dmYResolution is not used and dmPrintQuality retains the
+original meaning.
+ 
+The dmTTOption member specifies how TrueType fonts should be printed. The
+member can be set to one of the following values.
+ 
+<b>Value              Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>DMTT_BITMAP (1)</i>    Prints TrueType fonts as graphics.
+ 
+<i>DMTT_DOWNLOAD (2)</i>  Downloads TrueType fonts as soft fonts.
+ 
+<i>DMTT_SUBDEV (3)</i>    Substitutes device fonts for TrueType.
+ 
+<b>Note:  Before calling the</b> the CreateDC or CreateIC functions, an application
+       should call the DeviceCapabilities function with the DC_TRUETYPE
+       index to retrieve the driver's TrueType capabilities. The application
+       can use the value returned by the driver to set the dmTTOption member
+       to the appropriate value.
+ 
+       The default action is to download TrueType as soft fonts for
+       Hewlett-Packard printers that use PCL; substitute device fonts for
+       TrueType for PostScript printers; and to print TrueType fonts as
+       graphics for dot-matrix printers.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

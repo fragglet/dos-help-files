@@ -1,0 +1,89 @@
+<html>
+
+<head>
+<title>Begin_Nest_Exec - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Begin_Nest_Exec</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Nested_Execution_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Begin_Nest_V86_Exec.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall Begin_Nest_Exec
+ 
+The Begin_Nest_Exec service starts a nested execution block. This service is
+used in conjunction with the End_Nest_Exec service to create a nested
+execution block in which a virtual device may call the Exec_Int and
+<b>Resume_Exec</b> services. Virtual devices use these services to call software in
+the virtual machine.
+ 
+This service has no parameters.
+ 
+<b>Return Value</b>
+ 
+The Client_CS and Client_IP registers contain a break point used by nested
+execution services.
+ 
+<b>Comments</b>
+ 
+While in a nested execution block, a virtual device may call the Exec_Int
+and Resume_Exec services any number of times.
+ 
+If one of these calls changes the virtual machine registers, these changes
+are also made to the client state. Before creating the nested execution
+block, a virtual device should save the client state by using the
+<b>Save_Client_State</b> service. After ending the nested execution block, a
+virtual device should restore the client state by using the
+<b>Restore_Client_State</b> service.
+ 
+This service forces the virtual machine into protected-mode execution if
+there is a protected-mode application running in the current virtual
+machine. Otherwise, the virtual machine remains in V86 mode. The
+<b>End_Nest_Exec</b> service restores the virtual machine to its mode prior to the
+call to Begin_Nest_Exec.
+ 
+If the execution mode changes to protected mode, this service automatically
+switches the virtual machine to the locked protected-mode stack and
+<b>End_Nest_Exec</b> switches it back. This allows most devices to change execution
+modes without worrying about demand paging issues.
+ 
+<b>Example</b>
+ 
+The following example shows a nested call to the MS-DOS function Get Version
+(Interrupt 21h, Function 30h):
+ 
+VMMcall Begin_Nest_Exec             ; Start nested execution
+mov     [ebp.Client_AH], 30h        ; 30h = Get MS-DOS Version #
+mov     eax, 21h                    ; Execute an Int 21h in the
+VMMcall Exec_Int                    ; current VM to call DOS
+VMMcall End_Nest_Exec               ; End of nested exec calls
+ 
+This example copies the MS-DOS version to the Client_AH and Client_AL
+registers.
+ 
+<b>Uses</b>
+ 
+Client_CS, Client_IP, Flags
+ 
+<b>See Also</b>
+ 
+<b>Begin_Nest_V86_Exec, End_Nest_Exec, Exec_Int, Restore_Client_State,</b>
+<b>Resume_Exec, Save_Client_State, Set_PM_Exec_Mode, Set_V86_Exec_Mode</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

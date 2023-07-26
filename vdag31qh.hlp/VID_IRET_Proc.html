@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>VID_IRET_Proc - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VID_IRET_Proc</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_PIC_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VPICD_IRQ_Descriptor.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vpicd.inc
+ 
+clc
+cmp     [TimeOut],0
+jz      no_timeout
+stc                         ; carry set if interrupt timed-out
+ 
+no_timeout:
+mov     eax, IRQHand        ; IRQ handle
+mov     ebx, VM             ; current VM handle
+call    VID_IRET_Proc
+ 
+The VID_IRET_Proc procedure handles attempts by a virtual machine to return
+from an interrupt. The system calls this procedure whenever a virtual
+machine executes an iret instruction or whenever a time-out occurs for a
+simulated interrupt.
+ 
+The system disables interrupts before calling this procedure. The procedure
+can re-enable interrupts if necessary.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>IRQHand</i>    Specifies the handle identifying the interrupt request.
+ 
+<i>VM</i>         Specifies the handle identifying the current virtual machine.
+ 
+<b>Return Value</b>
+ 
+This procedure has no return value.
+ 
+<b>Comments</b>
+ 
+This procedure is useful for devices that must simulate large numbers of
+interrupts in a short period of time. For example, the virtual COM device
+simulates an interrupt, allows one character to be read from the COM port,
+and waits for the virtual machine to execute an iret instruction before
+putting more data into the virtual COM receive buffer.
+ 
+This procedure may modify EAX, EBX, ECX, EDX, ESI, and Flags.
+ 
+<b>See Also</b>
+ 
+<b>VPICD_IRQ_Descriptor</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

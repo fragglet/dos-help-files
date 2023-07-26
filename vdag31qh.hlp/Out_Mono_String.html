@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>Out_Mono_String - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Out_Mono_String</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Debugging_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Queue_Debug_String.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     esi, OFFSET32 String        ; points to string to write
+VMMcall Out_Mono_String
+ 
+The Out_Mono_String service writes the specified null-terminated string to
+the secondary display. If the string contains register placeholders,
+<b>Out_Mono_String</b> replaces these with the actual register values (in
+hexadecimal), or the symbolic label nearest to the specified addresses.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>String</i>     Points to a null-terminated string specifying the message to
+           write to the debugging device. Out_Mono_String uses the lods
+           instruction to process characters in the string, so the DS
+           register must specify the correct segment selector for the
+           string.
+ 
+           The string can contain one or more placeholders having the
+           following forms:
+ 
+           Placeholder         Description
+           ─────────────────────────────────────────────────────────────────
+           #register           Displays the current value of the specified
+                               register. For example, the service replaces
+                               #AX with the value of the AX register. The
+                               register must not be the name of a segment
+                               register.
+ 
+           ?register           Displays the label nearest the address
+                               specified by the registers. For example, the
+                               service replaces ?EAX with the VMM code
+                               segment label nearest the address in the EAX
+                               register. The register must not be the name
+                               of a segment register.
+ 
+           ?register:register  Displays the label nearest the address
+                               specified by the registers. For example, the
+                               service replaces ?AX:EBX with the label in
+                               the segment specified by the AX register that
+                               is nearest to the address in the EBX
+                               register. The register must not be the name
+                               of a segment register.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Comments</b>
+ 
+This service has no effect in the retail version of Windows. It is intended
+to be used with the debugging version.
+ 
+<b>Uses</b>
+ 
+All registers and flags
+ 
+<b>See Also</b>
+ 
+<b>Mono_Out, Out_Debug_Stri</b>ng
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

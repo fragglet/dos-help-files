@@ -1,0 +1,211 @@
+<html>
+
+<head>
+<title>StretchDIBits - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> StretchDIBits</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='UpdateColors.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD StretchDIBits(lpPDevice, fGet, DestX, DestY, DestXE, DestYE, SrcX,
+                   SrcY, SrcXE, SrcYE, lpBits, lpBitmapInfo, lpTranslate,
+                   dwROP, lpPBrush, lpDrawMode, lpClipRect)
+LPPDEVICE lpPDevice;         /* specifies device or bitmap             */
+WORD fGet;                   /* 0 to set bits, 1 to get bits           */
+WORD DestX;                  /* &lt;x&gt;-coord of upper-left corner of dest   */
+WORD DestY;                  /* &lt;y&gt;-coord of upper-left corner of dest   */
+WORD DestXE;                 /* width of destination bitmap            */
+WORD DestYE;                 /* height of destination bitmap           */
+WORD SrcX;                   /* &lt;x&gt;-coord of upper-left corner of source */
+WORD SrcY;                   /* &lt;y&gt;-coord of upper-left corner of source */
+WORD SrcXE;                  /* width of source bitmap                 */
+WORD SrcYE;                  /* height of source bitmap                */
+LPSTR lpBits;                /* points to buffer with bitmap data      */
+LPBITMAPINFO lpBitmapInfo;   /* points to bitmap information           */
+LPINT lpTranslate;           /* points to color-palette map            */
+DWORD dwROP;                 /* raster operation                       */
+LPBRUSH lpPBrush;            /* current brush                          */
+LPDRAWMODE lpDrawMode;       /* points to drawing mode                 */
+LPRECT lpClipRect;           /* points to clipping rectangle           */
+ 
+The StretchDIBits function moves a source bitmap into a destination bitmap,
+stretching or compressing the source bitmap as necessary to fit the
+dimensions of the destination bitmap. The function either converts and
+copies a device-independent bitmap to a given device or converts and copies
+a device-specific bitmap to a device-independent bitmap. The fGet parameter
+specifies whether the source bitmap is a device-independent bitmap or
+device-specific bitmap. GDI calls this function whenever an application
+calls the StretchDIBits function (GDI.439).
+ 
+A graphics device driver must export the StretchDIBits function if the
+RC_STRETCHDIB value is set in the dpRaster member of the driver's GDIINFO
+structure.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpPDevice     Points to a PDEVICE or PBITMAP </i>structure specifying a device
+              or a device-specific bitmap.
+ 
+<i>fGet</i>          Specifies whether to set or retrieve bitmap bits. If this
+              parameter is zero, the function stretches or compresses the
+              bitmap bits in the buffer pointed to by the lpBits parameter
+              and copies them to the given device or bitmap. If this
+              parameter is 1, the function retrieves bits from the device or
+              bitmap.
+ 
+<i>DestX         S</i>pecifies the x-coordinate of the upper-left corner of
+              destination bitmap.
+ 
+<i>DestY         S</i>pecifies the y-coordinate of the upper-left corner of
+              destination bitmap.
+ 
+<i>DestXE</i>        Specifies the width of the destination bitmap in pixels.
+ 
+<i>DestYE</i>        Specifies the height of the destination bitmap in pixels. If
+              this parameter is negative, the function must "flip" the
+              bitmap, effectively displaying or printing it upside down. In
+              this case, the height of the destination bitmap is the
+              absolute value of the parameter.
+ 
+<i>SrcX        </i>  Specifies the x-coordinate of the upper-left corner of source
+              bitmap.
+ 
+<i>SrcY        </i>  Specifies the y-coordinate of the upper-left corner of source
+              bitmap.
+ 
+<i>SrcXE</i>         Specifies the width of the source bitmap in pixels.
+ 
+<i>SrcYE</i>         Specifies the height of the source bitmap in pixels.
+ 
+<i>lpBits</i>        Points to the buffer that contains or receives the
+              device-independent bitmap bits. If the fGet parameter is zero,
+              the buffer must contains the bitmap bits to be copied to the
+              device or device-specific bitmap. If fGet is 1, the buffer
+              receives bitmap bits copied from the device or bitmap.
+ 
+<i>lpBitmapInfo  Points to a BITMAPINFO</i> structure specifying the dimensions and
+              format of the device-independent bitmap.
+ 
+<i>lpTranslate</i>   Points to an array of color translation values for converting
+              palette colors to actual device colors. This parameter is
+              ignored by devices that do not use color palettes.
+ 
+<i>dwRop</i>         Specifies the raster operation to use during stretching and
+              compressing. The dwRop parameter can be any one of 256 ternary
+              raster-operation values; the following lists the most common
+              values.
+ 
+              Value                     Meaning
+              ──────────────────────────────────────────────────────────────
+              SRCCOPY (0x00CC0020)      Copies source bits to the
+                                        destination rectangle: Destination =
+                                        Source.
+ 
+              SRCPAINT (0x00EE0086)     Combines the source and destination
+                                        bits using the bitwise OR operator:
+                                        Destination = Source | Destination.
+ 
+              SRCAND (0x008800C6)       Combines the source and destination
+                                        bits using the bitwise AND operator:
+                                        Destination = Source &amp; Destination.
+ 
+              SRCINVERT (0x00660046)    Combines the source and destination
+                                        bits using the bitwise exclusive OR
+                                        operator: Destination = Source ^
+                                        Destination.
+ 
+              SRCERASE (0x00440328)     Combines the source and inverse of
+                                        destination bits using the bitwise
+                                        AND operator: Destination = Source &amp;
+                                        (~ Destination).
+ 
+              NOTSRCCOPY (0x00330008)   Copies the inverse of the
+                                        destination bits to the destination
+                                        rectangle: Destination = ~
+                                        Destination.
+ 
+              NOTSRCERASE (0x001100A6)  Combines the inverse of the source
+                                        and destination bits using the
+                                        bitwise AND operator: Destination =
+                                        (~ Source) &amp; (~ Destination).
+ 
+              MERGECOPY (0x00C000CA)    Combines the source and brush bits
+                                        using the bitwise AND operator:
+                                        Destination = Source &amp; Pattern.
+ 
+              MERGEPAINT (0x00BB0226)   Combines the destination and inverse
+                                        of the source bits using the bitwise
+                                        OR operator: Destination = (~
+                                        Source) | Destination.
+ 
+              PATCOPY (0x00F00021)      Copies the brush bits to the
+                                        destination rectangle: Destination =
+                                        Pattern.
+ 
+              PATPAINT (0x00FB0A09)     Combines the destination, pattern,
+                                        and the inverse of source bits using
+                                        the bitwise OR operator: Destination
+                                        = (~ Source) | Pattern |
+                                        Destination.
+ 
+              PATINVERT (0x005A0049)    Combines the pattern and destination
+                                        bits using using the bitwise
+                                        exclusive OR operator: Destination =
+                                        Pattern ^ Destination.
+ 
+              DSTINVERT (0x00550009)    Copies the inverse of the
+                                        destination bits: Destination = ~
+                                        Destination.
+ 
+              BLACKNESS (0x00000042)    Set all destination bits to black.
+ 
+              WHITENESS (0x00FF0062)    Set all bits to white.
+ 
+<i>lpPBrush      Points to </i>a PBRUSH structure specifying the current brush.
+              Depending on the specified raster operation, the brush may be
+              used during the stretching or compressing of the bitmap.
+ 
+<i>lpDrawMode    Points to a DRAW</i>MODE structure specifying the color
+              information the function needs to determine patterned brush
+              colors and to carry color conversions and transparent copy
+              operations.
+ 
+<i>lpClipRect    Points to a RECT</i> structure specifying the clipping rectangle.
+ 
+<b>Return Value</b>
+ 
+The return value is the number of scan lines copied. Otherwise, it is zero
+if the function encounters an error or no scan lines copied. The return
+value is -1 if GDI needs to simulate the operation.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 28.
+ 
+For Windows 3.x, the source bitmap will always be a DIB (with the fGet
+parameter set to zero). The destination bitmap can be either a memory bitmap
+or the actual device surface.
+ 
+<b>See Also</b>
+ 
+<b>DeviceBitmapBits, SetDIBitsToDevice, StretchBlt, BITMAPINFO, DRAWMODE,</b>
+<b>PBRUSH, PDEVICE, RECT</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

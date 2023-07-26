@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<title>V86MMGR_GetPgStatus - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> V86MMGR_GetPgStatus</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_V86_Mode_Memory_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='V86MMGR_Load_Client_Ptr.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include v86mmgr.inc
+ 
+VxDcall V86MMGR_GetPgStatus
+ 
+The V86MMGR_GetPgStatus service returns the status of a page. This service
+allows the caller to discover various aspects of what a specific page is
+being used for. This service can be called with any page number in the 0
+through 110h range, but it is intended to return useful information only for
+pages above the last V86 page.
+ 
+This service is only available for Windows 3.1 and later.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>EBX</i>        Specifies the virtual machine handle to get information for. If
+           this parameter is zero, the service retrieves global
+           information.
+ 
+<i>ECX</i>        Specifies the V86 page number. It must be in the rage 0 through
+           110h.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains one or more of the following information values
+for the page:
+ 
+<b>Value      Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>V86PS_MAP</i>  Page belongs to mapper
+ 
+<i>V86PS_XMS</i>  Page belongs to XMS driver
+ 
+<i>V86PS_EMM</i>  Page belongs to EMM driver
+ 
+<i>V86PS_UMB</i>  Page is part of a UMB
+ 
+The V86PS_XMS value is not necessarily set.
+ 
+<b>Comments</b>
+ 
+One particular use of this service is to determine if a page is part of an
+imported high memory UMB.
+ 
+This service will not work if called during the Sys_Critical_Init message.
+The service is not valid until the Device_Init message. Calls during
+<b>Device_Init</b> only return useful information if paging import from a
+LIMulator/UMBulator is performed. In cases where no paging import exists,
+the information will not be correct until after the Init_Complete message.
+ 
+<b>Uses</b>
+ 
+EAX, Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

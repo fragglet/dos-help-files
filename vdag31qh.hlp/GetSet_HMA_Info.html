@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<title>GetSet_HMA_Info - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GetSet_HMA_Info</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Information_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Test_Cur_VM_Handle.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     ecx, Action         ; zero to get, nonzero to set
+mov     dx, A20Enable       ; A20 enable count (if ecx is nonzero)
+VMMcall GetSet_HMA_Info
+ 
+mov     [NoGlobalHMA], eax  ; nonzero if no global HMA user
+mov     [XMSCallAddr], ecx  ; loader XMS call address
+mov     [A20Enable], edx    ; A20 enable count before Windows started
+ 
+The GetSet_HMA_Info service returns and sets information related to the
+high-memory area (HMA) region.
+ 
+This service lets the XMS driver (in the V86MMGR device) determine whether a
+global HMA user existed before Windows started and gives the driver access
+to the HMA enable count.
+ 
+This service is always valid (not restricted to initialization).
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Action</i>     Specifies whether to get or set information. If this parameter is
+           zero, the service returns HMA information. Otherwise, it sets the
+           information.
+ 
+<i>A20Enable</i>  Specifies the A20 enable count to set for the Windows VMM loader.
+           The service uses this parameter only if the Action parameter is
+           nonzero.
+ 
+<b>Return Value</b>
+ 
+The EAX, ECX, and EX register contain the following HMA information:
+ 
+<b>Register  Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>EAX</i>       Specifies whether a global HMA user is present. If this register
+          is 0, Windows did not allocate the HMA meaning either there is a
+          global HMA user or there is no HMA. If this register is nonzero,
+          Windows has allocated the HMA, meaning there is no global HMA
+          user.
+ 
+<i>ECX</i>       Specifies the V86-mode address (segment:offset) that Windows used
+          to call the XMS driver when loading. The segment address is in the
+          high 16 bits of the register.
+ 
+<i>EDX</i>       Specifies the A20 enable count before Windows started.
+ 
+<b>Comments</b>
+ 
+The global HMA flag and loader XMS call address cannot be set.
+ 
+<b>Uses</b>
+ 
+EAX, ECX, EDX, Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,94 @@
+<html>
+
+<head>
+<title>List_Create - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> List_Create</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Linked_List_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='List_Deallocate.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, Flags      ; creation flags
+mov     ecx, NodeSize   ; size in bytes of each node in list
+VMMcall List_Create
+ 
+jc      error           ; carry set if error
+mov     [List], eax     ; list handle
+ 
+The List_Create service creates a new list structure and returns a list
+handle that virtual devices use in subsequent calls to other list services.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Flags</i>      Specifies the creation flags. This parameter can be a combination
+           of the following values:
+ 
+           Value           Meaning
+           ─────────────────────────────────────────────────────────────────
+           LF_Use_Heap     Allocates nodes on the system heap. This value
+                           must not be used in combination with the LF_Async
+                           value.
+ 
+           LF_Async        Creates an asynchronous list that can be used
+                           while processing interrupts.
+ 
+           LF_Alloc_Error  Directs the List_Allocate service to returns with
+                           carry flag set if new node could not be
+                           allocated.
+ 
+<i>NodeSize</i>   Specifies the size in bytes of each node in the list.
+ 
+<b>Return Value</b>
+ 
+If carry flag is clear, the ESI register contains the list handle. The carry
+flag is set to indicate an error.
+ 
+<b>Comments</b>
+ 
+If a virtual device requires large nodes, it should specify the LF_Use_Heap
+value to force the nodes to be allocated from the system heap. All allocate
+and deallocate calls for lists created in this way use the _HeapAlloc and
+<b>_HeapFree</b> services to create and destroy nodes.
+ 
+To access a list during hardware interrupts, a virtual device must set the
+LF_Async value when creating the list. This forces list operations to be
+atomic operations which cannot be re-entered. When using an asynchronous
+list, the virtual device must disable interrupts before calling the list
+services. The virtual device must disable interrupts even if when not
+calling during an interrupt. The virtual device must use the pushf, cli, and
+<b>popf</b> instructions to disable and re-enable interrupts. It must not use the
+<b>sti</b> instruction to enable interrupts unless other documentation states that
+this is premitted.
+ 
+If the LF_Alloc_Error value is not specified, the system crashes the current
+virtual machine if the List_Allocate service fails. If this value is
+specified, List_Allocate returns with the carry flag set when an allocation
+fails.
+ 
+<b>Uses</b>
+ 
+ESI, Flags
+ 
+<b>See Also</b>
+ 
+<b>List_Allocate, List_Deallocate, List_Destroy</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<title>EndSpoolPage - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> EndSpoolPage</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printer-Specific_Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='OpenJob.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+int FAR PASCAL EndSpoolPage(hJob)
+HANDLE hJob;
+ 
+The EndSpoolPage function marks the end of a spooled page. A driver uses
+this function, in conjunction with the StartSpoolPage function, to divide
+printer output into pages. Each page is stored in a temporary file on the
+machine's hard disk when Print Manager is running. Dividing a print job into
+pages allows Print Manager to begin printing one page while the driver is
+still generating output on subsequent pages. A Print Manager page does not
+need to correspond to a physical page of printed output; the division is the
+driver's decision.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hJob</i>       Identifies the print job. The handle must have been previously
+           opened using the OpenJob function.
+ 
+<b>Return Value</b>
+ 
+The return value is positive if the function is successful. Otherwise, it is
+one of the following error values.
+ 
+<b>Value                Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>SP_ERROR (-1)</i>        A general error condition or general error in banding
+                     occurred.
+ 
+<i>SP_APPABORT (-2)</i>     The job was stopped because the application's callback
+                     function returned FALSE (0).
+ 
+<i>SP_USERABORT (-3)</i>    The user stopped the print job by choosing the Delete
+                     button from Print Manager.
+ 
+<i>SP_OUTOFDISK (-4)</i>    A lack of disk space caused the job to stop. There is
+                     not enough disk space to create or extend the Print
+                     Manager temporary file.
+ 
+<i>SP_OUTOFMEMORY (-5)</i>  A lack of memory caused the job to stop.
+ 
+<b>Comments</b>
+ 
+When Print Manager is not running, page division is not very important
+because temporary files are not involved. However, starting and ending at
+least one Print Manager page is still required.
+ 
+Calls to StartSpoolPage and EndSpoolPage can occur at any point during the
+output. Some drivers use one spool page per physical page. Others use one
+page for the whole job. The printing of a particular page by the Print
+Manager application does not begin until it receives the corresponding
+<b>EndSpoolPage</b> function.
+ 
+A driver can perform output at any point between these two calls. When
+<b>EndSpoolPage</b> is called and Print Manager is loaded, the page's temporary
+file is submitted to Windows Print Manager.
+ 
+<b>See Also</b>
+ 
+<b>OpenJob, StartSpoolPa</b>ge
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

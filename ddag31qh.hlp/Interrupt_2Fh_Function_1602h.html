@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>Interrupt 2Fh Function 1602h - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Interrupt 2Fh Function 1602h</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Windows_Interrupt_2Fh_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Interrupt_2Fh_Function_1605h.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+mov  ax, 1602h            ; Get Enhanced-Mode Windows Entry Point
+int  2Fh                  ; multiplex interrupt
+ 
+mov  word ptr [WinAddr], di
+mov  word ptr [WinAddr+2], es ; es:di contains entry-point address
+ 
+ 
+Get Enhanced-Mode Windows Entry Point (Interrupt 2Fh Function 1602h) returns
+the address of the 386 enhanced-mode Windows entry-point procedure.
+Applications can call this procedure to direct Windows/386 version 2.x to
+carry out specific actions.
+ 
+This function applies to Windows/386 version 2.x only. It is provided under
+Windows version 3.x for compatibility reasons.
+ 
+<b>Return Value</b>
+ 
+The return value contains the Windows entry-point address in the ES:DI
+registers.
+ 
+<b>Comments</b>
+ 
+Although the Windows entry-point address is the same for every virtual
+machine, an application can call this function any number of times.
+ 
+To direct Windows to carry out a specific action, the application sets the
+AX register to 0000h. This function retrieves the current VM identifier and
+copies the identifier to the BX register.
+ 
+Additionally, the application must place a return address in the ES:DI
+register pair and use the jmp instruction to transfer control to the Windows
+entry point.
+ 
+<b>Example</b>
+ 
+The following example shows how to obtain the current VM identifier:
+ 
+    mov     di, cs
+    mov     es, di
+    mov     di, OFFSET Win_Return
+    xor     ax, ax          ; Get Current VM Identifier
+    jmp     [WinAddr]
+Win_Return:
+    mov     [VM_Id], bx     ; bx contains the current VM identifier
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

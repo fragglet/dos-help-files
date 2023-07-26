@@ -1,0 +1,108 @@
+<html>
+
+<head>
+<title>Install_V86_Break_Point - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Install_V86_Break_Point</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Break_Point_and_Callback_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Remove_V86_Break_Point.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, BreakAddr           ; break point address
+mov     edx, OFFSET32 RefData    ; points to reference data
+mov     esi, OFFSET32 Callback   ; points to callback procedure to install
+VMMcall Install_V86_Break_Point
+ 
+jc      not_installed
+ 
+The Install_V86_Break_Point service inserts a break point in V86 memory of
+the current virtual machine and installs a break-point callback procedure to
+receive control when the break point occurs. A virtual device, such as the
+virtual MS-DOS manager, can use this service to place patches in the BIOS.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>BreakAddr</i>  Specifies the V86 address to place the break point. The address
+           must be specified as a segment:offset pair and must specify RAM.
+           Once installed, the break point must not be moved.
+ 
+<i>RefData</i>    Points to reference data to be passed to the callback procedure.
+ 
+<i>Callback</i>   Points to the callback procedure to install. See the Comments
+           section for more information about this procedure.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the service is successful. Otherwise, the carry
+flag is set to indicate an error.
+ 
+<b>Comments</b>
+ 
+Virtual devices typically place V86 break points in global virtual device
+memory during device initialization. For example, the XMS driver in the
+virtual V86MMGR device inserts a breakpoint in the real-mode XMS driver
+during device initialization. Thereafter, all calls to the real-mode XMS
+driver are intercepted by the virtual XMS driver.
+ 
+The segment address specified when installing a V86 break point must be the
+segment address in the CS register when the virtual machine executes the
+break point. For example, if the break point is placed at 0100:0000 but the
+virtual machine executes the break point at the address 00FF:0010h, an error
+occurs even though the virtual machine executed a valid break point.
+ 
+When the virtual machine executes the break point, the system calls the
+callback procedure as follows:
+ 
+mov     eax, BreakAddr          ; address of breakpoint
+mov     ebx, VM                 ; current VM handle
+mov     edx, OFFSET32 RefData   ; points to reference data
+mov     esi, BreakLinAddr       ; linear address of break point
+mov     ebp, OFFSET32 crs       ; points to a Client_Reg_Struc
+ 
+The BreakAddr parameter is the V86 address of the break point. VM is a
+handle identifying the current virtual machine and RefData points to the
+reference data specified when the callback procedure was installed. The
+<i>BreakLinAddr</i> parameter specified the linear address of the break point and
+<i>crs point</i>s to a Client_Reg_Struc structure containing the register values
+for the specified virtual machine.
+ 
+The Client_CS and Client_IP registers contain the address of the break
+point. The virtual device must change these registers to prevent the break
+point from being executed again when the virtual machine resumes. A virtual
+device can change the register by simulating the instruction that was
+patched, incrementing the Client_IP register past the patch, jumping to
+another address using the Simulate_Far_Jmp service, or returning from an
+interrupt handler using the Simulate_Iret service.
+ 
+When the virtual device receives the System_Exit message, it must remove any
+break point that it placed in global V86 code, that is, code loaded before
+Windows was loaded. The virtual device can remove a V86 break point using
+the Remove_V86_Break_Point service.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Remove_V86_Break_Point</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

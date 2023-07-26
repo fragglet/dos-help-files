@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<title>Hook_V86_Page - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Hook_V86_Page</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Device_V86_Page_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Free_Physical_Memory_Management.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, PageNum            ; page number
+mov     esi, OFFSET32 Callback  ; points to Address of trap routine
+VMMcall Hook_V86_Page
+ 
+The Hook_V86_Page service install a callback procedure to handle faults for
+the specified page. Virtual devices, such as the virtual display device, use
+this service to detect when particular address ranges are accessed.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Page</i>       Specifies the number of the V86 page to install the callback
+           procedure for. This number must be within the range specified by
+           the number of the last V86 page and 0FFh.
+ 
+<i>Callback</i>   Points to the callback procedure to install. See the Comments
+           section for more information about this procedure.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the service installs the callback procedure.
+Otherwise, the carry flag is set to indicate an error such as an invalid
+page number or the page is already hooked.
+ 
+<b>Comments</b>
+ 
+The system calls the callback procedure whenever a page fault occurs for the
+specified page regardless of the current virtual machine.
+ 
+The system calls the callback as follows:
+ 
+ 
+mov     eax, Page     ; faulting page number
+mov     ebx, VM       ; current VM handle
+call    [Callback]
+ 
+The Page parameter specifies the number of the page that caused the page
+fault and VM is the handle of the current virtual machine. The EBP register
+does not point to a client register structure.
+ 
+The callback procedure must either map physical memory into page causing the
+page fault or terminate the virtual machine. In unusual circumstances, the
+virtual device may need to map the system nul page into the faulting page.
+ 
+Virtual devices must not rely on the contents of the CR2 (page fault)
+register. Instead, the callback procedure must use the Page parameter to
+determine which page caused the fault.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

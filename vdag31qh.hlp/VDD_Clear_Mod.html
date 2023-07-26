@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>VDD_Clear_Mod - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VDD_Clear_Mod</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_Display_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VDD_Free_Grab.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vdd.inc
+ 
+VxDcall VDD_Clear_Mod
+ 
+The VDD_Clear_Mod service clears the change state of a virtual machine.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>EDX</i>         Specifies the system virtual machine handle.
+ 
+<i>EBX</i>         Specifies the handle of the virtual machine to clear the change
+            state for.
+ 
+<i>EDI</i>         Specifies the VDD control block pointer.
+ 
+<i>EBP      </i>   Points to the Client_Reg_Struc structure for the virtual
+            machine.
+ 
+<i>Client_EBX</i>  Specifies the virtual machine handle.
+ 
+<b>Return Value</b>
+ 
+The carry flag is set if an invalid virtual machine handle is specified.
+Otherwise, this service has no return value.
+ 
+<b>Comments</b>
+ 
+This service allows proper text scrolling if an application runs between
+calls to the VDD_Get_Mod and VDD_Clear_Mod services.
+ 
+This service assumes that VDD_Clear_Mod is called twice when the VDD sends a
+scroll event to 386 enhanced mode grabber; once in the TextScroll function
+and again in the UpdateScreen function.
+ 
+If an application has accessed pages since the last call to the VDD_Get_Mod
+service and there is a scroll event generated in the previous VDD_Get_Mod,
+the service sets the fVDD_UpdAll1Bit value in VDD_Flags and transfers main
+memory to copy memory. The VDD_Clear_Mod service clears the fVDD_UpdAll1Bit
+value and sets fVDD_UpdAll2Bit. The VDD_State_Query service returns changes
+if fVDD_UpdAll2Bit is set. Since fVDD_UpdAll2Bit is set, the VDD_Mod_Text
+service returns the entire screen changed (no scrolls) and the
+<b>VDD_Clear_Mod</b> service clears the fVDD_UpdAll2Bit value and updates the copy
+memory.
+ 
+If application accessed pages since the last VDD_Get_Mod and there was no
+scroll event in the previous VDD_Get_Mod, the copy memory is not updated.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

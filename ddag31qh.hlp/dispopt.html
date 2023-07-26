@@ -1,0 +1,84 @@
+<html>
+
+<head>
+<title>Optimizing Performance - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Optimizing Performance</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Display_Grabbers.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+Whenever possible, display drivers should use the features of the CPU to
+optimize their performance. This is particularly important for drivers when
+used in multimedia versions of Windows.
+ 
+A display driver can determine what CPU is present and what mode Windows is
+operating in by examining the __WinFlags variable or by calling the
+<b>GetWinFlags</b> function. If the CPU is at least a 386, the display driver
+should take advantage of the CPU's 32-bit registers to manipulate data and
+to index huge arrays.
+ 
+<b>Tips for Writing Transparent Text</b>
+ 
+Drivers generating VGA text output can make two significant speedups for
+transparent text: don't draw empty bytes or words and use write mode 3.
+ 
+While drawing the character to video memory, avoid copying the "empty" part
+of a glyph's bitmap. For example, there is no need to copy the space
+character to video memory or the ascender on letters like the lowercase 'p'.
+Since accessing video memory is nearly 5 times slower than accessing system
+memory, it is cheaper to check for and ignore empty bytes or words in a
+glyph bitmap, than it is to store nothing to video memory. In the following
+example, the code gives a significant performance increase for many video
+adapters:
+ 
+      mov  ax,glyphbits
+      or   ax,ax
+      jz   around_it
+      xchg es:[di],ax
+  around_it:
+ 
+Use write mode 3 on VGA hardware. This mode simplifies the output of
+transparent text by eliminating the extra step of setting the bitmask
+register for each store to video memory. For example, the VGA portion of the
+following EGA/VGA code uses write mode 3 for the VGA adapter and is
+considerably faster than the equivalent EGA code.
+ 
+        mov     ax,glyphbits
+if _EGA
+        push    dx
+        mov     dx,3cfh
+        out     dx,al
+        xchg    es:[di],al              ;write ax to screen.
+        mov     al,ah
+        out     dx,al
+        xchg    es:[di+1],ah            ;write ax to screen.
+        pop     dx
+else
+        xchg    es:[di],al              ;write ax to screen.
+        xchg    es:[di+1],ah            ;write ax to screen.
+endif
+ 
+<b>Tips for Using the Interrupt Flag</b>
+ 
+Display drivers should avoid needless clearing and setting of the interrupt
+flag using the cli and sti instructions. Since 386 enhanced-mode Windows
+traps these instructions as part of its management of the CPU's virtual
+mode, these instructions each take about 600 CPU clocks to execute.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

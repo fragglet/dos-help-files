@@ -1,0 +1,1207 @@
+<html>
+
+<head>
+<title>Printer Font Installer - Printers and Fonts Kit(3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Printers and Fonts Kit(3.1) (pfk31qh.hlp) (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Printer Font Installer</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='../unknown.html#@L0'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#@L12'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+The Printer Font Installer, an important part of the driver for the
+Hewlett-Packard LaserJet printers that use Printer Control Language (PCL),
+installs screen fonts, downloadable fonts, PFM files, and PCM files from
+floppy disk. Font vendors who distribute fonts on floppy disk can use the
+installer to install their fonts. This topic describes the steps required to
+prepare distribution disks for use with the Printer Font Installer.
+ 
+The Printer Font Installer is in a separate dynamic-link library (DLL)
+called FINSTALL.DLL.
+ 
+<b>Printer-Font Installation</b>
+ 
+The HP LaserJet printer driver that uses PCL starts the Printer Font
+Installer whenever the user chooses the Fonts button in the driver's Setup
+dialog box. If the user then chooses the Add Font button to add fonts, the
+installer prompts for a disk containing the fonts to install as well as
+additional files.
+ 
+The installer then searches the specified disk for the printer-font
+directory file (FINSTALL.DIR). If the file exists, it reads the file and
+installs the fonts specified in it. If there is no printer-font directory
+file, the installer performs the following actions:
+ 
+♦  If a file on the disk exists with the .LBL extension, the installer
+   assumes the FINSTALL.DIR file is on another disk. It prompts the user to
+   switch disks, while allowing the user the option to read the disk without
+   the directory file.
+ 
+♦  If there is no .LBL file or the user chooses the first option, the
+   installer assumes the directory file does not exist. It then scans the
+   disk looking for downloadable font files.
+ 
+When the installer has to scan the disk for soft fonts, it opens each file
+on the disk and looks for the header of a downloadable font file. If it
+finds the header, it derives the font name and point size, and displays this
+to the user in the list box of soft fonts available for installation. When
+the font is installed, the installer will generate a PFM file from the
+downloadable font file. Without the FINSTALL.DIR file, it will ignore any
+PFM files already on the disk.
+ 
+<b>Printer-Font Directory File</b>
+ 
+The font-installation directory file, FINSTALL.DIR, describes the contents
+of the distribution disks for a font package. The Printer Font Installer
+uses this information to locate and install the files associated with screen
+and downloadable fonts.
+ 
+The FINSTALL.DIR file typically consists of one or more entries that define
+logical disk names, font families, and cartridges. The file can also contain
+comments.
+ 
+The DRIVE statement defines the logical disk names used in other entries in
+the file. DRIVE statements must appear before any entries that use the
+associated disk names. It is highly recommended that a logical drive be
+defined for each floppy disk in the distribution package, and that all files
+referenced be preceded by a logical drive ID.
+ 
+The FAMILY statement defines the screen fonts that correspond to
+downloadable fonts, and the CARTRIDGE statement defines the screen fonts
+that correspond to a given cartridge. Any number of these statements can be
+given in the file, and each statement can specify any number of screen
+fonts, downloadable fonts, and cartridges.
+ 
+The FINSTALL.DIR file should be placed on the first disk in the distribution
+set, or on a disk that is clearly marked. If the installer does not find the
+file on the first disk it searches, it will assume that no such file exists
+use a default procedure for installing fonts.
+ 
+The following example illustrates the format of a FINSTALL.DIR file:
+ 
+/* Acme Corporation's font package.
+ *
+ * This package consists of two floppy disks: One
+ * containing the Acme Ace soft font set and the other
+ * containing the Acme Sparrow soft font set.
+ */
+ 
+/* Logical drives
+ */
+DRIVE ACE1: = ACESET1.LBL, "Ace set (disk 1 of 2)"
+DRIVE SPARROW1: = SPRWSET1.LBL, "Sparrow set (disk 2 of 2)"
+ 
+/* Ace set */
+FAMILY "Ace" {
+ 
+    /* Screen fonts */
+    1:1 = "Acme Ace 1:1", ACE1:ACE11.FON
+    4:3 = "Acme Ace 4:3", ACE1:ACE43.FON
+ 
+    /* Printer fonts */
+    "Ace 36pt"      = P,ACE1:ACE36RPN.USP,ACE1:ACE36RPP.PFM
+    "Ace 36pt bold" = P,ACE1:ACE36BPN.USP,ACE1:ACE36RPP.PFM
+}
+ 
+/* Sparrow set */
+FAMILY "Sparrow" {
+ 
+    /* Screen fonts */
+    1:1 = "Acme Sparrow 1:1", SPARROW1:SPAROW11.FON
+    4:3 = "Acme Sparrow 4:3", SPARROW1:SPAROW43.FON
+ 
+    /* Printer fonts */
+    "Sparrow 36pt"      = P,SPARROW1:SPR36RPN.USP,SPARROW1:SPR36RPP.PFM
+    "Sparrow 36pt bold" = P,SPARROW1:SPR36BPN.USP,SPARROW1:SPR36RPP.PFM
+}
+ 
+For more information about the DRIVE, FAMILY, and CARTRIDGE statements, see
+the Section 5.7, "Directory File Reference," later in this topic.
+ 
+<b>Setting Up Fonts for Downloading</b>
+ 
+The Printer Font Installer allows the user to specify whether a font should
+be set up for permanent or temporary downloading. The Permanent and
+Temporary options in the dialog box specify which action to take.
+ 
+When a user changes a font from temporary to permanent status, the installer
+displays a warning message. This message reminds the user that permanent
+fonts take up printer memory, and therefore only the most frequently used
+fonts should be permanently downloaded to the printer.
+ 
+When the user exits the installer, the installer prompts the user for the
+download style. If the user selects the Download Now option, the installer
+will send a print job consisting of the permanent fonts to the printer. If
+the user selects the Download at Startup option, the installer will build a
+batch file that downloads the fonts to the printer and edits the
+AUTOEXEC.BAT file to call the batch file. The user may select both, one, or
+none of these options. As long as the user has permanent soft fonts, the
+installer displays this message every time the user exits the installer.
+ 
+As part of downloading permanent fonts, the installer sends a "delete all
+fonts" escape to the printer. This forces the printer to delete all
+permanently downloaded fonts. After downloading the new fonts, a banner page
+(in portrait format) is printed that shows the fonts that have been
+downloaded. Portrait fonts are shown in the typeface that was downloaded.
+ 
+<b>Downloading</b>
+ 
+If you choose Download Now (that is, upon exiting the installer) it is not a
+difficult task for the driver. The installer simply opens a Windows print
+job and sends down the fonts. Downloading fonts at startup (that is, when
+the user turns on the machine) is more complex.
+ 
+To set up the downloading of permanent fonts at startup, the installer
+performs the following tasks:
+ 
+1  Writes an executable program that prompts the user to download fonts.
+ 
+2  Creates a batch that downloads the fonts and writes out the banner page.
+ 
+3  Edits the AUTOEXEC.BAT file to call the download batch file.
+ 
+The executable program presents the user with a prompt to choose whether or
+not to download permanent soft fonts. The program is stored in the driver's
+resources and written to its own file when the installer is setting up fonts
+for permanent downloading. The downloading batch file calls this executable
+program.
+ 
+The program displays the following prompt:
+ 
+Download PCL fonts to port name? [y/n]
+ 
+If the user responds "no," the program returns 1 and the batch file tests
+the ERRORLEVEL. The program then exits without downloading fonts.
+ 
+If the user responds "yes," the program returns an ERRORLEVEL of zero, and
+the batch file proceeds to download fonts. The batch file is called from the
+user's AUTOEXEC.BAT file. The installer edits the AUTOEXEC.BAT file and
+appends the following strings to the file:
+ 
+command /c C:\PCLFONTS\SFLPT1.BAT
+ 
+The string that calls the download batch file uses the MS-DOS "command /c"
+option. This enables MS-DOS to suspend execution of the AUTOEXEC.BAT file to
+carry out the downloading of file, then return to the execution of the
+AUTOEXEC.BAT file. Without "command /c," MS-DOS would not return to
+executing the AUTOEXEC.BAT file (that is, any commands after the line in the
+AUTOEXEC.BAT file would not be executed).
+ 
+If a user sets up fonts for permanent downloading, but they are not being
+downloaded to the printer, the commands in the AUTOEXEC.BAT file are
+probably not being executed. The problem may be solved by moving the
+commands in the AUTOEXEC.BAT file.
+ 
+Although the entry the installer creates in the AUTOEXEC.BAT file may be
+moved in the file, it should never be modified. This is because the
+installer looks for the entry and modifies it if the user changes the fonts
+from permanent download to temporary. In this case, the installer inserts a
+<b>rem</b> command at the beginning of the entry. This has the effect of disabling
+the download entry without deleting it. If the user once again enters the
+installer and makes some fonts permanent, the installer will locate the
+entry in the AUTOEXEC.BAT file and remove the rem command.
+ 
+<b>PFM File Generator</b>
+ 
+The Printer Font Metrics (PFM) file generator creates PFM files whenever the
+installer locates downloadable font files, but fails to locate a
+FINSTALL.DIR file. The installer assumes it will have to build PFM files
+from the downloadable font files. It reads the header from the font file
+plus the widths of each individual character and uses that information to
+build the PFM file.
+ 
+Please notice that when the installer scans a disk for fonts and there is no
+FINSTALL.DIR file, it will ignore any PFM files already on the disk and will
+attempt to generate PFM files from the font files. It will also recognize
+cartridge PCM files.
+ 
+It is highly recommended that font manufacturers provide their own PFM files
+because vendor-supplied PFM files will more accurately represent the font
+than PFM files generated by the PFM file generator.
+ 
+<b>Generated PFM File Names</b>
+ 
+The PFM file generator builds the following PFM filename.
+ 
+<b>Value    Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>1, 2</i>     First two characters from the font filename.
+ 
+<i>3</i>        P, L, or X for portrait, landscape, or both orientations.
+ 
+<i>4</i>        B, R, I, or E for bold, roman, italic, or bold/italic (enhanced).
+ 
+<i>5, 6, 7</i>  Point size in points.
+ 
+<i>8</i>        Magic number.
+ 
+The "magic number" is used by the installer to ensure that the filename is
+unique. It starts out at zero. If a file already exists by that name, it is
+incremented to 1. The installer continues to increment the number to 9, then
+A through Z. If it fails to find a unique filename out of the 36
+possibilities, then it will not build the PFM file and reports a "Cannot
+build PFM file" error message.
+ 
+<b>PFM Data from Font Data</b>
+ 
+The installer's PFM generator derives the PFM file from the data in the
+downloadable font file. The following sections list where the data comes
+from for each member in the PFM file structures.
+ 
+<b>PFMHEADER Structure</b>
+ 
+The installer derives the PFM header from the downloaded file as follows.
+ 
+<b>Member              Description</b>
+────────────────────────────────────────────────────────────────────────────
+<b>dfVersion</b>           256.
+ 
+<b>dfSize</b>              Size of file.
+ 
+<b>dfType</b>              128.
+ 
+<b>dfPoints</b>            Height of the font in points (height from header *
+                    72/1200).
+ 
+<b>dfVertRes</b>           300.
+ 
+<b>dfHorizRes</b>          300.
+ 
+<b>dfAscent</b>            Baseline position from font header.
+ 
+<b>dfInternalLeading</b>   (Cell height - height + 2)/4 from font header.
+ 
+<b>dfExternalLeading</b>   (height/4) - baseline from font header.
+ 
+<b>dfItalic</b>            Set if the style byte in the header = 1.
+ 
+<b>dfUnderline</b>         0.
+ 
+<b>dfStrikeOut</b>         0.
+ 
+<b>dfWeight</b>            Derived from stroke weight.
+ 
+<b>dfCharSet</b>           Based upon HP symbol set.
+ 
+<b>dfPixWidth</b>          If variable width.
+ 
+<b>dfPixHeight</b>         Cell height from the font header.
+ 
+<b>dfPitchAndFamily</b>    Pitch bit is set if fixed pitch.
+ 
+<b>dfAvgWidth</b>          Average of all the character widths (cursor move).
+ 
+<b>dfMaxWidth</b>          Maximum of all the character widths (cursor move).
+ 
+<b>dfFirstChar</b>         First character in the font file.
+ 
+<b>dfLastChar</b>          Last character in the font file.
+ 
+<b>dfDefaultChar</b>       127 - first character.
+ 
+<b>dfBreakChar</b>         32 - first character.
+ 
+<b>dfWidthBytes</b>        0.
+ 
+<b>dfDevice</b>            Offset from beginning of file to device string "PCL/HP
+                    LaserJet".
+ 
+<b>dfFace</b>              Offset from beginning of file to font name.
+ 
+<b>dfBitsPointer</b>       0.
+ 
+<b>dfBitsOffset</b>        0.
+ 
+<b>dfCharOffset</b>        If variable pitch.
+ 
+<b>dfSizeFields</b>        Size of this part of the PFM structure.
+ 
+<b>dfExtMetricsOffset  Offset from beginning of file to E</b>XTTEXTMETRIC
+                    structure.
+ 
+<b>dfExtentTable</b>       0.
+ 
+<b>dfOriginTable</b>       0.
+ 
+<b>dfPairKernTable</b>     0.
+ 
+<b>dfTrackKernTable</b>    0.
+ 
+<b>dfDriverInfo        Offset from begi</b>nning of file to DRIVERINFO
+                    (driver-specific) structure.
+ 
+<b>dfReserved</b>          0.
+ 
+The installer derives the Windows weight value from the weight value in the
+font file header as follows.
+ 
+<b>Hewlett-Packard weight  Windows weight</b>
+────────────────────────────────────────────────────────────────────────────
+<i>-7</i>                      100 (Thin)
+ 
+<i>-6</i>                      100 (Thin)
+ 
+<i>-5</i>                      200 (Extra light)
+ 
+<i>-4</i>                      200 (Extra light)
+ 
+<i>-3</i>                      300 (Light)
+ 
+<i>-2</i>                      300 (Light)
+ 
+<i>-1</i>                      400 (Normal
+ 
+<i>0</i>                       400 (Normal)
+ 
+<i>1</i>                       500 (Medium)
+ 
+<i>2</i>                       600 (Semi-bold)
+ 
+<i>3</i>                       700 (Bold)
+ 
+<i>4</i>                       700 (Bold)
+ 
+<i>5</i>                       800 (Extra bold)
+ 
+<i>6</i>                       800 (Extra bold)
+ 
+<i>7</i>                       900 (Heavy)
+ 
+The installer determines the Windows character set (dfCharSet) and the type
+of translation (in the driver-specific structure, the symbolSet member of
+the xtbl member) from the symbol set field in the font file.
+ 
+<b>Hewlett-Packard symbol      Windows character      Translation</b>
+<b>set                         set</b>
+───────────────────────────────────────────────────────────────────────────
+ 
+8U (Roman-8)                0 (ANSI)               Roman-8
+ 
+0U (USASCII)                0 (ANSI)               USASCII
+ 
+11Q                         0N (ECMA-94)           0 (ANSI)
+ 
+8M (Math-8)                 180 (Math-8)           8-bit pass through
+ 
+15U (PI Font)               181 (PI Font)          8-bit pass through
+ 
+0B (LineDraw)               182 (LineDraw)         7-bit pass through
+ 
+4Q (PC Line)                183 (PC Line)          7-bit pass through
+ 
+0B (TaxLnDrw)               184 (Tax Line)         7-bit pass through
+ 
+1U (US Legal)               185 (US Legal)         7-bit pass through
+ 
+All others                  0 (ANSI)               7- or 8-bit pass through
+ 
+For the generic case, the installer checks the font type byte in the font
+header. If it is nonzero, the font uses an 8-bit pass through; if the type
+is zero, the font uses a 7-bit pass through.
+ 
+<b>EXTTEXTMETRIC Structure</b>
+ 
+The installer derives extended text metrics from the download header file as
+follows.
+ 
+<b>Member                         Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<b>etmCapHeight                   Basel</b>ine from header - dfInternalLeading.
+ 
+<b>etmDoubleLowerUnderlineOffset  The etmUnderlineOffset member.</b>
+ 
+<b>etmDoubleLowerUnderlineWidth   The etmDoubleUpperUnderlineWidth member.</b>
+ 
+<b>etmDoubleUpperUnderlineOffset  etmUnderlineOffset + etmUnderlineWidth * 2.</b>
+ 
+<b>etmDoubleUpperUnderlineWidth   The etmUnderlineWidth member.</b>
+ 
+<b>etmKernPairs</b>                   0.
+ 
+<b>etmKernTracks</b>                  0.
+ 
+<b>etmLowerCaseAscent</b>             Top offset from character record for 'd';
+                               left offset if landscape font.
+ 
+<b>etmLowerCaseDescent</b>            Character width - left offset from character
+                               record for 'p'; height - top if landscape
+                               font.
+ 
+<b>etmMasterHeight</b>                Cell height from font file header.
+ 
+<b>etmMasterUnits                 The etmMast</b>erHeight member.
+ 
+<b>etmMaxScale                    Th</b>e etmMasterHeight member.
+ 
+<b>etmMinScale                    Th</b>e etmMasterHeight member.
+ 
+<b>etmOrientation</b>                 2 if orientation byte set in header; 1 if
+                               not.
+ 
+<b>etmPointSize</b>                   Cell height *1440 / 300 from font file
+                               header.
+ 
+<b>etmSize              </b>          Size of the EXTTEXTMETRIC structure.
+ 
+<b>etmSlant</b>                       0.
+ 
+<b>etmStrikeOutOffset             Left offset - etmStrike</b>OutWidth from
+                               character record for '-'; top offset -
+                               etmStrikeOutWidth if landscape font.
+ 
+<b>etmStrikeOutWidth</b>              Character width from record for '-';
+                               character height if landscape font.
+ 
+<b>etmSubScript</b>                   Cell height from header.
+ 
+<b>etmSubScriptSize</b>               Cell height from header.
+ 
+<b>etmSuperScript                 etmCapHeight - etmXHeight.</b>
+ 
+<b>etmSuperScriptSize</b>             Cell height from header.
+ 
+<b>etmUnderlineOffset</b>             Top offset from character record for '_';
+                               left offset if landscape font.
+ 
+<b>etmUnderlineWidth</b>              Character width from character record for
+                               '_'; character height if landscape font.
+ 
+<b>etmXHeight</b>                     Top offset from character record for 'x';
+                               left offset if landscape font.
+ 
+<b>DRIVERINFO Structure</b>
+ 
+The generator derives driver-specific information from the download width
+tables and symbol set as follows.
+ 
+<b>Member             Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<b>epEscape</b>           0.
+ 
+<b>epMemUsage</b>         ((sum of all character widths + 7) &gt;&gt; 3) * height + 63.
+ 
+<b>epSize            </b> Size of the DRIVERINFO structure.
+ 
+<b>epVersion</b>          1.
+ 
+<b>firstchar of xtbl  0.</b>
+ 
+<b>lastchar of xtbl   0.</b>
+ 
+<b>len of xt</b>bl        0.
+ 
+<b>offset of xtbl    </b> 0.
+ 
+<b>symbolSet of xtbl  Based up</b>on font symbol set.
+ 
+<b>Regenerating PFM Files</b>
+ 
+In some situations, such as when the user reinstalls existing fonts without
+the aid of the FINSTALL.DIR file, the installer automatically protects
+against generating duplicate PFM files. There are two potential situations:
+ 
+♦  The user reinstalls fonts with PFM files that were initially generated by
+   the installer.
+ 
+♦  The user reinstalls fonts that were initially provided by the font vendor
+   (that is, either on the distribution disks, or built by a utility
+   provided by the font vendor).
+ 
+To reinstall fonts, the user starts the Printer Font Installer, chooses the
+Add Fonts button, and directs the installer to read font information from
+the directory containing already installed fonts. Then the user installs
+fonts into the same directory. The installer prompts the user if fonts
+should be replaced. If the user responds yes, the installer proceeds to
+replace every font.
+ 
+The installer provides a unique name for each PFM file. In this situation,
+the installer would give a unique name to a PFM file that was a duplicate of
+an existing PFM file. For example, suppose the first time a user installed a
+font, the installer generated a PFM filename XYZ0.PFM. When the user
+reinstalled the font, the installer would generate a second, identical PFM
+file named XYZ1.PFM.
+ 
+To prevent duplicate PFM files on the disk, the installer contains a
+protection mechanism. If the "magic number" in the PFM filename is not zero,
+then the installer compares the contents of the PFM file to the other PFM
+files sharing the same name. If it finds a duplicate, it erases the PFM file
+it just built and uses the already existing PFM file.
+ 
+This mechanism prevents the installer from placing duplicate PFM files on
+the disk. However, it does not address duplicate names when PFM files were
+originally supplied by the font vendor.
+ 
+<b>Note:</b>  If the user originally installs fonts provided by a font vendor and
+       then reinstalls without use of an FINSTALL.DIR file, the installer
+       will replace the vendor-supplied PFM files with its own generated PFM
+       files. It does not remove the PFM files from disk; rather it adds its
+       own PFM files and uses them. Because the installer's PFM generator is
+       not as accurate as the font vendor's PFM files, the installer may
+       actually end up renaming the fonts, which causes confusion for the
+       user.
+ 
+The user should never reinstall soft fonts from and to the same directory
+without the aid of an FINSTALL.DIR file. Because the installer contains the
+ability to automatically generate an FINSTALL.DIR file of the already loaded
+fonts, there really is no reason for reinstalling fonts without the use of
+an FINSTALL.DIR file.
+ 
+<b>Developing the FINSTALL.DIR File</b>
+ 
+The Printer Font Installer provides features to help you build, test, and
+debug the FINSTALL.DIR file. The following sections describes these features
+in detail.
+ 
+<b>Building an FINSTALL.DIR File</b>
+ 
+The installer will build an FINSTALL.DIR file for the fonts listed in the
+Installed list box of the installer dialog box. The developer should hold
+down the CTRL and SHIFT keys while choosing the Exit button. The installer
+prompts the user for the name and path of the FINSTALL.DIR file. If a file
+by the same name already exists, the installer will prompt to replace the
+file.
+ 
+This feature has several uses:
+ 
+♦  To preserve the soft font and cartridge entries when the user wants to
+   reinstall Windows.
+ 
+♦  To expedite moving fonts to another computer.
+ 
+♦  To use as a starter file for developers or power users who want to set up
+   a distribution disk of fonts.
+ 
+This feature is primarily intended to be used by technical support
+specialists who are directing users to perform certain operations. A user
+may be advised to erase part or all of the contents of his or her machine
+and start over. This feature is very useful in preventing the loss of
+soft-font information.
+ 
+<b>Adding Fonts</b>
+ 
+Developers can gain access to an advanced Add Fonts dialog box by holding
+down the CTRL and SHIFT keys when choosing the Add Fonts button. This dialog
+box gives developers the following options:
+ 
+♦  The ability to specify the path from which the installer should read
+   fonts.
+ 
+♦  The ability to rename the FINSTALL.DIR file.
+ 
+♦  The ability to indicate if an error file should be written and specify
+   its name.
+ 
+The first option is available to users through the normal Add fonts dialog
+box. The other two options are intended to be used by font vendors or
+advanced users setting up FINSTALL.DIR files for distribution.
+ 
+Before parsing the FINSTALL.DIR file, the installer will report the screen
+aspect ratio. The installer will classify the screen type as either EGA(4:3)
+or VGA(1:1). It uses the same algorithm to classify the screen fonts listed
+in the FINSTALL.DIR file. The fonts that match the category in which the
+screen was classified would be loaded by the installer.
+ 
+The formula the installer uses to classify screens is as follows:
+ 
+♦  Compute the screen width in lines-per-inch (horizontal resolution divided
+   by horizontal size converted from millimeters to inches):
+ 
+   width = (GetDeviceCaps(HORZ_RES) * 25) / (GetDeviceCaps(HORZSIZE))
+ 
+♦  Compute the screen height in lines-per-inch (vertical resolution divided
+   by vertical size converted from millimeters to inches):
+ 
+   height = (GetDeviceCaps(VERT_RES) * 25) / (GetDeviceCaps(VERTSIZE))
+ 
+♦  Take the inverse ratio of width to height:
+ 
+   ratio = (height * 10000) / width
+ 
+♦  Categorize the screen type based upon the ratio:
+ 
+   6250 to 9374    EGA (4:3)
+ 
+   9375 and above  VGA (1:1)
+ 
+It is highly recommended that font vendors use the advanced Add Fonts dialog
+box to verify that there are no syntax errors in the FINSTALL.DIR file. If
+the installer finds errors in the FINSTALL.DIR file, it will write error
+messages in the FINSTALL.ERR file. The messages will be of the form:
+ 
+line line-number, near character character position : error message
+ 
+The installer also displays a message indicating that errors were found and
+written to the file.
+ 
+<b>Printer Font Installer Scenarios</b>
+ 
+This section presents some sample uses of the Printer Font Installer. It
+starts with recommendations for selecting printer and screen fonts, then
+presents some "cookbook" approaches to performing certain tasks with the
+Printer Font Installer.
+ 
+<b>Selecting Printer Fonts</b>
+ 
+Fonts take up disk space and printer memory. Planning which fonts are needed
+and installing only those fonts can save disk space. Selecting fonts is a
+subjective process. It requires making tradeoffs between document design and
+computer memory, disk space, printer memory, and printing speed.
+ 
+The recommendations presented in this section are based upon experience
+gained from working with Windows and soft fonts. The intent of these
+recommendations is to help you optimize the amount of disk space and printer
+memory used by soft fonts. Some of the recommendations indicate that you
+should not load certain variations of fonts; you may want to experiment to
+determine if the additional expense in print time and disk space is worth
+including these fonts.
+ 
+It is recommended that you load the typographic range of point sizes and
+limiting documents to using these sizes. The typographic range is as
+follows:
+ 
+6, 7, 8, 9, 10, 11, 12, 14, 18, 24, 30, 48, 60, 72
+ 
+Better yet, if you know exactly which sizes you normally use in a document,
+load only those sizes. For example, a document may use only the following
+point sizes of MS Sans Serif:
+ 
+11 point for body text
+9 point for running headers, running footers, and footnotes
+14, 24, and 30 point bold for subheads and headlines
+ 
+By loading only these sizes, you reduce the number of fonts taking up disk
+space.
+ 
+It is recommended that you generate normal and italic for all point sizes,
+and bold for point sizes equal to and above 14 points. The driver for
+Hewlett-Packard printers that use PCL has the capability to simulate bold
+text. It will not look the same as the true bold face, so you may want to
+experiment first (for example, print a document with bold type but with no
+bold loaded, and then load the bold and reprint the document). Normally,
+however, the driver-simulated bold is adequate for the small point sizes.
+ 
+To save on even more space, we recommend that you load bold only for the
+larger sizes (that is, 24 points and above). The assumption is that you will
+only use bold sizes for headlines.
+ 
+Avoid loading bold italic for a font. Bold italic consumes disk space and
+printer memory and, because bold italic is rarely used, it does not warrant
+the space it requires. As an alternative, the driver will simulate bold
+italic by synthetically bolding the italic face.
+ 
+Character sets can make a big difference in the amount of disk space and
+printer memory used by a font. If the document never uses accented
+characters or special symbols like the bullet and copyright, it is
+recommended that you use the USASCII character set. If the document requires
+these characters, use the Windows ANSI, ECMA-94, or Roman-8 character sets
+(listed in order of preference, depending upon which sets you have access
+to).
+ 
+Fonts in the USASCII character set contain a little more than half the
+number of characters contained in the Windows ANSI, ECMA-94, and Roman-8
+character sets. By selecting  USASCII, you effectively half the amount of
+disk space and printer memory used by the font. We recommend using, in order
+of preference, Windows ANSI, ECMA-94, or Roman-8 for point sizes below 14
+points and USASCII for point sizes 14 points and above.
+ 
+<b>Selecting Screen Fonts</b>
+ 
+Selecting screen fonts is considerably different from selecting printer
+fonts. The selection of screen font sizes should not be based upon the
+selected printer font sizes. It does not make sense to build one
+corresponding screen font for every printer font for the following reasons:
+ 
+♦  Screen fonts in Windows are sized and modified by the screen driver. The
+   screen driver can derive normal, bold, italic, and bold italic variations
+   from one screen font.
+ 
+♦  Screen fonts are selected by way of a generic selection process
+   controlled by the application and the screen driver. One cannot assume
+   that a screen font specifically intended for a printer font will be used
+   to display that font.
+ 
+♦  Some applications allow the user to see the font at different views (for
+   example, "fit in window," 100 percent, and 200 percent). A screen font
+   should be provided for each view.
+ 
+♦  Most important, screen fonts take dynamic memory away from applications,
+   thus slowing the overall performance of Windows.
+ 
+Poorly selected screen fonts can both slow the performance of the system and
+produce a confusing screen display.
+ 
+Regardless of the printer font sizes and variations selected, it is
+recommended that you load a shortened typographic range of screen fonts:
+ 
+8, 9, 10, 12, 14, 18, 24
+ 
+Load these fonts in normal face only; the screen driver can simulate bold,
+italic, and bold italic. There is no need to double, triple, or quadruple
+the memory used by screen fonts to get these special fonts.
+ 
+Do not load screen fonts for printer fonts that are like Courier. Windows
+already provides those screen fonts. Additional screen fonts would use up
+memory without additional visual benefits.
+ 
+If you generate one printer font, you should generate the entire recommended
+range. Applications typically offer more than one view of the page, so the
+screen driver will need the different sizes to display the font in each
+view.
+ 
+If you feel you want the typographic quality of prebuilt bold and italic
+screen fonts, then you should experiment to see if these fonts look better
+than fonts synthesized by the screen driver. Display a page of text with
+only the normal face loaded, then display it with the normal, bold, and
+italic faces loaded.
+ 
+Never load a bold or italic screen font without a corresponding normal face
+font. Without the normal face, the screen driver will always use the bold or
+italic face, producing a confusing screen display.
+ 
+For example, suppose you decide to create a document that uses a 24-point
+italic font. You then load one printer and one screen font as 24-point
+italic. Thereafter, every time the screen driver determines it needs a
+24-point screen font that is similar to the font that you installed, it will
+use the 24-point italic face. Regardless of the variation you want (that is,
+normal, bold, or italic), the font will display in italic.
+ 
+As you add more fonts to your computer, the situation will become more
+confusing. To continue the example, suppose you decide to add the same
+printer and screen font as 48-point normal.
+ 
+When the application displays the 48-point font at 100 percent view on the
+screen, the font will display as 48-point normal (that is, the correct
+behavior). At 50 percent view, the font will display as 24-point italic
+(because that is the only font available). When switching views, therefore,
+the font changes from normal to italic.
+ 
+You can avoid this problem simply by not loading anything other than the
+normal face of the screen font. Normally, the difference between the
+synthesized font and the "true" font is barely noticeable, if noticeable at
+all. If you must load the italic or bold variations, then you must also load
+the normal variation in the same size.
+ 
+<b>Recovering Soft Fonts from a WIN.INI Change</b>
+ 
+Sometimes you need to remove the contents of your WINDOWS directory and
+reinstall Windows. In the process of doing this, you could lose all the soft
+font information. To prevent losing data:
+ 
+1  Build an FINSTALL.DIR file.
+ 
+   Using Windows, select the Printers icon from Control Panel, select the HP
+   LaserJet printer that uses PCL, and choose the Setup command.
+ 
+   Once inside the driver-specific dialog box, choose the Fonts button to
+   call the Printer Font Installer. The fonts you plan to save should be
+   listed in the left list box. Hold down the CTRL and SHIFT keys while
+   choosing the Exit button. The installer prompts for a filename and path.
+   Choose the OK button to accept the name of the FINSTALL.DIR file. Then,
+   exit Windows.
+ 
+2  Reinstall Windows.
+ 
+   Perform whatever steps are necessary to reinstall Windows (that is,
+   remove everything in the WINDOWS directory and run the Windows Setup
+   program).
+ 
+3  Install from the directory to itself to get the soft fonts listed.
+ 
+   Run the Printer Font Installer on the new computer through the Control
+   Panel's Printers icon. Select the HP LaserJet printer that uses PCL, and
+   then choose the Setup command.
+ 
+   From the driver-specific dialog box, choose the Fonts button to call the
+   installer. If the Fonts button is not highlighted, then you need to
+   select a printer that supports soft fonts (lower-left list box in the
+   driver-specific dialog box). Choose Add fonts and specify \PCLFONTS as
+   the source for copying fonts. If your fonts are stored in another
+   directory (such as FONTS or PCLPFM), then specify that directory.
+ 
+   Hold down the CTRL and SHIFT keys while selecting all the fonts in the
+   right list box. Choose the Add button between the two list boxes. The
+   installer prompts for a target directory. This must be equivalent to the
+   directory from which you are installing the fonts. If you are installing
+   from \PCLFONTS, then choose the OK button to accept \PCLFONTS as the
+   target directory. Otherwise, change the name to that of the directory
+   that contains the soft fonts (such as FONTS or PCLPFM).
+ 
+   The installer then shuffles the fonts very quickly from the right list
+   box to the left list box. It does not copy any fonts; it simply updates
+   the WIN.INI file. If this does not happen quickly, then you probably did
+   not build an FINSTALL.DIR file as described in Step 1, or did not install
+   fonts from and to the same directory.
+ 
+<b>A Quick Method for Moving Fonts to Another Computer</b>
+ 
+The purpose of this section is to describe how to move fonts from one
+computer to another. It is not intended for distributing fonts to several
+users. This description is not intended to encourage illegal copying of
+fonts. We assume that you are removing fonts from one computer and adding
+them to another.
+ 
+The steps are as follows:
+ 
+1  Build an FINSTALL.DIR file.
+ 
+   Using Windows, select the Printers icon from Control Panel, select the
+   PCL/HP LaserJet printer, and choose the Setup command.
+ 
+   Once inside the driver-specific dialog box, choose the Fonts button to
+   call the Printer Font Installer. The fonts you plan to save should be
+   listed in the left list box. Hold down the CTRL and SHIFT keys while
+   choosing the Exit button. The installer prompts for a filename and path.
+   Choose OK to accept the name of the FINSTALL.DIR file. Then, quit
+   Windows.
+ 
+2  Use the MS-DOS xcopy command to copy files to a floppy disk, by following
+   these instructions:
+ 
+   To change to the directory containing the soft fonts, type:
+ 
+   cd \PCLFONTS
+ 
+   To make sure that all the files in the directory are not marked for
+   archive, type:
+ 
+   attrib -a *.*
+ 
+   To copy files to the first disk, type:
+ 
+   xcopy *.* a: /m
+ 
+   If MS-DOS reports an "insufficient disk space" error, repeat the xcopy
+   command. The /m option on the xcopy command instructs MS-DOS to mark the
+   files it has copied to disk, so when you repeat the command it does not
+   recopy the files that are already on disk.
+ 
+   Repeat the xcopy command until all the files are on the disks.
+ 
+3  Copy the files from the floppy disks to the new machine, by following
+   these instructions:
+ 
+   On the new machine, to make a directory for the fonts, type:
+ 
+   cd \
+   mkdir \PCLFONTS
+   cd \PCLFONTS
+ 
+   To copy the fonts from the floppy disk into the new directory, type:
+ 
+   copy a:*.*
+ 
+   Repeat this step for every floppy disk.
+ 
+4  Install from the directory to itself to get the soft fonts listed.
+ 
+   Run the Printer Font Installer on the new machine through Control Panel's
+   Printers icon. Select the HP LaserJet printer that uses PCL, and then
+   choose the Setup command.
+ 
+   From the driver-specific dialog box, choose the Fonts button to start the
+   installer. Choose Add fonts and specify \PCLFONTS as the source for
+   copying fonts. The installer should list all the fonts you just copied
+   into the \PCLFONTS directory.
+ 
+   Hold down the CTRL and SHIFT keys while selecting all the fonts in the
+   right list box. Choose the Add button between the two list boxes. The
+   installer will prompt for a target directory. This must be the same
+<i>   directory from which you are installing the fonts</i>. If you are installing
+   from \PCLFONTS, as these instructions indicate, then choose OK to accept
+   \PCLFONTS as the target directory.
+ 
+   The installer then shuffles the fonts very quickly from the right list
+   box to the left list box. It does not copy any fonts; it simply updates
+   the WIN.INI file. If this does not happen quickly, then you probably did
+   not build an FINSTALL.DIR file as described in Step 1, or did not install
+   fonts from and to the same directory.
+ 
+The fonts will be moved to the new computer. This procedure is probably the
+fastest and simplest way to move fonts from one computer to the other.
+However, we do not recommend it as a general method of distributing fonts.
+The installer has a more elegant and less error-prone way of loading fonts
+from floppy disks as described in the next section.
+ 
+<b>Building a Floppy Disk Set of Fonts</b>
+ 
+This section describes how to set up a floppy disk set of fonts for
+distribution. This procedure is useful, for example, if a company chooses to
+use a range of fonts available from a font-generation utility. One person
+could generate the fonts and create a disk set of fonts for internal
+distribution. Then, all the other users could quickly and easily install the
+pregenerated fonts without having to learn how to use the font-generation
+utility.
+ 
+To carry out the following procedure, you must know how to use MS-DOS and a
+text editor.
+ 
+The steps are as follows:
+ 
+1  Install or generate the soft fonts.
+ 
+   Load the fonts onto your computer. You should build a set of screen fonts
+   for each type of display that may be used. Generally, this would be an
+   EGA or a VGA.
+ 
+   When you make changes to the FINSTALL.DIR file (see Step 4), you can
+   instruct the installer to load different screen fonts depending upon the
+   aspect ratio of the computer receiving the fonts.
+ 
+2  Build an FINSTALL.DIR file.
+ 
+   Using Windows, select the Printers icon from Control Panel, select the HP
+   LaserJet printer that uses PCL, and then choose the Setup command.
+ 
+   Once inside the driver-specific dialog box, choose the Fonts button to
+   start the Printer Font Installer. The fonts you plan to save should be
+   listed in the left list box. Hold down the CTRL and SHIFT keys while
+   choosing the Exit button. The installer prompts for a filename and path.
+   Choose OK to accept the name of the FINSTALL.DIR file. Then, quit
+   Windows.
+ 
+3  Arrange the font files, PFM files, PCM files, screen-font files, and
+   FINSTALL.DIR file onto disks.
+ 
+   If all the files fit on one disk, this is an easy task. If they do not
+   and the number of fonts is great, this may be a major task. For more
+   information about arranging the files, see the section at the end of this
+   procedure list.
+ 
+4  Edit the FINSTALL.DIR file to add logical drives.
+ 
+   If the files require more than one disk, edit the FINSTALL.DIR file and
+   add logical drives so the installer will know where all the files are.
+   With logical drives properly set up, the installer will prompt the user
+   to switch disks when necessary.
+ 
+   If you loaded screen fonts, add entries in the FINSTALL.DIR file for
+   screen fonts as well. Place the screen fonts in the appropriate FAMILY
+   block for which the screen fonts were made.
+ 
+5  Test the font-installation process thoroughly.
+ 
+   Make sure that all the fonts are correctly loaded. If you have screen
+   fonts for different aspect ratios, test loading fonts on machines with
+   different screen displays.
+ 
+   Use the advanced Add fonts button to check the syntax of your
+   FINSTALL.DIR file, and verify your screen display type.
+ 
+Arranging font files onto disks can be an extremely tedious task, especially
+if you have to set up disks for 360K, 720K (3.5 inch), and 1.2M builds and
+need to conserve disk space.
+ 
+Here are some recommendations:
+ 
+♦  Keep the screen font files for one FAMILY together on the same disk, and
+   make sure the lowest point size font is also on that disk.
+ 
+♦  Keep each PFM file on the same disk as its corresponding printer-font
+   file.
+ 
+♦  Conserve disk space by putting the largest fonts on the disk with the
+   smallest fonts.
+ 
+♦  If you are building the set for different disk densities, build the 360K
+   set first, then put the files from two disks onto each 720K disk, and the
+   files from three disks onto each 1.2M disk.
+ 
+The easiest way to build the disk set is to place files on the disks in the
+exact order in which they appear in the FINSTALL.DIR file. That is, the
+FINSTALL.DIR file goes on first, followed by the screen fonts for the first
+family listed, followed by the .PFM and font files for that family. Make
+sure that all the screen-font files for one family go on the same disk, and
+that at least one printer font (the first one listed in the FAMILY
+statement) with its PFM file also goes on that disk.
+ 
+Once the disk set is built and working, reorganize the files to optimize for
+disk space usage.
+ 
+<b>Setting Up Fonts on a Network</b>
+ 
+This section describes how a network administrator can set up fonts to use
+on a network. To carry out this procedure, you must know how to use MS-DOS
+and a text editor.
+ 
+To set up fonts for use on a network, follow these steps:
+ 
+1  Install or generate the soft fonts.
+ 
+   Load the fonts onto your computer. You should build a set of screen fonts
+   for each type of display that may be used. Generally, this would be an
+   EGA or a VGA.
+ 
+   When you make changes to the FINSTALL.DIR file (see Step 5), you can
+   instruct the installer to load different screen fonts depending upon the
+   aspect ratio of the machine receiving the fonts.
+ 
+2  Select permanent fonts.
+ 
+   To use permanently downloaded soft fonts, start the Printer Font
+   Installer (described in the next step) and select the fonts you want
+   permanently downloaded to the printer. When you exit the installer, it
+   will prompt you for the download options. Make sure "Download at startup"
+   is checked.
+ 
+3  Build an FINSTALL.DIR file.
+ 
+   Using Windows, select the Printers icon from Control Panel, select the HP
+   LaserJet printer that uses PCL, and choose the Setup command.
+ 
+   Once inside the driver-specific dialog box, choose the Fonts button to
+   start the Printer Font Installer. The fonts you plan to save should be
+   listed in the left list box. Hold down the CTRL and SHIFT keys while
+   choosing the Exit button. The installer prompts for a filename and path.
+   Choose OK to accept the name of the FINSTALL.DIR file. Then, quit
+   Windows.
+ 
+4  If you are not working from the file server, copy the fonts to the file
+   server.
+ 
+   If you created and installed fonts from the network server, you can skip
+   this step.
+ 
+   Set up a directory on the file server for the fonts and copy all the
+   files to it. Use MS-DOS commands to do this. If you set up permanent
+   fonts, move the files created by the installer from your computer to the
+   network computer, and edit the AUTOEXEC.BAT file on the network to
+   transfer the command line starting the download batch file.
+ 
+5  Edit the FINSTALL.DIR file to add screen fonts.
+ 
+   If you generated screen fonts, edit the FINSTALL.DIR file to add
+   references to the fonts.
+ 
+   You do not need to add logical drives to the FINSTALL.DIR file if all the
+   font files and PFM files reside in one directory.
+ 
+6  Test the font installation process thoroughly.
+ 
+   Make sure that all the fonts are correctly loaded. If you have screen
+   fonts for different aspect ratios, test loading fonts on computers with
+   different screen displays.
+ 
+   Use the advanced Add fonts button to check the syntax of your
+   FINSTALL.DIR file, and verify your screen display type.
+ 
+7  Announce the availability of soft fonts to network users.
+ 
+   Instruct your users that the fonts are available. They can load the fonts
+   by running the Printer Font Installer and choosing the Add fonts button.
+   They should indicate the network drive and path to the directory
+   containing the soft fonts. Installing the fonts this way will be much
+   faster than loading from floppy disks.
+ 
+   If you set up permanent soft fonts, then your instructions must list
+   those fonts and their ID numbers for the users. Instruct the users to
+   choose the Edit button and edit each of the permanent fonts, verifying
+   the ID numbers. They must change the ID numbers on any fonts that do not
+   match your list.
+ 
+Make sure that all the users have assigned the correct IDs to their
+permanent fonts. This is not as difficult as it seems. There usually are
+only a few permanent fonts, and the installer resolves ID conflicts. If the
+user attempts to assign an ID to a font that is used by another font, the
+installer will ask the user if the other font should be assigned a new ID.
+The installer will select the first available ID number when assigning a new
+ID.
+ 
+<b>Setting Up PFM Files for Resident and Cartridge Fonts</b>
+ 
+It is possible to build special PFM files for printer-resident and cartridge
+fonts. These fonts should be set up as permanently downloaded fonts in the
+WIN.INI file or collected into a cartridge PCM file. The special PFM files
+contain the escape sequences that the driver will send to the printer to use
+the fonts. Font or printer vendors will most likely build the PFM and PCM
+files.
+ 
+In short, to set up cartridge and printer-resident fonts, the developer
+should do the following:
+ 
+1  Build special PFM files.
+ 
+2  If appropriate, combine PFMs into a PCM using the PFM Editor.
+ 
+3  Make a special FINSTALL.DIR file for loading PFM-only fonts or PCM
+   files.
+ 
+In addition to the structures described for the PFM files, the driver has a
+driver-specific data structure that must be added to the file. The
+<b>PFMEXTENSION structure contains a df</b>DriverInfo member. This member is a file
+offset to the driver-specific structure. For the PCL driver, the
+driver-specific structure is the DRIVERINFO structure.
+ 
+The value of the members in the DRIVERINFO structure should be filled in as
+follows.
+ 
+<b>Member             Value</b>
+────────────────────────────────────────────────────────────────────────────
+<b>epEscape</b>           An offset from the top of the file to the escape string
+                   that the driver should send to the printer to call the
+                   font.
+ 
+<b>epMemUsage</b>         An approximation of the printer memory used by the font.
+ 
+<b>epSize            </b> Size of (DRIVERINFO).
+ 
+<b>epVersion</b>          1.
+ 
+<b>firstchar of xtbl  (BYTE)0.</b>
+ 
+<b>lastchar of xtbl   (BYTE</b>)0.
+ 
+<b>len of xt</b>bl        0.
+ 
+<b>offset of xtbl    </b> (long)0.
+ 
+<b>symbolSet of xtbl  epsymGENERIC7 for 7-bit fonts and epsymGENER</b>IC8 for 8-bit
+                   fonts.
+ 
+In addition, the escape string for calling the fonts must be written to the
+PFM file. The driver will use the escape string pointed to by epEscape to
+select the font. Once the PFM and PCM files are built, you must make an
+FINSTALL.DIR file.
+ 
+In PFM files, the absence of the downloadable font file is indicated by two
+commas in the font string, as in the following example:
+ 
+"Acme Ace 12pt"=PL,  ,  CPY_ACE.PFM
+ 
+The installer loads these fonts as permanently downloadable soft fonts. This
+has one side effect. When the user quits the installer, it will prompt for
+download options. Because the installer thinks the fonts are permanent soft
+fonts, it will try to download them to the printer. However, it will not
+find the permanent font files because they do not exist. Therefore, the
+installer will simply ignore the files and not make a download batch file or
+open a print job. However, if these fonts are mixed in with other "real"
+permanent soft fonts, then the installer will correctly download those
+fonts.
+ 
+If the intended printer is a standard HP LaserJet, the driver will not load
+soft font PFM files. The driver will not load the PFM files when the
+intended printer cannot handle soft fonts. However, the user may instruct
+the driver to load cartridge font (PCM) information to gain access to the
+cartridge font information. To override the soft font restrictions, you can
+place the following setting in the driver-specific section of the WIN.INI
+file:
+ 
+options=7
+ 
+This setting instructs the driver to load soft font information regardless
+of the printer's abilities. However, this is not recommended.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

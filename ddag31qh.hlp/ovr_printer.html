@@ -1,0 +1,149 @@
+<html>
+
+<head>
+<title>Miscellaneous Printer Updates - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Miscellaneous Printer Updates</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='new31ovr.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+Windows 3.1 includes several new features that enhance the Windows printing
+environment.
+ 
+♦  Indices for DeviceCapabilities Function
+ 
+♦  New Paper Sizes
+ 
+♦  New Members in the DEVMODE Structure
+ 
+♦  RESETDEVICE and STARTDOC Escapes
+ 
+<b>Indices For DeviceCapabilities Function</b>
+ 
+Printer drivers must process requests from applications for new
+<b>DeviceCapabilities indices. A driver's DeviceCapabilit</b>ies function must
+check for and process the following:
+ 
+<b>Value                     Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>DC_ENUMRESOLUTIONS (13)</i>   Retrieves a list of resolutions supported by the
+                          model.
+ 
+<i>DC_FILEDEPENDENCIES (14)</i>  Retrieves a list of filenames which also need to
+                          be installed when the driver is installed.
+ 
+<i>DC_TRUETYPE (15)</i>          Retrieves the driver's capabilities with regard to
+                          printing TrueType fonts.
+ 
+<i>DC_PAPERNAMES (16)</i>        Enumerates the actual string describing the paper
+                          names.
+ 
+<i>DC_ORIENTATION (17)</i>       Retrieves the relationship between Portrait and
+                          Landscape orientations in terms of the number of
+                          degrees that portrait orientation is to be rotated
+                          counterclock-wise to get landscape orientation.
+ 
+<i>DC_COPIES (18)</i>            Retrieves the maximum number of copies the device
+                          can print.
+ 
+The implementation of one or all of the indices is optional. If a driver
+does not implement a given index, the DeviceCapabilities function should
+return -1. For more information about the new indices, see the
+<i><span class='grhilite'>◄</span><a href='DeviceCapabilities.html'>DeviceCapabil</i>ities</a><span class='grhilite'>►</span> function.
+ 
+<b>New Paper Sizes</b>
+ 
+There are 21 new predefined paper sizes. The include file, PRINT.H, contains
+a complete list of all supported paper sizes. Applications typically call
+the DeviceCapabilities function to retrieve names and sizes of the supported
+paper sizes, so printer drivers must be ready to process the following
+DeviceCapabilities indices:
+ 
+<b>Value          Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>DC_PAPER</i>       Retrieves the identifiers of the listed paper sizes.
+ 
+<i>DC_PAPERSIZES</i>  Retrieves the width and height of the listed paper sizes.
+ 
+<i>DC_PAPERNAMES</i>  Retrieves the names of the listed paper sizes.
+ 
+<b>New Members in the DEVMODE Structure</b>
+ 
+The dmYResolution and dmTTOption members in the DEVMODE structure are new
+for Windows 3.1. The DEVMODE structure returned by the ExtDeviceMode
+function contains one or both of these fields if the dmField member includes
+the following values:
+ 
+<b>DM_YRESOLUTION</b>  0x0002000L
+<b>DM_TTOPTION</b>     0x0004000L
+ 
+The dmYResolution member specifies the vertical resolution of the printer in
+dots per inch. In this case, the dmPrintQuality member specifies the
+horizontal resolution in dots per inch. If DM_YRESOLUTION bit is not set in
+<b>dmFields, dmYResolution is not used and </b>dmPrintQuality retains the original
+meaning.
+ 
+The dmTTOption member specifes how TrueType fonts should be printed. The
+member can be set to one of the following values:
+ 
+<b>Value              Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>DMTT_BITMAP (1)</i>    Print TrueType fonts as graphics.
+ 
+<i>DMTT_DOWNLOAD (2)</i>  Download TrueType fonts as soft fonts.
+ 
+<i>DMTT_SUBDEV (3)</i>    Substitute device fonts for TrueType.
+ 
+<b>Note:  Before calling the</b> the CreateDC or CreateIC functions, an application
+       should call the DeviceCapabilities function with the DC_TRUETYPE
+       index to retrieve the driver's TrueType capabilities. The application
+       can use the value returned by the driver to set the dmTTOption member
+       to the appropriate value.
+ 
+       The default action is to download TrueType as soft fonts for PCL
+       printer; substitute device fonts for TrueType for Pscript printers;
+       and to print TrueType fonts as graphics for dotmatrix printers.
+ 
+<b>RESETDEVICE and STARTDOC Escapes</b>
+ 
+The support the ResetDC and StartDoc functions (new for Windows 3.1),
+printer drivers must process the RESETDEVICE and STARTDOC escapes in their
+<b>Control</b> functions.
+ 
+Although the STARTDOC escape was available in Windows 3.0, the lpInData and
+<i>lpOutData parameters have c</i>hanged. Specifically, lpInData points to a
+zero-terminated string specifying the name of the document, and lpOutData
+points to a DOCINFO structure specifying the output port or file as well as
+the document name. The structure has the following form:
+ 
+typedef struct {
+    short   cbSize;
+    LPSTR   lpszDocName;
+    LPSTR   lpszOutput;         // output port name
+} DOCINFO, FAR * LPDOCINFO;
+ 
+The lpszOutput is the name of the output file to use. If either lpOutData or
+<b>lpszOutput is NULL, the output</b> port given to CreateDC should be used.
+ 
+The RESETDEVICE escape, corresponding to the new ResetDC function, allows
+the driver to move a printer's output state from an old physical device
+structure to a new one. This allows applications to change the printer
+setup, such as orientation, with creating a new print job. For more
+information about this escape, see the <span class='grhilite'>◄</span><a href='RESETDEVICE.html'>RESETDEVICE</a><span class='grhilite'>►</span> escape.
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

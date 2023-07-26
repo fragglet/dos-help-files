@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<title>_GetGlblRng0V86IntBase - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _GetGlblRng0V86IntBase</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Page_Allocation_and_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_GetLastV86Page.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _GetGlblRng0V86IntBase
+ 
+mov     [Address], eax      ; address for ring-0 V86 interrupt handlers
+ 
+The _GetGlblRng0V86IntBase service returns the linear address used to manage
+ring-0 global V86 interrupt handlers.
+ 
+This service is only available during initialization, and only available for
+Windows version 3.1 or later.
+ 
+This service has no parameters.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the linear address of the ring-0 handler.
+ 
+<b>Comments</b>
+ 
+Ring-0 global V86 interrupt handlers require segment selectors that permit
+execution in protected mode at ring 0. Furthermore, the selectors must
+represent memory that is not subject to page faults. Page faults are a
+potential problem because part of the global code or data for a ring-0 V86
+interrupt handler may overlap with the noninstanced part of an instance data
+page.
+ 
+This service returns the linear address of the start of a V86 address space
+in which instance data pages are always present. The linear address is a
+duplicate of the V86 address 0:0 in the system virtual machine. The size of
+this duplicate mapping is 1 megabyte plus 64 kilobytes. This address space
+includes the xMS HMA (pages 100h-10Fh). The system sets up the duplicate
+mapping after all virtual devices have processed the Sys_Critical_Init
+message. The A20 state of the system virtual machine, or any other virtual
+machine, has no effect on the mapping used for this address space. The
+physical (global) HMA is always mapped in this address space. Thus, A20 is
+effectively always on (HMA always enabled).
+ 
+Virtual devices that use this address space must wait until the Device_Init
+or Init_Complete message to request the address. This service returns zero
+if a virtual device attempts to retrieve the address while processing the
+<b>Sys_Critical_Init</b> message. If a virtual device needs the address sooner than
+receipt of the Device_Init message, the virtual device can use a base
+address of 0 to build the selectors. It can then edit the selectors when it
+processes the Device_Init message, changing the base address to the correct
+location by adding in the return value from this service.
+ 
+Ring-0 global V86 interrupt handlers may only access global memory.
+ 
+Instance data does not work properly in this address space. The local part
+of this address space is mapped with the system nul page.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

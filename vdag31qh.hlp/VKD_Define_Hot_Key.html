@@ -1,0 +1,133 @@
+<html>
+
+<head>
+<title>VKD_Define_Hot_Key - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VKD_Define_Hot_Key</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_Keyboard_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VKD_Define_Paste_Mode.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vkd.inc
+ 
+VxDcall VKD_Define_Hot_Key
+ 
+The VKD_Define_Hot_Key service defines a hot-key-notification callback
+procedure. Hot keys are detected by ANDing the shift state mask with the
+global shift state, then comparing the resulting state with the shift state
+compare value. If this matches and the key code matches, the callback
+procedure is called with the specified reference data in EDX.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>AL</i>         Specifies scan code of the main key.
+ 
+<i>AH</i>         Specifies the type of scan code. This parameter can be one of the
+           following values:
+ 
+           Value  Meaning
+           ─────────────────────────────────────────────────────────────────
+           0      Normal code
+ 
+           1      Extended code (ExtendedKey_B)
+ 
+           0FFh   Either normal or extended (AllowExtended_B)
+ 
+<i>EBX</i>        Specifies shift state. The high word is a mask that is ANDed with
+           the global shift state when checking for this hot key. The low
+           word is the masked-shift-state-compare value.
+ 
+<i>CL</i>         Specifies the operation flags. This parameter can be one of the
+           following values:
+ 
+           Value           Meaning
+           ─────────────────────────────────────────────────────────────────
+           CallOnPress     Calls callback when key press is detected.
+ 
+           CallOnRelease   Calls callback when key release is detected.
+                           Keyboard may still be in hot-key hold state.
+ 
+           CallOnRepeat    Calls callback when repeated press is detected.
+ 
+           CallOnComplete  Calls callback when the hot key state is ended
+                           (all shift modifier keys are released) or when a
+                           different hot key is entered. For example, assume
+                           that both ALT+1 and ALT+2 are hot keys. If the
+                           user holds the ALT key down, then presses and
+                           releases the 1 key and presses the 2 key, the
+                           callback for ALT+1 is call even though the ALT
+                           key has not been released.
+ 
+           CallOnUpDwn     Calls on both press and release.
+ 
+           CallOnAll       Calls on press, release and repeats.
+ 
+           PriorityNotify  Specifies that the callback can only be called
+                           when interrupts are enabled and the critical
+                           section is not owned. This value can be combined
+                           with any other value in this list.
+ 
+           Local_Key       Specifies that the key can be locally enabled or
+                           disabled.
+ 
+<i>ESI</i>        Points to the callback procedure.
+ 
+<i>EDX</i>        Points to the reference data to pass to the callback procedure.
+ 
+<i>EDI</i>        Specifies maximum notification delay in milliseconds if the CL
+           register specifies the PriorityNotify value. If this parameter is
+           zero, the callback is always notified.
+ 
+<b>Return Value</b>
+ 
+If the carry flag is clear, the EAX register contains the definition handle.
+Otherwise, the carry flag is set to indicate an error.
+ 
+<b>Comments</b>
+ 
+The callback procedure is called when a hot key is detected, and detection
+meets mask requirements. The callback receives the following input
+parameters:
+ 
+AL    ; scan code of key
+AH    ; 0 if key just pressed (Hot_Key_Pressed)
+      ; 1 if key just released (Hot_Key_Released)
+      ; 2 if key is an auto-repeat press (Hot_Key_Repeated)
+      ; 3 hot key state ended (Hot_Key_Completed)
+ 
+EBX   ; hot key handle
+ECX   ; global shift state
+EDX   ; points to the reference data
+EDI   ; elapsed time for delayed notification in milliseconds
+ 
+The EDI register normally contains zero, but if the PriorityNotify value is
+specified this value could be larger.
+ 
+The high bit of the AH register is set if the hot key is a priority hot key
+and the virtual machine which had the keyboard focus at the time the hot key
+was recognized was suspended or not executable. In this case, the priority
+event was scheduled for the system virtual machine rather than the keyboard
+owner. The Hot_Key_SysVM_Notify value can be used to check this bit.
+ 
+The callback procedure can modify EAX, EBX, ECX, EDX, ESI, EDI, and Flags
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

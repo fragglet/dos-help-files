@@ -1,0 +1,150 @@
+<html>
+
+<head>
+<title>About the Information Files - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About the Information Files</div>
+<pre> 
+An information file is an ASCII text file that contains lists of disk names,
+filenames, and related information that Setup and Control Panel use to
+install device drivers and virtual devices. The file lists the names of the
+installation disks, the device driver and virtual-device files, and all
+dependent files that must be installed with the device drivers and virtual
+devices.
+ 
+Windows supplies default information files, named SETUP.INF and CONTROL.INF,
+that list all drivers and related files. Setup uses these files to install
+Windows, then stores the files in the Windows SYSTEM directory so that Setup
+and Control Panel can read the files whenever the user requests changes to
+the Windows configuration. Setup and Control Panel use information in
+SETUP.INF and CONTROL.INF to let the user replace the existing display,
+network, keyboard, and pointing-device drivers or to install new printer
+drivers and fonts.
+ 
+<b>Important:</b>  Never modify or replace the SETUP.INF or CONTROL.INF files.
+ 
+Setup and Control Panel can also read OEMSETUP.INF information files to
+install drivers that are not listed in SETUP.INF or CONTROL.INF. Setup and
+Control Panel search for and read OEMSETUP.INF files whenever the user
+requests the installation of unlisted drivers.
+ 
+To install a driver from an OEM distribution disk, Setup or Control Panel
+reads the lists of available drivers from the OEMSETUP.INF file and displays
+this list to the user. When the user selects a driver, Setup or Control
+Panel copies the driver and its associated files from the specified
+distribution disks to the WINDOWS directory. Setup or Control Panel also
+updates settings in the initialization files, such as WIN.INI and
+SYSTEM.INI, by copying the new settings to the sections specified in the
+information file.
+ 
+Setup also copies OEMSETUP.INF files to the WINDOWS directory (for network
+installations), or the SYSTEM directory (for nonnetwork installations) as
+OEMx.INF. The x is a unique number. This process applies to the installation
+of pointing devices, keyboards, and screen displays.
+ 
+<b>Information-File Syntax</b>
+ 
+Information files consist of one or more sections. Each section starts with
+a section name, enclosed in brackets ([]), and contains one or more entries
+(or information lines). A setting specifies the names, settings, and
+sections that Setup and Control Panel use to identify and install drivers.
+ 
+Each setting consists of one or more parameters, separated by commas (,). A
+parameter specifies information such as the driver filename, driver
+description, and the filename of associated files. In some cases, a
+parameter specifies the name of a related section in the information file
+that contains additional settings for the driver.
+ 
+The following example illustrates the general syntax of information files:
+ 
+; Example OEMSETUP.INF information file
+ 
+[disks]
+    1 =. ,"Generic Printer Distribution Disk",disk1
+ 
+[io.device]
+    1:TTY.DRV,"Generic / Text Only","DEVICESPECIFIC"
+ 
+[io.dependent]
+    tty.drv = 1:tty.hlp
+ 
+This example has three sections, [disks], [io.device], and [io.dependent],
+that specify the files that Control Panel needs to install the generic
+printer, TTY.DRV, and its associated help file. Information files can
+include comments, but each comment must be preceded by a semicolon (;).
+ 
+Whenever a filename is given in an information file it must have the form:
+ 
+id:filename
+ 
+In this example, id is a valid disk identifier and filename is a valid
+MS-DOS filename. A valid disk identifier is any identifier given in the
+[disks] section of the information file. This section names the distribution
+disk or disks and assigns disk identifiers.
+ 
+<b>Information Files for Display Drivers</b>
+ 
+The OEMSETUP.INF file for a display driver must contain a [display] section.
+The file may also contain the following sections:
+ 
+[disks]
+[sysfonts]
+[fixedfonts]
+[oemfonts]
+[fonts]
+ 
+Display drivers often have many dependent files such as files for standard-
+and 386 enhanced-mode grabbers, startup logo modules, and system, fixed,
+OEM, and user fonts. These sections fully specify the files to be installed
+with the display driver.
+ 
+When installing a display driver, Setup selects fonts by matching the aspect
+ratio of the display to that of the font. For configurations using other
+than code page 437, Setup asks MS-DOS for code-page information and selects
+an OEM font from the [codepages] section based on that information. Because
+only MS-DOS version 3.30 and higher supports the call for code-page
+information, Setup may (depending on the MS-DOS version) rely on the defxlat
+setting in the [data] section to retrieve code-page information.
+ 
+<b>Information Files for Printer Drivers</b>
+ 
+The OEMSETUP.INF file for a printer driver must contain an [io.device]
+section. The file may also contain the following sections:
+ 
+[io.dependent]
+[disks]
+[fonts]
+ 
+Although Control Panel can install a printer without an information file,
+Control Panel requires the file if the driver has any related files such as
+help and font files.
+ 
+If the user requests the installation of a printer that is not listed in the
+CONTROL.INF file, Control Panel searches for printer drivers on the
+specified disk. It will also look for an OEMSETUP.INF file and use that
+information to copy any additional files the printer driver needs. Although
+each entry in the [io.device] section contains a description for the driver,
+Control Panel does not use this description. Instead, it scans for and
+displays the description field in the driver's executable file.
+ 
+<b>Information Files for Network Installation</b>
+ 
+The OEMSETUP.INF file for a network driver contains [disks] and [networks]
+sections, and a corresponding [netname.versions] section. The
+[netname.versions] section specifies more sophisticated control over how the
+network is installed.
+ 
+</pre>
+</body>
+
+</html>

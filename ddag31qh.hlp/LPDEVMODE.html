@@ -1,0 +1,336 @@
+<html>
+
+<head>
+<title>DEVMODE - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DEVMODE</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Driver_Structures.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DRAWMODE.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+typedef struct _devicemode {    /* dm */
+    char  dmDeviceName[CCHDEVICENAME];
+    WORD  dmSpecVersion;
+    WORD  dmDriverVersion;
+    WORD  dmSize;
+    WORD  dmDriverExtra;
+    DWORD dmFields;
+    short dmOrientation;
+    short dmPaperSize;
+    short dmPaperLength;
+    short dmPaperWidth;
+    short dmScale;
+    short dmCopies;
+    short dmDefaultSource;
+    short dmPrintQuality;
+    short dmColor;
+    short dmDuplex;
+    short dmYResolution;
+    short dmTTOption;
+} DEVMODE;
+ 
+The DEVMODE structure contains information about a printer driver's
+initialization and environment. An application passes this structure to the
+<b>DeviceCapabilities and ExtDeviceMode functions.</b>
+ 
+<b>Member           Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<b>dmDeviceName</b>     Specifies the name of the device the driver supports──for
+                 example, "HP LaserJet III" in the case of the
+                 Hewlett-Packard LaserJet III.
+ 
+<b>dmSpecVersion    Specifies the version </b>number of the DEVMODE structure. For
+                 Windows version 3.1, this value should be 0x30A.
+ 
+<b>dmDriverVersion</b>  Specifies the assigned printer driver version number.
+ 
+<b>dmSize           S</b>pecifies the size, in bytes, of the DEVMODE structure.
+                 (This value does not include the optional dmDriverData
+                 member for device-specific data, which can follow the
+                 structure.) If an application manipulates only the
+                 driver-independent portion of the data, it can use this
+                 member to find out the length of the structure without
+                 having to account for different versions.
+ 
+<b>dmDriverExtra    Specifies the size, in</b> bytes, of the optional dmDriverData
+                 member for device-specific data, which can follow the
+                 structure. If an application does not use device-specific
+                 information, it should set this member to zero.
+ 
+<b>dmFields</b>         Specifies a value that indicates which of the remaining
+                 members in the DEVMODE structure have been initialized. It
+                 can be any combination (or it can be none) of the following
+                 values.
+ 
+                 Constant          Value
+                 ───────────────────────────────────────────────────────────
+                 DM_ORIENTATION    0x0000001L
+ 
+                 DM_PAPERSIZE      0x0000002L
+ 
+                 DM_PAPERLENGTH    0x0000004L
+ 
+                 DM_PAPERWIDTH     0x0000008L
+ 
+                 DM_SCALE          0x0000010L
+ 
+                 DM_COPIES         0x0000100L
+ 
+                 DM_DEFAULTSOURCE  0x0000200L
+ 
+                 DM_PRINTQUALITY   0x0000400L
+ 
+                 DM_COLOR          0x0000800L
+ 
+                 DM_DUPLEX         0x0001000L
+ 
+                 DM_YRESOLUTION    0x0002000L
+ 
+                 DM_TTOPTION       0x0004000L
+ 
+                 A printer driver supports only those members that are
+                 appropriate for the printer technology.
+ 
+<b>dmOrientation</b>    Specifies the orientation of the paper. It can be either
+                 DMORIENT_PORTRAIT or DMORIENT_LANDSCAPE.
+ 
+<b>dmPaperSize</b>      Specifies the size of the paper to print on. This member
+                 may be set to zero if the length and width of the paper are
+                 specified by the dmPaperLength and dmPaperWidth members,
+                 respectively. Otherwise, the dmPaperSize member can be set
+                 to one of the following predefined values.
+ 
+                 Value                            Meaning
+                 ───────────────────────────────────────────────────────────
+                 DMPAPER_10x14                    10 x 14 inches
+ 
+                 DMPAPER_11x17                    11 x 17 inches
+ 
+                 DMPAPER_A3                       A3 297 x 420 millimeters
+ 
+                 DMPAPER_A4                       A4 210 x 297 millimeters
+ 
+                 DMPAPER_A4_EXTRA                 A4 Extra 9.27 x 12.69
+                                                  inches
+ 
+                 DMPAPER_A4_TRANSVERSE            Transverse 297 x 210
+                                                  millimeters
+ 
+                 DMPAPER_A4SMALL                  A4 Small 210 x 297
+                                                  millimeters
+ 
+                 DMPAPER_A5                       A5 148 x 210 millimeters
+ 
+                 DMPAPER_B4                       B4 250 x 354 millimeters
+ 
+                 DMPAPER_B5                       B5 182 x 257 millimeters
+ 
+                 DMPAPER_CSHEET                   C size sheet
+ 
+                 DMPAPER_DSHEET                   D size sheet
+ 
+                 DMPAPER_ENV_10                   Envelope #10 4.125 x 9.5
+                                                  inches
+ 
+                 DMPAPER_ENV_11                   Envelope #11 4.5 x 10.375
+                                                  inches
+ 
+                 DMPAPER_ENV_12                   Envelope #12 4.75 x 11
+                                                  inches
+ 
+                 DMPAPER_ENV_14                   Envelope #14 5 x 11.5
+                                                  inches
+ 
+                 DMPAPER_ENV_9                    Envelope #9 3.875 x 8.875
+                                                  inches
+ 
+                 DMPAPER_ENV_C5                   Envelope C5 162 x 229
+                                                  millimeters
+ 
+                 DMPAPER_ENV_DL                   Envelope DL 110 x 220
+                                                  millimeters
+ 
+                 DMPAPER_ENV_MONARCH              Envelope Monarch 3.875 x
+                                                  7.5 inches
+ 
+                 DMPAPER_ESHEET                   E size sheet
+ 
+                 DMPAPER_EXECUTIVE                Executive 7.25 x 10.5
+                                                  inches
+ 
+                 DMPAPER_FIRST                    Letter 8.5 x 11 inches
+ 
+                 DMPAPER_FOLIO                    Folio 8.5 x 13 inches
+ 
+                 DMPAPER_LAST                     Letter Extra Transverse 12
+                                                  x 9.5 inches
+ 
+                 DMPAPER_LEDGER                   Ledger 11 x 17 inches
+ 
+                 DMPAPER_LEGAL                    Legal 8.5 x 14 inches
+ 
+                 DMPAPER_LEGAL_EXTRA              Legal Extra 9.5 x 15
+                                                  inches
+ 
+                 DMPAPER_LETTER                   Letter 8.5 x 11 inches
+ 
+                 DMPAPER_LETTER_EXTRA             Letter Extra 9.5 x 12
+                                                  inches
+ 
+                 DMPAPER_LETTER_EXTRA_TRANSVERSE  Letter Extra Transverse 12
+                                                  x 9.5 inches
+ 
+                 DMPAPER_LETTER_TRANSVERSE        Letter Transverse 11 x 8.5
+                                                  inches
+ 
+                 DMPAPER_LETTERSMALL              Letter Small 8.5 x 11
+                                                  inches
+ 
+                 DMPAPER_NOTE                     Note 8.5 x 11 inches
+ 
+                 DMPAPER_QUARTO                   Quarto 215 x 275
+                                                  millimeters
+ 
+                 DMPAPER_STATEMENT                Statement 5.5 x 8.5
+                                                  inches
+ 
+                 DMPAPER_TABLOID                  Tabloid 11 x 17 inches
+ 
+                 DMPAPER_TABLOID_EXTRA            Tabloid Extra 11.69 x 18
+                                                  inches
+ 
+                 DMPAPER_USER                     User defined
+ 
+<b>dmPaperLength</b>    Specifies a paper length, in tenths of a millimeter. This
+                 member overrides the paper length specified by the
+                 dmPaperSize member, either for custom paper sizes or for
+                 such devices as dot-matrix printers that can print on a
+                 variety of page sizes.
+ 
+<b>dmPaperWidth</b>     Specifies a paper width, in tenths of a millimeter. This
+                 member overrides the paper width specified by the
+                 dmPaperSize member.
+ 
+<b>dmScale</b>          Specifies the factor by which the printed output is to be
+                 scaled. The apparent page size is scaled from the physical
+                 page size by a factor of dmScale/100. For example, a
+                 letter-size paper with a dmScale value of 50 would contain
+                 as much data as a page of size 17x22 inches because the
+                 output text and graphics would be half their original
+                 height and width.
+ 
+<b>dmCopies</b>         Specifies the number of copies printed if the device
+                 supports multiple-page copies.
+ 
+<b>dmDefaultSource</b>  Specifies the default bin from which the paper is fed. The
+                 application can override this value by using the
+                 GETSETPAPERBINS escape. This member can be one of the
+                 following values.
+ 
+                 DMBIN_AUTO
+                 DMBIN_CASSETTE
+                 DMBIN_ENVELOPE
+                 DMBIN_ENVMANUAL
+                 DMBIN_FIRST
+                 DMBIN_LARGECAPACITY
+                 DMBIN_LARGEFMT
+                 DMBIN_LAST
+                 DMBIN_LOWER
+                 DMBIN_MANUAL
+                 DMBIN_MIDDLE
+                 DMBIN_ONLYONE
+                 DMBIN_SMALLFMT
+                 DMBIN_TRACTOR
+                 DMBIN_UPPER
+ 
+                 A range of values is reserved for device-specific bins. To
+                 be consistent with initialization information, the
+                 GETSETPAPERBINS and ENUMPAPERBINS escapes use these
+                 values.
+ 
+<b>dmPrintQuality</b>   Specifies the printer resolution. Following are the four
+                 predefined device-independent values:
+ 
+                     DMRES_HIGH (-4)
+                     DMRES_MEDIUM (-3)
+                     DMRES_LOW (-2)
+                     DMRES_DRAFT (-1)
+ 
+                 If a positive value is given, it specifies the number of
+                 dots per inch (DPI) and is therefore device dependent.
+ 
+                 If the printer initializes the dmYResolution member, the
+                 dmPrintQuality member specifies the x-resolution of the
+                 printer, in dots per inch.
+ 
+<b>dmColor</b>          Specifies whether a color printer is to render color or
+                 monochrome output. Possible values are:
+ 
+                     DMCOLOR_COLOR (1)
+                     DMCOLOR_MONOCHROME (2)
+ 
+<b>dmDuplex</b>         Specifies duplex (double-sided) printing for printers
+                 capable of duplex printing. This member can be one of the
+                 following values:
+ 
+                     DMDUP_SIMPLEX (1)
+                     DMDUP_HORIZONTAL (2)
+                     DMDUP_VERTICAL (3)
+ 
+<b>dmYResolution    Specifies the y-resolu</b>tion of the printer, in dots per
+                 inch. If the printer initializes this member, the
+                 dmPrintQuality member specifies the x-resolution of the
+                 printer, in dots per inch.
+ 
+<b>dmTTOption</b>       Specifies how TrueType fonts should be printed. It can be
+                 one of the following values.
+ 
+                 Value          Meaning
+                 ───────────────────────────────────────────────────────────
+                 DMTT_BITMAP    Prints TrueType fonts as graphics. This is
+                                the default action for dot-matrix printers.
+ 
+                 DMTT_DOWNLOAD  Downloads TrueType fonts as soft fonts. This
+                                is the default action for Hewlett-Packard
+                                printers that use Printer Control Language
+                                (PCL).
+ 
+                 DMTT_SUBDEV    Substitutes device fonts for TrueType fonts.
+                                This is the default action for PostScript
+                                printers.
+ 
+<b>Comments</b>
+ 
+An application can retrieve the paper sizes and names supported by a printer
+by calling the DeviceCapabilities function with the DC_PAPERS, DC_PAPERSIZE,
+and DC_PAPERNAMES values.
+ 
+Before setting the value of the dmTTOption member, applications should find
+out how a printer driver can use TrueType fonts by calling the
+<b>DeviceCapabilities</b> function with the DC_TRUETYPE value.
+ 
+Drivers can add device-specific data immediately following the DEVMODE
+structure.
+ 
+<b>See Also</b>
+ 
+<b>DeviceCapabilities, ExtDeviceMode</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

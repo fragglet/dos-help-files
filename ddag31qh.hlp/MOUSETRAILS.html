@@ -1,0 +1,99 @@
+<html>
+
+<head>
+<title>MOUSETRAILS - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MOUSETRAILS</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display-Specific_Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MoveCursor.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define MOUSETRAILS 39 WORD Control(lpDestDevice, MOUSETRAILS, lpTrailSize,
+                                    NULL)
+LPPDEVICE lpDestDevice;
+LPINT lpTrailSize;
+ 
+The MOUSETRAILS escape enables or disables mouse trails for the display
+driver.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpDestDevice  Points to a PDEVICE st</i>ructure specifying the destination
+              device.
+ 
+<i>lpTrailSize</i>   Points to a 16-bit variable containing a value specifying the
+              action to take, and the number of mouse cursor images to
+              display (trail size). The variable can be one of the following
+              values.
+ 
+              Value        Meaning
+              ──────────────────────────────────────────────────────────────
+              1 through 7  Enables mouse trails and sets the trail size to
+                           the specified number. A value of 1 requests a
+                           single mouse cursor; 2 requests that one extra
+                           mouse cursor be drawn behind the current mouse
+                           cursor, and so on, up to a maximum of 7 total
+                           cursor images. The function sets the MouseTrails
+                           setting in the WIN.INI file to the given value.
+                           The function then returns the new trail size.
+ 
+              0            Disables mouse trails. The function sets the
+                           MouseTrails setting to the negative value of the
+                           current trail size (if positive). The function
+                           then returns the negative value.
+ 
+              -1           Enables mouse trails. The display driver reads
+                           the MouseTrails setting from the [Windows]
+                           section of the WIN.INI file. If the setting value
+                           is positive, the function sets the trail size to
+                           the given value. If the setting value is
+                           negative, the function sets trail size to the
+                           setting's absolute value and writes the positive
+                           value back to WIN.INI. If the MouseTrails setting
+                           is not found, the function sets the trail size to
+                           7 and writes a new MouseTrails setting to the
+                           WIN.INI file, setting its value to 7. The
+                           function then returns the new trail size.
+ 
+              -2           Disables mouse trails but does not cause the
+                           driver to update the WIN.INI file.
+ 
+              -3           Enables mouse trails but does not cause the
+                           driver to update the WIN.INI file.
+ 
+<b>Return Value</b>
+ 
+The return value specifies the size of the escape if successful. Otherwise,
+it is zero if the escape is not supported.
+ 
+<b>Comments</b>
+ 
+An application can retrieve the current trail size by calling the
+QUERYESCSUPPORT escape as shown in the following example:
+ 
+Escape(hDC, QUERYESCSUPPORT, sizeof(int), MOUSETRAILS, NULL);
+ 
+The QUERYESCSUPPORT escape returns the current trail size without changing
+to the current setting. If the escape returns zero, mouse trails are not
+supported by the display driver. If the escape returns a positive value,
+mouse trails are enabled and the value specifies the current trail size. If
+the escape returns a negative value, mouse trails are currently disabled and
+the value is the same as the negative MouseTrails value specified in the
+WIN.INI file.
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,119 @@
+<html>
+
+<head>
+<title>[network] - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> [network]</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Setup_Information.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='[netname_dot_versions].html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+[network]
+<i>Netname = Filename,"Description", [HelpFile], [OptionalFile],</i>
+         [WinIniSect], [SysIniSect],[VirtualDevice]...
+ 
+The [network] section identifies the networks that are available for
+installation. Setup uses the [network] and related sections to install
+network drivers and update the SYSTEM.INI file.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Netname</i>        Specifies a unique name identifying the network driver.
+ 
+<i>Filename</i>       Specifies the MS-DOS filename of the network-driver file. If
+               no filename is given, Setup searches for a [netname.versions]
+               section in the information file.
+ 
+<i>Description</i>    Specifies an ASCII string that describes the network driver.
+               This parameter must be enclosed in double quotation marks
+               (").
+ 
+<i>HelpFile</i>       Specifies the MS-DOS filename of the associated Help file.
+               Setup copies this file to the WINDOWS directory. This
+               parameter is optional.
+ 
+<i>OptionalFile</i>   Specifies the MS-DOS filename of any file that may be
+               necessary for a given network. Setup copies this file to the
+               WINDOWS directory. This parameter is optional.
+ 
+<i>WinIniSect</i>     Specifies the name of the section in the OEMSETUP.INF file
+               that describes modifications to be made to the WIN.INI file.
+               For more information about the section associated with this
+               parameter, see the following "Comments" section.
+ 
+<i>SysIniSect</i>     Specifies the name of the section in the OEMSETUP.INF file
+               that describes modifications to be made to the SYSTEM.INI
+               file. For more information about the section associated with
+               this parameter, see the following "Comments" section.
+ 
+<i>VirtualDevice</i>  Specifies the MS-DOS filename of an associated virtual device
+               to be installed for running 386 enhanced-mode Windows.
+ 
+<b>Comments</b>
+ 
+The sections corresponding to the WinIniSect and SysIniSect parameters
+contain one or more lines defining the modifications to make to the WIN.INI
+and SYSTEM.INI files. For more information about the lines in these
+sections, see the [netname.versions] section.
+ 
+If a network has a corresponding [netname.versions] section, the
+<i>work-section (or sections) defined b</i>y the [netname.versions] section specify
+most (if not all) of the files and initialization file changes that need to
+be made to install the network. This means that, other than the Netname and
+the Description parameters, all parameters in the [network] section can be
+empty. If a network driver is specified in the [network] section, it becomes
+the default driver if none is specified in the work-section. If any of the
+<i>OptionalFile, HelpFile, and VirtualDevice parameters specify</i> files, Setup
+adds the files to the list of such files given in the work-section. The
+<i>SysIniSect and WinIniSect parameters also specify </i>work-sections and actions
+that will be performed for all versions of the network.
+ 
+<b>Example</b>
+ 
+The following is an example of a [network] section in the OEMSETUP.INF file
+for a specific network driver:
+ 
+[disks]
+1 = . ,"Oem Network driver disk #1"
+ 
+[network]
+oem_net = 1:oem.drv, "OEM Network Driver", 1:oemnet.hlp,
+        1:oem_app.exe, oem_winini, oem_sysini, 1:oem1.386, 1:oem2.386
+ 
+[oem_winini]
+Windows,load,oem_app.exe
+ 
+[oem_sysini]
+386enh,TimerCriticalSection,500
+ 
+In this example, Setup adds the setting load=OEM_APP.EXE to the [windows]
+section of the WIN.INI file, and adds the setting TimerCriticalSection=500
+to the [386Enh] section of the SYSTEM.INI file. If a load setting already
+exists in WIN.INI, Setup appends OEM_APP.EXE to the setting.
+ 
+The following example relies on the section [mynet.versions] to identify the
+files to install for the network:
+ 
+[networks]
+mynet=,"My Network"
+ 
+<b>See Also</b>
+ 
+[disks],[netname.versions]
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

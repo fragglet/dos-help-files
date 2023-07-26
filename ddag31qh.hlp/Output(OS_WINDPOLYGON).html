@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<title>Output(OS_WINDPOLYGON) - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Output(OS_WINDPOLYGON)</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Pixel.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD Output(lpDestDev, OS_WINDPOLYGON, wCount, lpPoints, lpPPen, lpPBrush,
+            lpDrawMode, lpClipRect)
+LPPDEVICE lpDestDev;
+WORD wCount;
+LPPOINT lpPoints;
+LPPPEN lpPPen;
+LPPBRUSH lpPBrush;
+LPDRAWMODE lpDrawMode;
+LPRECT lpClipRect;
+ 
+The OS_WINDPOLYGON style specifies that the Output function draws a polygon
+and fills it using the winding-number-filling method. GDI calls Output with
+this style when an application calls functions, such as the Polygon function
+(GDI.36), and the current polygon-filling mode is WINDING.
+ 
+The graphics driver must support the OS_WINDPOLYGON style if the
+PC_WINDPOLYGON value is set in the dpPolygonals member of the GDIINFO
+structure.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpDestDev   Points to a PDEVICE or PBITMAP st</i>ructure specifying the
+            destination device or bitmap.
+ 
+<i>wCount      Specif</i>ies the number of POINT structures in the array pointed to
+            by the lpPoints parameter.
+ 
+<i>lpPoints    Points to an array of POINT </i>structures containing wCount
+            elements. Each point represents a vertex of the polygon.
+ 
+<i>lpPPen      Points</i> to a PPEN structure that specifies the physical pen to
+            draw the border of the polygon.
+ 
+<i>lpPBrush    Points to a </i>PBRUSH structure that specifies the physical brush
+            to fill the polygon.
+ 
+<i>lpDrawMode  Points to a DRAWMO</i>DE structure containing the drawing
+            information to draw and fill the polygon.
+ 
+<i>lpClipRect  Points to a RECT s</i>tructure containing coordinates for the
+            clipping rectangle. If the lpClipRect parameter is NULL, the
+            clipping rectangle is the entire display surface.
+ 
+<b>Return Value</b>
+ 
+The return value is 1 if the function draws the figure. Otherwise, it is
+zero if the function encounters an unrecoverable error. The return value is
+-1 if the function cannot draw the specified figure and wants GDI to
+simulate it.
+ 
+<b>Comments</b>
+ 
+The Output function should fill the interior of the polygon first, then draw
+the border.
+ 
+To fill the polygon, Output calculates the polygon outline and fill
+according to the winding-number-filling method. Winding-number filling
+depends on the direction (down or up) that each side of the polygon is
+drawn. With winding-number filling, a given closed area within a polygon
+should be filled if a horizontal ray, starting in the area and continuing
+through the left edge of the polygon, crosses an unequal number of upwardly
+and downwardly drawn sides.
+ 
+To draw the border, Output draws a line segment from the first point in the
+array to the second, from the second to the third, and so on. If the last
+line segment does not end at the first point, Output draws this line segment
+to ensure a closed figure.
+ 
+Although the Output function can use device hardware to draw and fill
+polygons, the function either must provide the same capability when drawing
+to a main memory bitmap, or return -1 to direct GDI to simulate the output
+using polylines and scan lines.
+ 
+<b>See Also</b>
+ 
+<b>Output(OS_ALTPOLYGON)</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

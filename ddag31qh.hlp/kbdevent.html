@@ -1,0 +1,62 @@
+<html>
+
+<head>
+<title>Keyboard-Event Callback Function - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Keyboard-Event Callback Function</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Keyboard_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='kbdini.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+The keyboard-interrupt handler calls the keyboard-event callback function
+when it has scan and virtual-key codes to pass back to Windows. The
+registers must be set as follows:
+ 
+<b>Register  Value</b>
+────────────────────────────────────────────────────────────────────────────
+<i>AL</i>        Virtual key code. For more information about the specific values,
+          see Section 6.1.7, "Virtual-Key Codes."
+ 
+<i>AH</i>        80h if the key is up, or 00h if the key is down.
+ 
+<i>BL</i>        Scan code. This is an OEM-dependent value.
+ 
+<i>BH</i>        01h if the key is an enhanced key (that is, if the prefix 0E0h
+          preceded this scan code), or 00h if the key is not enhanced.
+ 
+<i>DI:SI</i>     Address of extra message information. If extra message information
+          isn't used, set the DI and SI registers to 0.
+ 
+An enhanced key is one of a set of duplicate keys, such as the ENTER,
+INSERT, DELETE, and direction keys, found on some keyboards such as the IBM
+enhanced keyboard. On the IBM keyboard, an enhanced key has the same scan
+code as its corresponding nonenhanced key, but the keyboard inserts the 0E0h
+prefix byte to indicate that the enhanced key generated the code. In this
+case, the keyboard-interrupt handler sets the BH register to 1 before
+calling the keyboard-event callback function. On the IBM enhanced keyboard,
+the following are enhanced keys: Direction keys, INSERT, HOME, PAGE UP,
+DELETE, END, PAGE DOWN, DIVIDE (on numeric keypad), and ENTER (on numeric
+keypad).
+ 
+For keyboards that have extended keys with special scan codes instead of
+prefixes, Windows will not generate the proper WM_KEYUP or WM_KEYDOWN
+message unless the interrupt handler converts the scan codes to the
+corresponding IBM scan codes on the IBM enhanced keyboard and sets the BH
+register to 1 before calling the keyboard-event callback function.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

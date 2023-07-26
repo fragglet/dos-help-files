@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<title>Set_NMI_Handler_Addr - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Set_NMI_Handler_Addr</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Processor_Fault_and_Interrupt_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Unhook_Invalid_Page_Fault.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     esi, OFFSET32 nmi       ; points to new NMI handler
+VMMcall Set_NMI_Handler_Addr
+ 
+The Set_NMI_Handler_Addr service sets the Non-Maskable Interrupt (NMI)
+vector to the address of the specified NMI handler.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>nmi</i>        Points to the new NMI handler.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Comments</b>
+ 
+To install an NMI handler, a virtual device must retrieve and save the
+current NMI handler address using the Get_NMI_Handler_Addr service, and set
+the new address using Set_NMI_Handler_Addr.
+ 
+The NMI handler must not call VMM or virtual device services. This
+restriction includes calls to asynchronous VMM services. The NMI handler can
+examine and modify local data in the VxD_LOCKED_DATA_SEG segment, but it
+must not attempt to access any other memory, including virtual machine and
+V86 memory. If a virtual device needs to use VMM services in response to an
+NMI, it should install an NMI event handler using the Hook_NMI_Event
+service.
+ 
+The NMI handler must not execute the iret instruction. Instead, it must jump
+to the address of the previous NMI handler (retrieved using the
+<b>Get_NMI_Handler_Addr</b> service). The CPU ignores additional NMIs until it
+executes the iret instruction. Because no NMI handlers in the chain execute
+this instruction, the handlers are guaranteed not to be re-entered.
+ 
+Some computers require the latch at port 70h be reset to enable further
+NMIs. To simplify NMI processing for other NMI handlers, the virtual parity
+device (PARITY) automatically resets this latch.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Get_NMI_Handler_Addr, Hook_NMI_Event</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,128 @@
+<html>
+
+<head>
+<title>Mouse Support for Non-Windows Applications - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Mouse Support for Non-Windows Applications</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Mouse_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Miscellaneous_Drivers.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+386 enhanced-mode Windows supports mouse input for non-Windows applications
+running in a window. To provide this input, Windows works in conjunction
+with an extended MS-DOS mouse driver. Windows sends information about the
+Windows mouse to the MS-DOS driver and the driver provides this information
+to the non-Windows application.
+ 
+To support mouse input in a window, an MS-DOS mouse driver must:
+ 
+♦  Install an Interrupt 2Fh handler and watch for Mouse Device Call Out
+   functions (Interrupt 2Fh Function 1607h)
+ 
+♦  Register a mouse-support callback function when Windows broadcasts the
+   Mouse Device Call Out function
+ 
+♦  Respond appropriate to requests made by Windows through the mouse-support
+   callback function
+ 
+<b>Registering the Mouse-Support Callback</b>
+ 
+An MS-DOS mouse driver must install an interrupt-handling routine for
+Interrupt 2Fh when it is first loaded. The handler should watch for the
+Mouse Device Call Out function (Interrupt 2Fh Function 1607h) that Windows
+broadcasts when it starts up. When it detects the function, it should
+respond with the address of its mouse-support callback function.
+ 
+Windows sets the following registers and calls the Mouse Device Call Out
+function as follows:
+ 
+mov ax, 1607h
+mov bx, 000Ch   ; virtual mouse device ID number
+mov cx, 0001h   ; mouse API extension number
+int 2Fh
+ 
+The MS-DOS mouse driver must respond by setting the registers as follows:
+ 
+mov ax, seg Callback
+mov ds, ax
+mov si, offset Callback ; DS:SI contains address of mouse-support
+                        ; callback
+mov ax, 0               ; zero indicates that support exists
+ 
+<b>Mouse-Support Callback Function</b>
+ 
+Windows calls the mouse-support callback function with requests and
+information about the Windows mouse. The value in the AX registers specifies
+what request Windows is passing to the callback function. The following
+lists the requests.
+ 
+<b>AX     Action</b>
+────────────────────────────────────────────────────────────────────────────
+<i>0001h</i>  Mouse move/button click
+ 
+<i>0002h</i>  Disable mouse cursor drawing
+ 
+<i>0003h</i>  Enable mouse cursor drawing
+ 
+Before Windows calls, it disables interrupts and the trace flag. The
+callback function must return by executing an iret instruction.
+ 
+<b>Mouse Movement and the Button</b>
+ 
+Whenever the mouse moves or a button is pressed, Windows calls the
+mouse-support callback (in the proper virtual-machine context) with the
+following parameters:
+ 
+<b>Register  Value</b>
+────────────────────────────────────────────────────────────────────────────
+<i>AX</i>        0001h.
+ 
+<i>BX    </i>    x-coordinate in pixels of mouse.
+ 
+<i>CX    </i>    y-coordinate in pixels of mouse.
+ 
+<i>DX</i>        Button state (see Interrupt 33h Function 0Ch).
+ 
+<i>SI</i>        Mouse event flags (see Interrupt 33h Function 0Ch).
+ 
+The driver should update its internal state appropriately and call any
+user-installed mouse handler.
+ 
+<b>Disable Mouse Cursor Drawing</b>
+ 
+When a non-Windows application is going to run in a window, Windows disables
+mouse cursor drawing to prevent two mouse cursors from being drawn. The
+user's mouse Enable and Disable functions should behave normally, but the
+mouse cursor should not be drawn by the MS-DOS driver. The state variable
+that enables and disables mouse-cursor drawing should be instanced so that
+each virtual-machine (VM) can have a different state.
+ 
+<b>Enable Mouse Cursor Drawing</b>
+ 
+This is the default state for a full-screen non-Windows application and
+should be the initial state for the MS-DOS mouse driver. Windows makes this
+request to re-enable the mouse cursor drawing when a non-Windows application
+is switched from a window back to full screen.
+ 
+<b>Note:</b>  Applications that draw their own cursors will still have two mouse
+       cursors in a window.
+ 
+       Applications which don't depend on the mouse driver will not have
+       mouse support in a window.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

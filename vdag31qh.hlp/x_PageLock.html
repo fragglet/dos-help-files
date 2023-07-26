@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<title>_PageLock - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _PageLock</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Page_Allocation_and_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_PageReAllocate.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _PageLock, &lt;hMem, nPages, PageOff, flags&gt;
+ 
+or      eax, eax        ; nonzero if locked, zero if error
+jz      not_locked
+ 
+The _PageLock service locks one or more pages in the specified memory
+block.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hMem</i>       Specifies a handle identifying the memory block to lock. This
+           handle must have been previously created using the _PageAllocate
+           or _PageReAllocate service.
+ 
+<i>nPages</i>     Specifies the number of pages to lock.
+ 
+<i>PageOff</i>    Specifies the offset in pages from the start of the memory block
+           to the first page to lock.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter can be the
+           following value:
+ 
+           Value           Meaning
+           ─────────────────────────────────────────────────────────────────
+           PageLockedIfDP  Lock pages only if the virtual pageswap device
+                           uses MS-DOS or BIOS function to write pages to
+                           the hardware. If the virtual pageswap device
+                           writes directly to the hardware, this service
+                           returns immediately without locking the pages.
+ 
+                           The PageLockedIfDP value cannot be used until
+                           after the Init_Complete message has been
+                           processed.
+ 
+           All other values are reserved.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero value if the service is successful.
+Otherwise, EAX contains zero to indicate an error, such as invalid memory
+handle or insufficient memory.
+ 
+<b>Comments</b>
+ 
+This service returns an error if the sum of the PageOff and nPages
+parameters is greater than the number of pages in the memory block.
+ 
+This service has no affect on memory blocks allocated using the PageFixed
+value; such memory is always locked.
+ 
+Virtual devices must not assume that the requested number of pages can
+always be locked.
+ 
+Each page in a memory block has an individual lock count. This service
+increments the lock count each time the page is locked, and decrements the
+count each time the page is unlocked. The lock count must be zero for the
+page to be unlocked. This means that if the handle is locked 5 times, it has
+to be unlocked 5 times. Virtual devices must not leave handles locked when
+not needed.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_PageAllocate, _PageUnlock</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>Dimensions and Mapping Modes - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Dimensions and Mapping Modes</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printer_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='printenv.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+A printer driver provides values in its GDIINFO structure specifying the
+aspect ratio, logical pixels-per-inch, and mapping modes for the printer.
+The following sections detail these modes.
+ 
+<b>Aspect Ratio</b>
+ 
+The aspect ratio defines the relative dimensions of the printer's pixels.
+The ratio consists of three values: an x-, y-, and xy-aspect. These
+represent the relative width, height, and diagonal length (or hypotenuse) of
+a pixel. GDI uses the aspect ratio to determine how to draw squares and
+circles as well as drawing lines at an angle.
+ 
+The aspect values have the following relationship:
+ 
+(dpAspectXY * dpAspectXY) == (dpAspectX * dpAspectX) +
+(dpAspectY * dpAspectY)
+ 
+Because the dimensions are given as relative values, they may be scaled as
+needed to obtain accurate integer values. Keep the values under 1000 for
+numerical stability in GDI calculations. For example, a device with a 1:1
+aspect ratio (such as a 300 dpi laser printer) can use 100 for the
+<b>dpAspectX member and the dp</b>AspectY member and 141 (100 * 1.41421...) for
+<b>dpAspectXY</b>.
+ 
+<b>Logical Pixels-Per-Inch</b>
+ 
+Printer drivers should always use real inches. A 300 dpi laser printer puts
+300 in both members.
+ 
+<b>Mapping Modes</b>
+ 
+The printer driver provides viewport and window extents for the standard
+mapping modes: MM_LOENGLISH, MM_HIENGLISH, MM_LOMETRIC, MM_HIMETRIC, and
+MM_TWIPS.
+ 
+Place the device resolution in pixels-per-inch in the viewport extents and
+the number of logical units-per-inch in the window extent. The y-coordinate
+of the viewport is negated to reflect the fact that the x-axis is along the
+top of the paper in the default mapping mode (MM_TEXT, which specifies
+device coordinates) with y increasing while going down the page; whereas in
+the other mapping modes, the x-axis is along the bottom edge of the page.
+ 
+For example, on a 300 dpi laser printer, the MM_TWIPS mapping mode will
+require that the dpTwpWin member be set to (1440,1440) and the dpTwpVpt
+member be set to (300, -300).
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

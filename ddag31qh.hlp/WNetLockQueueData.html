@@ -1,0 +1,91 @@
+<html>
+
+<head>
+<title>WNetLockQueueData - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WNetLockQueueData</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Network_Driver_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WNetOpenJob.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD WNetLockQueueData(szQueue, szUser, lplpQueueStruct)
+LPSTR szQueue;
+LPSTR szUser;
+LPQUEUESTRUCT FAR * lplpQueueStruct;
+ 
+The WNetLockQueueData function locks a buffer, maintained by the driver,
+that describes the state of the queue. (The structure can be created at this
+time if it was not already available.) Print Manager calls this function.
+ 
+<b>Parameter        Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>szQueue</i>          Points to a null-terminated name of a local or remote
+                 queue.
+ 
+<i>szUser           P</i>oints to a null-terminated user name. If the szUser
+                 parameter is not NULL, it indicates that Print Manager is
+                 only interested in jobs belonging to that user. If this
+                 parameter is NULL, Print Manager will assume that
+                 QUEUESTRUCT contains information about all jobs.
+ 
+<i>lplpQueueStruct</i>  Points to a variable to receive the address
+                 (selector:offset) of a driver-supplied buffer. The buffer
+                 contains a single QUEUESTRUCT structure followed by zero or
+                 more JOBSTRUCT structures and the variable-length strings
+                 to which they refer. The number of JOBSTRUCT structures is
+                 specified by the pqJobcount member in QUEUESTRUCT.
+ 
+<b>Return Value</b>
+ 
+The return value is one of the following values.
+ 
+<b>Value             Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>WN_BAD_POINTER</i>    Invalid pointer.
+ 
+<i>WN_BAD_QUEUE      The szQueue parame</i>ter is not a valid net queue or
+                  redirected. device
+ 
+<i>WN_NET_ERROR</i>      Network error.
+ 
+<i>WN_NOT_SUPPORTED</i>  Function not supported.
+ 
+<i>WN_OUT_OF_MEMORY</i>  Out of memory.
+ 
+<i>WN_SUCCESS</i>        Success.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 10.
+ 
+While Print Manager's lock is in effect, the queue data must not be modified
+or moved. Each lock operation is completed by a matching unlock operation.
+ 
+If the queue status is WNPRQ_PROBLEM, which means that all the printers on
+this queue have stopped, examining the job status for the first job in the
+queue. The first job usually reveals the exact nature of the problem.
+However, this may not be true if the queue is serviced by multiple printers
+that could have different problems, or if the first job is paused and the
+first nonpaused job is being held up by an error.
+ 
+<b>See Also</b>
+ 
+<b>WNetUnlockQueueData, QUEUESTRUCT, JOBSTRUCT</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

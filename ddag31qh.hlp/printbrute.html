@@ -1,0 +1,175 @@
+<html>
+
+<head>
+<title>The Brute Functions - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> The Brute Functions</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printer_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='printpq.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+The brute functions is a set of graphics-support functions that a printer
+driver can use to carry out certain graphics operations. The brute functions
+permit a printer driver to use the resources of GDI rather than provide its
+own support to complete some graphics operations.
+ 
+Brute functions primarily provide support for memory bitmaps. On each call
+to a printer-driver function, the driver checks the PDEVICE structure and
+determines if it represents a memory bitmap. If such cases, the driver calls
+a corresponding brute function, passing on all the parameters, to carry out
+the graphics operation.
+ 
+For banding drivers, the driver calls the brute functions for the main
+output device as well as for the memory bitmaps.
+ 
+<b>Brute-Information Functions</b>
+ 
+The following brute functions take the same parameters and return values as
+the corresponding driver functions and actually call the display driver to
+manipulate monochrome memory bitmaps:
+ 
+♦  dmRealizeObject
+ 
+♦  dmEnumDFonts
+ 
+♦  dmEnumObject
+ 
+♦  dmColorInfo
+ 
+For graphics, most raster drivers call the dmColorInfo function to map
+colors. Display drivers then add together the three color components (R, G,
+and B). If the weighted, average color value of these components is equal to
+or greater than 128, then the color maps to white. Otherwise, it maps to
+black.
+ 
+The IBM Color Printer driver does the same thing in monochrome mode.
+However, in color mode, each color is compared individually to the 128
+value. Hewlett-Packard printers that use the PCL driver are only adjustable
+for text.
+ 
+Notice that the following colors all map to white on EGA, VGA, and 8514/a
+displays:
+ 
+♦  Light grey
+ 
+♦  Green
+ 
+♦  Yellow
+ 
+♦  Magenta
+ 
+♦  Cyan
+ 
+<b>Brute-Output Functions</b>
+ 
+Nonbanding drivers (such as PostScript or a plotter driver) use the brute
+functions to support memory bitmaps. Whenever a pointer to the driver's
+<b>PDEVICE</b> structure is passed to the driver, GDI may substitute a pointer to a
+<b>BITMAP</b> structure. The driver can differentiate between the two cases because
+the first member (bmType) of a BITMAP structure must be zero, whereas the
+first member (often called epType) of a PDEVICE structure must be nonzero.
+If this first member is zero, the driver simply passes the same arguments
+through to the corresponding brute function and returns its return value.
+ 
+Banding drivers operate by using a memory bitmap to simulate the display
+surface. Therefore, a banding driver calls the brute function with a pointer
+to a BITMAP structure that defines the band bitmap. The driver also has to
+translate some coordinate parameters from device coordinates to bitmap
+coordinates since, in general, there will be many bands in different
+positions on a page of output. The brute functions, however, always use
+coordinates relative to the bitmap, that is, (0,0) to (bmWidth, bmHeight).
+ 
+Therefore, many output functions may take the following form:
+ 
+Function(LPPDEVICE lpDevice, ... )
+{
+    if (!lpDevice-&gt; epType)
+      {
+        /* output to memory bitmap */
+        return dmFunction(lpDevice, ... );
+      }
+    /* if this is a nonbanding driver, perform
+     * device-specific output. Otherwise, for a
+     * banding driver,
+     */
+ 
+    /* transform coordinates according to band position
+     */
+    somerandomxcoordinate -= lpDevice-&gt; xBandPosition;
+    somerandomycoordinate -= lpDevice-&gt; yBandPosition;
+ 
+    /* assume that a BITMAP structure is stored somewhere in
+     * the PDEVICE for the band bitmap
+     */
+    lpDevice = (LPPDEVICE)&amp;lpDevice-&gt; epBandBmpHdr;
+ 
+    return dmFunction(lpDevice, ... );
+}
+ 
+The brute functions operate by calling the corresponding display driver
+function to manipulate a memory bitmap. Therefore, they have exactly the
+same parameters as the corresponding driver functions, with the exception
+that the lpDevice parameters are always assumed to point to BITMAP
+structures.
+ 
+Since driver capabilities and bitmap formats vary from display to display,
+the printer driver should use the brute functions only for monochrome (not
+color) bitmaps. Also, since the scan line and polyline support is required
+for all display drivers, the printer driver can assume that this support is
+in the brute functions.
+ 
+The following brute functions are available for output:
+ 
+♦  dmBitBlt
+ 
+♦  dmOutput
+ 
+♦  dmPixel
+ 
+♦  dmStrBlt
+ 
+♦  dmScanLR
+ 
+There is currently no dmExtTextOut function; the driver calls the
+<b>ExtTextOut</b> function.
+ 
+<b>Color-Library Functions</b>
+ 
+Although the dot-matrix (brute) library functions in GDI (such as dmBitBlt
+and dmOutput) only support monochrome printers, a color printer driver can
+call corresponding functions in the the color library which do implement
+color. The color library supports all the dot-matrix (dm) functions except
+<b>dmTranspose. The dmTranspose func</b>tion does not depend on color format. The
+arguments and return values of these functions are the same as those for the
+GDI monochrome versions of these functions.
+ 
+The library implements color using a 3-plane RGB (Red, Green, Blue) banding
+bitmap, which is converted to CMYK (Cyan, Magenta, Yellow, Black) when the
+bitmap is sent to the printer. If a printer requires a different format, the
+color library must be modified.
+ 
+Both dmBitBlt and dmOutput compile short, efficient functions into the stack
+segment and then call them to perform the actual operation. In protected
+mode, this requires creating a code segment alias for the stack segment. A
+selector must be allocated for these two functions to operate. It is stored
+in the global variable ScratchSelector, which is external to the library and
+which must be supplied by the driver. In the sample IBM Color Printer
+driver, the selector is allocated and freed in Enable and Disable,
+respectively.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>Get_Crit_Section_Status - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Get_Crit_Section_Status</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Primary_Scheduler_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Get_Crit_Status_No_Block.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall Get_Crit_Section_Status
+ 
+mov     [VM], ebx           ; VM handle of owner
+mov     [Claims], ecx       ; # of times critical section claimed
+jc      high_priority       ; priority is Critical_Section_Boost or higher
+ 
+The Get_Crit_Section_Status service returns the claim count and owner of the
+critical section.
+ 
+This service has no parameters.
+ 
+<b>Return Value</b>
+ 
+The ECX register contains the critical section claim count, and the EBX
+register contains the handle identifying the virtual machine owning the
+critical section. If the ECX register is 0, the EBX register contains the
+handle of the current virtual machine.
+ 
+The carry flag is set if the current virtual machine has an execution
+priority greater than or equal to Critical_Section_Boost, such as during a
+hardware interrupt simulation.
+ 
+<b>Comments</b>
+ 
+Windows 3.1 sometimes delays releasing the critical section until events are
+processed. This service causes the system to complete any delayed releases
+before the service returns the status. This may cause a task switch if
+another virtual machine has a delayed release.
+ 
+If a virtual device must ensure that it owns the critical section to
+successfully complete an operation, it should call this service to make sure
+that the critical section status is up to date.
+ 
+This is not an asynchronous service; it must not be called at interrupt
+time.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Get_Crit_Status_No_Block</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

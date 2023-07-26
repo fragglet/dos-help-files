@@ -1,0 +1,250 @@
+<html>
+
+<head>
+<title>DeviceCapabilities - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DeviceCapabilities</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printer-Specific_Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DevInstall.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#include &lt;drivinit.h&gt; DWORD DeviceCapabilities(lpDeviceName, lpPort, nIndex,
+                                             lpOutput, lpDevMode)
+LPSTR lpDeviceName;    /* pointer to device-name string         */
+LPSTR lpPort;          /* pointer to port-name string           */
+WORD nIndex;           /* device capability to query            */
+LPSTR lpOutput;        /* pointer to the output                 */
+LPDEVMODE lpDevMode;   /* pointer to structure with device data */
+ 
+The DeviceCapabilities function retrieves the capabilities of the printer
+device driver and is recommended for all printer drivers.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<i>lpDeviceName</i>  Points to a null-terminated string that contains the name of
+              the printer device, such as Hewlett-Packard LaserJet that uses
+              PCL.
+ 
+<i>lpPort</i>        Points to a null-terminated string that contains the name of
+              the port to which the device is connected, such as LPT1.
+ 
+<i>nIndex</i>        Specifies the capabilities to query. It can be any one of the
+              following values.
+ 
+              Value                   Meaning
+              ──────────────────────────────────────────────────────────────
+              DC_BINNAMES             Copies an array containing a list of
+                                      the names of the paper bins. This
+                                      array is in the form char
+                                      PaperNames[cBinMax][cchBinName] where
+                                      cchBinName is 24. If the lpszOutput
+                                      parameter is NULL, the return value is
+                                      the number of bin entries required.
+                                      Otherwise, the return value is the
+                                      number of bins copied. To work
+                                      properly with the common dialog box
+                                      library (COMMDLG), a printer driver
+                                      for Windows 3.1 must support the
+                                      DC_BINNAMES index.
+ 
+              DC_BINS                 Retrieves a list of available bins.
+                                      The function copies the list to
+                                      lpOutput as a WORD array. If lpOutput
+                                      is NULL, the function returns the
+                                      number of supported bins to allow the
+                                      application the opportunity to
+                                      allocate a buffer with the correct
+                                      size. See the description of the
+                                      dmDefaultSource member of the DEVMODE
+                                      structure for information on these
+                                      values. An application can determine
+                                      the name of device-specific bins by
+                                      using the ENUMPAPERBINS escape.
+ 
+              DC_COPIES               Returns the maximum number of copies
+                                      the device can produce.
+ 
+              DC_DRIVER               Returns the printer-driver version
+                                      number.
+ 
+              DC_DUPLEX               Returns the level of duplex support.
+                                      The function returns 1 if the printer
+                                      is capable of duplex printing.
+                                      Otherwise, the return value is zero.
+ 
+              DC_ENUMRESOLUTIONNAMES  Retrieves a list of resolution names
+                                      supported by the model. The
+                                      application should allocate a buffer
+                                      to hold one or more arrays each
+                                      containing CCHPAPERNAME (64) bytes. If
+                                      lpOutput is NULL, the function returns
+                                      the number of resolutions supported by
+                                      the model. If lpOutput is not NULL,
+                                      the buffer is filled in.
+ 
+              DC_ENUMRESOLUTIONS      Returns a list of available
+                                      resolutions. If lpOutput is NULL, the
+                                      function returns the number of
+                                      available resolution configurations.
+                                      Resolutions are represented by pairs
+                                      of LONG integers representing the
+                                      horizontal and vertical resolutions.
+ 
+              DC_EXTRA                Returns the number of bytes required
+                                      for the device-specific portion of the
+                                      DEVMODE structure for the printer
+                                      driver.
+ 
+              DC_FIELDS               Returns the dmFields member of the
+                                      printer driver's DEVMODE data
+                                      structure. The dmFields member
+                                      indicates which member in the
+                                      device-independent portion of the
+                                      structure are supported by the printer
+                                      driver.
+ 
+              DC_FILEDEPENDENCIES     Returns a list of files which also
+                                      need to be loaded when a driver is
+                                      installed. If lpOutput is NULL, the
+                                      function returns the number of files.
+                                      If lpOutput is not NULL, it is a
+                                      pointer to an array of filenames. Each
+                                      element in the array is exactly 64
+                                      characters long.
+ 
+              DC_MAXEXTENT            Returns a POINT structure containing
+                                      the maximum paper size that the
+                                      dmPaperLength and dmPaperWidth members
+                                      of the printer driver's DEVMODE
+                                      structure can specify.
+ 
+              DC_MINEXTENT            Returns a POINT structure containing
+                                      the minimum paper size that the
+                                      dmPaperLength and dmPaperWidth members
+                                      of the printer driver's DEVMODE
+                                      structure can specify.
+ 
+              DC_ORIENTATION          Retrieves the relationship between
+                                      portrait and landscape orientations in
+                                      terms of the number of degrees that
+                                      portrait orientation is to be rotated
+                                      counterclock-wise to get landscape
+                                      orientation. It can be one of the
+                                      following values.
+ 
+                                      Value  Meaning
+                                      ──────────────────────────────────────
+                                      0      No landscape orientation.
+ 
+                                      90     Portrait is rotated 90 degrees
+                                             to produce landscapes. (For
+                                             example, PCL.)
+ 
+                                      270    Portrait is rotated 270 degrees
+                                             to produce landscape. (For
+                                             example, dot-matrix printers.)
+ 
+              DC_PAPERNAMES           Retrieves a list of the nonstandard
+                                      paper names supported by the model.
+                                      The application should allocate a
+                                      buffer to hold one or more arrays each
+                                      containing CCHPAPERNAME (64) bytes. If
+                                      lpOutput is NULL, the function returns
+                                      the number of non-standard paper sizes
+                                      supported by the model. If lpOutput is
+                                      not NULL, the buffer is filled in.
+ 
+              DC_PAPERS               Retrieves a list of supported paper
+                                      sizes. The function copies the list to
+                                      lpOutput as a WORD array and returns
+                                      the number of entries in the array. If
+                                      lpOutput is NULL, the function returns
+                                      the number of supported paper sizes to
+                                      allow the application the opportunity
+                                      to allocate a buffer with the correct
+                                      size. See the description of the
+                                      dmPaperSize member of the DEVMODE data
+                                      structure for information on these
+                                      values.
+ 
+              DC_PAPERSIZE            Copies the dimensions of supported
+                                      paper sizes in tenths of a millimeter
+                                      to an array of POINT structures
+                                      pointed to by lpOutput. This allows an
+                                      application to obtain information
+                                      about nonstandard paper sizes.
+ 
+              DC_SIZE                 Returns the dmSize member of the
+                                      printer driver's DEVMODE data
+                                      structure.
+ 
+              DC_TRUETYPE             Retrieves the driver's capabilities
+                                      with regard to printing TrueType
+                                      fonts. The return value can be one or
+                                      more of the following capability
+                                      flags.
+ 
+                                      Value          Meaning
+                                      ──────────────────────────────────────
+                                      DCTT_BITMAP    (0x0000001L) Device is
+                                                     capable of printing
+                                                     TrueType fonts as
+                                                     graphics.
+ 
+                                      DCTT_DOWNLOAD  (0x0000002L) Device is
+                                                     capable of downloading
+                                                     TrueType fonts.
+ 
+                                      DCTT_SUBDEV    (0x0000004L) Device is
+                                                     capable of substituting
+                                                     device fonts for
+                                                     TrueType.
+ 
+                                      In this case, the lpOutput parameter
+                                      is not used, and should be NULL.
+ 
+              DC_VERSION              Returns the specification version to
+                                      which the printer driver conforms.
+ 
+<i>lpOutput</i>      Points to an array of bytes. The actual format of the array
+              depends on the setting of the nIndex parameter. If set to
+              zero, DeviceCapabilities returns the number of bytes required
+              for the output data.
+ 
+<i>lpDevMode     Points to a DEVMODE structure. </i>If the lpDevMode parameter is
+              NULL, this function retrieves the current default
+              initialization values for the specified printer driver.
+              Otherwise, the function retrieves the values contained in the
+              structure to which lpDevMode points.
+ 
+<b>Return Value</b>
+ 
+The return value depends on the setting of the nIndex parameter if
+successful. Otherwise, the return value is -1 if the function fails.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 91.
+ 
+<b>See Also</b>
+ 
+ENUMPAPERBINS, ExtDeviceMode, DEVMODE
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

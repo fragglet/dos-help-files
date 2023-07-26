@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>Map_Lin_To_VM_Addr - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Map_Lin_To_VM_Addr</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Miscellaneous_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MMGR_SetNULPageAddr.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, LineAddr   ; Linear address to convert
+mov     ecx, Limit      ; segment limit in bytes
+VMMcall Map_Lin_To_VM_Addr
+ 
+jc      error           ; carry set if error
+mov     [SegSel], cx    ; segment or selector
+mov     [Offset], edx   ; address offset
+ 
+The Map_Lin_To_VM_Addr service converts a 32-bit ring-0 linear address into
+an V86 or protected-mode address. This service converts the address for use
+with the current execution mode of the current virtual machine.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>LinAddr</i>    Specifies the linear address to convert.
+ 
+<i>Limit</i>      Specifies the zero-based segment limit (0 specifies a one-byte
+           segment, 1 is a two-byte segment, and so on). This parameter is
+           used only if the service creates an LDT selector.
+ 
+<b>Return Value</b>
+ 
+If the carry flag is clear, the CX register contains the segment address or
+selector, and EDX regsiter contains the address offset. This offset is
+always zero if the virtual machine is running a protected mode application.
+ 
+The carry flag is set to indicate an error such as no LDT selectors
+available.
+ 
+<b>Comments</b>
+ 
+If the virtual machine is running in V86 mode, the LineAddr parameter must
+specify a linear address that is within the 1 megabyte V86 address space of
+the current virtual machine. The service returns a segment:offset pair.
+ 
+If the virtual machine is running a protected-mode application, the service
+returns a selector:offset pair. This service creates a new selector in the
+current virtual machine's LDT if the specified base and limit values do not
+match a selector the service previously allocated.
+ 
+A virtual device must never free a selector that is returned by this
+service. For this reason, this service should be used sparingly.
+ 
+<b>Uses</b>
+ 
+ECX, EDX, Flags
+ 
+<b>See Also</b>
+ 
+<b>Map_Flat</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

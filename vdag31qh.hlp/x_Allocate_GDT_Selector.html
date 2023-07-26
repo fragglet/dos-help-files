@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<title>_Allocate_GDT_Selector - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _Allocate_GDT_Selector</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='GDT_sl_LDT_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_Allocate_LDT_Selector.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _Allocate_GDT_Selector, &lt;DescDWORD1, DescDWORD2, flags&gt;
+ 
+mov     ecx, eax                    ; zero in eax and edx if error
+or      ecx, edx
+jz      error
+ 
+mov     [Selector], eax             ; new selector
+mov     word ptr [GDTSel], dx       ; selector for the GDT
+ror     edx, 10h
+mov     word ptr [SelCount], dx     ; number of selectors in GDT
+ 
+The _Allocate_GDT_Selector service creates a new selector and adds it to the
+Global Descriptor Table (GDT).
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>DescDWORD1</i>  Specifies the high doubleword of the descriptor for the
+            selector. This parameter contains the high 16 bits of the base
+            address, the high 4 bits of the limit, and the status and type
+            bits.
+ 
+<i>DescDWORD2</i>  Specifies the low doubleword of the descriptor for the selector.
+            This parameter contains the low 16 bits of the base address and
+            limit.
+ 
+<i>flags</i>       Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+If the service is successful, the EAX and EDX registers contain the
+following values:
+ 
+<b>Register  Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>EAX</i>       Contains the new selector.
+ 
+<i>EDX</i>       Contains the selector for and the size of the global descriptor
+          table (GDT). The low 16 bits contains the selector for the GDT,
+          and the high 16 bits contains the size of the GDT expressed as the
+          number of selectors in the table.
+ 
+If an error occurs, such as an invalid descriptor value or the GDT is full,
+the EAX and EDX registers contain zero to indicate an error.
+ 
+<b>Comments</b>
+ 
+Although this service returns the selector for the GDT, virtual devices
+should not attempt to edit the GDT directly. Virtual devices can instead use
+the _SetDescriptor service to change selectors in the GDT.
+ 
+Virtual devices should use the BuildDescriptorDWORDs service to set the
+<i>DescDWORD1 and DescDWORD2 para</i>meters to the appropriate values.
+ 
+This service sets the RPL of the selector to the DPL of the selector set in
+the DescDWORD1 parameter.
+ 
+<b>Uses</b>
+ 
+EAX, EDX
+ 
+<b>See Also</b>
+ 
+<b>_Allocate_LDT_Selector, _Free_GDT_Selector</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

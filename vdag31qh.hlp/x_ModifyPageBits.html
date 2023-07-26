@@ -1,0 +1,116 @@
+<html>
+
+<head>
+<title>_ModifyPageBits - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _ModifyPageBits</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Page_Allocation_and_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_PageAllocate.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _ModifyPageBits, &lt;VM, VMLinPgNum, nPages, bitAND, bitOR,
+                          pType, flags&gt;
+ 
+or      eax, eax            ; nonzero if modified, zero if error
+jz      not_modified
+ 
+The _ModifyPageBits service modifies the page attribute bits associated with
+PG_HOOKED pages in the V86 address space of a virtual machine. Virtual
+devices use this service to modify the P_PRES, P_WRITE, and P_USER bits and
+the PG_TYPE, if appropriate.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>VM</i>          Specifies a handle identifying the virtual machine owning the
+            pages to modify.
+ 
+<i>VMLinPgNum</i>  Specifies the linear page number of the first page to modify.
+            All pages must be in the 1 megabyte V86 address space. Page
+            numbers below the first page of the specified virtual machine or
+            above 10Fh cause an error.
+ 
+<i>nPages</i>      Specifies the number of pages to modify.
+ 
+<i>bitAND</i>      Specifies the AND mask for the page attribute bits. All AND mask
+            bits, except the P_PRES, P_WRITE, and P_USER bits, must be set
+            to 1. The P_PRES, P_WRITE, and P_USER bits can be 0 or 1 to
+            clear or preserve the corresponding page attributes.
+ 
+<i>bitOR</i>       Specifies the OR mask for the page attribute bits. All bits,
+            except the P_PRES, P_WRITE, and P_USER bits, must be set to 0.
+            The P_PRES, P_WRITE, and P_USER bits can be 0 or 1 to preserve
+            or set the corresponding page attributes.
+ 
+<i>pType</i>       Specifies the page type. It can be one of the following values:
+ 
+            Value      Meaning
+            ────────────────────────────────────────────────────────────────
+            PG_HOOKED  Changes the page type to hooked. This value must be
+                       specified if the service clears any one of the
+                       P_PRES, P_WRITE and P_USER bits.
+ 
+            PG_IGNORE  Leaves the current page type unchanged.
+ 
+            All other values are reserved.
+ 
+<i>flags</i>       Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero value if the service is successful.
+Otherwise, EAX contains zero to indicate an error such as an invalid virtual
+machine handle, invalid bits in AND and OR masks, an invalid type, or a bad
+page range.
+ 
+<b>Comments</b>
+ 
+This service always clears the P_DIRTY and P_ACC bits regardless of the AND
+and OR mask values.
+ 
+If a virtual device clears the P_PRES, P_WRITE, or P_USER bits, the virtual
+device must set the page type for all such pages to PG_HOOKED. Also the
+virtual device must have previously installed a hook page fault handler for
+these pages.
+ 
+This service cannot be used to set the P_PRES bit. Virtual devices can use
+the _MapIntoV86 or _PhysIntoV86 service to make pages present. Since the
+<b>_MapIntoV86</b> service resets the page type to the same page type as the memory
+specified by the memory handle, the virtual devices should set the page type
+to PG_HOOKED when it creates the memory handle using the _PageAllocate
+service. Since the _PhysIntoV86 service sets the page type to PG_SYS, the
+virtual devices must use the _ModifyPageBits service to change the page type
+to PG_HOOKED if it uses _PhysIntoV86 to map physical pages into a hooked
+page region.
+ 
+If using the P_WRITE bit to simulate ROM in a virtual machine, a virtual
+device should map the pages using the _PhysIntoV86 service and immediately
+call the _ModifyPageBits service to clear the P_WRITE bit and change the
+page type to PG_HOOKED.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_MapIntoV86, _PhysIntoV86</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

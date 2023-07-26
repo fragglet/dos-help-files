@@ -1,0 +1,132 @@
+<html>
+
+<head>
+<title>cextfcn - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> cextfcn</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Communication-Driver_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='cflush.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+LONG  cextfcn(cid, fcn);
+int cid;
+int fcn;
+ 
+The cextfcn function carries out the extended communications function
+specified by the fcn parameter. USER calls this function when an application
+calls the EscapeCommFunction function (USER.214).
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>cid</i>        Identifies the communications device.
+ 
+<i>fcn</i>        Specifies the extended function to carry out. It can be one of
+           the following values.
+ 
+           Value       Meaning
+           ─────────────────────────────────────────────────────────────────
+           CLRDTR      Clears the data-terminal-ready (DTR) signal.
+ 
+           CLRRTS      Clears the request-to-send (RTS) signal.
+ 
+           GETBASEIRQ  Returns the base-port address and IRQ setting for the
+                       COM port specified by the cid parameter. The low 16
+                       bits of the return address specifies the base-port
+                       address, and the high address specifies the IRQ
+                       selection. If the high 16 bits is -1, then the port
+                       does not exist; if it is zero, the installed COMM
+                       driver does not support this escape.
+ 
+           GETMAXBAUD  Returns a constant that indicates the highest baud
+                       rate supported by the port specified by the cid
+                       parameter. The following constants may be returned.
+ 
+                       Value       Meaning
+                       ─────────────────────────────────────────────────────
+                       CBR_110     The highest baud rate is 110.
+ 
+                       CBR_300     The highest baud rate is 300.
+ 
+                       CBR_600     The highest baud rate is 600.
+ 
+                       CBR_1200    The highest baud rate is 1200.
+ 
+                       CBR_2400    The highest baud rate is 2400.
+ 
+                       CBR_4800    The highest baud rate is 4800.
+ 
+                       CBR_9600    The highest baud rate is 9600.
+ 
+                       CBR_19200   The highest baud rate is 19,200.
+ 
+                       CBR_38400   The highest baud rate is 38,400.
+ 
+                       CBR_56000   The highest baud rate is 56,000.
+ 
+                       CBR_128000  The highest baud rate is 128,000.
+ 
+                       CBR_256000  The highest baud rate is 256,000.
+ 
+           GETMAXCOM   Returns the maximum COM port identifier supported by
+                       the communications driver. This value ranges from
+                       0x00 to 0x7F, such that 0x00 corresponds to COM1,
+                       0x01 to COM2, 0x02 to COM3, and so on. The
+                       communications driver included in Windows 3.1
+                       supports COM1 through COM4, and will always return
+                       0x03.
+ 
+           GETMAXLPT   Returns the maximum LPT port ID supported by the
+                       system. This value ranges from 0x80H to 0xFFH, such
+                       that 0x80H corresponds to LPT1, 0x81H to LPT2, 0x82H
+                       to LPT3, and so on.
+ 
+           RESETDEV    Resets the printer device (that is, assert the reset
+                       line) if the cid parameter specifies an LPT port. No
+                       function is performed if cid specifies a COM port.
+ 
+           SETDTR      Sets the data-terminal-ready (DTR) control line on.
+ 
+           SETRTS      Sets the request-to-send (RTS) control line on.
+ 
+           SETXOFF     Causes transmission to act as if an XOFF character
+                       has been received.
+ 
+           SETXON      Causes transmission to act as if an XON character has
+                       been received.
+ 
+<b>Return Value</b>
+ 
+This return value is zero if successful. Otherwise, it is negative if the
+<i>fcn</i> parameter does not specify a valid function code.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 9.
+ 
+If the communications driver does not export the CommWriteString function,
+Windows 3.1 intercepts and adjusts the return values for the GETBASEIRQ,
+GETMAXBAUD, GETMAXLPT, and GETMAXCOM functions after the cextfcn function
+returns.
+ 
+<b>Updates/Changes</b>
+ 
+The cextfcn function now returns a 32-bit value and accepts the new
+communication escapes RESETDEV, GETMAXLPT, and GETMAXCOM.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

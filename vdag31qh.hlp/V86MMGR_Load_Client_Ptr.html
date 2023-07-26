@@ -1,0 +1,68 @@
+<html>
+
+<head>
+<title>V86MMGR_Load_Client_Ptr - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> V86MMGR_Load_Client_Ptr</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_V86_Mode_Memory_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='V86MMGR_LocalGlobalReg.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include v86mmgr.inc
+ 
+VxDcall V86MMGR_Load_Client_Ptr
+ 
+The V86MMGR_Load_Client_Ptr service loads the FS:ESI register with the
+specified client segment and offset values. If the virtual machine is
+running a 16-bit protected mode application, the high word of the offset in
+ESI is set to zero. Otherwise, if the virtual machine is running a 32-bit
+program or is in VxD_Exec_Mode, the high word of ESI is not set to zeroed.
+This allows most translation procedures to operate correctly without the
+need to test the execution mode of the current virtual machine.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<i>AH</i>         Specifies a client segment register.
+ 
+<i>AL</i>         Specifies a client offset register.
+ 
+<i>EBX</i>        Specifies the current virtual machine handle. The virtual machine
+           must be in protected mode.
+ 
+<i>EBP      </i>  Points to a Client_Reg_Struc structure containing the register
+           values for the virtual machine.
+ 
+<b>Return Value</b>
+ 
+The FS:ESI register pair points to the client's buffer.
+ 
+<b>Example</b>
+ 
+The value passed in AX should be formed from the Client_Reg_Struc structure
+fields. For example, to load the virtual machine's DS:(E)DX, use the
+following code:
+ 
+mov ax, (Client_DS * 100h) + Client_DX
+VxDcall V86MMGR_Load_Client_Ptr
+ 
+<b>Uses</b>
+ 
+FS, ESI, Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

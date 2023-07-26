@@ -1,0 +1,99 @@
+<html>
+
+<head>
+<title>_PageUnLock - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _PageUnLock</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Page_Allocation_and_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='System-Internal_Memory_Management.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _PageUnLock, &lt;hMem, nPages, PageOff, flags&gt;
+ 
+or      eax, eax            ; nonzero if unlocked, zero if error
+jz      not_unlocked
+ 
+The _PageUnLock service unlocks one or more pages in the specified memory
+block.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hMem</i>       Specifies a handle identifying the memory block to unlock. This
+           handle must have been previously created using the PageAllocate
+           or PageReAllocate service.
+ 
+<i>nPages</i>     Specifies the number of pages to unlock.
+ 
+<i>PageOff</i>    Specifies the offset in pages from the start of the block to the
+           first page to unlock.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter can be a
+           combination of the following values:
+ 
+           Value            Meaning
+           ─────────────────────────────────────────────────────────────────
+           PageLockedIfDP   Unlock pages only if the virtual pageswap device
+                            use MS-DOS or BIOS functions to write to the
+                            hardware. If the virtual pageswap device writes
+                            directly to the hardware, this service returns
+                            immediately without unlocking the pages.
+ 
+                            The PageLockedIfDP value cannot be used until
+                            after the Init_Complete message has been
+                            processed.
+ 
+           PageMarkPageOut  Marks pages for immediate swapping if this
+                            service sets the lock count for the pages to
+                            zero. This service marks the pages by clearing
+                            the P_ACC bit for each page. The PageMarkPageOut
+                            value should only be used if the pages are
+                            unlikely to be accessed for some time.
+ 
+           All other values are reserved.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero value if the service is successful.
+Otherwise, EAX contains zero to indicate an error, such as an invalid memory
+handle.
+ 
+<b>Comments</b>
+ 
+This service returns an error if the sum of the PageOff and nPages
+parameters is greater than the number of pages in the memory block. It also
+returns an error if the specified pages are not already locked.
+ 
+Each page in a memory block has an individual lock count. This service
+increments the lock count each time the page is locked, and decrements the
+count each time the page is unlocked. The lock count must be zero for the
+page to be unlocked. This means that if the handle is locked 5 times, it has
+to be unlocked 5 times. Virtual devices must not leave handles locked when
+not needed.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_PageLock</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

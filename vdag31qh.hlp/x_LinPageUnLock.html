@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<title>_LinPageUnLock - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _LinPageUnLock</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Memory_Management_for_Protected-Mode.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_PageCheckLinRange.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _LinPageUnLock, &lt;HLinPgNum, nPages, flags&gt;
+ 
+or      eax, eax                ; nonzero if unlocked, zero if error
+jz      not_unlocked
+ 
+The _LinPageUnLock service unlocks one or more pages starting at the
+specified linear page number. This service is similar to the _PageUnLock
+service, but uses linear page numbers instead of memory handles.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>HLinPgNum</i>  Specifies the linear page number of the first page to unlock. A
+           linear page number is a ring-0 linear address shifted right by 12
+           bits.
+ 
+<i>nPages</i>     Specifies the number of pages to unlock.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter can be a
+           combination of the following values:
+ 
+           Value            Meaning
+           ─────────────────────────────────────────────────────────────────
+           PageLockedIfDP   Unlocks pages only if the virtual pageswap
+                            device use MS-DOS or BIOS functions to write to
+                            the hardware. If the virtual pageswap device
+                            writes directly to the hardware, this service
+                            returns immediately without unlocking the
+                            pages.
+ 
+           PageMarkPageOut  Marks pages for immediate swapping if this
+                            service sets the lock count for the pages to
+                            zero. This service marks the pages by clearing
+                            the P_ACC bit for each page. The PageMarkPageOut
+                            value should only be used if the pages are
+                            unlikely to be accessed for some time.
+ 
+           All other values are reserved.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero value if the unlock is successful.
+Otherwise, EAX contains zero to indicate an error, such as an invalid
+address range.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_LinMapIntoV86, _LinPageLock, _PageUnLock</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

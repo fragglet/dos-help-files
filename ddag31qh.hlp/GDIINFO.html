@@ -1,0 +1,597 @@
+<html>
+
+<head>
+<title>GDIINFO - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> GDIINFO</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Driver_Structures.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='JUST_VALUE_STRUCT.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+typedef struct tagGDIINFO {
+    short  int                dpVersion;
+    short  int                dpTechnology;
+    short  int                dpHorzSize;
+    short  int                dpVertSize;
+    short  int                dpHorzRes;
+    short  int                dpVertRes;
+    short  int                dpBitsPixel;
+    short  int                dpPlanes;
+    short  int                dpNumBrushes;
+    short  int                dpNumPens;
+    short  int                futureuse;
+    short  int                dpNumFonts;
+    short  int                dpNumColors;
+    unsigned  short  int      dpDEVICEsize;
+    unsigned  short  int      dpCurves;
+    unsigned  short  int      dpLines;
+    unsigned  short  int      dpPolygonals
+    unsigned  short  int      dpText;
+    unsigned  short  int      dpClip;
+    unsigned  short  int      dpRaster;
+    short  int                dpAspectX;
+    short  int                dpAspectY;
+    short  int                dpAspectXY;
+    short  int                dpStyleLen;
+    POINT                     dpMLoWin;
+    POINT                     dpMLoVpt;
+    POINT                     dpMHiWin;
+    POINT                     dpMHiVpt;
+    POINT                     dpELoWin;
+    POINT                     dpELoVpt;
+    POINT                     dpEHiWin;
+    POINT                     dpEHiVpt;
+    POINT                     dpTwpWin;
+    POINT                     dpTwpVpt;
+    short  int                dpLogPixelsX;
+    short  int                dpLogPixelsY;
+    short  int                dpDCManage;
+    short  int                dpCaps1;
+    long   int                dpSpotSizeX;
+    long   int                dpSpotSizeY;
+    short  int                dpPalColors;
+    short  int                dpPalReserved;
+    short  int                dpPalResolution;
+} GDIINFO;
+ 
+The GDIINFO structure contains information about graphics devices supported
+by the device driver. GDI retrieves this structure when it loads the driver
+and uses the information in the structure to initialize the driver.
+ 
+<b>Member           Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<b>dpVersion</b>        Specifies the version number. The high-order byte specifies
+                 the major version, the low-order byte the minor version.
+                 For example, in a device driver developed for Windows 3.1,
+                 this member should contain 0x030A.
+ 
+<b>dpTechnology</b>     Specifies the device technology. It can be one of the
+                 following values.
+ 
+                 Value              Meaning
+                 ───────────────────────────────────────────────────────────
+                 DT_PLOTTER (0)     Vector plotter
+ 
+                 DT_RASDISPLAY (1)  Raster display
+ 
+                 DT_RASPRINTER (2)  Raster printer
+ 
+                 DT_RASCAMERA (3)   Raster camera
+ 
+                 DT_CHARSTREAM (4)  Character stream, PLP
+ 
+                 DT_METAFILE (5)    Metafile, VDM
+ 
+                 DT_DISPFILE (6)    Display file
+ 
+<b>dpHorzSize</b>       Specifies the width of the physical display surface in
+                 millimeters.
+ 
+<b>dpVertSize</b>       Specifies the height of the physical display surface in
+                 millimeters.
+ 
+<b>dpHorzRes</b>        Specifies the width of the display surface in pixels. For
+                 nonraster devices, this width is equivalent to the number
+                 of vertical grid lines used by the device to plot points on
+                 the display surface. In such cases, a pixel is defined to
+                 be the smallest mark the device can draw.
+ 
+<b>dpVertRes</b>        Specifies the height of the display in raster lines. For
+                 nonraster devices, this height is equivalent to the number
+                 of horizontal grid lines used by the device to plot points
+                 on the display surface. In such cases, a raster line is
+                 equivalent to a gridline.
+ 
+<b>dpBitsPixel</b>      Specifies the number of adjacent bits on each plane
+                 required to define a single pixel.
+ 
+<b>dpPlanes</b>         Specifies the number of planes required to define the
+                 pixels. For a typical raster device with red, green, and
+                 blue bit planes (such as a 3-plane EGA), this member is 3.
+ 
+<b>dpNumBrushes</b>     Specifies the number of device-specific brushes supported
+                 by this device.
+ 
+<b>dpNumPens</b>        Specifies the number of device-specific pens supported by
+                 this device.
+ 
+<b>futureuse</b>        Reserved; do not use.
+ 
+<b>dpNumFonts</b>       Specifies the number of device-specific fonts supported by
+                 this device.
+ 
+<b>dpNumColors</b>      Specifies the number of entries in the color table for this
+                 device or the number of reserved colors for palette-capable
+                 devices.
+ 
+<b>dpDEVICEsize     Specifies the size </b>(in bytes) of the PDEVICE structure for
+                 this device. It must be at least two bytes.
+ 
+<b>dpCurves</b>         Specifies whether the device driver can perform circles,
+                 pie wedges, chord arcs, and ellipses. The dpCurves member
+                 also specifies whether the interior of those figures that
+                 can be handled can be brushed in, and whether the borders
+                 of those figures that can be handled can be drawn with wide
+                 lines, styled lines, or lines that are both wide and
+                 styled. The dpCurves member can be a combination of the
+                 following values.
+ 
+                 Value                   Meaning
+                 ───────────────────────────────────────────────────────────
+                 CC_NONE (0x0000)        Curves not supported.
+ 
+                 CC_CIRCLES (0x0001)     Can perform circles.
+ 
+                 CC_PIE (0x0002)         Can perform pie wedges.
+ 
+                 CC_CHORD (0x0004)       Can perform chord arcs.
+ 
+                 CC_ELLIPSES (0x0008)    Can perform ellipses.
+ 
+                 CC_WIDE (0x0010)        Can perform wide lines.
+ 
+                 CC_STYLED (0x0020)      Can perform styled lines.
+ 
+                 CC_WIDESTYLED (0x0040)  Can perform lines that are wide and
+                                         styled.
+ 
+                 CC_INTERIORS (0x0080)   Can perform interiors.
+ 
+                 CC_ROUNDRECT (0x0100)   Can perform round rectangles.
+ 
+                 All other values are reserved.
+ 
+<b>dpLines</b>          Specifies whether the device driver can perform polylines
+                 and lines. The dpLines member also specifies whether the
+                 interior of those figures that can be handled can be
+                 brushed in, and whether the borders of those figures that
+                 can be handled can be drawn with wide lines, styled lines,
+                 or lines that are both wide and styled. The dpLines member
+                 can be a combination of the following values.
+ 
+                 Value                   Meaning
+                 ───────────────────────────────────────────────────────────
+                 LC_NONE (0x0000)        Lines not supported.
+ 
+                 LC_POLYLINE (0x0002)    Can perform polylines.
+ 
+                 LC_WIDE (0x0010)        Can perform wide lines.
+ 
+                 LC_STYLED (0x0020)      Can perform styled lines.
+ 
+                 LC_WIDESTYLED (0x0040)  Can perform wide styled lines.
+ 
+                 LC_INTERIORS (0x0080)   Can perform interiors.
+ 
+                 All other values are reserved. The high byte must be zero.
+ 
+<b>dpPolygonals</b>     Specifies whether the device driver can perform polygons,
+                 rectangles, and scan lines. The dpPolygonals member also
+                 specifies whether the interior of those figures that can be
+                 handled can be brushed in, and whether the borders of those
+                 figures that can be handled can be drawn with wide lines,
+                 styled lines, or lines that are both wide and styled. The
+                 dpPolygonals member can be a combination of the following
+                 values.
+ 
+                 Value                    Meaning
+                 ───────────────────────────────────────────────────────────
+                 PC_NONE (0x0000)         Polygons not supported.
+ 
+                 PC_ALTPOLYGON (0x0001)   Can perform alternate-fill
+                                          polygons.
+ 
+                 PC_RECTANGLE (0x0002)    Can perform rectangles.
+ 
+                 PC_WINDPOLYGON (0x0004)  Can perform winding-number-fill
+                                          polygons.
+ 
+                 PC_SCANLINE (0x0008)     Can perform scan lines.
+ 
+                 PC_WIDE (0x0010)         Can perform wide borders.
+ 
+                 PC_STYLED (0x0020)       Can perform styled borders.
+ 
+                 PC_WIDESTYLED (0x0040)   Can perform borders that are wide
+                                          and styled.
+ 
+                 PC_INTERIORS (0x0080)    Can perform interiors.
+ 
+                 All other values are reserved. The high byte must be zero.
+ 
+<b>dpText</b>           Specifies the level of text support the device driver
+                 provides. The dpText member can be a combination of the
+                 following values.
+ 
+                 Value                     Meaning
+                 ───────────────────────────────────────────────────────────
+                 TC_OP_CHARACTER (0x0001)  Can generate character-precision
+                                           text. If this value is not given
+                                           (or implied by the TC_OP_STROKE
+                                           value), the driver can generate
+                                           string-precision text only.
+ 
+                 TC_OP_STROKE (0x0002)     Can generate stroke-precision
+                                           text. The value implies the
+                                           TC_OP_CHARACTER value.
+ 
+                 TC_CP_STROKE (0x0004)     Can draw partially clipped
+                                           characters. If this value is not
+                                           given, the character must be
+                                           entirely within the clipping
+                                           region to be drawn.
+ 
+                 TC_CR_90 (0x0008)         Can rotate characters in
+                                           90-degree increments. If this
+                                           value is not given (or implied by
+                                           the TC_CR_ANY value), the driver
+                                           can not rotate text.
+ 
+                 TC_CR_ANY (0x0010)        Can rotate characters to any
+                                           angle. This value implies the
+                                           TC_CR_90 value.
+ 
+                 TC_SF_X_YINDEP (0x0020)   Can scale characters
+                                           independently along the x- and
+                                           y-axes. If this value is not
+                                           given, the driver may be able to
+                                           scale characters but not
+                                           independently along the axes.
+ 
+                 TC_SA_DOUBLE (0x0040)     Can scale characters by doubling.
+                                           If this value is not given (or
+                                           implied by the TC_SA_INTEGER or
+                                           TC_SA_CONTIN values), the driver
+                                           cannot scale text.
+ 
+                 TC_SA_INTEGER (0x0080)    Can scale characters by integral
+                                           multiples. This value implies the
+                                           TC_SA_DOUBLE value.
+ 
+                 TC_SA_CONTIN (0x0100)     Can scale characters by any
+                                           multiple. This value implies the
+                                           TC_SA_DOUBLE and TC_SA_INTEGER
+                                           values.
+ 
+                 TC_EA_DOUBLE (0x0200)     Can generate bold characters by
+                                           doubling the weight. If this
+                                           value is not given, the driver
+                                           cannot modify character weights.
+ 
+                 TC_IA_ABLE (0x0400)       Can generate italic characters by
+                                           skewing.
+ 
+                 TC_UA_ABLE (0x0800)       Can generate underlined
+                                           characters.
+ 
+                 TC_SO_ABLE (0x1000)       Can generate struck-out
+                                           characters.
+ 
+                 TC_RA_ABLE (0x2000)       Can use raster fonts to generate
+                                           text.
+ 
+                 TC_VA_ABLE (0x4000)       Can use vector fonts to generate
+                                           text.
+ 
+                 TC_RESERVED (0x8000)      Reserved; must be zero.
+ 
+                 If a device claims to have an ability, it must have it for
+                 all fonts, whether realized by the device or provided by
+                 GDI.
+ 
+<b>dpClip</b>           Specifies whether the device can clip output. This member
+                 can be one of the following values.
+ 
+                 Value             Meaning
+                 ───────────────────────────────────────────────────────────
+                 CP_NONE (0)       Device cannot clip.
+ 
+                 CP_RECTANGLE (1)  Device can output using a single
+                                   rectangle.
+ 
+                 CP_REGION (2)     Device can output using a region (which
+                                   may be several rectangles).
+ 
+<b>dpRaster</b>         Specifies raster abilities. This member can be a
+                 combination of the following values.
+ 
+                 Value                     Meaning
+                 ───────────────────────────────────────────────────────────
+                 RC_NONE (0x0000)          Device has no raster
+                                           capabilities.
+ 
+                 RC_BITBLT (0x0001)        Can transfer bitmaps. The driver
+                                           exports the BitBlt function.
+ 
+                 RC_BANDING (0x0002)       Requires banding support.
+ 
+                 RC_SCALING (0x0004)       Requires scaling support.
+ 
+                 RC_BITMAP64 (0x0008)      Supports bitmaps that are larger
+                                           than 64K bytes.
+ 
+                 RC_GDI20_OUTPUT (0x0010)  Supports the Windows 2.x
+                                           functions. The driver exports the
+                                           ExtTextOut, GetCharWidth, and
+                                           FastBorder functions.
+ 
+                 RC_GDI20_STATE (0x0020)   Supports state blocks in device
+                                           contexts.
+ 
+                 RC_SAVEBITMAP (0x0040)    Saves bitmaps locally in "shadow"
+                                           memory. Driver exports the
+                                           SaveScreenBitmap function.
+ 
+                 RC_DI_BITMAP (0x0080)     Can get and set
+                                           device-independent bitmaps
+                                           (DIBs). The Driver exports the
+                                           DeviceBitmapBits function.
+ 
+                 RC_PALETTE (0x0100)       Can do color-palette management.
+ 
+                 RC_DIBTODEV (0x0200)      Can transfer device-independent
+                                           bitmaps directly to device. The
+                                           driver exports the
+                                           SetDIBitsToDevice function.
+ 
+                 RC_BIGFONT (0x0400)       Supports Windows 3.x fonts. If
+                                           this value is not given, GDI
+                                           ensures that the driver receives
+                                           Windows 2.x fonts only.
+ 
+                 RC_STRETCHBLT (0x0800)    Can stretch and compress bitmaps
+                                           while transferring the bitmap.
+                                           The driver exports the
+                                           StretchBlt function.
+ 
+                 RC_FLOODFILL (0x1000)     Can perform flood filling. The
+                                           driver exports the FloodFill
+                                           function.
+ 
+                 RC_STRETCHDIB (0x2000)    Can stretch and compress
+                                           device-independent bitmaps while
+                                           transferring the bitmap. The
+                                           driver exports the StretchDIBits
+                                           function.
+ 
+                 RC_OP_DX_OUTPUT (0x4000)  Can fill opaque rectangle and set
+                                           character widths on calls to the
+                                           ExtTextOut function.
+ 
+                 RC_DEVBITS (0x8000)       Supports device bitmaps. Driver
+                                           exports the BitmapBits and
+                                           SelectBitmap function.
+ 
+<b>dpAspectX</b>        Specifies the relative width of a device pixel. This value,
+                 in the range 1 to 1000, helps specify the device's aspect
+                 ratio.
+ 
+<b>dpAspectY</b>        Specifies the relative height of a device pixel. This
+                 value, in the range 1 to 1000, helps specify the device's
+                 aspect ratio.
+ 
+<b>dpAspectXY</b>       Specifies the relative diagonal width of a device pixel.
+                 This value, in the range 1 to 1000, helps specify the
+                 device's aspect ratio. It must be equal to the square root
+                 of the sum of the squares of the dpAspectX and dpAspectY
+                 members.
+ 
+<b>dpStyleLen</b>       Specifies the minimum length of a dot generated by a styled
+                 pen. The length is relative to the width of a device pixel
+                 and should be given in the same units as the dpAspectX
+                 member. For example, if dpAspectX is 5 and the minimum
+                 length required is 3 pixels, the dpStyleLen member should
+                 be 15.
+ 
+<b>dpMLoWin</b>         Specifies the width and height of the metric (low
+                 resolution) window. Width is dpHorzSize*10; height is
+                 dpVertSize*10.
+ 
+<b>dpMLoVpt</b>         Specifies the horizontal and vertical resolutions of the
+                 metric (low resolution) viewport. Horizontal is dpHorzRes;
+                 vertical is -dpVertRes.
+ 
+<b>dpMHiWin</b>         Specifies the width and height of the metric (high
+                 resolution) window. Width is dpHorzSize*100; height is
+                 dpVertSize*100.
+ 
+<b>dpMHiVpt</b>         Specifies the horizontal and vertical resolutions of the
+                 metric (high resolution) viewport. Horizontal is dpHorzRes;
+                 vertical is -dpVertRes.
+ 
+<b>dpELoWin</b>         Specifies the width and height of the English (low
+                 resolution) window. Width is dpHorzSize*1000; height is
+                 dpVertSize*1000.
+ 
+<b>dpELoVpt</b>         Specifies the horizontal and vertical resolutions of the
+                 English (low resolution) viewport. Horizontal is
+                 dpHorzRes*254; vertical is -dpVertRes*254.
+ 
+<b>dpEHiWin</b>         Specifies the width and height of the English (high
+                 resolution) window. Width is dpHorzSize*10,000; height is
+                 dpVertSize*10,000.
+ 
+<b>dpEHiVpt</b>         Specifies the horizontal and vertical resolutions of the
+                 English (high resolution) viewport. Horizontal is
+                 dpHorzRes*254; vertical is -dpVertRes*254.
+ 
+<b>dpTwpWin</b>         Specifies the width and height of the twip window. There
+                 are 20 twips per 1 printer's point and 72 printer's points
+                 per inch. Width is dpHorzSize*14400; height is
+                 dpVertSize*14400.
+ 
+<b>dpTwpVpt</b>         Specifies the horizontal and vertical resolutions of the
+                 twip viewport. Horizontal is dpHorzRes*254; vertical is
+                 -dpVertRes*254.
+ 
+<b>dpLogPixelsX</b>     Specifies the number of pixels per logical inch along a
+                 horizontal line on the display surface. This is used to
+                 match fonts.
+ 
+<b>dpLogPixelsY</b>     Specifies the number of pixels per logical inch along a
+                 vertical line on the display surface. This is used to match
+                 fonts.
+ 
+<b>dpDCManage</b>       Specifies whether the device driver can manage multiple
+                 device contexts (DC). This member can be one of the
+                 following values.
+ 
+                 Value                   Meaning
+                 ───────────────────────────────────────────────────────────
+                 0x0000                  Driver allows multiple DCs. It
+                                         creates a new PDEVICE for each DC
+                                         that specifies a new device and
+                                         filename pair, but uses the same
+                                         PDEVICE for any subsequent DCs that
+                                         specify the same device and
+                                         filename pair.
+ 
+                 DC_SPDEVICE (0x0001)    Driver allows multiple DCs but it
+                                         creates a new PDEVICE for each DC
+                                         regardless of whether the device
+                                         and filename pairs are the same.
+ 
+                 DC_1PDEVICE (0x0002)    Driver allows multiple DCs but only
+                                         if all DCs have unique device and
+                                         filename pairs. The driver creates
+                                         a PDEVICE for each DC. The driver
+                                         returns an error on any attempt to
+                                         create a second DC with an existing
+                                         device and filename pair.
+ 
+                 DC_IGNOREDFNP (0x0004)  Driver allows multiple DCs but only
+                                         creates one PDEVICE. All DCs share
+                                         the same PDEVICE regardless of the
+                                         device and filename pairs.
+ 
+                 0x0006                  Driver allows only one DC. The
+                                         driver returns an error on any
+                                         attempt to create a second DC.
+ 
+                 The values 0x0003, 0x0005, and 0x0007 are not valid and
+                 must not be used.
+ 
+<b>dpCaps1</b>          Specifies additional raster abilities. The member can be
+                 one of the following values.
+ 
+                 Value                    Meaning
+                 ───────────────────────────────────────────────────────────
+                 C1_TRANSPARENT (0x0001)  Performs BitBlt and StretchBlt
+                                          functions with a transparent
+                                          background.
+ 
+                 TC_TT_ABLE (0x0002)      Informs GDI that the driver is
+                                          capable of producing TrueType as
+                                          raster fonts. The driver must call
+                                          the dmExtTextOut function to draw
+                                          the raster font into the bitmap.
+                                          The value is similar to
+                                          TC_RA_ABLE.
+ 
+                 All other values are reserved.
+ 
+<b>dpSpotSizeX</b>      Specifies the horizontal spot size for TrueType fonts on
+                 this device.
+ 
+<b>dpSpotSizeY</b>      Specifies the vertical spot size for TrueType fonts on this
+                 device.
+ 
+<b>dpPalColors</b>      Specifies the total number of simultaneous colors available
+                 in Windows 3.x for palette-capable devices.
+                 Nonpalette-capable devices ignore this value.
+ 
+<b>dpPalReserved</b>    Specifies the even number of reserved system colors
+                 available in Windows 3.x for palette-capable devices.
+                 Nonpalette-capable devices ignore this value.
+ 
+<b>dpPalResolution</b>  Specifies the palette resolution, which equals the number
+                 of bits going into video DACS. Nonpalette-capable devices
+                 ignore this value.
+ 
+<b>Comments</b>
+ 
+The dpText member requires that for each precision level that the precision
+levels below it are also set. For example, the TC_SA_INTEGER value requires
+that the the TC_SA_DOUBLE value be set, and the TC_SA_CONTIN value requires
+that all three be set. Since it is required that the lowest precision level
+of each ability be supported, no value is provided in dpText for the lowest
+level of each ability.
+ 
+The dpAspectX, dpAspectY, and dpAspectXY members specify the relative width,
+height, and diagonal width of a device pixel and correspond directly to the
+device's aspect ratio. For devices whose pixels do not have integral
+diagonal widths, the member values can be multiplied by a convenient factor
+to preserve information. For example, pixels on a device with a 1 to 1
+aspect ratio have a diagonal width of 1.414. For good results, the aspect
+members should be set to 100, 100, and 141, respectively. For numerical
+stability, the member values should be kept under 1000.
+ 
+The window/viewport pair members are the numerator and denominator of the
+scale fraction used to correct for the device aspect ratio, and to set to a
+fixed unit of measurement, either metric or English. These numbers should be
+integers in the range of -32768 to 32767. When calculating these constants,
+out-of-range values can be divided by some number to bring them back into
+range as long as the corresponding window or viewport constant is divided by
+the same number.
+ 
+The dpRaster member is also used to indicate a scaling device. If the
+RC_SCALING value is set, the device does graphics scaling. Certain devices
+perform graphics at one resolution and text at another. Some applications
+require that character cells be an integral number of pixels. If a device
+reported that its graphics resolution was 75 dpi but its text resolution was
+300 dpi, then its character cells would not be an integral number of pixels
+(since they were digitized at 300 dpi). To get around this problem, GDI uses
+scaling devices. The device driver registers itself as a 300 dpi device and
+all the graphics at 300 dpi are scaled to 75 dpi. Any device that scales
+must have the RC_SCALING value set. Scaling always reduces the resolution;
+it never increases it. GDI calls the Control function with GETSCALINGFACTOR
+escape before output to a device. The scaling factor is a shift count that
+is a power of two. Therefore, a scaling factor of 2 means reduce by 4, and a
+scaling factor of 1 means reduce by 2.
+ 
+The number of reserved colors on the palette is always 20, with 16
+corresponding to the VGA colors and 4 special colors. Half of the reserved
+palette colors are placed at the beginning and half at the end of the
+palette.
+ 
+<b>See Also</b>
+ 
+<b>Enable, Control, GETSCALINGFAC</b>TOR, PDEVICE
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,68 @@
+<html>
+
+<head>
+<title>VID_Virt_Int_Proc - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VID_Virt_Int_Proc</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_PIC_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VID_EOI_Proc.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vpicd.inc
+ 
+mov     eax, IRQHand  ; IRQ handle
+mov     ebx, VM       ; current VM handle
+call    VID_Virt_Int_Proc
+ 
+The VID_Virt_Int_Proc procedure handles virtual interrupts for a virtual
+device. The system calls the procedure whenever a simulated interrupt
+occurs. The procedure is useful for implementing critical sections around a
+simulated hardware interrupt.
+ 
+The system disables interrupts before calling this procedure. The procedure
+can re-enable interrupts if necessary.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>IRQHand</i>    Specifies the handle identifying the interrupt request.
+ 
+<i>VM</i>         Specifies the handle identifying the current virtual machine.
+ 
+<b>Return Value</b>
+ 
+This procedure has no return value.
+ 
+<b>Comments</b>
+ 
+A virtual device requests a virtual interrupt by using the
+<b>VPICD_Set_Int_Request</b> service. Once set, the system simulates the interrupt
+at a convenient point in time. The call to this procedure signals that the
+simulated interrupt is underway and can no longer be canceled using the
+<b>VPICD_Clear_Int_Request</b> service.
+ 
+A virtual device that uses this procedure usually also uses the
+<b>VID_Virt_IRET_Proc</b> procedure to detect the end of the simulated interrupt.
+ 
+This procedure may modify EAX, EBX, ECX, EDX, ESI, and Flags.
+ 
+<b>See Also</b>
+ 
+<b>VID_IRET_Proc, VPICD_IRQ_Descriptor</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

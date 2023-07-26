@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<title>_Add_Global_V86_Data_Area - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _Add_Global_V86_Data_Area</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='V86_Address_Space_Mapping_and_Allocation.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_Allocate_Global_V86_Data_Area.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _Add_Global_V86_Data_Area, &lt;LinAddr, nBytes, flags&gt;
+ 
+or      eax, eax        ; nonzero if added, zero if error
+jz      not_added
+ 
+The _Add_Global_V86_Data_Area service adds a region to the list of regions
+available for allocation as global V86 data areas.
+ 
+This service is only available during initialization, and only for Windows
+version 3.1 or later.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>LinAddr</i>    Specifies the linear address of the first byte of the region.
+           This address must be less than 100000h, and must not lie between
+           the first and last V86 page for the specified virtual machine.
+ 
+<i>nBytes</i>     Specifies the size in bytes of the region.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero value if the service is successful.
+Otherwise, EAX contains zero to indicate an error such as an invalid region
+specification.
+ 
+<b>Comments</b>
+ 
+This service supports virtual devices, such as the virtual MS-DOS manager
+and the V86MMGR device, which can manage high memory above the last V86
+page. The service lets these devices add available regions which would
+otherwise go unused. Typically, such regions are nonpage-aligned fragments
+which cannot be used for normal operations requiring page-aligned memory.
+ 
+Calls to this service should be made during processing of the
+<b>Sys_Critical_Init</b> message. Virtual devices should not wait for the
+<b>Device_Init or Init_Complete mess</b>ages since most of the allocation of global
+V86 data areas is done while processing the Device_Init message.
+ 
+If this service adds a region that is above the last V86 page, virtual
+devices should not attempt to allocate the region until the
+<b>Sys_Critical_Init</b> message has been processed.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_Allocate_Global_V86_Data_Area</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

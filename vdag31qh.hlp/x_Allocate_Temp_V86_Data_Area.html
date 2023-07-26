@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<title>_Allocate_Temp_V86_Data_Area - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _Allocate_Temp_V86_Data_Area</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='V86_Address_Space_Mapping_and_Allocation.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_Free_Temp_V86_Data_Area.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _Allocate_Temp_V86_Data_Area, &lt;nBytes, flags&gt;
+ 
+or      eax, eax        ; zero if error
+jz      error
+mov     [Address], eax  ; address of temporary block
+ 
+The _Allocate_Temp_V86_Data_Area service allocates a block of memory from
+the global V86 data area. The block is for exclusive use by the virtual
+device during system initialization only. A virtual device typically
+allocates a temporary block to serve as a buffer for calls to MS-DOS or BIOS
+functions. A virtual device makes such calls using the Simulate_Int
+service.
+ 
+This service is only available during initialization.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>nBytes</i>     Specifies the number of bytes to allocate.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the ring-0 linear address of the block if the
+service is successful. Otherwise, EAX contains zero to indicate an error
+such as insufficient memory to satisfy the request or temporary area already
+allocated.
+ 
+<b>Comments</b>
+ 
+This service always aligns the temporary block on a paragraph boundary and
+fills the block with zeros.
+ 
+Virtual devices must free the temporary block as soon as possible. The
+system provides only one temporary data area, therefore only one temporary
+block can be allocated at a time. Attempts to allocate a temporary block
+when it is already allocated will result in an error.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_Free_Temp_V86_Data_Area</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

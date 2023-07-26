@@ -1,0 +1,220 @@
+<html>
+
+<head>
+<title>_PageAllocate - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _PageAllocate</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Page_Allocation_and_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_PageFree.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _PageAllocate, &lt;nPages, pType, VM, AlignMask, minPhys,
+                maxPhys, &lt;OFFSET32 PhysAddr&gt;, flags&gt;
+ 
+mov     ecx, eax                ; zero in eax and edx if error
+or      ecx, edx
+jz      error
+ 
+mov     [Handle], eax           ; memory handle
+mov     [Address], edx          ; ring-0 address of memory block
+ 
+The _PageAllocate service allocates a block of memory consisting of the
+specified number of pages. This service reserves linear address space for
+the memory block, and depending on the value of the flags parameter, may
+also map the linear addresses to physical memory, locking the pages in
+memory. The service returns a memory handle that can be used in subsequent
+memory management functions to lock, unlock, reallocate, and free the memory
+block.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>nPages</i>     Specifies the number of pages to allocate for the memory block.
+           This parameter must not be zero.
+ 
+<i>pType</i>      Specifies the type of pages to allocate. It can be one of the
+           following values:
+ 
+           Value      Meaning
+           ─────────────────────────────────────────────────────────────────
+           PG_VM      Allocates pages that are specific to a particular
+                      virtual machine. The handle of PG_VM memory blocks
+                      will typically be placed in the virtual machine's
+                      control block.
+ 
+           PG_SYS     Allocates global system pages that are valid in all
+                      virtual machines.
+ 
+           PG_HOOKED  Allocates pages that are mapped into the virtual
+                      machine at locations for which a page-fault handler
+                      has been installed. These pages are specific to a
+                      particular virtual machine.
+ 
+<i>VM</i>         Specifies a handle identifying the virtual machine for which to
+           allocate the pages. This parameter applies to pages allocated
+           using the PG_VM and PG_HOOKED values only. This parameter must be
+           set to zero when using the PG_SYS value.
+ 
+<i>AlignMask</i>  Specifies an alignment mask that defines acceptable starting page
+           numbers for the memory block. This parameter can be one of the
+           following values:
+ 
+           Value      Meaning
+           ─────────────────────────────────────────────────────────────────
+           00000000h  Physical address is a multiple of 4K.
+ 
+           00000001h  Physical address is a multiple of 8K.
+ 
+           00000003h  Physical address is a multiple of 16K.
+ 
+           00000007h  Physical address is a multiple of 32K.
+ 
+           0000000Fh  Physical address is a multiple of 64K.
+ 
+           0000001Fh  Physical address is a multiple of 128K.
+ 
+           This parameter is used only if the flags parameter specifies the
+           PageUseAlign value.
+ 
+<i>minPhys</i>    Specifies the minimum acceptable physical page number in the
+           memory block. All page numbers must be greater than or equal to
+           this value. This parameter is used only if the flags parameter
+           specifies the PageUseAlign value.
+ 
+<i>maxPhys</i>    Specifies the maximum acceptable physical page number in the
+           memory block. All page numbers must be less than this value. This
+           parameter is used only if the flags parameter specifies the
+           PageUseAlign value.
+ 
+<i>PhysAddr</i>   Points to the four-byte buffer to receive the physical address of
+           the start of the memory block. The service uses this parameter
+           only if the flags parameter specifies the PageUseAlign value.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter can be a
+           combination of the following values:
+ 
+           Value               Meaning
+           ─────────────────────────────────────────────────────────────────
+           PageZeroInit        Fills the memory block with zeros. If this
+                               value is not given, the contents of the
+                               memory block are undefined.
+ 
+           PageUseAlign        Allocates pages using the alignment and
+                               physical addresses specified by the
+                               AlignMask, minPhys, and maxPhys parameters.
+                               The PageUseAlign value is only available
+                               during initialization and can only be used in
+                               combination with the PageFixed value.
+ 
+           PageContig          Allocates contiguous physical pages to create
+                               the memory block. This value is ignored if
+                               the PageUseAlign value is not also
+                               specified.
+ 
+           PageFixed           Locks the allocated pages in memory at a
+                               fixed linear address and prevents the pages
+                               from subsequently being unlocked or moved.
+                               The service locks the memory block regardless
+                               of the type of virtual pageswap device
+                               present.
+ 
+           PageLocked          Locks the allocated pages in the memory. The
+                               pages can be subsequently unlocked using the
+                               _PageUnLock service. The service locks the
+                               memory block regardless of the type of
+                               virtual pageswap device present.
+ 
+           PageLockedIfDP      Locks the allocated pages in the memory only
+                               if the virtual pageswap device uses MS-DOS or
+                               BIOS functions to write to the hardware. If
+                               the pages are locked, they can be
+                               subsequently unlocked using the _PageUnLock
+                               service.
+ 
+                               A virtual device must not specify the
+                               PageLockedIfDP value until after it has
+                               received the Init_Complete message.
+ 
+                               The PageLocked and PageLockedIfDP values are
+                               mutually exclusive.
+ 
+           PageMapFreePhysReg  Allocates a free physical region which a
+                               virtual device may use to map physical pages
+                               that otherwise are placed in the system's
+                               free memory pool. The nPages parameter
+                               specifies the number of pages in the region.
+                               The pType parameter must be set to PG_SYS and
+                               the VM, AlignMask, minPhys, maxPhys, and
+                               PhysAddrPTR parameters must be set to zero. A
+                               free physical region cannot be reallocated or
+                               freed; these regions exist for the duration
+                               of the Windows session.
+ 
+                               This value is only available during
+                               initialization, and only in Windows version
+                               3.1 or later.
+ 
+           All other values are reserved.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the memory handle of the block, and the EDX
+register contains the ring-0 linear address of the memory block. Otherwise,
+the EAX and EDX registers both contain zero to indicate an error such
+insufficient memory to satisfy the request.
+ 
+<b>Comments</b>
+ 
+Unless PageLocked, PageLockedIfDP, or PageFixed is specified, this service
+allocates linear address space without mapping the addresses to physical
+memory. In this case, the system maps the physical page when the virtual
+device attempts to access an address in the address space. A virtual device
+can also use the _PageLock service to force this mapping.
+ 
+Virtual devices use the PageUseAlign value to allocate buffers for use by
+the device which have additional alignment restrictions enforced by the
+hardware. For example, a DMA may require buffers to start at addresses that
+are a multiple of 64K or 128K. When allocating such buffers, the PageContig
+value is often used in combination with PageUseAlign.
+ 
+The action specified by the PageLockedIfDP value is available only after the
+virtual pageswap device has been initialized.
+ 
+Virtual devices must never rely on apparent relationships between the memory
+handle and the ring-0, or physical address of a memory block.
+ 
+All pages in the free physical region are initially not present. Virtual
+devices use the MapFreePhysReg service to map physical pages into the region
+and use the UnmapFreePhysReg service to remove pages from the region. Since
+the system does not provide a backing store for a free physical region,
+unmapping a page makes the previous contents unrecoverable. The
+<b>MapFreePhysReg and UnmapFreePhysReg servic</b>es can only be be used within a
+free-physical-region callback procedure installed using the
+<b>_SetFreePhysRegCalBk</b> service.
+ 
+<b>Uses</b>
+ 
+EAX, EDX
+ 
+<b>See Also</b>
+ 
+<b>_PageFree, _PageLock, _PageReAllocate, _PageUnLock</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

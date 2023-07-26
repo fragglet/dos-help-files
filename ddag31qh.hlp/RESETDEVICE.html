@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>RESETDEVICE - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> RESETDEVICE</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Escapes.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='RESTORE_CTM.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define RESETDEVICE 128 
+short Control(lpDevice, RESETDEVICE, lpDeviceOld, NULL)
+LPPDEVICE lpDevice;
+LPPDEVICE lpDeviceOld;
+ 
+The RESETDEVICE escape resets the device context by copying information that
+is specific to the current print job from the original physical device
+structure to the new one. GDI calls this escape whenever an application
+calls the ResetDC function (GDI.376).
+ 
+Printer drivers that can reset print-job options (such as orientation and
+paper source) during a single print job must support the RESETDEVICE
+escape.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpDevice     Points to a</i> PDEVICE structure specifying the new physical
+             device.
+ 
+<i>lpDeviceOld  Points to a PDEVICE </i>structure containing the device-specific
+             settings to be copied to the new physical device structure.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the function is successful. Otherwise, it is
+FALSE.
+ 
+<b>Comments</b>
+ 
+The RESETDEVICE escape must copy all information required to continue the
+current print job to the new physical device structure. This includes
+information such as the print-job number and record of downloaded resources,
+but does not include information about the environment (such as orientation
+and paper source). GDI calls the Enable function to set the environment for
+the new physical device structure before calling this escape.
+ 
+After the RESETDEVICE escape returns, GDI immediately calls the Disable
+function with the old physical device structure. RESETDEVICE must ensure
+that resources copied to the new physical device structure are not deleted
+on the subsequent call to Disable. For example, if the Disable function
+frees any working buffers allocated by the driver at the start of a print
+job, RESETDEVICE must either allocate new buffers for the new physical
+device structure or remove all pointers to these buffers from the old
+physical device structure.
+ 
+<b>See Also</b>
+ 
+<b>Disable, Enable, PDEVICE</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

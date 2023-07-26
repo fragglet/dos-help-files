@@ -1,0 +1,92 @@
+<html>
+
+<head>
+<title>_XchgFreePhysReg - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _XchgFreePhysReg</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Free_Physical_Memory_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GDT_sl_LDT_Management.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _XchgFreePhysReg, &lt;LinPgNum, PhysAddr, flags&gt;
+ 
+cmp     eax, 0FFFFFFFFh         ; 0FFFFFFFFh if error
+je      not_exchanged
+mov     [PageTable], eax        ; previous page table entry
+ 
+The _XchgFreePhysReg service replaces the current physical address in a page
+table entry with a new physical address. A virtual device typically uses
+this service to compact a free physical region by assigning pages that are
+present to adjacent linear addresses (that is, by removing not-present pages
+from between present pages).
+ 
+This is an asynchronous service.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>LinPgNum</i>   Specifies the linear page number of the first page in the region
+           to exchange. A linear page number is a linear address shifted
+           right by 12 bits. The specified page must be within a free
+           physical region previously allocated using the _PageAllocate
+           service.
+ 
+<i>PhysAddr</i>   Specifies the physical address to insert into the page table
+           entry specified by LinPgNum. This parameter must be a 32-bit
+           physical address. If this parameter is zero, the service makes
+           the page not present.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the previous physical address for the specified
+page if the service is successful. If the specified page is not present, EAX
+contains zero. Otherwise, EAX contains 0FFFFFFFFh to indicate an error, such
+as an invalid linear page number.
+ 
+<b>Comments</b>
+ 
+A virtual device typically makes a series of calls to _XchgFreePhysReg,
+using the physical address return by one call as the parameter in the next
+call. To start the series, the virtual device sets the PhysAddr parameter to
+zero, and specifies a page known to be present. This forces the present page
+to be not present. The virtual device continues calling the service,
+specifying different page numbers, until the service returns 0.
+ 
+This service cannot be used to change the number of pages which were mapped
+using the PageFixed value with the _MapFreePhysReg service.
+ 
+The virtual pageswap device uses this service to read ahead and write behind
+without having to copy data. Using the _XchgFreePhysReg service in this way
+is restricted to the virtual pageswap device.
+ 
+Failure to use this service properly can result in invalid page faults and
+loss of pages.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_MapFreePhysReg, _PageAllocate</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

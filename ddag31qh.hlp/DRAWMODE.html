@@ -1,0 +1,169 @@
+<html>
+
+<head>
+<title>DRAWMODE - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DRAWMODE</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Driver_Structures.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='EXTTEXTDATA.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+typedef struct tagDRAWMODE {
+  short    Rop2;       /*binary-raster operations*/
+  short    bkMode;     /*background mode*/
+  PCOLOR   bkColor;    /*physical background color*/
+  PCOLOR   TextColor;  /*physical text (foreground) color*/
+  short    TBreakExtra;/*number of extra pixels to add to line*/
+  short    BreakExtra; /*pixels per break: TBreakExtra/BreakCount*/
+  short    BreakErr;   /*running error term*/
+  short    BreakRem;   /*remaining pixels: TBreakExtra%BreakCount*/
+  short    BreakCount; /*number of breaks in the line*/
+  short    CharExtra;  /*extra pixels for each character*/
+  COLORREF LbkColor;   /*logical background color*/
+  COLORREF LTextColor; /*logical text (foreground) color*/
+} DRAWMODE;
+ 
+The DRAWMODE structure contains information used during output, such as
+drawing lines, filling interiors, and writing text.
+ 
+<b>Member       Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<b>Rop2</b>         Specifies a binary-raster operation value. The value, in the
+             range 1 to 16, determines how to combine source and destination
+             colors. This member can be one of the following values.
+ 
+             Value                Meaning
+             ───────────────────────────────────────────────────────────────
+             R2_BLACK (1)         Black: 0.
+ 
+             R2_NOTMERGEPEN (2)   Inverse of the bitwise OR of the source
+                                  and destination colors: NOT (Source OR
+                                  Dest).
+ 
+             R2_MASKNOTPEN (3)    Bitwise AND of the destination and the
+                                  inverse of the source: Dest AND (NOT
+                                  Source).
+ 
+             R2_NOTCOPYPEN (4)    Inverse of the source color: NOT Source.
+ 
+             R2_MASKPENNOT (5)    Bitwise AND of the source and the inverse
+                                  of the destination: Source AND (NOT
+                                  Dest).
+ 
+             R2_NOT (6)           Inverse of the destination color: NOT
+                                  Dest.
+ 
+             R2_XORPEN (7)        Bitwise exclusive OR of the destination
+                                  and source: Dest XOR Source.
+ 
+             R2_NOTMASKPEN (8)    Inverse of the bitwise AND of the
+                                  destination and source colors: NOT (Dest
+                                  AND Source).
+ 
+             R2_MASKPEN 9         Bitwise AND of the destination and source
+                                  colors: Dest AND Source.
+ 
+             R2_NOTXORPEN (10)    Inverse of the bitwise exclusive OR of the
+                                  destination and source colors: NOT (Dest
+                                  XOR Source).
+ 
+             R2_NOP 11            Destination color: Dest.
+ 
+             R2_MERGENOTPEN (12)  Bitwise OR of the destination and the
+                                  inverse of the source: Dest AND (NOT
+                                  Source).
+ 
+             R2_COPYPEN (13)      Source color: Source.
+ 
+             R2_MERGEPENNOT (14)  Bitwise OR of the source and the inverse
+                                  of the destination: Source OR (NOT Dest).
+ 
+             R2_MERGEPEN (15)     Bitwise OR of the source and the
+                                  destination: Source OR Dest.
+ 
+             R2_WHITE (16)        White: 1.
+ 
+<b>bkMode</b>       Specifies whether the background for styled lines, hatched
+             brushes, brushes used for interiors and scan lines, bitmaps,
+             and text is given the current background color or left
+             unchanged. This member can be one of the following values.
+ 
+             Value             Meaning
+             ───────────────────────────────────────────────────────────────
+             TRANSPARENT (1)   Leaves destination background unchanged.
+ 
+             OPAQUE (2)        Replaces destination background with the
+                               color specified by the BackgroundColor
+                               member.
+ 
+             TRANSPARENT1 (4)  Leaves destination background unchanged, but
+                               before copying the source to destination,
+                               removes pixels from the source that have the
+                               current background color.
+ 
+<b>bkColor</b>      Contains a physical color value specifying the background
+             color.
+ 
+<b>TextColor</b>    Contains a physical color value specifying the text
+             (foreground) color.
+ 
+<b>TBreakExtra</b>  Specifies the total amount of space (in pixels) to add to the
+             break characters in a line of text. TBreakExtra is set to zero
+             if no justification is required.
+ 
+<b>BreakExtra</b>   Specifies the amount of space (in pixels) to add to each break
+             character in a line of text. This value is equal to
+             TBreakExtra divided by BreakCount.
+ 
+<b>BreakErr</b>     Specifies the running error term: the amount of space (in
+             pixels) not yet added to break characters in a line of text.
+             This member is used in conjunction with the BreakRem member to
+             determine which break characters receive the additional pixels
+             specified by BreakRem. Initially, BreakErr is set to
+             (BreakCount)/2+1.
+ 
+<b>BreakRem</b>     Specifies the amount of space (in pixels) to add to one or more
+             break characters in a line of text. This space is in addition
+             to any extra space specified by the BreakExtra member and is
+             intended to be distributed evenly across the line. The
+             BreakRem value is equal to the remainder after dividing
+             TBreakExtra by BreakCount.
+ 
+<b>BreakCount</b>   Specifies the number of break characters in a line of text. If
+             the TBreakExtra member is not zero, each break character must
+             be drawn wider than its normal width. The BreakExtra member
+             specifies the extra width (in pixels). The BreakRem member may
+             also specify additional pixels for one or more break
+             characters.
+ 
+<b>CharExtra</b>    Specifies amount of space (in pixels) to add between characters
+             in a line of text.
+ 
+<b>LbkColor     Contains an</b> COLORREF value specifying the logical background
+             color.
+ 
+<b>LTextColor   Contains an COLOR</b>REF value specifying the logical text
+             (foreground) color.
+ 
+<b>See Also</b>
+ 
+<b>BitBlt, DeviceBitmapBits, ExtTextOut, Output, Pixel, SetDIBitsToDe</b>vice,
+<b>StrBlt, StretchBlt, StretchDIB</b>its
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

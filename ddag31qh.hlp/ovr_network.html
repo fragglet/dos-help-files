@@ -1,0 +1,278 @@
+<html>
+
+<head>
+<title>Updates for Network Drivers - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Updates for Network Drivers</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='index.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ovr_printer.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+The new features for the 3.1 version of the network driver interface consist
+primarily of:
+ 
+♦  Saved Network Connections
+ 
+♦  New Capability Bits
+ 
+♦  New Return Values
+ 
+♦  String Handling
+ 
+♦  Handling Error Messages
+ 
+♦  New Print, Connection, and Dialog Functions
+ 
+♦  Default Shell Behavior
+ 
+♦  Long Filename Interface
+ 
+♦  Enhancements To The 3.1 MS-Net Driver
+ 
+Drivers written to the Windows 3.0 level of functionality will be supplied
+with reasonable defaults for all 3.1 features. If a network does not require
+special support for any of the features the network driver may be written to
+the 3.0 specification.
+ 
+For more complete information about network drivers, see the chapter
+<i><span class='grhilite'>◄</span><a href='Network_Drivers.html'>Network Drivers</a><span class='grhilite'>►</span>.</i>
+ 
+<b>Saved Network Connections</b>
+ 
+Saved network connections are connections which are always automatically
+connected when Windows boots. If the connection cannot be made, the drive is
+still treated as connected, as if it were in the error state. The File
+Manager will reconnect the drive if the user selects it. When the user
+connects to a drive or printer, that connection is remembered as a permanent
+connection. When the user disconnects a device through the disconnect
+dialog, it is removed from the list of permanently connected devices.
+ 
+Although error state and permanent devices can be reconnected from the File
+Manager, the drives may not (generally will not) be valid for other Windows
+applications. If Windows was unable to restore a permanant connection when
+starting, the user will be warned.
+ 
+Network drivers which implement (or stub) these functions will return a
+specification version of 3.10 (0x030A) from when the WNNC_SPEC_VERSION
+parameter is specified with the WNetGetCaps function.
+ 
+<b>New Capability Bits</b>
+ 
+The WNetGetCaps function now returns several new capability bits.
+ 
+The WNNC_PRINTING index now includes WNNC_PRT_WriteJob (0x8000). This bit
+indicates support of the WNetWriteJob function.
+ 
+The WNNC_CONNECTION index now includes WNNC_CON_RestoreConnection (0x0020).
+This bit indicates support of the WNetRestoreConnection function.
+ 
+The WNNC_DEVICEMODE index has been renamed WNNC_DIALOG. The index includes
+several values for dialog functions, including a value for WNetBrowseDialog.
+Although a bit is reserved for WNetBrowseDialog under WNNC_DIALOG, the
+WNNC_CONN_BrowseDialog bit (returned using WNNC_CONNECTION) must also be
+supported for compatibility; they mean the same thing and must both be set
+or clear.
+ 
+The new WNNC_ADMIN (0x0009) index has been added to indicate support of long
+file names and administration functions. In Windows 3.1, these are limited
+to modifying directory icons (in the tree view) and getting notification of
+directory manipulations.
+ 
+The new WNNC_PRINTMGREXT (0x000B) index has been added to indicate support
+for extended Print Manager capabilities.
+ 
+<b>New Return Values</b>
+ 
+The WNetGetConnection function now returns several new error values.
+ 
+The WN_DEVICE_ERROR (0x0035) value specifies that a connection exists on the
+given device, but that the connection is in an error state and should be
+disconnected and reconnected before it is accessed again. Generally, the
+shell will attempt to reconnect such devices by calling the
+<b>WNetRestoreConnection</b> function.
+ 
+The WN_CONNECTION_CLOSED (0x0036) value indicates that a permanently
+maintained connection is defined for the device, but that the device is not
+currently connected to any network resource. This return value is defined
+for those network drivers that export the WNetRestoreConnection function.
+The only way a permanent connection can be closed is if the device could not
+be connected when starting up.
+ 
+The WN_CONTINUE (0x000D) value is used by functions to indicate a situation
+distinct from both WN_CANCELLED and WN_SUCCESS where the shell does not need
+to post a message to the user.
+ 
+<b>String Handling</b>
+ 
+All strings passed to the network driver may be assumed to be ANSI strings.
+Similarly, all strings returned by the network driver should be ANSI
+strings. This is not a new feature.
+ 
+<b>Handling Error Messages</b>
+ 
+If appropriate, the shell will post error messages whenever an error is
+reported by a network driver function. If the error value is WN_NET_ERROR,
+the WNetGetError and WNetGetErrorText functions will be called to allow the
+network driver to return a network specific error. If these two functions
+fail or are not implemented, a generic message will be used instead. This
+behavior will be standardized across all shell components. Some functions,
+such as connection dialogs, are allowed to post their own messages as part
+of processing the dialog box. The shell never posts error messages if the
+return value is WN_SUCCESS, WN_CANCEL, or WN_CONTINUE unless otherwise
+noted.
+ 
+<b>New Print, Connection, and Dialog Functions</b>
+ 
+There are the following new functions:
+ 
+<b>Function               Description</b>
+────────────────────────────────────────────────────────────────────────────
+<b>WNetWriteJob</b>           Writes to an open print job
+ 
+<b>WNetRestoreConnection</b>  Restores a connection to a network device
+ 
+<b>WNetConnectDialog</b>      Displays a shell connection dialog box
+ 
+<b>WNetDisconnectDialog</b>   Displays a shell disconnection dialog box
+ 
+<b>WNetConnectionDialog</b>   Displays a connection dialog box
+ 
+<b>WNetViewQueueDialog</b>    Display a queue viewing dialog box
+ 
+<b>WNetGetPropertyText</b>    Adds buttons to a property dialog box
+ 
+<b>WNetPropertyDialog</b>     Supports added buttons in the property dialog
+ 
+<b>WNetGetDirectoryType</b>   Retrieves directory type
+ 
+<b>WNetDirectoryNotify</b>    Notifies driver of operations on directories
+ 
+For network drivers that provide user functions, the following ordinals are
+reserved the user functions:
+ 
+WNNC_ORD_UserStart      500
+WNNC_ORD_UserEnd        599
+ 
+The shell is guaranteed never to use ordinals in this range.
+ 
+<b>Default Shell Behavior</b>
+ 
+If a network driver does not support the new function calls (for example, it
+is a Windows 3.0 network driver), Windows and the File Manager simulate a
+new method of supporting permanent connections.
+ 
+The default connection dialog includes a checkbox for making a connection
+permanent. If the user makes a permanent connection, the device will be
+added to a WIN.INI section called [Network]. The tag will be the local
+device and the value will be the network resource. For security, passwords
+will not be saved. The following example illustrates the new section:
+ 
+[Network]
+S:=\\USER2\SHELL
+T:=\\TOOLSVR\DOSENV
+U:=\\PYREX\USER
+LPT1=\\WINDEV\PRINTER
+ 
+When a device is disconnected, it is removed from the list of permanent
+devices. The File Manager simulates the WNetGetConnection behavior of
+returning a connection with a special status when it is listed in WIN.INI
+but is not connected. The default connection dialogs allows the user to
+"reconnect" a disconnected device which has a saved connection. The dialogs
+also support disconnecting and reconnecting a device in an error state.
+ 
+On startup, Windows enumerates devices saved in the [Network] section and
+attempts to redirect them using WNetAddConnection. If a device is already
+redirected, the redirection will not be overridden. If WNetAddConnection
+returns WN_BAD_PASSWORD the user will be prompted to supply the password.
+ 
+Network drivers which require their own connection dialogs or startup
+restore function should attempt to duplicate the functionality of the
+default behavior as closely as possible in order to provide consistency. To
+maintain this consistency, network drivers should use the [Network] section.
+The tags "A:" through "Z:" and all common MS-DOS device names ("LPT1",
+"COM1", "PRN", etc) are reserved, including those not currently supported
+for redirection. The network driver may define additional tags of its own.
+ 
+<b>Long Filename Interface</b>
+ 
+The Long Filename interface enables access to files with names that do not
+fit the MS-DOS 8.3 filename convention on network drives.
+ 
+There are the following functions:
+ 
+<b>Function           Description</b>
+────────────────────────────────────────────────────────────────────────────
+<b>LFNFindFirst</b>       Searches for the first file with a matching name
+ 
+<b>LFNFindNext</b>        Searches for the next file with a matching name
+ 
+<b>LFNFindClose</b>       Ends the search for matching files
+ 
+<b>LFNGetAttributes</b>   Retrieves file attributes
+ 
+<b>LFNSetAttributes</b>   Sets file attributes
+ 
+<b>LFNCopy</b>            Copies a file
+ 
+<b>LFNMove</b>            Moves a file
+ 
+<b>LFNDelete</b>          Deletes a file
+ 
+<b>LFNMKDir</b>           Creates a directory
+ 
+<b>LFNRMDir</b>           Removes a directory
+ 
+<b>LFNGetVolumeLabel</b>  Retrieves the volume label
+ 
+<b>LFNSetVolumeLabel</b>  Sets the volume label
+ 
+<b>LFNParse</b>           Parses paths
+ 
+<b>LFNVolumeType</b>      Specifies volume type
+ 
+Typically, these functions are called only when a network drive with long
+filenames is detected. In other words, they do not need to support local
+drives. The exception is the LFNCopy function which must be able to copy to
+or from any type of volume.
+ 
+The return value is typically a MS-DOS error function (as returned from
+MS-DOS functions when the carry flag is set, or from int 21h Function 59h,
+Get Extended Error Information). If a function returns the special error
+code 0xFFFF, then the network error message functions will be called to
+retrieve error message text.
+ 
+The maximum length of any long filename will be assumed to be 260 including
+the terminator.
+ 
+File attribute values are identical to MS-DOS file attribute fields.
+ 
+<b>Enhancements To The 3.1 MS-Net Driver</b>
+ 
+The 3.1 MS-Net driver implements the error state return value from the
+<b>WNetGetConnection</b> function. All connection dialogs are the default shell
+dialogs. In addition, a WIN.INI switch is added to [Network] to disable the
+spooler queue viewing functions. This will allow better use of the MS-Net
+driver with "somewhat compatible" networks. By disabling the spooler queue
+query functions, the MS-Net driver may run without assuming NETBIOS as the
+transport or SMB as the file sharing protocol. It will also allow the use of
+the MS-Net driver with servers that do not correctly implement the splretq
+SMB command, such as early versions of Xenix-Net.
+ 
+If possible through Kernel, the MS-Net driver should implement checking of
+open files when a device is disconnected.
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

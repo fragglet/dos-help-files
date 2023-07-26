@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>_PageDiscardPages - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _PageDiscardPages</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Memory_Management_for_Protected-Mode.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_SelectorMapFlat.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _PageDiscardPages, &lt;LinPgNum, VM, nPages, flags&gt;
+ 
+or      eax, eax            ; nonzero if discarded, zero if error
+jz      not_discarded
+ 
+The _PageDiscardPages service marks pages as no longer in use, allowing the
+system to discard the pages. Subsequent attempts to access the page do not
+cause the system to read the previous contents of the page from disk.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>LinPgNum</i>   Specifies linear page number of the first page to discard. If
+           this parameter is less than 110h or corresponds to a virtual
+           machine high linear address, the VM parameter must specify a
+           valid virtual machine handle. All pages of the specified range
+           must be marked V86Pageable.
+ 
+<i>VM</i>         Specifies a handle identifying the virtual machine containing the
+           pages to discard.
+ 
+<i>nPages</i>     Specifies the number of pages to discard.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter can be a
+           combination of the following values:
+ 
+           Value         Meaning
+           ─────────────────────────────────────────────────────────────────
+           PageZeroInit  Fills the specified pages with zeros when a
+                         subsequent attempt to page in the pages is made.
+                         This value only applies when the PageDiscard value
+                         is also given. If this value is not given, the
+                         content of the pages is undefined.
+ 
+           PageDiscard   Marks pages for a full discard by clearing both the
+                         P_ACC and P_DIRTY bits in the page table entries.
+                         If this value is not given, this service only
+                         clears the P_ACC bit in the page table entries.
+ 
+           All other values are reserved.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero value if the service is successful.
+Otherwise EAX contains zero indicating an error, such as an invalid range or
+an invalid virtual machine handle.
+ 
+<b>Comments</b>
+ 
+This service ignores pages in the range which are not present or are locked.
+This service affects only pages that are subject to demand paging.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

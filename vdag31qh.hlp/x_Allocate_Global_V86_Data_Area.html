@@ -1,0 +1,174 @@
+<html>
+
+<head>
+<title>_Allocate_Global_V86_Data_Area - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _Allocate_Global_V86_Data_Area</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='V86_Address_Space_Mapping_and_Allocation.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_Allocate_Temp_V86_Data_Area.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _Allocate_Global_V86_Data_Area, &lt;nBytes, flags&gt;
+ 
+or      eax, eax        ; zero if error
+jz      error
+mov     [Address], eax  ; ring-0 linear address of block
+ 
+The _Allocate_Global_V86_Data_Area service allocates a block of memory from
+the global V86 data area. The block is for exclusive use by the virtual
+device. Virtual devices use this service to allocate memory for
+device-specific objects which must be accessible to both the virtual device
+and software running in the virtual machine.
+ 
+This service is only available during initialization.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>nBytes</i>     Specifies the number of bytes to allocate. This parameter should
+           be a multiple of 4096.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter can be a
+           combination of the following values:
+ 
+           Value              Meaning
+           ─────────────────────────────────────────────────────────────────
+           GVDAWordAlign      Aligns block on a word boundary. If no
+                              alignment value is given, the service aligns
+                              the block on a byte boundary.
+ 
+           GVDADWordAlign     Aligns block on a doubleword boundary. If no
+                              alignment value is given, the service aligns
+                              the block on a byte boundary.
+ 
+           GVDAParaAlign      Aligns block on a paragraph (16-byte)
+                              boundary. If no alignment value is given, the
+                              service aligns the block on a byte boundary.
+ 
+           GVDAPageAlign      Aligns block on a page (4 kilobyte) boundary.
+                              If no alignment value is given, the service
+                              aligns the block on a byte boundary.
+ 
+                              The GVDAWordAlign, GVDADWordAlign,
+                              GVDAParaAlign, and GVDAPageAlign values are
+                              mutually exclusive.
+ 
+           GVDAInstance       Creates an instance data block allowing the
+                              virtual device to maintain different values in
+                              the block for each virtual machine. If this
+                              value is not given, the service creates a
+                              global block in which the same data is
+                              available to all virtual machines.
+ 
+           GVDAZeroInit       Fills the block with zeros. If this value is
+                              not given, the initial content of the block is
+                              undefined.
+ 
+           GVDAReclaim        Unmaps any physical pages in the block while
+                              mapping the system nul page into the block.
+                              The service places unmapped physical pages in
+                              the free list. This value only applies if the
+                              GVDAPageAlign value is also given. If this
+                              value is not given, the service ignores any
+                              physical pages it unmaps. It is up to the
+                              virtual device to reclaim these pages.
+ 
+                              The GVDAReclaim and GVDAInstance values are
+                              mutually exclusive.
+ 
+           GVDAInquire        Returns the size in bytes of the largest block
+                              that satisfies the requested alignment but
+                              does not require the first V86 page to be
+                              moved. The nBytes parameter is not used if
+                              this value is specified.
+ 
+                              A virtual device typically uses this value,
+                              while processing the Init_Complete message, to
+                              allocate portions of the global V86 data area
+                              that might otherwise go unused. The
+                              GVDAInquire value is only available for
+                              Windows version 3.1 or later.
+ 
+           GVDAHighSysCritOK  Informs the service that the virtual device
+                              can manage a block that resides in high MS-DOS
+                              memory. The service allocates from high MS-DOS
+                              memory only if such memory is available (for
+                              example, implemented as xMS UMBs) and the
+                              virtual device specifies this value. A virtual
+                              device can use this value only while
+                              processing the Sys_Critical_Init message.
+ 
+                              When first allocated, a block in high MS-DOS
+                              memory may not be immediately usable since
+                              memory supporting the area may not yet have
+                              been mapped. The system maps the memory for
+                              the area sometime during the
+                              Sys_Critical_Init message, but there is no
+                              guarantee as to when.
+ 
+                              The GVDAHighSysCritOK value is only available
+                              for Windows version 3.1 or later.
+ 
+           All other values are reserved.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the ring-0 linear address of the block if the
+service is successful. Otherwise, EAX contains zero to indicate an error
+such as insufficient memory to satisfy the request.
+ 
+If GVDAInquire is given, EAX contains the size in bytes of the largest block
+that satisfies the request, but that does not move the first V86 page. EAX
+contains zero if all such requests move the first V86 page.
+ 
+<b>Comments</b>
+ 
+If this service returns an error, the virtual device should consider this a
+fatal error and respond accordingly.
+ 
+The size returned when the GVDAInquire value is given may be less than a
+reasonable minimum. For instance, if GVDAPageAlign is specified, the return
+size may be less than 4096. It is up to the virtual device to check for
+this.
+ 
+For blocks allocated with GVDAInstance, this service calls automatically
+calls the _AddInstanceItem service.
+ 
+The _Allocate_Global_V86_Data_Area service is not available and must not be
+called if the virtual device has allocated a temporary block using the
+<b>_Allocate_Temp_V86_Data_Area</b> service. The virtual device must free the block
+before it can call the _Allocate_Global_V86_Data_Area service.
+ 
+If GVDAReclaim is not given, the virtual device should reclaim the physical
+addresses of any unmapped physical pages and map the pages to other
+addresses. A virtual device reclaims the physical addresses by using the
+<b>_CopyPageTable</b> service to retrieve the page table entries for the system
+virtual machine. The virtual device can then use the _PhysIntoV86 service to
+map the physical pages into the V86 address space.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_CopyPageTable, _PhysIntoV86</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

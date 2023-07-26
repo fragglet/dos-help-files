@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<title>_SetDescriptor - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _SetDescriptor</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='GDT_sl_LDT_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Heap_Allocation.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _SetDescriptor, &lt;Selector, VM, DescDWORD1, DescDWORD2, flags&gt;
+ 
+or      eax, eax        ; nonzero if set, zero if error
+jz      not_set
+ 
+The _SetDescriptor service sets (changes) the descriptor of the given
+selector.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Selector</i>    Specifies the GDT or LDT selector to set.
+ 
+<i>VM</i>          Specifies a handle identifying the virtual machine to which the
+            specified LDT selector belongs. The service ignores this
+            parameter if Selector is a GDT selector. Otherwise, the handle
+            must be valid for LDT selectors.
+ 
+<i>DescDWORD1</i>  Specifies the high doubleword of the descriptor for the
+            selector. This parameter contains the high 16 bits of the base
+            address, the high 4 bits of the limit, and the status and type
+            bits.
+ 
+<i>DescDWORD2</i>  Specifies the low doubleword of the descriptor for the selector.
+            This parameter contains the low 16 bits of the base address and
+            limit.
+ 
+<i>flags</i>       Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero value if the service is successful.
+Otherwise, EAX contains zero to indicate an error, such as an invalid
+selector or an invalid virtual machine handle.
+ 
+<b>Comments</b>
+ 
+This service ignores the high 16-bits of the Selector parameter; the 80386
+CPU often sets these bits to random values when doubleword operations are
+performed on segment registers.
+ 
+The service ignores the RPL bits of the selector.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_GetDescriptor</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

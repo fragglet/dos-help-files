@@ -1,0 +1,150 @@
+<html>
+
+<head>
+<title>Output - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Output</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Output(OS_ALTPOLYGON).html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD Output(lpDestDev, wStyle, wCount, lpPoints, lpPPen, lpPBrush,
+            lpDrawMode, lpClipRect)
+LPPDEVICE lpDestDev;
+WORD wStyle;
+WORD wCount;
+LPPOINT lpPoints;
+LPPPEN lpPPen;
+LPPBRUSH lpPBrush;
+LPDRAWMODE lpDrawMode;
+LPRECT lpClipRect;
+ 
+The Output function draws the lines and figures specified by the wStyle
+parameter. GDI calls this function when an application calls functions, such
+as LineTo (GDI.19), Rectangle (GDI.27), and Ellipse (GDI.24).
+ 
+Every graphics driver must export an Output function.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<i>lpDestDev   Points to a PDEVICE or PBITMAP st</i>ructure specifying the
+            destination device or bitmap.
+ 
+<i>wStyle</i>      Specifies the type of output to draw. This parameter can be one
+            of the following values.
+ 
+            Value                Meaning
+            ────────────────────────────────────────────────────────────────
+            OS_ARC (3)           Draws an arc.
+ 
+            OS_SCANLINES (4)     Draws a set of horizontal line segments.
+ 
+            OS_RECTANGLE (6)     Draws a rectangle.
+ 
+            OS_ELLIPSE (7)       Draws an ellipse.
+ 
+            OS_POLYLINE (18)     Draws a set of connected line segments.
+ 
+            OS_WINDPOLYGON (20)  Draws a polygon and fill it using the
+                                 winding-number-filling method.
+ 
+            OS_ALTPOLYGON (22)   Draws a polygon and fills it using the
+                                 alternate-filling method.
+ 
+            OS_PIE (23)          Draws a closed figure consisting of an arc
+                                 and two line segments connecting the
+                                 endpoints of the arc to the centerpoint of
+                                 the arc's bounding rectangle.
+ 
+            OS_CHORD (39)        Draws a closed figure consisting of an arc
+                                 and the chord connecting the endpoints of
+                                 the arc.
+ 
+            OS_CIRCLE (55)       Draws a circle.
+ 
+            OS_ROUNDRECT (72)    Draws a rectangle with round corners.
+ 
+            OS_BEGINNSCAN (80)   Begins a series of scan lines.
+ 
+            OS_ENDNSCAN (81)     Ends a series of scan lines.
+ 
+            For a full description of each style, see the subsequent Output
+            description pages.
+ 
+<i>wCount      Specif</i>ies the number of POINT structures in the array pointed to
+            by the lpPoints parameter.
+ 
+<i>lpPoints    Points to an array of POINT </i>structures. The array has wCount
+            elements. For most output styles, this parameter contains the
+            device coordinates for each point in the figure.
+ 
+<i>lpPPen      Points</i> to a PPEN structure specifying the physical pen to use to
+            draw lines and borders. This parameter is NULL if no lines or
+            borders are to be drawn.
+ 
+<i>lpPBrush    Points to a </i>PBRUSH structure specifying the physical brush to
+            use to fill the interiors of figures and draw scan lines. This
+            parameter is NULL if no interiors or scan lines are to be
+            drawn.
+ 
+<i>lpDrawMode  Points to a DRAWMO</i>DE structure containing information to use
+            when drawing, such as binary-raster operation, background mode,
+            and foreground and background color.
+ 
+<i>lpClipRect  Points to a RECT s</i>tructure containing coordinates for the
+            clipping rectangle. If the lpClipRect parameter is NULL, the
+            clipping rectangle is the entire display surface.
+ 
+<b>Return Value</b>
+ 
+The return value is 1 if the function is successful. Otherwise, it is zero
+if the function encounters an unrecoverable error. The return value is -1 if
+the function does not support the given style and wants GDI to simulate the
+output.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 8.
+ 
+<b>Output</b> uses the binary-raster operation, background mode, and background
+color specified by the DRAWMODE structure to draw lines and scan lines.
+<b>Output</b> uses the binary-raster operation to determine how to combine pen or
+brush colors with the existing color on the display surface. The function
+uses background mode to determine how to fill gaps in styled lines or
+hatched brushes. If the background mode is OPAQUE, Output combines the
+background color with the existing color in the gaps. If the background mode
+is TRANSPARENT, Output leaves the existing color unchanged. For all pen or
+brush styles other than styled lines and hatched brushes, Output draws as if
+the background mode is OPAQUE regardless of the actual background mode.
+ 
+<b>Output uses the lp</b>ClipRect parameter only if the driver has set either the
+CP_RECTANGLE or CP_REGION value in the dpClip member of the GDIINFO
+structure. Output ensures that the coordinates specified by the lpClipRect
+parameter do not extended beyond the boundaries of the display surface.
+ 
+<b>See Also</b>
+ 
+<b>Output(OS_ALTPOLYGON), Output(OS_ARC), Output(OS_BEGINNSCAN),</b>
+<b>Output(OS_CHORD), Output(OS_CIRCLE), Output(OS_ELLIPSE),</b>
+<b>Output(OS_ENDNSCAN), Output(OS_PIE), Output(OS_POLYLINE),</b>
+<b>Output(OS_RECTANGLE), Output(OS_ROUNDRECT), Output(OS_SCANLINES),</b>
+<b>Output(OS_WINDPOLYGON)</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

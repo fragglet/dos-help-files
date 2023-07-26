@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<title>List_Allocate - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> List_Allocate</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Linked_List_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='List_Attach.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     esi, List       ; list handle
+VMMcall List_Allocate
+ 
+jc      not_allocated   ; carry set if error
+mov     [Node], eax     ; address of new node
+ 
+The List_Allocate service allocates a new node for the specified list. A
+virtual device can attach the new node to the list using the List_Attach or
+<b>List_Insert</b> service. The contents of the new node are undefined.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>List</i>       Specifies the handle for the list.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the address of the new node if this service is
+successful. For lists created using the LF_Alloc_Error value, the carry flag
+is clear if the service is successful. For other lists, this service never
+returns if the new node cannot be allocated.
+ 
+<b>Comments</b>
+ 
+This service normally allocates nodes from a pool of free nodes. This
+prevents the overhead of calling the _HeapAlloc service for every node
+allocation. If the list is created using the LF_Use_Heap value, this service
+calls the _HeapAlloc service for each node.
+ 
+<b>Uses</b>
+ 
+EAX, Flags
+ 
+<b>See Also</b>
+ 
+<b>List_Attach, List_Create, List_Deallocate, List_Insert</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

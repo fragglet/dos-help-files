@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>InkReady - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> InkReady</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display-Specific_Pen_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Display-Specific_Pen_Functions.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+BOOL InkReady(lpfn)
+LPFN lpfn;   /* pointer to callback function */
+ 
+The InkReady function notifies the display driver that the Recognition
+Context Manager (RC) is ready to ink a path drawn by the pen. The RC Manager
+for Pen computing calls this function when the user stroked a path using the
+pen. The display driver completes the inking by calling the callback
+function pointed to by the lpfn parameter. Depending on whether any other
+drawing operation is under way, the driver may call the callback function
+immediately or wait for the current drawing operation to complete.
+ 
+Display drivers that support Pen computing must export the InkReady
+function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpfn</i>       Points to the callback function that completes the inking.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if it completed the inking (called the callback
+function) immediately. Otherwise, it is FALSE to indicate that the display
+driver will complete the inking as soon as the current drawing operation is
+complete.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 600.
+ 
+The InkReady function determines whether any other drawing operation is
+under way. If not, the function should call the callback function
+immediately, and then return TRUE. If a drawing operation is under way,
+<b>InkReady</b> must save the callback function address and return FALSE. The
+display driver is then responsible for calling the callback function as soon
+as the current drawing operation is complete.
+ 
+The callback function pointed to by lpfn takes no parameters and returns no
+value.
+ 
+<b>See Also</b>
+ 
+<b>GetLPDevice</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

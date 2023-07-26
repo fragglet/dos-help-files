@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>Enabling and Disabling the Physical Device - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Enabling and Disabling the Physical Device</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='disphardware.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+GDI enables the display driver by calling the Enable function and directing
+the driver to initialize a physical device for subsequent graphics output. A
+physical device is a PDEVICE structure that represents the display and its
+current operating state. A display driver uses the physical device
+information to determine how to carry out specific tasks, such as which
+display mode to use. The display driver initializes the physical device by
+copying information to the PDEVICE structure.
+ 
+In 386 enhanced-mode Windows, GDI calls the Enable function only when the
+display driver is first loaded. In standard-mode Windows, GDI calls the
+<b>Enable</b> function when first loaded and whenever the user switches back to
+Windows from a non-Windows application.
+ 
+GDI calls Enable twice: Once to retrieve a copy of the driver's GDIINFO
+structure, and a second time to initialize the PDEVICE structure. After the
+first call, GDI uses the dpDEVICEsize member in the GDIINFO structure to
+determine the size of the driver's PDEVICE structure. GDI then allocates
+memory for the structure and calls Enable for the second time, passing a
+pointer to structure. At this point, the driver initializes the display
+hardware and the structure.
+ 
+When Windows switches back from a non-Windows application, GDI calls Enable
+once. The driver reinitializes the display hardware and the PDEVICE
+structure, reinitializing any screen data that may have been discarded when
+Windows switched to the non-Windows application.
+ 
+Although only the display driver initializes and uses the PDEVICE structure,
+it is GDI that allocates memory for the structure, determines when to pass
+it to the driver's output functions, and deletes the structure when it is no
+longer needed. Except for the first two bytes (16 bits) of the PDEVICE
+structure, the content and format of the structure depends entirely on the
+display driver. Typically, the driver includes all the information that the
+output functions need to generate appropriate graphics commands. The first
+two bytes, on the other hand, must be set to a nonzero value. GDI reserves
+zero to indicate a PBITMAP structure. GDI creates and uses PBITMAP
+structures in place of PDEVICE structures when an application creates a
+memory-device context.
+ 
+GDI disables the display driver by calling the Disable function when Windows
+quits. GDI expects the driver to free any resources associated with the
+physical device and to restore the display hardware to the state before
+Windows started. After the driver returns from the Disable function, GDI
+frees the memory it allocated for the PDEVICE structure and frees the
+driver, removing any driver code and data from memory.
+ 
+In standard-mode Windows, GDI also calls Disable when the user switches to a
+non-Windows application. In this case, GDI temporarily disables the physical
+device, expecting the driver to select a text mode for the display hardware
+so that the non-Windows application has a nongraphics mode in which to
+start. Although Windows saves the display driver's data segment when it
+switches, it discards all other segments. Therefore, the display driver
+should save any data that may be discarded so that the data can be restored
+when Windows switches back from the non-Windows application.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

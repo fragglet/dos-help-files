@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>VID_Hw_Int_Proc - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VID_Hw_Int_Proc</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_PIC_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VID_Virt_Int_Proc.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vpicd.inc
+ 
+mov     eax, IRQHand    ; IRQ handle
+mov     ebx, VMId       ; current VM handle
+call    VID_Hw_Int_Proc
+ 
+jc      not_handled     ; carry set if interrupt not handled
+ 
+The VID_Hw_Int_Proc procedure handles hardware interrupts for a virtual
+device. The system calls the procedure whenever a hardware interrupt occurs.
+Typically, VID_Hw_Int_Proc services the physical device, calls the
+<b>VPICD_Phys_EOI</b> service to end the physical interrupt, and sets the virtual
+IRQ request for a specific virtual machine.
+ 
+The system disables interrupts before calling this procedure. The procedure
+can re-enable interrupts if necessary.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>IRQHand</i>    Specifies the handle identifying the interrupt request.
+ 
+<i>VMId</i>       Specifies the handle identifying the current virtual machine.
+ 
+<b>Return Value</b>
+ 
+The procedure clears the carry flag if it processed the interrupt. If the
+IRQ is sharable, the procedure can direct the system to pass the interrupt
+to the next handler by setting the carry flag. In this case, it must not
+process the interrupt.
+ 
+<b>Comments</b>
+ 
+The VMM services the procedure is allowed to call is limited. If processing
+the interrupt requires use of restricted services, this procedure should use
+the Schedule_Call_Global_Event service to schedule an event that performs
+the additional processing.
+ 
+This procedure may modify EAX, EBX, ECX, EDX, ESI, and Flags.
+ 
+This procedure must return using the ret instruction, not an iret
+instruction.
+ 
+<b>See Also</b>
+ 
+<b>VPICD_IRQ_Descriptor</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,67 @@
+<html>
+
+<head>
+<title>Get_PM_Int_Type - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Get_PM_Int_Type</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Interrupts_and_Callback_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Get_PM_Int_Vector.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, Interrupt      ; number of interrupt to check
+VMMcall Get_PM_Int_Type
+ 
+mov     [Type], edx         ; 0 if trap gate, otherwise interrupt gate
+ 
+The Get_PM_Int_Type service determines whether a protected-mode interrupt
+vector is an interrupt gate or trap gate type interrupt.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Interrupt</i>  Specifies the number of the interrupt to check.
+ 
+<b>Return Value</b>
+ 
+The EDX register contains zero if the specified interrupt corresponds to a
+trap gate. The EDX register contains a nonzero value if the interrupt
+corresponds to an interrupt gate.
+ 
+<b>Comments</b>
+ 
+An interrupt through an interrupt gate automatically clears the interrupt
+flag bit to disable interrupts. Interrupts through a trap gate do not modify
+the interrupt bit. All protected-mode interrupts default to the trap gate
+type, but virtual devices such as the virtual PIC device, may change some
+trap gates to interrupt gates so that hardware interrupts disable
+interrupts. The virtual PIC device leaves software interrupts, such as
+Interrupt 21h, unchanged. This avoids an unnecessary ring transition by
+eliminating the need for the software interrupt handlers to execute an sti
+instruction.
+ 
+<b>Uses</b>
+ 
+EDX, Flags
+ 
+<b>See Also</b>
+ 
+<b>Get_PM_Int_Vector, Set_PM_Int_Type</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

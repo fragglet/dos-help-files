@@ -1,0 +1,62 @@
+<html>
+
+<head>
+<title>_GetAppFlatDSAlias - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _GetAppFlatDSAlias</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Page_Allocation_and_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_GetDemandPageInfo.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _GetAppFlatDSAlias
+ 
+mov     [FlatData], eax         ; read-only GDT selector
+ 
+The _GetAppFlatDSAlias service returns a ring-3, read-only, GDT selector
+that provides access to the same memory as the system's ring-0 data segment
+selector. Virtual devices use this service to support protected-mode APIs
+that let protected-mode applications read from the same memory as the
+virtual device.
+ 
+This service has no parameters.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the selector.
+ 
+<b>Comments</b>
+ 
+Since more than one virtual device may use this selector, a virtual device
+must never attempt to free the selector using the _Free_GDT_Selector
+service. Also, a virtual device should not attempt to create a read/write
+selector using this selector. If a virtual device requires an application to
+write to any portion of system memory, the virtual device should build its
+own selector with a base and limit that specifies just the memory the
+application must modify.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_Free_GDT_Selector</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

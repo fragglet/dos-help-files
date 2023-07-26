@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<title>Get_VMM_Reenter_Count - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Get_VMM_Reenter_Count</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Information_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Get_VMM_Version.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall Get_VMM_Reenter_Count
+ 
+jecxz   not_reentered           ; ecx is zero if VMM not re-entered
+mov     [Count], ecx            ; otherwise, number of times re-entered
+ 
+The Get_VMM_Reenter_Count service returns the number of times the VMM has
+been re-entered as a result of a hardware interrupt, page fault, or other
+processor exception. Virtual devices typically use this service to determine
+whether they can call nonre-entrant VMM services.
+ 
+This service has no parameters.
+ 
+<b>Return Value</b>
+ 
+The ECX register is zero if the VMM has not been re-entered. Otherwise, the
+ECX register specifies the number of times the VMM has been re-entered.
+ 
+<b>Comments</b>
+ 
+If this service returns a nonzero value, a virtual device may call only VMM
+services that are asynchronous. If a virtual must call other VMM services,
+the virtual device can schedule an event using a service such as
+<b>Schedule_Global_Event</b>. The system calls the event's callback procedure when
+all VMM services are available.
+ 
+The Call_Global_Event and Call_VM_Event services call this service to
+determine whether the event callback procedure should be called
+immediately.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Call_Global_Event, Call_VM_Event, Schedule_Global_Event, Schedule_VM_Event</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

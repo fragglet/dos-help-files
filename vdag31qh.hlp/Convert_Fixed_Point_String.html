@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>Convert_Fixed_Point_String - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Convert_Fixed_Point_String</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Initialization_Information_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Convert_Hex_String.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     ecx, Places     ; number of decimal places
+mov     edx, String     ; points to string to convert
+VMMcall Convert_Fixed_Point_String
+ 
+mov     [Value], eax    ; fixed-point value
+mov     [TermChar], edx ; pointer to terminating character
+ 
+The Convert_Fixed_Point_String service converts a string representing a
+fixed-point number into a fixed-point value. This service also returns a
+pointer to the character in the string that marked the end of the number.
+ 
+This service is only valid during initialization.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Places</i>     Specifies the number of digits after the decimal point to
+           convert. If a fixed-point number has extra digits, the service
+           skips over the digits without calculating them into the
+           fixed-point value.
+ 
+<i>String</i>     Points to the null-terminated string to convert. The Comments
+           section describes the format of the string.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the normalized value of fixed-point number; the
+actual value is computed as EAX * 10 ** (-Places). The EDX register contains
+the address of the character in the string marking the end of the
+fixed-point number.
+ 
+<b>Comments</b>
+ 
+A fixed-point number is a decimal number that consists of an integer, a
+fraction, or a combination of integer and fraction. The integer can be any
+combination of decimal digits and may be preceded by a plus sign (+) or a
+minus sign (-) to indicate a positive or negative fixed-point value. The
+fraction can be any combination of decimal digits but must be preceded with
+a decimal point (.).
+ 
+<b>Uses</b>
+ 
+EAX, EDX, Flags
+ 
+<b>See Also</b>
+ 
+<b>Convert_Boolean_String, Convert_Decimal_String, Convert_Hex_String</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

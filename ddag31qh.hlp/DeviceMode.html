@@ -1,0 +1,114 @@
+<html>
+
+<head>
+<title>DeviceMode - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DeviceMode</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Disable.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+void DeviceMode(hWnd, hInstance, lpDestDevType, lpOutputfile)
+HWND hWnd;
+HANDLE hInstance;
+LPSZ lpDestDevType;
+LPSZ lpOutputfile;
+ 
+The DeviceMode function sets the current settings (such as paper bin, paper
+size, scaling, and orientation) for the device driver by prompting for those
+modes with a dialog box. Control Panel calls the DeviceMode function when
+the user requests the setting up the printer as part of printer
+installation.
+ 
+All printer drivers must export the DeviceMode function. Display drivers
+that permit the user to change operating modes must export the DeviceMode
+function.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hWnd</i>           Identifies the parent window to use for the dialog box.
+ 
+<i>hInstance</i>      Identifies the module instance of the device driver.
+ 
+<i>lpDestDevType</i>  Points to a null-terminated string containing the device
+               name. The application passes the same device-type name as
+               specified in the CreateDC function.
+ 
+<i>lpOutputfile</i>   Points to a null-terminated string containing the name of an
+               MS-DOS file or device port. The application passes the same
+               device type name as given in the CreateDC function.
+ 
+<b>Return Value</b>
+ 
+This function has no return value.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 13.
+ 
+The DeviceMode function creates an application-modal dialog box using the
+<b>DialogBox</b> function (USER.240). The dialog box must provide options for the
+user to set the various settings of the device. DeviceMode does the
+following:
+ 
+1  Initializes the dialog box settings by retrieving the current environment
+   using the GetEnvironment function (GDI.133), or by reading the
+   environment from the corresponding device-specific section in the WIN.INI
+   file.
+ 
+2  Calls the DialogBox function to display the dialog box, then waits for
+   the user to complete their changes. When the value returns from
+   DialogBox, check the return value. Make subsequent updates only if the
+   return value is IDOK.
+ 
+3  Updates the current device environment by using the SetEnvironment
+   function (GDI.132). Also, the function updates the corresponding
+   device-specific section in the WIN.INI file.
+ 
+4  Sends a WM_DEVMODE message to all applications informing them of a change
+   to the device's operating modes.
+ 
+The dialog box must provide at least a title bar and OK and Cancel buttons,
+in addition to controls for the various operating modes. The title bar
+should contain the name of the current printer model (if the driver supports
+several models), but no other printer model information should be presented
+in the dialog box. (The DeviceMode dialog box must not permit the user to
+change printer models.)
+ 
+If a device has too many options to fit in a single dialog box, DeviceMode
+can provide nested dialog boxes, using buttons in the first dialog box to
+access the others. In all cases, a dialog function for a DeviceMode dialog
+box closes the dialog box if it receives a WM_COMMAND message with the
+<i>wParam</i> parameter set to IDCANCEL. This message occurs when the user presses
+the ESC key, or chooses the Cancel button in the dialog box, or when Windows
+Help needs to close the dialog box in order to respond to a request for help
+from another application.
+ 
+Although Control Panel requires DeviceMode, most applications call the
+<b>ExtDeviceMode or AdvancedSetUpDialog fu</b>nction when the user makes a request
+to set up the device. (Applications either directly or indirectly call
+through the standard Printer Setup dialog box.) In drivers that provide
+<b>ExtDeviceMode, the DeviceMode typically calls ExtDeviceMode to se</b>t up the
+device.
+ 
+<b>See Also</b>
+ 
+<b>AdvancedSetUpDialog, ExtDeviceMode</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>Get_Crit_Status_No_Block - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Get_Crit_Status_No_Block</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Primary_Scheduler_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='No_Fail_Resume_VM.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall Get_Crit_Status_No_Block
+ 
+mov     [VM], ebx           ; VM handle of owner
+mov     [Claims], ecx       ; # of times critical section claimed
+jc      high_priority       ; priority is Critical_Section_Boost or higher
+ 
+(Version 3.1 only)
+ 
+The Get_Crit_Status_No_Block service returns the claim count and handle of
+the owner of the critical section. Unlike the Get_Crit_Section_Status
+service, this service returns immediately (without blocking) even if a
+delayed request to release the critical section is pending.
+ 
+This service has no parameters.
+ 
+<b>Return Value</b>
+ 
+The ECX register contains the critical section claim count, and the EBX
+register contains the handle identifying the virtual machine owning the
+critical section. If the ECX register is 0, the EBX register contains the
+handle of the current virtual machine.
+ 
+The carry flag is set if the current virtual machine has an execution
+priority greater than or equal to Critical_Section_Boost, such as during a
+hardware interrupt simulation.
+ 
+<b>Comments</b>
+ 
+In some cases, this service may indicate that the critical section is
+currently owned even when it will be released before returning to the
+virtual machine.
+ 
+This is an asynchronous service; it may be called at interrupt time.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>End_Critical_Section, Get_Crit_Section_Status</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

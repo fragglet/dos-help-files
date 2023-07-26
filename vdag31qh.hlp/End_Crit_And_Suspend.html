@@ -1,0 +1,94 @@
+<html>
+
+<head>
+<title>End_Crit_And_Suspend - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> End_Crit_And_Suspend</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Primary_Scheduler_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='End_Critical_Section.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall End_Crit_And_Suspend
+jc      not_released            ; carry set if critical section not released
+ 
+The End_Crit_And_Suspend service releases the critical section and
+immediately suspends the current virtual machine. Virtual devices use this
+service to block a virtual machine until another virtual machine can process
+an event.
+ 
+This service has no parameters.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if this service is successful. Otherwise, the carry
+flag is set to indicate an error.
+ 
+<b>Comments</b>
+ 
+This service releases the critical section only if the virtual machine has
+claimed the section once. This service returns an error if the system could
+not suspend the virtual machine, or could not release the critical section
+because the claim count was not 1. In such cases, the service does not
+decrement the claim count and the critical section is not released.
+ 
+<b>Example</b>
+ 
+The following example uses this service to display a dialog box in the
+system virtual machine. The Show_Dialog_Box procedure enters a critical
+section to prevent the Call_Priority_VM_Event service from switching to the
+system virtual machine immediately. It then calls End_Crit_And_Suspend which
+blocks the current virtual machine. The Show_Dialog_Event procedure runs in
+the system virtual machine and actually displays the dialog box. When it is
+finished it resumes the virtual machine that called Show_Dialog_Box by
+calling the Resume_VM service.
+ 
+Show_Dialog_Box:
+    VMMcall Get_Crit_Section_Status
+    jc      Cant_Do_It                  ; critical section already claimed
+ 
+    VMMcall Begin_Critical_Section
+    mov     eax, Low_Pri_Device_Boost
+    VMMcall Get_System_VM_Handle
+    mov     ecx, 11b
+    mov     edx, OFFSET32 Dialog_Box_Data_Strucure
+    mov     esi, OFFSET32 Show_Dialog_Event
+    VMMcall Call_Priority_VM_Event
+    VMMcall End_Crit_And_Suspend
+    jc      Did_Not_Work
+    ; When End_Crit_And_Suspend returns the dialog box
+    ; will have been displayed
+ 
+Show_Dialog_Event:
+    ; Call Windows to display the dialog box
+ 
+    mov     ebx, [Suspended_VM_Id]
+    VMMcall Resume_VM
+    jc      Error
+    ret
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>End_Critical_Section, Resume_VM, Suspend_VM</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

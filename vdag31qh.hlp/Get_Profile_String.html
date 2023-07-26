@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<title>Get_Profile_String - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Get_Profile_String</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Initialization_Information_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Get_PSP_Segment.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     edx, OFFSET32 Default ; points to default string (optional)
+mov     esi, OFFSET32 Profile ; points to section name
+mov     edi, OFFSET32 Keyname ; points to entry name
+VMMcall Get_Profile_String
+ 
+jc      not_found               ; carry set if entry not found
+mov     [Value], edx            ; points to entry value string
+ 
+The Get_Profile_String service searches the SYSTEM.INI file for a specified
+entry and returns a pointer to a null-terminated string representing the
+entry value.
+ 
+This service is only available during initialization.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Default</i>    Points to a null-terminated string to be returned if the entry is
+           not found or has no current value.
+ 
+<i>Profile</i>    Specifies a null-terminated string identifying the section in the
+           SYSTEM.INI file to search. If Profile is zero, the service
+           searches the [386Enh] section.
+ 
+<i>Keyname</i>    Points to a null-terminated string identifying the name of the
+           entry to search for.
+ 
+<b>Return Value</b>
+ 
+If the carry flag is clear, the EDX register contains the address of the
+null-terminated string representing the entry value. If the carry flag is
+set, the string cannot be found.
+ 
+<b>Comments</b>
+ 
+A virtual device must not modify the string pointed to by the EDX register.
+If modification is required, the virtual device must copy the string and
+modify the copy.
+ 
+<b>Uses</b>
+ 
+EDX, Flags
+ 
+<b>See Also</b>
+ 
+<b>Get_Next_Profile_String</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

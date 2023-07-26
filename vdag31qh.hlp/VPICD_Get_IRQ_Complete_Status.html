@@ -1,0 +1,89 @@
+<html>
+
+<head>
+<title>VPICD_Get_IRQ_Complete_Status - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VPICD_Get_IRQ_Complete_Status</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_PIC_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VPICD_Get_Status.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vpicd.inc
+ 
+mov     eax, IRQNum             ; IRQ number
+VxDcall VPICD_Get_IRQ_Complete_Status
+ 
+jc      already_virtualized     ; carry set if IRQ is already virtualized
+ 
+mov     [Status], ecx           ; status
+ 
+The VPICD_Get_IRQ_Complete_Status service returns the complete status for
+the specified IRQ. This service is similar to VPICD_Get_Complete_Status
+except that it takes an IRQ number as a parameter instead of an IRQ handle.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>IRQNum</i>     Specifies the number of the IRQ for which to retrieve status.
+ 
+<b>Return Value</b>
+ 
+The carry flag is set if the IRQ has been virtualized. Otherwise, the carry
+flag is clear.
+ 
+The ECX register contains a combination of the following status flag
+values:
+ 
+<b>Value                    Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>VPICD_Stat_IRET_Pending  A virtual iret is pending.</i>
+ 
+<i>VPICD_Stat_In_Service</i>    The IRQ is virtually in service.
+ 
+<i>VPICD_Stat_Phys_Mask</i>     The IRQ is physically masked.
+ 
+<i>VPICD_Stat_Phys_In_Serv</i>  The IRQ is physically in service.
+ 
+<i>VPICD_Stat_Virt_Mask</i>     The virtual machine has masked the IRQ.
+ 
+<i>VPICD_Stat_Virt_Req</i>      The virtual interrupt request for the virtual
+                         machine has been set (by a virtual device, not
+                         necessarily the caller).
+ 
+<i>VPICD_Stat_Phys_Req</i>      The physical interrupt request has been set.
+ 
+<i>VPICD_Stat_Virt_Dev_Req</i>  The virtual interrupt request has been set by the
+                         calling virtual device.
+ 
+<b>Comments</b>
+ 
+Virtual devices typically use this service to inspect an IRQ before
+attempting to virtualize it, or to inspect the state of another virtual
+device's interrupt. Since the service indicates whether an IRQ has been
+virtualized, virtual devices use this service to avoid conflicts when more
+than one device may want to use an IRQ.
+ 
+<b>Uses</b>
+ 
+ECX, Flags
+ 
+<b>See Also</b>
+ 
+<b>VPICD_Get_Complete_Status</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,180 @@
+<html>
+
+<head>
+<title>Call_Priority_VM_Event - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Call_Priority_VM_Event</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Event_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Call_VM_Event.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, PriorityBoost          ; priority boost (can be 0)
+mov     ebx, VM                     ; VM handle
+mov     ecx, Flags                  ; option flags
+mov     edx, OFFSET32 RefData       ; points to reference data
+mov     esi, OFFSET32 EventCallback ; points to event callback procedure
+mov     edi, TimeOut                ; number of milliseconds for time-out
+VMMcall Call_Priority_VM_Event
+ 
+mov     [Event], esi            ; event handle or zero if callback called
+ 
+The Call_Priority_VM_Event service either calls the callback procedure
+immediately or schedules a priority event for the specified virtual machine.
+This service schedules the event if the virtual device is processing a
+hardware interrupt that interrupted the VMM, or the current virtual machine
+is not the specified virtual machine, or the Flags parameter specifies the
+PEF_Always_Sched value. In all other cases, the service calls the callback
+procedure and returns without scheduling an event.
+ 
+This is an asynchronous service.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>PriorityBoost</i>  Specifies a positive or negative priority boost for the
+               virtual machine. This parameter must be a value such that
+               when added to the current execution priority the result is
+               within the range Reserved_Low_Boost to Reserved_High_Boost.
+               This parameter can be 0 if no boost is necessary.
+ 
+               The following lists some common priority boost values:
+ 
+               Value                   Meaning
+               ─────────────────────────────────────────────────────────────
+               Reserved_Low_Boost      Reserved for use by system.
+ 
+               Cur_Run_VM_Boost        The time-slice scheduler uses this
+                                       value to force a virtual machine to
+                                       run for its allotted time-slice.
+ 
+               Low_Pri_Device_Boost    Virtual devices use this value for
+                                       events that need timely processing,
+                                       but are not time critical.
+ 
+               High_Pri_Device_Boost   Virtual devices use this value for
+                                       events that need timely processing,
+                                       but should not circumvent operations
+                                       that have a critical section boost.
+ 
+               Critical_Section_Boost  The system uses this value for
+                                       virtual machines specified in a call
+                                       to the Begin_Critical_Section
+                                       service.
+ 
+               Time_Critical_Boost     Virtual devices use this value for
+                                       events that must be processed even
+                                       when another virtual machine is in a
+                                       critical section. For example, VPICD
+                                       uses this when simulating hardware
+                                       interrupts.
+ 
+               Reserved_High_Boost     Reserved for use by system.
+ 
+<i>VM</i>             Specifies a handle identifying the virtual machine to process
+               the event.
+ 
+<i>Flags</i>          Specifies how to carry out the event. This parameter can be a
+               combination of the following values:
+ 
+               Value              Meaning
+               ─────────────────────────────────────────────────────────────
+               PEF_Wait_For_STI   Callback procedure is not called until the
+                                  virtual machine enables interrupts.
+ 
+               PEF_Wait_Not_Crit  Callback procedure is not called until the
+                                  virtual machine is not in a critical
+                                  section or time-critical operation.
+ 
+               PEF_Dont_Unboost   Priority of the virtual machine is not
+                                  reduced after return from callback
+                                  procedure.
+ 
+               PEF_Always_Sched   Event is always scheduled, meaning the
+                                  callback procedure is never called
+                                  immediately.
+ 
+               PEF_Time_Out       Specifies that time-out value in the EDI
+                                  register should be used. Available in
+                                  Windows version 3.1 or later.
+ 
+               All other values are reserved.
+ 
+<i>RefData</i>        Points to reference data to be passed to the callback
+               procedure.
+ 
+<i>EventCallback</i>  Points to the callback procedure. See the Comments section
+               for more information about the procedure.
+ 
+<i>TimeOut</i>        Specifies the number of milliseconds until the event times
+               out. The service uses this parameter only if the PEF_Time_Out
+               value is specified by the Flags parameter.
+ 
+<b>Return Value</b>
+ 
+The ESI register is zero if the callback procedure was called immediately.
+Otherwise, the ESI register contains the event handle. The handle can be
+used in a subsequent call to the Cancel_Priority_VM_Event service to cancel
+the event.
+ 
+<b>Comments</b>
+ 
+The system carries out a task switch to the specified virtual machine if it
+is not the current virtual machine. If the PriorityBoost parameter is not
+zero, the service boosts the priority of the virtual machine before calling
+the callback procedure.
+ 
+If the amount of time specified by the TimeOut parameter elapses before the
+system can switch to the virtual machine, the system sets the carry flag and
+calls the callback procedure immediately regardless of which virtual machine
+is currently running. In this case, any requested priority boost is canceled
+even if the Flags parameter specified the PEF_Dont_Unboost value. The
+callback procedure should always check the carry flag to determine whether a
+time out occurred.
+ 
+The callback procedure can carry out any actions and use any VMM services.
+The system calls the event callback procedure as follows:
+ 
+mov     ebx, VM                 ; current VM handle
+mov     edx, OFFSET32 RefData   ; points to reference data
+mov     ebp, OFFSET32 crs       ; points to a Client_Reg_Struc
+call    [EventCallback]
+ 
+The VM parameter is a handle identifying the current virtual machine. If a
+time-out occurred, this handle may not be valid. In such cases, the callback
+procedure should use the Get_Cur_VM_Handle service to get the handle of the
+current virtual machine.
+ 
+The RefData parameter points to reference data supplied by the virtual
+machine that scheduled the event and crs points to a Client_Reg_Struc
+structure containing the contents of the current virtual machine's
+registers.
+ 
+The callback procedure can modify EAX, EBX, ECX, EDX, ESI, EDI, and Flags.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Adjust_Exec_Priority, Call_VM_Event, Call_When_Not_Critical,</b>
+<b>Call_When_VM_Ints_Enabled,Cancel_Priority_VM_Event</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

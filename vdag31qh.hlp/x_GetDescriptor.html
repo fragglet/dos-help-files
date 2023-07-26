@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<title>_GetDescriptor - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _GetDescriptor</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='GDT_sl_LDT_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_SetDescriptor.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _GetDescriptor, &lt;Selector, VM, flags&gt;
+ 
+mov     ecx, eax                ; zero in eax and edx if error
+or      ecx, edx
+jz      error
+ 
+mov     [DescDWORD1], edx       ; high doubleword of descriptor
+mov     [DescDWORD2], eax       ; low doubleword of descriptor
+ 
+The _GetDescriptor service retrieves a copy of the descriptor associated
+with the given LDT or GDT selector.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Selector</i>   Specifies a GDT or LDT selector.
+ 
+<i>VM</i>         Specifies a handle identifying the virtual machine to which the
+           specified LDT selector belongs. The service ignores this
+           parameter if Selector is a GDT selector. Otherwise, the handle
+           must be valid for LDT selectors.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the low doubleword of the descriptor and the EDX
+register contain the high doubleword of the descriptor. Both EAX and EDX
+contain zero to indicate an error, such as an invalid selector or an invalid
+virtual machine handle.
+ 
+<b>Comments</b>
+ 
+This service ignores the high 16-bits of the Selector parameter; the 80386
+CPU often sets these bits to random values when doubleword operations are
+performed on segment registers.
+ 
+This service ignores the RPL bits of the selector.
+ 
+<b>Uses</b>
+ 
+EAX, EDX
+ 
+<b>See Also</b>
+ 
+<b>_BuildDescriptorDWORDs, _SetDescriptor</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,134 @@
+<html>
+
+<head>
+<title>EnumObj - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> EnumObj</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ExtDeviceMode.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD EnumObj(lpDestDev, wStyle, lpCallbackFunc, lpClientData)
+LPPDEVICE lpDestDev;
+WORD wStyle;
+FARPROC lpCallbackFunc;
+LPVOID lpClientData;
+ 
+The EnumObj function enumerates the pens and brushes available on the
+device. GDI calls EnumObj when an application calls the EnumObjects function
+(GDI.71). For each object having the given style, EnumObj calls the callback
+function with the logical information for that object. EnumObj continues to
+call the callback function until there are no more objects or the callback
+function returns zero.
+ 
+Every graphics driver must export an EnumObj function.
+ 
+<b>Parameter       Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpDestDev       Points to a PDEVICE or PBITMA</i>P structure specifying the
+                destination device or bitmap.
+ 
+<i>wStyle</i>          Specifies whether to enumerate pens or brushes. This
+                parameter can be one of the following values.
+ 
+                Value  Meaning
+                ────────────────────────────────────────────────────────────
+                1      Enumerates pens
+ 
+                2      Enumerates brushes
+ 
+                EnumObj enumerates all objects of the given type. If there
+                are no objects of the given type, the function must return
+                1.
+ 
+<i>lpCallbackFunc</i>  Points to the user-supplied callback function.
+ 
+<i>lpClientData</i>    Points to the user-supplied data.
+ 
+<b>Return Value</b>
+ 
+The return value is the last value returned by the callback function.
+Otherwise, it is 1 if there are no objects of the given type.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 7.
+ 
+The callback function has the following form:
+ 
+<b>WORD Callbac</b>kFunction(lpLogObj, lpClientData)
+<b>LPVOID lpLogObj;</b>
+<b>LPSTR lpClientD</b>ata;
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>lpLogObj      Points to a LPEN or LBRUSH structure, depe</i>nding on the wStyle
+              parameter.
+ 
+<i>lpClientData  Points to the user-sup</i>plied data passed to EnumObj.
+ 
+Before calling the callback function, EnumObj must fill the LPEN or LBRUSH
+structure with the logical colors and other values that correspond to a
+given physical pen or brush.
+ 
+To support some older applications (such as Microsoft Excel for versions
+earlier than 2.1), EnumObj specifies the 8 default EGA colors in the first 8
+objects it enumerates.
+ 
+<b>EGA color  RGB value</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Black</i>      0,0,0
+ 
+<i>White</i>      0xFF,0xFF,0xFF
+ 
+<i>Red</i>        0xFF,0,0
+ 
+<i>Green</i>      0,0xFF,0
+ 
+<i>Blue</i>       0,0,0xFF
+ 
+<i>Yellow</i>     0xFF,0xFF,0
+ 
+<i>Magenta</i>    0xFF,0,0xFF
+ 
+<i>Cyan</i>       0,0xFF,0xFF
+ 
+If the driver supports additional colors, EnumObj can specify those colors
+in any order. Since some applications end the enumeration after the first 16
+colors, the second 8 colors to enumerated should be the most desirable
+colors of the device.
+ 
+<b>EnumObj</b> should enumerate solid pens before styled lines. Enumerating styled
+pens is optional. The function should enumerate:
+ 
+♦  Solid pens
+ 
+♦  Styled pens (optional)
+ 
+♦  Solid brushes (no dithered colors)
+ 
+♦  Hatched brushes
+ 
+<b>EnumObj</b> does not need to specify the background colors for hatched brushes.
+ 
+<b>See Also</b>
+ 
+<b>EnumDFonts</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

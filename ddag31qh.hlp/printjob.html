@@ -1,0 +1,113 @@
+<html>
+
+<head>
+<title>Print Jobs - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Print Jobs</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printer_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='printband.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+A printer driver provides print job support by handling printer-specific
+escapes. GDI passes escapes to a printer driver's Control function whenever
+an application calls the Escape function (GDI.38).
+ 
+<b>The QUERYESCSUPPORT Escape</b>
+ 
+All drivers are required to implement the QUERYESCSUPPORT escape. For this
+escape, the lpInData parameter points to a 16-bit value that contains the
+index of another escape.
+ 
+The driver returns a positive number if the driver implements that escape,
+or zero if the escape is unimplemented. The driver always returns nonzero if
+the escape queried is QUERYESCSUPPORT.
+ 
+<b>The SETABORTPROC Escape</b>
+ 
+SETABORTPROC is the first escape an application calls when printing. An
+application passes a pointer to a callback function in the lpInData
+parameter when it calls the SETABORTPROC escape. This callback function is
+used to check for user actions such as cancelling the print job. The printer
+driver, however, is not responsible for the callback function; GDI modifies
+the SETABORTPROC escape so that lpInData points to the application's device
+context handle.
+ 
+The hDC parameter given to the driver by this escape should be used with the
+<b>OpenJob</b> function to enable the output functions in GDI to call the
+application's callback function. Printer drivers generally save this handle
+in the PDEVICE structure. If the application does not use SETABORTPROC, NULL
+should be passed to the OpenJob function.
+ 
+<b>The STARTDOC Escape</b>
+ 
+Usually, STARTDOC is the escape an application calls. STARTDOC indicates to
+GDI and the device driver that the application is printing.
+ 
+This escape also supplies a Print Manager job title in a NULL-terminated
+string pointed to by lpInData. The lpOutData parameter is unused. This
+supplies the title used by the OpenJob function.
+ 
+Together, with the port name supplied as a parameter to Enable and the hDC
+supplied by the SETABORTPROC escape, the driver now has all the data
+necessary to call the OpenJob function.
+ 
+<b>RESETDEVICE and STARTDOC Escapes</b>
+ 
+To support the ResetDC and StartDoc functions, which are new to Windows 3.1,
+printer drivers must process the RESETDEVICE and STARTDOC escapes in their
+<b>Control</b> functions.
+ 
+Although the STARTDOC escape was available in Windows 3.0, the lpInData and
+<i>lpOutData parameters have c</i>hanged. Specifically, lpInData points to a
+null-terminated string specifying the name of the document, and lpOutData
+points to a DOCINFO structure specifying the output port or file as well as
+the document name. The structure has the following form:
+ 
+typedef struct {
+    short   cbSize;
+    LPSTR   lpszDocName;
+    LPSTR   lpszOutput;         // output port name
+} DOCINFO, FAR * LPDOCINFO;
+ 
+The lpszOutput is the name of the output file to use. If either lpOutData or
+<b>lpszOutput is NULL, the output</b> port given to CreateDC should be used.
+ 
+The RESETDEVICE escape, corresponding to the new ResetDC function, allows
+the driver to move a printer's output state from an old physical device
+structure to a new one. This allows applications to change the printer
+setup, such as orientation, with creating a new print job. For more
+information about this escape, see Section 4.1.23, "Other Escapes."
+ 
+<b>The NEWFRAME Escape</b>
+ 
+An application calls the NEWFRAME escape when a new page is to be printed.
+The printer driver completes output for the given page and advances to the
+next page. NEWFRAME does not use the lpInData or lpOutData parameters.
+ 
+<b>The ENDDOC and ABORTDOC Escapes</b>
+ 
+When an application has completed printing all output, it calls the ENDDOC
+escape. ENDDOC does not use either the lpInData or lpOutData parameters. At
+this point, the driver may call the CloseJob function.
+ 
+Another common escape is ABORTDOC, which is also called ABORTPIC in older
+documentation or applications, and has the same number assigned. This escape
+allows GDI or the application to cancel a print job. Generally, if the job
+is valid, the driver will clean up and call the DeleteJob function.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

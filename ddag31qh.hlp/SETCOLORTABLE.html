@@ -1,0 +1,91 @@
+<html>
+
+<head>
+<title>SETCOLORTABLE - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> SETCOLORTABLE</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Escapes.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='SETCOPYCOUNT.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define SETCOLORTABLE 4 
+short Control(lpDevice, SETCOLORTABLE, lpColorEntry, lpColor)
+LPPDEVICE lpDevice;
+LPWORD lpColorEntry;
+LPLONG lpColor;
+ 
+The SETCOLORTABLE escape sets an RGB color-table entry. If the device cannot
+supply the exact color, the function sets the entry to the closest possible
+approximation of the color.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<i>lpDevice      Points to </i>a PDEVICE structure specifying the destination
+              device.
+ 
+<i>lpColorEntry  Points to a COLORTABLE</i>_STRUCT structure.
+ 
+<i>lpColor</i>       Points to a 32-bit variable that receives the RGB color value
+              selected by the device driver to represent the requested color
+              value.
+ 
+<b>Return Value</b>
+ 
+The return value is positive if the escape is successful. Otherwise, it is
+negative.
+ 
+<b>Comments</b>
+ 
+A device's color table is a shared resource; changing the system display
+color for one window changes it for all the windows.
+ 
+The SETCOLORTABLE escape has no effect on devices with fixed-color tables.
+ 
+This escape is intended for use by both printer and display drivers.
+However, the EGA and VGA color drivers do not support it. It should not be
+used with palette-capable display devices.
+ 
+It is used by applications that want to change the palette used by the
+display driver. However, since the driver's color-mapping algorithms will
+probably no longer work with a different palette, an extension has been
+added to this escape.
+ 
+If the color index pointed to by the lpColorEntry parameter is 0xFFFFH, the
+driver is to leave all color-mapping functionality to the calling
+application. The application will necessarily know the proper color-mapping
+algorithm and take responsibility for passing the correctly mapped physical
+color to the driver (instead of the logical RGB color) in functions such as
+<b>RealizeObject and ColorInfo.</b>
+ 
+For example, if the device supports 256 colors with palette indexes of 0
+through 255, the application would determine which index contains the color
+that it wants to use in a certain brush. It would then pass this index in
+the low byte of the logical color passed to RealizeObject. The driver would
+then use this color exactly as passed instead of performing its usual
+color-mapping algorithm. If the application wants to reactivate the driver's
+color-mapping algorithm (that is, if it restores the original palette when
+switching from its window context), then the color index pointed to by
+<i>lpColorEntry</i> should be 0xFFFEH.
+ 
+<b>See Also</b>
+ 
+<b>ColorInfo, GETCOLORTABLE, RealizeObject, COLORTABLE_STRUCT, PDE</b>VICE
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<title>DRAWPATTERNRECT - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DRAWPATTERNRECT</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Escapes.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ENABLEDUPLEX.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define DRAWPATTERNRECT 25 
+short Control(lpDevice, DRAWPATTERNRECT, lpInData, NULL)
+LPPDEVICE lpDevice;
+LPPOINT lpInData;
+ 
+The DRAWPATTERNRECT escape creates a pattern, gray scale, or solid black
+rectangle using the pattern or rule capabilities of PCL printers. With the
+Hewlett-Packard LaserJet IIP, this escape can also create a solid white
+rectangle. A gray scale is a gray pattern that contains a specific mixture
+of black and white pixels. A PCL printer is an HP LaserJet or
+LaserJet-compatible printer.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpDevice   Points to a P</i>DEVICE structure specifying the destination device.
+ 
+<i>lpInData   Points to a P</i>ATTERNRECT structure containing information about
+           the rectangle to create.
+ 
+<b>Return Value</b>
+ 
+The return value is nonzero if the escape is successful. Otherwise, it is
+zero.
+ 
+<b>Comments</b>
+ 
+An application should use the QUERYESCSUPPORT escape to determine whether a
+device is capable of drawing patterns and rules before implementing this
+escape. If a printer is capable of outputting a white rule, the return value
+for QUERYESCSUPPORT is 2.
+ 
+The effect of a white rule is to erase any text or other pattern rules
+already written in the specified area.
+ 
+The driver sends all text and rules in the first band before any GDI bitmap
+graphics are sent. Therefore, it is not possible to erase bitmap graphics
+with white rules.
+ 
+If an application uses the BANDINFO escape, the drive should send all
+patterns and rectangles specified by the DRAWPATTERNRECT escape in the first
+band.
+ 
+Patterns and rules created with this escape may not be erased by placing
+opaque objects over them unless you have white rule capability. An
+application should use the function calls provided in GDI to obtain this
+effect.
+ 
+<b>See Also</b>
+ 
+BANDINFO, QUERYESCSUPPORT, PATTERNRECT, PDEVICE
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

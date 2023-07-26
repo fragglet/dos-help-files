@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<title>SHELL_Event - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> SHELL_Event</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_Shell_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='SHELL_Get_Version.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include shell.inc
+ 
+VxDcall SHELL_Event
+ 
+The SHELL_Event service posts an event in the Windows shell to VMDOSAPP.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>EBX</i>        Specifies the virtual machine Handle for the event.
+ 
+<i>ECX</i>        Specifies the event number.
+ 
+<i>AX    </i>     Specifies the wParam parameter for the event. The high 16 bits
+           specify the special boost flags.
+ 
+<i>ESI</i>        Points to the callback procedure for the event. If this parameter
+           is zero, no callback procedure is called. See the Comments
+           section for more information about this procedure.
+ 
+<i>EDX</i>        Points to reference data for the event callback procedure.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the event is placed in the queue. The EAX
+register contains the handle of the event but only if the ESI parameter is
+nonzero.
+ 
+The carry flag is set to indicate an error such as the VMDOSAPP is not
+present or insufficient memory for placement.
+ 
+<b>Comments</b>
+ 
+The system calls the callback procedure with the following input
+parameters:
+ 
+EDX     ; points to reference data
+EBP     ; points to a VMDOSAPP Client_Reg_Struc frame
+ 
+If the carry flag is clear on entry, the event was processed and the EBP
+register points to a Client_Reg_Struc structure containing the register
+values after the event returned. If the carry flag is set, the event could
+not be placed in the queue and only the EDX register contains valid data.
+ 
+In both case, the EBX register does not contain a virtual machine handle.
+ 
+<b>Uses</b>
+ 
+EAX, Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

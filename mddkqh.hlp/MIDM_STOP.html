@@ -1,0 +1,61 @@
+<html>
+
+<head>
+<title>MIDM_STOP - Windows Multimedia DDK</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows Multimedia DDK (mddkqh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MIDM_STOP</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MDDK_dot_h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+<b>MIDM_STOP</b>
+ 
+        This message is sent to a MIDI input device driver to end
+        recording of incoming MIDI data.
+ 
+<u>Parameters</u>
+        DWORD dwParam1
+            Unused.
+ 
+        DWORD dwParam2
+            Unused.
+ 
+<u>Return value</u>
+        The return value is an error code, or zero (MMSYSERR_NOERROR) if
+        the operation is successful. Possible error codes are:
+ 
+        MMSYSERR_NOTENABLED
+            The driver failed to load or initialize.
+ 
+<u>Comments</u>
+        If there is a buffer in the input queue that contains any
+        system-exclusive data, the driver should set the MHDR_DONE bit
+        and clear the MHDR_INQUEUE bit in the <a href='MIDIHDR.html'>dwFlags</a> field of the
+        MIDIHDR structure identifying the buffer. It should then put
+        the number of actual bytes recorded in the <a href='MIDIHDR.html'>dwBytesRecorded</a> field
+        and return the buffer to the client by sending a MIM_LONGDATA
+        message with the DriverCallback function. Any empty buffers
+        should remain in the queue.
+ 
+        While recording is stopped, the driver should maintain the
+        current MIDI status byte for running status events and the
+        parsing state for multi-byte events. If this message is
+        received and recording is already stopped, the driver should
+        return MMSYSERR_NOERROR.
+ 
+<u>See also</u>
+        MIDM_START, MIDM_RESET
+ 
+                                       -♦-
+</pre>
+</body>
+
+</html>

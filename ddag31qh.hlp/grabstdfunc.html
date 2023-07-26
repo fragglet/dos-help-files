@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<title>Standard and Extended Functions - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Standard and Extended Functions</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Grabbers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='gradstddisp.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+A grabber provides a set of standard functions that initialize the display
+and save and restore the video context.
+ 
+The InquireGrab function returns the size of the grabber buffer, which holds
+screen data when copying data to the clipboard. This function also carries
+out extended functions, depending on the value Windows passes to it in the
+AX register. The InquireSave function returns the size of the save buffer,
+the buffer used to hold the screen contents and video context when Windows
+switches away from the non-Windows application. Either InquireGrab or
+<b>InquireSave</b> (whichever Windows calls first) is responsible for initializing
+the grabber the first time the function is called.
+ 
+The SaveScreen and RestoreScreen functions save and restore the video
+context needed to support switching away and back to the non-Windows
+application. Windows supplies the buffer to receive or contain the data; the
+functions are responsible for copying the data to or from the display
+device.
+ 
+The optional InitScreen function initializes the display to a text mode (one
+that Windows supports). Windows calls this function before the non-Windows
+application starts and when Windows switches away from the application.
+ 
+A display grabber also includes several extended functions. Windows calls
+the extended functions by supplying an extended-function number in the AX
+register when it calls the InquireGrab function.
+ 
+The GetVersion function (0FFFAh) returns the version number of the grabber,
+and the GetInfo function (0FFFEh) returns information about the grabber and
+screen. The EnableSave and DisableSave functions (0FFFCh and 0FFFBh) enable
+and disable video-context switching. Using these functions allow a grabber
+to install or remove hooks needed to support video-context switching. The
+<b>SetSwapDrive</b> function (0FFFDh) sets the current swap drive and path that the
+grabber can use to create swap files during a context switch. The GetBlock
+function (0FFF8h) copies a block of screen data to a specified buffer.
+ 
+Windows calls grabber functions in real mode, not in protected mode. This
+means the grabber can carry out its work using the same techniques as MS-DOS
+programs or drivers.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

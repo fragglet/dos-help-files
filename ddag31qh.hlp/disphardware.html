@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<title>Hardware Initialization - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Hardware Initialization</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='dispobjects.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+A display driver sets the display mode and registers for the display
+hardware whenever GDI calls the Enable and Disable functions. When running
+under 386 enhanced-mode Windows (or other operating systems featuring
+pre-emptive multitasking), the driver is also responsible for saving and
+restoring the display mode and registers whenever Windows is switching
+between Windows applications and non-Windows applications.
+ 
+<b>Enabling and Disabling the Display Hardware</b>
+ 
+A display driver prepares the display hardware for Windows whenever GDI
+calls the Enable function. To prepare the hardware, the display driver saves
+the current display mode, then sets the display hardware to graphics mode,
+initializing hardware registers as needed. Although GDI calls the BitBlt
+function to clear the screen as Windows starts, many display drivers
+eliminate the possibility of the user seeing any random data by also
+clearing the screen as they initialize the display hardware.
+ 
+A display driver restores the display hardware to its original state
+whenever GDI calls the Disable function. To restore the display hardware,
+the driver sets the display hardware to a text mode, and restores the
+original number of lines. If possible, the driver should use the same text
+mode as before Windows started.
+ 
+<b>Screen Switching</b>
+ 
+In a pre-emptive multitasking environment, such as 386 enhanced-mode
+Windows, the display driver should save and restore the display hardware
+whenever the environment switches Windows to or from the foreground. 386
+enhanced-mode Windows switches Windows to and from the foreground whenever
+the user switches to or from non-Windows applications. Saving and restoring
+the display hardware ensures that the display driver is not affected by
+changes non-Windows applications make to the display hardware.
+ 
+To detect screen switches, the display driver hooks Interrupt 2Fh and checks
+for the Notify Background Switch and Notify Foreground Switch functions
+(Interrupt 2Fh Functions 4001h and 4002h). When the driver detects one of
+these functions, it either saves or restores the display mode and registers
+accordingly. When the driver detects a switch to the foreground, the driver
+also calls the RepaintScreen function (USER.275) to direct Windows to
+restore the entire contents of the screen by repainting it.
+ 
+The display driver should hook Interrupt 2Fh whenever GDI calls the Enable
+function. The driver hooks the interrupt by using the MS-DOS functions Get
+Interrupt Vector (Interrupt 21h Function 35h) and Set Interrupt Vector
+(Interrupt 21h Function 25h).
+ 
+A display driver can temporarily disable screen switching by calling the
+Enter Critical Section function (Interrupt 2Fh Function 4003h). This
+function prevents 386 enhanced-mode Windows from proceeding with a switch
+until the display driver calls Exit Critical Section (Interrupt 2Fh Function
+4004h).
+ 
+If a display driver uses portions of video memory that are not used by the
+current display mode (for example, the driver uses extra video RAM for
+saving screen bitmaps), the driver should call the Enable VM-Assisted
+Save/Restore function (Interrupt 2Fh Function 4000h) to pass 386
+enhanced-mode Windows the address of save and restore flags. Windows sets or
+clears these flags depending on whether it used the extra video memory while
+a non-Windows application was in the foreground. In such cases, the driver
+must call the Disable VM-Assisted Save/Restore function (Interrupt 2Fh
+Function 4007h) to disable this feature whenever GDI calls the Disable
+function.
+ 
+Although the display driver is responsible for repainting the screen when
+Windows is switched to the foreground, occasionally the driver must postpone
+repainting because Windows is in a critical section and is not ready to
+process the repainting. In such cases, Windows calls the UserRepaintDisable
+function in the display driver directing the driver to postpone repainting.
+Windows will call UserRepaintDisable a second time when it completes the
+critical section.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

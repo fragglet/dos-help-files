@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>Close_VM - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Close_VM</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Primary_Scheduler_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Create_Semaphore.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, TimeOut    ; milliseconds to wait before failing close
+mov     ebx, VM         ; handle of VM to close
+mov     ecx, Flags      ; action to take
+VMMcall Close_VM
+ 
+The Close_VM service attempts to close the virtual machine, allowing all
+virtual devices an opportunity to clean up before the virtual machine
+terminates.
+ 
+This service is only available in Windows version 3.1 and later.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>TimeOut</i>    Specifies the number of milliseconds the service must wait before
+           calling the NukeVM service to force the virtual machine to
+           close.
+ 
+<i>VM</i>         Specifies a handle identifying the virtual machine to close.
+ 
+<i>Flags</i>      Specifies whether to return to the caller while closing the
+           virtual machine. This parameter can be a combination of the
+           following values:
+ 
+           Value              Meaning
+           ─────────────────────────────────────────────────────────────────
+           CVF_Continue_Exec  Return to the virtual machine after scheduling
+                              the closing event even if the virtual machine
+                              is being closed.
+ 
+           All other values are reserved.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Comments</b>
+ 
+Whenever possible, a virtual device should use this service instead of the
+the Nuke_VM or Crash_Cur_VM service.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

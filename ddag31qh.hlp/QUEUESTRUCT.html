@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<title>QUEUESTRUCT - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> QUEUESTRUCT</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Network_Driver_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='JOBSTRUCT.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+typedef struct _queuestruct {
+    WORD pqName;        /* queue name (offset)            */
+    WORD pqComment;     /* queue comment string (offset)  */
+    WORD pqStatus;      /* queue status                   */
+    WORD pqJobcount;    /* number of JOBSTRUCTs following */
+    WORD pqPrinters;    /* number of printers for queue   */
+                        /*   (zero if not available)      */
+} QUEUESTRUCT;
+ 
+typedef QUEUESTRUCT FAR * LPQUEUESTRUCT;
+ 
+The QUEUESTRUCT structure contains information about a print queue.
+ 
+<b>Member      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<b>pqName</b>      Specifies the offset (relative to the beginning of the
+            structure) to the null-terminated queue name.
+ 
+<b>pqComment</b>   Specifies the offset (relative to the beginning of the
+            structure) to the null-terminated queue comment string.
+ 
+<b>pqStatus</b>    Specifies the queue status. It can one of the following values.
+ 
+            Value                   Meaning
+            ────────────────────────────────────────────────────────────────
+            WNPRQ_ACTIVE (0x0000)   Queue is active.
+ 
+            WNPRQ_PAUSE (0x0001)    Queue is paused.
+ 
+            WNPRQ_ERROR (0x0002)    Network error.
+ 
+            WNPRQ_PENDING (0x0003)  Queue has been deleted. The queue
+                                    remains until the current jobs are done,
+                                    but no new jobs may be started.
+ 
+            WNPRQ_PROBLEM (0x0004)  All printers are stopped.
+ 
+<b>pqJobcount  Specifies the numb</b>er of JOBSTRUCT structures immediately
+            following the QUEUESTRUCT structure.
+ 
+<b>pqPrinters</b>  Specifies the number of printers for the queue. It is zero if
+            not available.
+ 
+<b>Comments</b>
+ 
+For more information about the mechanism that stores the string referenced
+by QUEUESTRUCT, see Section 5.2.6, "Passing Buffers," earlier in this topic.
+For example, assuming that lpQS is the LPQUEUESTRUCT returned by
+<b>WNetLockQueueData</b>, the expression
+ 
+(LPSTR) lpQS + lpQS -&gt; pqComment
+ 
+points to the queue comment. All offsets are relative to the beginning of
+the buffer, not the beginning of an individual JOBSTRUCT structure.
+ 
+<b>See Also</b>
+ 
+<b>WNetLockQueueData, JOBSTRUCT</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

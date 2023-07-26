@@ -1,0 +1,85 @@
+<html>
+
+<head>
+<title>Enabling and Disabling the Driver - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Enabling and Disabling the Driver</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Keyboard_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='kbdintrpt.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+When Windows is ready to receive keyboard input, it enables the driver by
+calling the Enable function. When Windows no longer requires keyboard input
+(when terminating or switching to a full-screen MS-DOS application, for
+example), it disables the driver by calling the Disable function.
+ 
+The Enable function is responsible for:
+ 
+♦  Saving the address of the keyboard-event callback function
+ 
+♦  Initializing the Windows virtual-key state array
+ 
+♦  Installing the keyboard-interrupt handler
+ 
+♦  Installing language- and keyboard-specific translation tables
+ 
+When Windows calls Enable, it passes the address of the keyboard-event
+callback function. Enable saves this address──the keyboard-interrupt handler
+uses it to pass scan and virtual-key codes back to Windows.
+ 
+Windows also passes the address of its 256-element, virtual-key state array
+(sometimes called the keyboard-state vector) to Enable. The elements in this
+array specify the state of the virtual keys. Windows sets bit 7 in an
+element if the corresponding virtual key is down, and clears the bit if the
+key is up. Similarly, Windows toggles bit zero each time the virtual key is
+pressed. Although Windows maintains the key-state array, Enable initializes
+the array to reflect to current state of the SHIFT, CTRL, ALT, NUMLOCK,
+CAPSLOCK, and SCROLLLOCK keys as specified by the keyboard flags in the RAM
+area used by the ROM BIOS. (On most computers, the keyboard flags are at
+address 40h:17h.)
+ 
+<b>Note:</b>  If the keyboard driver reads data from the ROM BIOS, it must use the
+       special segment selector, __ROMBIOS, to create ROM BIOS addresses.
+       The selector (exported by the Windows kernel as KERNEL.173)
+       corresponds to ROM BIOS address 0F0000H.
+ 
+To install the driver's own keyboard-interrupt handler, the Enable function
+first saves the existing keyboard-interrupt handler. (On most computers, the
+keyboard interrupt is Interrupt 9.) The original handler address is saved to
+allow the Disable function to restore it as well as to allow the driver to
+call the original handler for certain actions. Enable should also save the
+address of the Keyboard Service routine (Interrupt 16h). The Enable and
+other functions use this address to set the keyboard lights.
+ 
+Finally, Enable installs the proper language- and keyboard-specific
+translation tables. To do so, the function reads the type, subtype,
+KEYBOARD.DLL, and OEMANSI.BIN settings from the [Keyboard] section of the
+SYSTEM.INI file. The Windows Setup program or Control Panel establish the
+values for these settings. Enable uses the values to determine which type
+and subtype of keyboard to support as well as with language-specific support
+libraries to load. If the values are not given in the SYSTEM.INI file, the
+keyboard must choose default values based on the computer-type identifier
+and keyboard-type identifier (if the ROM BIOS provides one).
+ 
+<b>Note:</b>  To support computers in which the keyboard and mouse use the same
+       interrupt, Windows disables and enables both the keyboard and mouse
+       drivers when switching to and from a full-screen MS-DOS application.
+       Windows always enables the drivers in the reverse order in which it
+       disables the drivers.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,114 @@
+<html>
+
+<head>
+<title>VxD_IO - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VxD_IO</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='VMM_Macros.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VxDjmp.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VxD_IO  Port, IOCallback
+ 
+The VxD_IO macro adds an I/O callback procedure and I/O port number to an
+I/O table. Virtual devices use the macro in conjunction with the
+<b>Begin_VxD_IO_Table and End_VxD_IO_Table macros to crea</b>te a table of I/O
+callback procedures for the Install_Mult_IO_Handlers service.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Port</i>        Specifies the number of the I/O port to be trapped.
+ 
+<i>IOCallback</i>  Specifies the name of the I/O callback procedure. See the
+            Comments section for information about this procedure.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Comments</b>
+ 
+The I/O table can contain any number of VxD_IO macros. Each macro must
+specify an unique I/O port number, but the same I/O callback procedure can
+be assigned to more than one port.
+ 
+After a virtual device installs the callback procedures, the system calls a
+procedure whenever a program in the virtual machine attempts to access the
+corresponding port. The system calls the procedure as follows:
+ 
+mov     ebx, VM             ; current VM handle
+mov     ecx, IOType         ; type of I/O
+mov     edx, Port           ; port number
+mov     ebp, OFFSET32 crs   ; points to a Client_Reg_Struc
+mov     eax, Data           ; output data (if I/O type is output)
+call    [IOCallback]
+ 
+mov     [Data], eax         ; input data (if I/O type is input)
+ 
+The VM parameter specifies the current virtual machine, Port specifies the
+I/O port, and crs points to a Client_Reg_Struc structure containing the
+register contents for the current virtual machine.
+ 
+The IOType parameter specifies the type of input or output operation
+requested and determines whether the callback procedure receives data in the
+EAX register or must return data in the EAX register. The IOType parameter
+can be a combination of the following values:
+ 
+<b>Value         Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Byte_Input</i>    Input a single byte; place in AL if String_IO not given.
+ 
+<i>Byte_Output</i>   Output a single byte from AL if String_IO not given.
+ 
+<i>Word_Input</i>    Input a word; place in AX if String_IO not given.
+ 
+<i>Word_Output</i>   Output a word from AX if String_IO not given.
+ 
+<i>Dword_Input</i>   Input a double word; place in EAX if String_IO not given.
+ 
+<i>Dword_Output</i>  Output a double word from EAX if String_IO not given.
+ 
+<i>String_IO</i>     Input or output a string. The high 16-bits specifies segment
+              address of buffer containing the string to output or to
+              receive the string input.
+ 
+<i>Rep_IO</i>        Repeat the input or output string operation the number of
+              times specified by the Client_CX field in the
+              Client_Reg_Struc structure.
+ 
+<i>Addr_32_IO</i>    Use 32-bit address offsets for input or output string
+              operations. If this value is not given, the 16-bit offsets are
+              used.
+ 
+<i>Reverse_IO</i>    Decrement string address on each input or output operation. If
+              this value is not given, the string address is incremented on
+              each operation.
+ 
+In memory, an I/O table consists of a VxD_IOT_Hdr structure followed by one
+or more VxD_IO_Struc structures. The first word in the table specified the
+number of entries. Each entry consists of a word specifying the port number
+and a double word specifying the 32-bit offset of the callback procedure.
+ 
+<b>See Also</b>
+ 
+<b>Begin_VxD_IO_Table, End_VxD_IO_Table, Install_Mult_IO_Handlers</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

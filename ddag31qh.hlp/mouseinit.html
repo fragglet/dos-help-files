@@ -1,0 +1,53 @@
+<html>
+
+<head>
+<title>Mouse Initialization and Interrupt Handler - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Mouse Initialization and Interrupt Handler</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Mouse_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='mouseport.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+Windows initializes the mouse driver by calling the driver's initialization
+routine, and subsequently calling the driver's Enable function. The
+initialization routine determines whether a mouse exists and whether an
+MS-DOS mouse driver is present. If the initialization routine returns a
+nonzero value, Windows assumes the mouse is present and calls the Inquire
+function to retrieve information about the mouse hardware. This function
+returns the mouse information in the form of a MOUSEINFO structure.
+ 
+Windows calls the Enable function when it is ready to receive mouse input.
+The Enable function installs the mouse-interrupt handler, replacing any
+existing interrupt handler. Once installed, the handler retrieves the mouse
+motion and button status and passes this information to Windows through a
+mouse-event callback function. Windows passes the address of the mouse-event
+callback function to the driver when it calls Enable. The driver must save
+the callback function address and use it whenever it has mouse input to send
+to Windows.
+ 
+Windows calls the Disable function to remove the mouse-interrupt handler and
+restore any previous handler. This occurs whenever the user switches to a
+non-Windows application or when Windows quits. Windows calls Enable to
+reinstall the interrupt handler when the user eventually switches back to
+Windows.
+ 
+The mouse driver includes the MouseGetIntVect function that Windows or
+utilities can call to determine which interrupt vector the mouse hardware is
+using.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

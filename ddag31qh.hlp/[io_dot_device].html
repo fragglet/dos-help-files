@@ -1,0 +1,112 @@
+<html>
+
+<head>
+<title>[io.device] - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> [io.device]</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Setup_Information.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='[io_dot_dependent].html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+[io.device]
+<i>Filename,"Description","AspectRatio"[,"AspectRatio"...]</i>
+ 
+The [io.device] section specifies the files and information required to
+install printer drivers.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Filename</i>     Specifies the MS-DOS filename of the printer-driver file.
+ 
+<i>Description</i>  Specifies an ASCII string that describes the printer driver.
+             This string should match the description field in the driver's
+             executable file. This parameter must be enclosed in double
+             quotation marks (").
+ 
+<i>AspectRatio</i>  Specifies the aspect ratio (relative dimensions) of the printer
+             as well as the number of pixels-per-inch in both horizontal and
+             vertical directions. This parameter must be enclosed in double
+             quotation marks ("). This parameter can have one or the
+             following form:
+ 
+                 "AspectXY,LogPixelsX,LogPixelsY"
+                 "DEVICESPECIFIC"
+ 
+             The parameters AspectXY, LogPixelsX, and LogPixelsY are decimal
+             values that are equal to the values of the dpAspectXY,
+             dpLogPixelsX, and dpLogPixelsY members in the GDIINFO structure
+             for the printer driver.
+ 
+             Control Panel uses this information to determine which raster
+             fonts to install for the device. Control Panel searches for
+             matching fonts in the [sysfonts], [fixedfonts], [oemfonts], or
+             [fonts] sections of the information file, then installs any
+             matching fonts in the [fonts] section of the WIN.INI file.
+ 
+             Up to five different aspect ratio values may be listed; at
+             least one is required. The DEVICESPECIFIC keyword is used if no
+             raster-font installation is desired.
+ 
+<b>Comments</b>
+ 
+Control Panel uses the Filename parameter to check whether the driver has
+been previously installed.
+ 
+Control Panel combines the Filename and Description parameters to create a
+setting that it adds to the [devices] and [PrinterPorts] sections in the
+WIN.INI file. The settings have the following form:
+ 
+Description=Filename,Port[,Data]
+ 
+If a portion of the Description parameter is enclosed in brackets ([]),
+Control Panel uses that portion (instead of the Filename parameter) in the
+WIN.INI file. In this case, the text in the brackets is typically the
+generic name for a driver that supports many printer models.
+ 
+<b>Example</b>
+ 
+The following is an example of an OEMSETUP.INF file for the XYZ laser and
+ink-jet printers:
+ 
+[disks]
+1 = . ,"XYZ Printers Disk"
+ 
+[io.device]
+1:XYZLASER.DRV,"XYZ Laser Printer","DEVICESPECIFIC"
+1:XYZINK.DRV,"XYZ Ink Jet Printer [XYZ Series]","100,120,120","100,96,96"
+ 
+[io.dependent]
+XYZLASER.DRV=1:XYZLASER.HLP,1:SFXYZ.DLL
+ 
+If the driver is not found in the current drive, Control Panel prompts the
+user for the specified disk. After Control Panel installs the driver, it
+updates the WIN.INI file as follows:
+ 
+[printerports]
+XYZ Series=XYZINK,LPT1:,15,45
+XYZ Laser Printer=XYZLASER,LPT2:,15,45
+ 
+[devices]
+XYZ Series=XYZINK,LPT1:
+XYZ Laser Printer=XYZLASER,LPT2:
+ 
+<b>See Also</b>
+ 
+[disks], [io.dependent]
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

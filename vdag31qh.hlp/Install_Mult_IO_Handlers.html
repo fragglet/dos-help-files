@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<title>Install_Mult_IO_Handlers - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Install_Mult_IO_Handlers</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='I_sl_O_Trapping_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Simulate_IO.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     edi, OFFSET32 IOTable   ; points to an I/O table
+VMMcall Install_Mult_IO_Handlers
+ 
+jnc     installed               ; carry clear if all procedures installed
+mov     [BadPort], edx          ; I/O port number that failed
+ 
+The Install_Mult_IO_Handlers service installs I/O callback procedures for
+one or more I/O ports.
+ 
+This service is only available during initialization.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>IOTable    Points to </i>an I/O table created using the Begin_Vxd_IO_Table,
+           End_Vxd_IO_Table, and Vxd_IO macros. See the Comments section for
+           more information about the table.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if all callback procedures are installed for the
+specified ports. If the carry flag is set, the EDX register contains the
+number of the I/O port for which the procedure could not be installed.
+ 
+<b>Comments</b>
+ 
+This service repeatedly calls the Install_IO_Handler service until all
+entries in the specified I/O table have been installed.
+ 
+A virtual device can create an I/O table using the Begin_Vxd_IO_Table,
+<b>End_Vxd_IO_Table, and Vxd_IO macros. The followi</b>ng example shows a table
+containing three entries for ports 30, 31, and 32:
+ 
+Begin_Vxd_IO_Table  My_IO_Table
+Vxd_IO              30,IO_Handler_1
+Vxd_IO              31,IO_Handler_2
+Vxd_IO              32,IO_Handler_1
+End_Vxd_IO_Table    My_IO_Table
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Begin_Vxd_IO_Table, End_Vxd_IO_Table, Install_IO_Handler, Vxd_IO</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

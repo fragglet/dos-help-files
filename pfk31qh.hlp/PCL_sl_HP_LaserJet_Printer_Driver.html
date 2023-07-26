@@ -1,0 +1,278 @@
+<html>
+
+<head>
+<title>PCL/HP LaserJet Printer Driver - Printers and Fonts Kit(3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Printers and Fonts Kit(3.1) (pfk31qh.hlp) (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> PCL/HP LaserJet Printer Driver</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printers_and_Fonts_Kit(3_dot_1).html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Printer_Font_Installer.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+The Microsoft Windows PCL printer driver supports a wide variety of printers
+including the Hewlett-Packard printers that use Printer Control Language
+(PCL) and fonts. This topic provides a brief overview of the features for
+the driver and in particular those features new for Windows 3.1.
+ 
+<b>Features for Windows 3.1</b>
+ 
+The printer driver for HP LaserJet printers that use PCL includes the
+following new features for Windows 3.1:
+ 
+♦  Memory Tracking. This allows users to manage the memory usage on the
+   printer. This especially useful when using multiple downloadable fonts.
+ 
+♦  TrueType as Graphics. This allows for drawing glyphs using outlines
+   rather then downloaded glyphs.
+ 
+♦  User-Specified Position and Thickness for TrueType Fonts. This allows for
+   user control of the appearance of glyphs from TrueType fonts.
+ 
+♦  ResetDC Function. This allows users to change the page orientation or
+   paper tray in the middle of a print job.
+ 
+♦  Standard Dialog Boxes. This provides a consistent user interface between
+   printer drivers and applications.
+ 
+<b>Soft Fonts and Cartridges</b>
+ 
+Because of the large number of downloadable and cartridge fonts available
+for HP LaserJet printers, the driver can only have a few of these fonts
+built into it. The driver supports the installation of additional fonts by
+supplying a utility called the Printer Font Installer.
+ 
+The Printer Font Installer adds support for soft fonts and font cartridges
+by installing PFM and PCM files and associated screen and soft font files.
+The font cartridge manufacturer can use the PFM Editor to create PFM and PCM
+files to accompany the font cartridge, or create these files on their own.
+ 
+<b>PFM Files for HP Printers that Use PCL</b>
+ 
+The Printer Font Metrics (PFM) files for PCL printers have the following
+form:
+ 
+PFMHEADER     Header;          /* font header */
+WORD          WidthTable[];    /* variable-width fonts only */
+PFMEXTENSION  Extensions;      /* extensions */
+char          DeviceName[];    /* printer device name */
+char          FaceName[];      /* font name */
+EXTTEXTMETRIC ExtTextMetrics;  /* extended-text metrics (optional)*/
+WORD          ExtentTable[];   /* unscaled character widths */
+DRIVERINFO    DriverInfo;      /* driver-specific info (optional)*/
+PAIRKERN      KerningPairs[];  /* pair-kerning table (optional) */
+KERNTRACK     KerningTracks[]; /* track-kerning table (optional) */
+ 
+The width table is present if the dfPixWidth member is zero, which indicates
+a variable-width font. (Otherwise, for fixed-width fonts the width of all
+the characters in the font equals the value in the dfPixWidth member and no
+width table is given.) The width table is an array of words containing the
+widths in device units of characters in the range from dfFirstChar to
+<b>dfLastChar</b>. The width of a character c can be located using the formula:
+ 
+width = WidthTable [c - dfFirstChar]
+ 
+The size of the table is dfLastChar - dfFirstChar + 2 words. The last word
+is not used and is set to zero; it should be present for compatibility with
+the Windows screen-font file format.
+ 
+If your font contains kern pairs, you must fill in the EXTTEXTMETRIC
+structure to indicate the number of kern pairs. Do not leave the other
+members blank; fill them in with reasonable values in the event an
+application uses them.
+ 
+Eventually, there will be PFM files that describe scalable PCL fonts. To
+guarantee that your raster fonts are never interpreted as scalable fonts,
+make sure that the members for scaling information in the EXTTEXTMETRIC
+structure indicate a nonscaling font:
+ 
+etmMasterHeight = etmMasterUnits = etmMinScale = etmMaxScale =
+dfPixHeight
+ 
+The PCL driver for Windows supports five possible character translations. It
+determines which internal translation table to use based upon the value of
+the symbolSet member of the xtbl member. Following are the symbol sets and
+their corresponding translation tables.
+ 
+<b>Symbol set     Translation table</b>
+────────────────────────────────────────────────────────────────────────────
+<b>epsymECMA94</b>    ECMA94_Trans
+ 
+<b>epsymGENERIC7</b>  GENERIC7_Trans
+ 
+<b>epsymGENERIC8</b>  GENERIC8_Trans
+ 
+<b>epsymRoman8</b>    Roman8_Trans
+ 
+<b>epsymUSASCII</b>   USASCII_Trans
+ 
+The translation tables are stored in the TRANS.H file. For epsymRoman8,
+<b>epsymUSASCII, and epsymECMA94, the d</b>river attempts to derive Windows ANSI
+from the symbol set. For epsymGENERIC8 and epsymGENERIC7, the driver simply
+lets an 8- or 7-bit symbol set pass through to the printer unchanged.
+ 
+The driver assumes the width table in the PFM file contains the widths of
+the characters after translation. If you set epsymRoman8, epsymUSASCII, or
+<b>epsymECMA94 for the symbolSet member of xtbl member, yo</b>u must use the
+appropriate translation table in TRANS.H to do an inverse translation when
+building the width table.
+ 
+Following is a sample of the translation table for epsymRoman8:
+ 
+#define HP_DF_CH ((BYTE) 0x7F)
+ 
+unsigned  char  &lt;+&gt; Roman8_Trans[] = {
+        HP_DF_CH, NULL,                 /*  80  */
+        HP_DF_CH, NULL,                 /*  81  */
+        ...
+        'Y' ,     0xa8,         /*  dd  */
+        0xf0,     NULL,         /*  de  */
+        0xde,     NULL,         /*  df  */
+        0xc8,     NULL,         /*  e0  */
+        ...
+        0xef,     NULL  };      /*  ff  */
+ 
+The table translates characters in the range from 128 to 255. The driver
+uses the character it receives from the application to index into the
+translation table. It replaces the character with the first entry in the
+table. If the second entry is not a NULL entry, it overstrikes the first
+character with the second character.
+ 
+For example, when the driver detects character 0xDD (that is, the Y-acute
+(Y) in the text stream), the driver will output a capital "Y" overstruck by
+the acute accent. When the overstrike character is present, the driver
+guarantees that the width of the character pair equals the width of the
+first character.
+ 
+If the driver-specific data structure is not present, or the symbolSet
+member of xtbl member equals a symbol set other than epsymRoman8,
+<b>epsymUSASCII, epsymECMA94, epsymGENERIC8, or epsymGENERIC7, the driver will</b>
+use the epsymGENERIC8 translation as a default if the dfLastChar member of
+the PFMHEADER structure is greater than 127 (an 8-bit font). Otherwise, it
+will use the epsymGENERIC7 translation.
+ 
+<b>PFM Files for Scalable PCL Fonts</b>
+ 
+Currently, the PCL driver for Windows supports only nonscaling PCL fonts.
+The driver will detect scalable fonts by examining the etmMinScale and
+<b>etmMaxScale members in the EXTTEX</b>TMETRIC structure. If they are equal, it
+will assume a nonscaling font.
+ 
+A PFM file for scalable PCL font must have the following form:
+ 
+PFMHEADER     Header;          /* font header */
+WORD          WidthTable[];    /* variable-width fonts only */
+PFMEXTENSION  Extensions;      /* extensions */
+char          DeviceName[];    /* printer device name */
+char          FaceName[];      /* font face name */
+EXTTEXTMETRIC ExtTextMetrics;  /* extended text metrics (optional)*/
+WORD          ExtentTable[];   /* unscaled character widths */
+DRIVERINFO    DriverInfo;      /* driver-specific info (optional)*/
+PAIRKERN      KerningPairs[];  /* pair-kerning table (optional) */
+KERNTRACK     KerningTracks[]; /* track-kerning table (optional) */
+ 
+In the PFMHEADER structure, the dfPixHeight member must contain the height
+of a default font size (same as 12 points).
+ 
+For variable-width fonts, the width-table array contains widths for the
+default point size.
+ 
+In the DRIVERINFO structure, the epEscape member must be nonzero (that is, a
+printer escape must be provided).
+ 
+Optionally, pair-kern and track-kern tables may be provided. The default
+font size and width table should be provided for consistency with the
+existing driver. If they differ and the dfExtMetricsOffset member is not
+NULL, the driver will assume a scalable font.
+ 
+An extent table must be supplied for scalable fonts. The extent table is an
+array of words containing the unscaled widths of the characters. The range
+of the table should be from dfFirstChar to dfLastChar. The size of the table
+should be dfLastChar - dfFirstChar + 1 word. The driver will scale the
+characters using the formulas based on the etmMasterHeight and
+<b>etmMasterUnits</b> members.
+ 
+The driver will not support the ENABLERELATIVEWIDTHS escape, as this would
+be difficult to support with scaling and nonscaling fonts intermixed
+(scaling fonts use font units; nonscaling fonts use device units).
+ 
+The driver will assume the dfVertRes member equals 300 dpi. Remember that
+<b>etmMasterHeight, etmMinScale, and etmMaxScale must be expressed in device</b>
+units.
+ 
+If the intended printer does not force its widths to 300 dpi units (that is,
+<b>etmMasterUnits does not equal etmMasterHei</b>ght), the driver will attempt to
+correct for roundoff error between the printer's units and the driver's
+imposed 300 dpi units. The driver will correct for the error by maintaining
+a running roundoff value during output of a single line of text.
+ 
+You must provide the driver-specific data structure. As described earlier,
+the symbolSet member of xtbl member must be equal to epsymRoman8,
+<b>epsymUSASCII, epsymECMA94, epsymGENERIC8, or epsymGENERIC7. Use an inverse</b>
+translation of the tables provided in the TRANS.H file to build the extent
+table if you select epsymRoman8, epsymUSASCII, or epsymECMA94.
+ 
+You must also provide an escape string pointed to by the epEscape member in
+the driver-specific data structure. The driver will send this escape to the
+printer to select the font.
+ 
+If pair or track kerns exist, they should use the same units as the
+character widths in the extent table.
+ 
+<b>Permanent Soft Fonts</b>
+ 
+Permanent soft fonts are downloaded to the printer when the printer is
+turned on, and remain there until the printer is turned off. Permanent fonts
+are downloaded to the printer sometime after power up. The driver does not
+have to be active, nor does Windows need to be running for permanent fonts
+to be downloaded to the printer. In fact, permanent fonts are typically
+downloaded to the printer when the user first turns on the computer.
+ 
+<b>Initialization Settings for PCL Printers</b>
+ 
+The printer driver for HP printers that use PCL uses a number of sections
+and settings in the WIN.INI file. Users set these settings by using the
+driver's Printer Setup dialog box or the Printer Font Installer. Normally,
+the user should have no need to modify these settings directly.
+ 
+The most important settings for the driver are the softfonts and softfontn
+settings. These set the number of and define the PFM or PCM files for the
+soft fonts and cartridges for the printer. The Printer Font Installer sets
+these settings when the user installs fonts. However, notice that the driver
+has no control over the order of the settings in the WIN.INI file, and the
+driver does not currently "delete" settings from the WIN.INI file.
+ 
+The order of settings in the WIN.INI file is insignificant and has no effect
+on the operation of the driver. If the driver does not delete an entire
+entry line from WIN.INI, it removes everything to the right of the equal
+sign (=). The title text to the left of the equal sign remains there until
+the user manually removes it.
+ 
+The Windows Printer Font Installer, used in conjunction with the HP LaserJet
+driver that uses PCL, also requires these settings that associated
+permanently downloaded fonts with their corresponding PFM files. The
+following shows the general form for these settings:
+ 
+C:\PCLFONTS\HVPB0140.PFM=C:\PCLFONTS\HV140BPN.USP
+C:\PCLFONTS\TRPR0120.PFM=C:\PCLFONTS\TR120BPN.USP
+ 
+The Printer Font Installer in the driver for HP printers that use PCL uses
+these settings to preserve the filenames of the permanently downloaded
+fonts. If the fonts are changed to temporary fonts, these settings are
+removed and the soft font filenames are added with the appropriate
+softfontn setting.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

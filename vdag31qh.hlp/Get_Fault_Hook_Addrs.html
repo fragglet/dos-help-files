@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>Get_Fault_Hook_Addrs - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Get_Fault_Hook_Addrs</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Processor_Fault_and_Interrupt_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Get_NMI_Handler_Addr.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, Interrupt      ; interrupt number
+VMMcall Get_Fault_Hook_Addrs
+ 
+The Get_Fault_Hook_Addrs service returns addresses of the V86 mode,
+protected-mode, and VMM fault handlers for a specified fault.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Interrupt</i>  Specifies the interrupt number of the fault to check.
+ 
+<b>Return Value</b>
+ 
+If the carry flag is clear, the EDX, ESI, and EDI registers contain the
+addresses described in the following list. Otherwise, the carry flag is set
+to indicate an error such as an invalid interrupt number.
+ 
+<b>Register  Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>EDX</i>       Contains the address of the fault handler installed by a V86 mode
+          application. This register contains zero if no handler has been
+          installed.
+ 
+<i>ESI</i>       Contains the address of the fault handler installed by a
+          protected-mode application. This register contains zero if no
+          handler has been installed.
+ 
+<i>EDI</i>       Contains the address of a fault handle installed by the VMM. This
+          register contains zero if no handler has been installed.
+ 
+<b>Comments</b>
+ 
+A virtual device cannot get the hook address for the Non-Maskable Interrupt
+(Interrupt 2). It must use the Get_NMI_Handler_Addr and
+<b>Set_NMI_Handler_Addr</b> services to hook Interrupt 2.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Get_NMI_Handler_Addr, Set_NMI_Handler_Addr</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

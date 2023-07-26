@@ -1,0 +1,92 @@
+<html>
+
+<head>
+<title>_MapFreePhysReg - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _MapFreePhysReg</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Free_Physical_Memory_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_PageResetHandlePAddr.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _MapFreePhysReg, &lt;LinPgNum, nPages, flags&gt;
+ 
+or      eax,eax         ; nonzero if mapped, zero if error
+je      not_mapped
+ 
+The _MapFreePhysReg service maps one or more physical pages into a free
+physical region. The service maps physical pages currently in the free list
+to the specified pages in the region.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>LinPgNum</i>   Specifies the linear page number of the first page to map. The
+           page must be in a free physical region previously created using
+           the _PageAllocate service. A linear page number is a linear
+           address shifted right by 12 bits right.
+ 
+<i>nPages</i>     Specifies number of pages to map. All pages must be within the
+           free physical region.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter can be the
+           following value:
+ 
+           Value      Meaning
+           ─────────────────────────────────────────────────────────────────
+           PageFixed  Maps the specified pages as fixed pages, permanently
+                      locking the pages at the specified address. If this
+                      value is not given, the pages are not fixed. Virtual
+                      devices never return fixed pages to the system.
+ 
+           All other values are reserved.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero value if the service is successful.
+Otherwise, EAX contains returns zero specifying an invalid linear page
+number, an invalid range of pages, part of the page range already present,
+insufficient number of pages on free list, or an invalid use of the
+PageFixed value.
+ 
+<b>Comments</b>
+ 
+This service is intended to be used in a free-physical-region callback
+procedure installed using the _SetFreePhysRegCalBk service. Virtual devices
+should not call this service until after the Sys_VM_Init message or the
+<b>Init_Complete</b> message has been received.
+ 
+The PageFixed value allows a virtual device to maintain a cache of memory
+which has a minimum size. The virtual device maps a predetermined number of
+pages using the PageFixed value to ensure that this cache has its minimum
+size. The virtual device never unmaps these pages. The virtual device maps
+any additional pages without using the PageFixed value. This allows these
+pages to be unmapped later. Occasionally, there may be too few physical
+pages to attain the minimum cache size. The virtual device must be prepared
+to handle this condition.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_SetFreePhysRegCalBk, _UnmapFreePhysReg</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

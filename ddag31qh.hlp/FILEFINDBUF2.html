@@ -1,0 +1,110 @@
+<html>
+
+<head>
+<title>FILEFINDBUF2 - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> FILEFINDBUF2</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Network_Driver_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='FTIME.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+typedef struct _FILEFINDBUF2 {  /* findbuf2 */
+    FDATE   fdateCreation;
+    FTIME   ftimeCreation;
+    FDATE   fdateLastAccess;
+    FTIME   ftimeLastAccess;
+    FDATE   fdateLastWrite;
+    FTIME   ftimeLastWrite;
+    ULONG   cbFile;
+    ULONG   cbFileAlloc;
+    USHORT  attrFile;
+    ULONG   cbList;
+    UCHAR   cchName;
+    CHAR    achName[CCHMAXPATHCOMP];
+} FILEFINDBUF2;
+ 
+The FILEFINDBUF2 structure contains file information.
+<b>Member           Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<b>fdateCreation</b>    Specifies the date the file was created.
+ 
+<b>ftimeCreation</b>    Specifies the time the file was created.
+ 
+<b>fdateLastAccess</b>  Specifies the date the file was last opened.
+ 
+<b>ftimeLastAccess</b>  Specifies the time the file was last opened.
+ 
+<b>fdateLastWrite</b>   Specifies the date the file was last written to.
+ 
+<b>ftimeLastWrite</b>   Specifies the time the file was last written to.
+ 
+<b>cbFile</b>           Specifies the size (in bytes) of the file.
+ 
+<b>cbFileAlloc</b>      Specifies the number of bytes allocated for the file on the
+                 storage device.
+ 
+<b>attrFile</b>         Specifies the file attributes. This member can be a
+                 combination of the following values.
+ 
+                 Value  Meaning
+                 ───────────────────────────────────────────────────────────
+                 0      File can be read from or written to.
+ 
+                 1      File can be read from but not written to.
+ 
+                 2      File or directory is hidden and does not appear in a
+                        directory listing.
+ 
+                 4      File or directory is a system file.
+ 
+                 8      Filename is the current volume label for the media.
+ 
+                 16     Filename identifies a directory not a file.
+ 
+                 32     File has been archived.
+ 
+<b>cbList</b>           Specifies the size (in bytes) of the buffer for extended
+                 attributes.
+ 
+<b>cchName</b>          Specifies the number of characters in the filename.
+ 
+<b>achName</b>          Specifies the name of the file. This member contains a
+                 null-terminated filename having the number of characters
+                 specified by the cchName member.
+ 
+<b>Comments</b>
+ 
+File Manager uses the values in the fdateLastWrite and ftimeLastWrite
+members when it displays the date and time for a given file; it ignores the
+other date and time values. Also, File Manager use the cbFile member as the
+file size, ignoring cbFileAlloc and cbList.
+ 
+File Manager assumes that the achName member is truncated to just the length
+of the filename and the zero terminator. For example, if another
+<b>FILEFINDBUF2</b> structure immediately follows the first, the pointer to the
+second structure is computed as follows:
+ 
+(PFILEFINDBUF2)((LPSTR)lpFindBuf + sizeof(FILEFINDBUF2) -
+CCHMAXPATHCOMP + lpFindBuf-&gt;cchName + 1)
+ 
+<b>See Also</b>
+ 
+<b>LFNFindFirst</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

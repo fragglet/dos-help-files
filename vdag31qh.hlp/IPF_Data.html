@@ -1,0 +1,90 @@
+<html>
+
+<head>
+<title>IPF_Data - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> IPF_Data</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='VMM_Structures.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VMM_Structures.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+IPF_Data    struc
+    IPF_LinAddr     dd  ?   ; CR2 address of fault
+    IPF_MapPageNum  dd  ?   ; Possible converted page number of fault
+    IPF_PTEEntry    dd  ?   ; Contents of PTE that faulted
+    IPF_FaultingVM  dd  ?   ; May not = current VM (IPF_V86PgH set)
+    IPF_Flags       dd  ?   ; Flags
+IPF_Data    ends
+ 
+The IPF_Data structure contains information about the current invalid page
+fault.
+ 
+<b>Member          Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<b>IPF_LinAddr</b>     Specifies the CR2 address of the page fault.
+ 
+<b>IPF_MapPageNum</b>  Specifies the possible converted page number of the fault.
+ 
+<b>IPF_PTEEntry</b>    Specifies the contents of the page-table entry that caused
+                the fault.
+ 
+<b>IPF_FaultingVM</b>  Specifies the handle identifying the virtual machine that
+                caused the fault. This is not necessarily the current
+                virtual machine.
+ 
+<b>IPF_Flags</b>       Specifies the invalid-page-fault flags. It can be a
+                combination of the following values:
+ 
+                Value       Meaning
+                ────────────────────────────────────────────────────────────
+                IPF_PgDir   Page directory entry not present (not-present
+                            page table).
+ 
+                IPF_V86Pg   Unexpected not-present page in V86.
+ 
+                IPF_V86PgH  Unexpected not-present page in V86 at high
+                            linear address.
+ 
+                IPF_InvTyp  Page has invalid not-present type.
+ 
+                IPF_PgErr   Pageswap device could not page for some reason.
+ 
+                IPF_ReFlt   Re-entrant page fault.
+ 
+                IPF_VMM     Page fault caused by a virtual device.
+ 
+                IPF_PM      Page fault caused by virtual machine running in
+                            protected mode.
+ 
+                IPF_V86     Page fault caused by virtual machine running in
+                            V86 mode.
+ 
+<b>Comments</b>
+ 
+Invalid page faults occur in a virtual machine other than the current
+virtual machine if the high linear address of the virtual machine is
+accessed. In this case, the IPF_FaultingVM field is set to the handle of the
+virtual machine that owns the high linear address.
+ 
+<b>See Also</b>
+ 
+<b>Hook_Invalid_Page_Fault</b>
+ 
+ 
+                                      ♦
+</pre>
+</body>
+
+</html>

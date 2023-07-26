@@ -1,0 +1,126 @@
+<html>
+
+<head>
+<title>JOBSTRUCT - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> JOBSTRUCT</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Network_Driver_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Network_Return_Values.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+typedef struct _jobstruct {
+    WORD  pjId;             /* job ID                         */
+    WORD  pjUsername;       /* submitting user name (offset)  */
+    WORD  pjParms;          /* implementation string (offset) */
+    WORD  pjPosition;       /* position of job in the queue   */
+    WORD  pjStatus;         /* job status                     */
+    DWORD pjSubmitted;      /* time when job was submitted    */
+                            /*   (from 1970-1-1 in seconds)   */
+    DWORD pjSize;           /* job size in bytes              */
+                            /*   (-1L means not available)    */
+    WORD  pjCopies;         /* number of copies               */
+                            /*   (0 means not available)      */
+    WORD  pjComment;        /* comment for this job (offset)  */
+} JOBSTRUCT;
+ 
+The JOBSTRUCT structure contains information about print jobs.
+<b>Member       Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<b>pjId</b>         Specifies the job identifier.
+ 
+<b>pjUsername</b>   Specifies the offset (relative to the beginning of the
+             QUEUESTRUCT structure containing this JOBSTRUCT structure) to
+             the submitting user name.
+ 
+<b>pjParms</b>      Specifies the offset (relative to the beginning of the
+             QUEUESTRUCT structure containing this JOBSTRUCT structure) to
+             the implementation string.
+ 
+<b>pjPosition</b>   Specifies the position of job in the queue.
+ 
+<b>pjStatus</b>     Specifies the job status. It can be a combination of one Queue
+             Status value and one Device Status value, as described by the
+             following.
+ 
+             Queue Status
+ 
+             Value                       Meaning
+             ───────────────────────────────────────────────────────────────
+             WNPRJ_QS_QUEUED (0x0000)    Job queued.
+ 
+             WNPRJ_QS_PAUSED (0x0001)    Job paused.
+ 
+             WNPRJ_QS_SPOOLING (0x0002)  Job spooling.
+ 
+             WNPRJ_QS_PRINTING (0x0003)  Job printing.
+ 
+             Device Status
+ 
+             Value                          Meaning
+             ───────────────────────────────────────────────────────────────
+             WNPRJ_DS_COMPLETE (0x0008)     Complete.
+ 
+             WNPRJ_DS_INTERV (0x0010)       Intervention required.
+ 
+             WNPRJ_DS_ERROR (0x0020)        Printer error.
+ 
+             WNPRJ_DS_DESTOFFLIN (0x0040)   Printer offline.
+ 
+             WNPRJ_DS_DESTPAUSED (0x0080)   Printer paused.
+ 
+             WNPRJ_DS_NOTIFY (0x0100)       Notify owner.
+ 
+             WNPRJ_DS_DESTNOPAPER (0x0200)  Printer out of paper.
+ 
+             WNPRJ_DS_DESTFORMCHG (0x0400)  Form change required.
+ 
+             WNPRJ_DS_DESTCRTCHG (0x0800)   cartridge change required.
+ 
+             WNPRJ_DS_DESTPENCHG (0x1000)   Pen change required.
+ 
+<b>pjSubmitted</b>  Specifies the time when job was submitted in seconds since
+             January 1, 1970.
+ 
+<b>pjSize</b>       Specifies the job size in bytes. If it is -9, the size is not
+             available.
+ 
+<b>pjCopies</b>     Specifies the number of copies. If it is zero, the number is
+             not available.
+ 
+<b>pjComment</b>    Specifies the offset (relative to the beginning of the
+             QUEUESTRUCT structure containing this JOBSTRUCT structure) to
+             the comment for this job.
+ 
+<b>Comments</b>
+ 
+For more information about the mechanism that stores the strings referenced
+by JOBSTRUCT, see Section 5.2.6, "Passing Buffers," earlier in this topic.
+For example, assuming that lpQS is the LPQUEUESTRUCT returned by
+<b>WNetLockQueueData</b>, the expression
+ 
+(LPSTR) lpQS + lpQS -&gt; pqComment
+ 
+points to the queue comment. All offsets are relative to the beginning of
+the buffer, not the beginning of an individual JOBSTRUCT structure.
+ 
+<b>See Also</b>
+ 
+<b>WNetLockQueueData, QUEUESTRUCT</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

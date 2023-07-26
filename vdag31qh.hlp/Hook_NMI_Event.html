@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>Hook_NMI_Event - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Hook_NMI_Event</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Processor_Fault_and_Interrupt_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Hook_PM_Fault.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     esi, OFFSET32 NmiProc   ; points to NMI event procedure
+VMMcall Hook_NMI_Event
+ 
+The Hook_NMI_Event service installs a Non-Maskable Interrupt (NMI) event
+procedure. Virtual devices use this service to install event procedures to
+carry out tasks that are not permitted in NMI handlers.
+ 
+This service is only available during initialization.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>NmiProc</i>    Points to an NMI event procedure. See the Comments section for
+           more information about this procedure.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Comments</b>
+ 
+The system calls each installed NMI event procedure after the last handler
+in the NMI handler chain has executed. If more than one NMI event procedure
+is installed, the system calls the procedures in the order in which they
+where installed. The system calls the event procedure as follows:
+ 
+mov     ebx, VM              ; current VM handle
+mov     ebp, OFFSET32 crs    ; points to a Client_Reg_Struc
+call    [NmiProc]
+ 
+The VM parameter is a handle identifying the current virtual machine, and
+the crs parameter points to a Client_Reg_Struc structure containing the
+register values for the current virtual machine.
+ 
+NMI event procedures can be re-entered. This means an event procedure can be
+interrupted by another NMI.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Set_NMI_Handler_Addr, Client_Reg_Struc</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

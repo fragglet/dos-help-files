@@ -1,0 +1,96 @@
+<html>
+
+<head>
+<title>AdvancedSetUpDialog - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> AdvancedSetUpDialog</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printer-Specific_Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DeviceCapabilities.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD AdvancedSetUpDialog(hWnd, hDriver, lpDevModeIn, lpDevModeOut)
+HWND hWnd;
+HANDLE hDriver;
+LPDEVMODE lpDevModeIn;
+LPDEVMODE lpDevModeOut;
+ 
+The AdvancedSetUpDialog function displays a dialog box with which the user
+sets advanced print-job options. Applications call this function indirectly
+whenever the user chooses the Options button in the Print Setup dialog box.
+<b>AdvancedSetUpDialog</b> lets the user specify print-job options that the driver
+supports, such as color, duplex printing, and text quality, but that are not
+available through the Print Setup dialog boxes.
+ 
+Printer drivers that do not export AdvancedSetUpDialog must export the
+<b>ExtDeviceMode</b> function.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<i>hWnd        </i>  Identifies the parent window. AdvancedSetUpDialog uses this
+              handle as the parent window handle when it creates the dialog
+              box.
+ 
+<i>hDriver</i>       Identifies the module instance of the device driver.
+              AdvancedSetUpDialog uses this handle as the module instance
+              handle when it creates the dialog box.
+ 
+<i>lpDevModeIn   Points to a DEVMODE</i> structure specifying the initial values
+              for the advanced printer options in the dialog box. If the
+              lpDevModeIn parameter is NULL or the dmSpecVersion member in
+              this DEVMODE structure is less than 0x0300,
+              AdvancedSetUpDialog must return -1 without displaying the
+              dialog box.
+ 
+<i>lpDevModeOut  Points to a DEVMODE st</i>ructure that receives the final values
+              for the advanced printer options. The final values include any
+              input from the user. If the user cancels the dialog box,
+              AdvancedSetUpDialog must at least copy the initial values
+              (supplied in the lpDevModeIn parameter) to the lpDevModeOut
+              parameter. The lpDevModeOut parameter must specify all print
+              settings, not just those changed by the user.
+ 
+<b>Return Value</b>
+ 
+The return value is IDOK if the user chose the OK button to exit the dialog
+box, or IDCANCEL if the user chose the Cancel button. In either case, the
+structure pointed to by lpDevModeOut contains final values for the advanced
+pint-job options. If an error occurs, the function returns -1.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 93.
+ 
+<b>AdvancedSetUpDialog</b> creates an application-modal dialog box using the
+<b>DialogBox</b> function (USER.240). The dialog box must provide options for the
+user to set the various advanced operating modes of the device. If
+<b>DialogBox returns IDOK, Adv</b>ancedSetUpDialog copies the complete print-job
+information including all the user's input to lpDevModeOut. Otherwise, it
+must copy the complete contents of lpDevModeIn to lpDevModeOut.
+ 
+Although AdvancedSetUpDialog and ExtDeviceMode may display similar dialog
+boxes, these functions are not identical. In particular,
+<b>AdvancedSetUpDialog</b> must not update or modify the current environment or
+WIN.INI settings.
+ 
+<b>See Also</b>
+ 
+<b>ExtDeviceMode, DEVMODE</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

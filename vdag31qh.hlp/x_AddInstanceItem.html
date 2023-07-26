@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<title>_AddInstanceItem - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _AddInstanceItem</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Miscellaneous_Memory_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_Allocate_Device_CB_Area.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _AddInstanceItem, &lt;&lt;OFFSET32 InstStruc&gt;, flags&gt;
+ 
+or      eax, eax        ; nonzero if added, zero if error
+jz      not_added
+ 
+The _AddInstanceItem service identifies a region of instance data in the V86
+address space.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>InstStruc  Points to an Ins</i>tDataStruc structure containing information about
+           the block of memory to instance.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero value if the service is successful.
+Otherwise EAX contains zero to indicate an error.
+ 
+<b>Comments</b>
+ 
+To prevent errors, a virtual device must not change the location and content
+of any InstDataStruc structures until after the system has completed its
+initialization. To achieve this, a virtual can either staticly allocate the
+structures in its INIT data segment or dynamically allocate the structures
+on the system heap using the _HeapAllocate service. If the structures are in
+the INIT data segment, the system automatically frees the structure when it
+reclaims the INIT segment space. If the structures are in the system heap,
+the virtual device must free the structures using the _HeapFree service
+while processing the Sys_VM_Init message.
+ 
+If a virtual device the structures on the system heap, it must not attempt
+to reallocate the structure before system initialization has completed since
+this invalidates the structure address.
+ 
+Only one, contiguous region of instance data can be identified with each
+structure. The virtual device can cut down the call overhead and data space
+requirements by coalescing adjacent blocks of instance data and identifying
+the coalesced blocks as a single instance item.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>InstDataStruc</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

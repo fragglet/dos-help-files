@@ -1,0 +1,91 @@
+<html>
+
+<head>
+<title>Get_Profile_Fixed_Point - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Get_Profile_Fixed_Point</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Initialization_Information_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Get_Profile_Hex_Int.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, Default            ; default value
+mov     ecx, Places             ; number of digits after decimal point
+mov     esi, OFFSET32 Profile   ; points to section name
+mov     edi, OFFSET32 Keyname   ; points to entry name
+VMMcall Get_Profile_Fixed_Point
+ 
+jc      not_found               ; carry set if entry not found
+jz      no_value                ; zero set if entry has no value
+ 
+mov     [Value], eax            ; entry value
+ 
+The Get_Profile_Fixed_Point service returns the value of a
+fixed-point-number entry in the SYSTEM.INI file. The Profile and Keyname
+parameters specify the section and entry to search for.
+ 
+This service is only available during initialization.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Default</i>    Specifies the default value to return if the entry is not found
+           or has no current value.
+ 
+<i>Places</i>     Specifies the number of digits after the decimal point to
+           convert. If fixed-point number has extra digits, the service
+           ignores them.
+ 
+<i>Profile</i>    Specifies a null-terminated string identifying the section in the
+           SYSTEM.INI file to search. If Profile is zero, the service
+           searches the [386Enh] section.
+ 
+<i>Keyname</i>    Points to a null-terminated string identifying the name of the
+           entry to search for.
+ 
+<b>Return Value</b>
+ 
+If the carry and zero flags are clear, the specified entry is found and is a
+valid fixed-point number. In this case, the EAX register is set to the
+normalized value of the number; the actual value is computed as EAX * 10 **
+(-Places).
+ 
+If the carry flag is clear and the zero flag is set, the specified entry
+exists but has no corresponding value. If the carry flag is set, the entry
+cannot be found or the entry does not represent a valid fixed-point number.
+In these cases, the EAX register is set to the Default value.
+ 
+<b>Comments</b>
+ 
+A valid fixed-point number is a decimal number that consists of an integer,
+a fraction, or a combination of integer and fraction. The integer can be any
+combination of decimal digits, and may be preceded by a plus sign (+) or a
+minus sign (-) to indicate a positive or negative fixed-point value. The
+fraction can be any combination of decimal digits but must be preceded with
+a decimal point (.).
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Get_Profile_Boolean, Get_Profile_Decimal_Int, Get_Profile_Hex_Int</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

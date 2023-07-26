@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<title>_BuildDescriptorDWORDs - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _BuildDescriptorDWORDs</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='GDT_sl_LDT_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_Free_GDT_Selector.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _BuildDescriptorDWORDs, &lt;DESCBase, DESCLimit, DESCType,
+                                 DESCSize, flags&gt;
+ 
+mov     [DescDWORD1], edx       ; high doubleword of descriptor
+mov     [DescDWORD2], eax       ; low doubleword of descriptor
+ 
+The _BuildDescriptorDWORDs service builds the descriptor parameter used in
+calls to the _Allocate_GDT_Selector and _Allocate_LDT_Selector services.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>DESCBase</i>   Specifies the 32-bit base address for the descriptor.
+ 
+<i>DESCLimit</i>  Specifies the 20-bit limit for the descriptor.
+ 
+<i>DESCType</i>   Specifies the present bit, DPL, and type fields for the
+           descriptor (bits 8-15 of the high doubleword). Only the low 8
+           bits of the parameter are valid; all other bits must be zero.
+ 
+<i>DESCSize</i>   Specifies the granularity and big/default fields for the
+           descriptor (bits 20-23 of the high doubleword). Only bits the
+           high four bits (4-7) of the DESCSize parameter are valid; all
+           other bits must be zero.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter can be the
+           following value:
+ 
+           Value           Meaning
+           ─────────────────────────────────────────────────────────────────
+           BDDExplicitDPL  Uses the DPL bits in the DESCType parameters. If
+                           this value is not given, the service sets the DPL
+                           bits to be equal to the RPL bits for
+                           protected-mode applications.
+ 
+           All other values are reserved.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the low doubleword of the descriptor and the EDX
+register contains the high doubleword of the descriptor.
+ 
+<b>Comments</b>
+ 
+Virtual devices must not rely on the privilege level at which protected-mode
+applications run. When creating selectors for protected-mode applications, a
+virtual device should specify the BDDExplicitDPL value. This provides a
+convenient way to build descriptors without knowing the protection level for
+protected-mode applications.
+ 
+<b>Uses</b>
+ 
+EAX, EDX
+ 
+<b>See Also</b>
+ 
+<b>_Allocate_GDT_Selector, _Allocate_LDT_Selector</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

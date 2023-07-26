@@ -1,0 +1,84 @@
+<html>
+
+<head>
+<title>Call_When_Idle - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Call_When_Idle</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Primary_Scheduler_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Call_When_Not_Critical.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     esi, OFFSET32 IdleCallback      ; points to callback procedure
+VMMcall Call_When_Idle
+ 
+jc      error                       ; carry set if callback not installed
+ 
+The Call_When_Idle service installs a system-idle callback procedure. The
+system calls this procedure whenever the Windows kernel signals that Windows
+is idle and all other virtual machines are also idle. Virtual devices
+typically use this service to perform background operations. For example,
+the pageswap device uses this service to asynchronously write dirty pages to
+the backing store.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>IdleCallback</i>  Points to the callback procedure to install. See the Comments
+              section for more information about the procedure.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the callback procedure is installed. Otherwise,
+the carry flag is set.
+ 
+<b>Comments</b>
+ 
+Virtual devices can install any number of idle callback procedures. The
+system calls each one, in the order installed, until one of the procedures
+clears the carry flag.
+ 
+The system calls each callback procedure as follows:
+ 
+mov     ebx, SysVM          ; system VM handle
+mov     ebp, OFFSET32 crs   ; points to a Client_Reg_Struc structure
+call    [IdleCallback]
+ 
+jc      pass_to_next        ; if carry set, call the next idle callback
+ 
+ 
+The SysVM parameter specifies a handle identifying the system virtual
+machine and the csr parameters points to a Client_Reg_Struc structure
+containing the registers of the system virtual machine.
+ 
+The callback procedure can carry out any operation and can modify EAX, EBX,
+ECX, EDX, ESI, EDI, and Flags. If the operation takes a significant amount
+of time, the procedure should clear the carry flag before returning to
+prevent other callbacks from being called. Otherwise,  the procedure should
+set the carry flag and return.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Call_When_Not_Critical, Call_When_Task_Switched</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

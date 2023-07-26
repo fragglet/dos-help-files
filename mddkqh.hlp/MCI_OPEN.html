@@ -1,0 +1,220 @@
+<html>
+
+<head>
+<title>MCI_OPEN - Windows Multimedia DDK</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows Multimedia DDK (mddkqh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MCI_OPEN</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MDDK_dot_h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+<b>MCI_OPEN</b>
+ 
+        This MCI command message initializes a device or device element.
+        All devices respond to this message. The parameters and flags
+        available for this message depend on the selected device.
+ 
+<u>Parameters</u>
+        DWORD dwFlags
+            The following flags apply to all devices:
+ 
+            MCI_NOTIFY
+                Specifies that MCI should post the MM_MCINOTIFY message
+                when this command completes. The window to receive this
+                message is specified in the <a href='MCI_OPEN_PARMS.html'>dwCallback</a> field of the data
+                structure identified by lpOpen.
+ 
+            MCI_WAIT
+                Specifies that the open operation should finish before
+                MCI returns control to the application.
+ 
+            MCI_OPEN_ALIAS
+                Specifies that an alias is included in the <a href='MCI_OPEN_PARMS.html'>lpstrAlias</a>
+                field of the data structure identified by lpOpen.
+ 
+            MCI_OPEN_SHAREABLE
+                Specifies that the device or device element should be
+                opened as shareable.
+ 
+            MCI_OPEN_TYPE
+                Specifies that a device type name or constant is
+                included in the <a href='MCI_OPEN_PARMS.html'>lpstrDeviceType</a> field of the data
+                structure identified by lpOpen.
+ 
+            MCI_OPEN_TYPE_ID
+                Specifies that the low-order word of the
+                <a href='MCI_OPEN_PARMS.html'>lpstrDeviceType</a> field of the associated data structure
+                contains a standard MCI device type ID and the
+                high-order word optionally contains the ordinal index
+                for the device. Use this flag with the MCI_OPEN_TYPE
+                flag.
+ 
+        LPMCI_OPEN_PARMS lpOpen
+            Specifies a far pointer to the MCI_OPEN_PARMS data
+            structure. (Devices with extended command sets might replace
+            this data structure with a device-specific data structure.)
+ 
+        Flags for Compound Devices
+ 
+        DWORD dwFlags
+            The following additional flags apply to compound devices:
+ 
+            MCI_OPEN_ELEMENT
+                Specifies that an element name is included in the
+                <a href='MCI_OPEN_PARMS.html'>lpstrElementName</a> field of the data structure identified
+                by lpOpen.
+ 
+            MCI_OPEN_ELEMENT_ID
+                Specifies that the <a href='MCI_OPEN_PARMS.html'>lpstrElementName</a> field of the data
+                structure identified by lpOpen is interpreted as a DWORD
+                and has meaning internal to the device. Use this flag
+                with the MCI_OPEN_ELEMENT flag.
+ 
+        LPMCI_OPEN_PARMS lpOpen
+            Specifies a far pointer to the MCI_OPEN_PARMS data
+            structure. (Devices with additional parameters might replace
+            this data structure with a device-specific data structure.)
+ 
+        Animation Extensions
+ 
+        DWORD dwFlags
+            The following flags apply to animation devices:
+ 
+            MCI_ANIM_OPEN_EXPANDDIBS
+                Specifies that the device should expand bitmaps while
+                loading the animation rather than while playing.
+ 
+            MCI_ANIM_OPEN_NOSTATIC
+                Specifies that the device should reduce the number of
+                static (system) colors in the palette to two.
+ 
+            MCI_ANIM_OPEN_PARENT
+                Indicates the parent window handle is specified in the
+                <a href='MCI_ANIM_OPEN_PARMS.html'>hWndParent</a> field of the data structure identified by
+                lpOpen. The parent window handle is required for some
+                window styles.
+ 
+            MCI_ANIM_OPEN_WS
+                Indicates a window style is specified in the <a href='MCI_ANIM_OPEN_PARMS.html'>dwStyle</a>
+                field of the data structure identified by lpOpen. The
+                <a href='MCI_ANIM_OPEN_PARMS.html'>dwStyle</a> field specifies the style of the window that the
+                driver will create and display if the application does
+                not provide one. The style parameter takes an integer
+                which defines the window style. These constants are the
+                same as the ones in WINDOWS.H (such as WS_CHILD,
+                WS_OVERLAPPEDWINDOW, or WS_POPUP).
+ 
+        LPMCI_ANIM_OPEN_PARMS lpOpen
+            Specifies a far pointer to the MCI_ANIM_OPEN_PARMS data
+            structure.
+ 
+        Video Overlay Extensions
+ 
+        DWORD dwFlags
+            The following flags apply to video overlay devices:
+ 
+            MCI_OVLY_OPEN_PARENT
+                Indicates the parent window handle is specified in the
+                <a href='MCI_OVLY_OPEN_PARMS.html'>hWndParent</a> field of the data structure identified by
+                lpOpen.
+ 
+            MCI_OVLY_OPEN_WS
+                Indicates a window style is specified in the <a href='MCI_OVLY_OPEN_PARMS.html'>dwStyle</a>
+                field of the data structure identified by lpOpen. The
+                <a href='MCI_OVLY_OPEN_PARMS.html'>dwStyle</a> field specifies the style of the window that the
+                driver will create and display if the application does
+                not provide one. The style parameter takes an integer
+                that defines the window style. These constants are the
+                same as those in WINDOWS.H (for example, WS_CHILD,
+                WS_OVERLAPPEDWINDOW, or WS_POPUP).
+ 
+        LPMCI_OVLY_OPEN_PARMS lpOpen
+            Specifies a far pointer to the MCI_OVLY_OPEN_PARMS data
+            structure.
+ 
+        Waveform Audio Extensions
+ 
+        The MCIWAVE device included with Inwdows requires
+        asynchronous waveform driver. It does not work with
+        synchronous drivers like the PC speaker driver.
+ 
+        DWORD dwFlags
+            The following flags apply to waveform audio devices:
+ 
+            MCI_WAVE_OPEN_BUFFER
+                Indicates a buffer length is specified in the
+                <a href='MCI_WAVE_OPEN_PARMS.html'>dwBufferSeconds</a> field of the data structure identified
+                by lpOpen. The default size of the buffer is set when the
+                waveform audio device is installed or configured. Typically
+                the buffer size is set to 4 seconds. With the MCIWAVE
+                device, the minimum size is 2 seconds and the maximum size
+                is 9 seconds.
+ 
+        LPMCI_WAVE_OPEN_PARMS lpOpen
+            Specifies a far pointer to the MCI_WAVE_OPEN_PARMS data
+            structure. (Devices with extended command sets might replace
+            this data structure with a device-specific data structure.)
+ 
+<u>Return value</u>
+        Returns zero if the open is successful. If an error occurs, it
+        returns the following values:
+ 
+        MCIERR_CANNOT_LOAD_DRIVER
+            Error loading media device driver.
+ 
+        MCIERR_DEVICE_OPEN
+            The device name is in use by this task. Use a unique alias.
+ 
+        MCIERR_DUPLICATE_ALIAS
+            The specified alias is an open device in this task.
+ 
+        MCIERR_EXTENSION_NOT_FOUND
+            Cannot deduce a device type from the given extension.
+ 
+        MCIERR_FILENAME_REQUIRED
+            A valid filename is required.
+ 
+        MCIERR_MISSING_PARAMETER
+            Required parameter is missing.
+ 
+        MCIERR_MUST_USE_SHAREABLE
+            The device is already open; use the shareable flag with each
+            open.
+ 
+        MCIERR_NO_ELEMENT_ALLOWED
+            An element name cannot be used with this device.
+ 
+<u>Comments</u>
+        If MCI_OPEN_SHAREABLE is not specified when a device or device
+        element is initially opened, then all subsequent MCI_OPEN
+        messages to the device or device element will fail. If the
+        device or device element is already open, and this flag is not
+        specified, the call will fail even if the first open command
+        specified MCI_OPEN_SHAREABLE. Files for the MCISEQ and MCIWAVE
+        devices are nonshareable.
+ 
+        Case is ignored in the device name, but there must not be any
+        leading or trailing blanks.
+ 
+        To use automatic type selection (via the [mci extensions]
+        section of the WIN.INI file), assign the file name (including
+        file extension) to the <a href='MCI_OPEN_PARMS.html'>lpstrElementName</a> field, assign a NULL
+        pointer to the <a href='MCI_OPEN_PARMS.html'>lpstrDeviceType</a> field, and set the
+        MCI_OPEN_ELEMENT flag.
+ 
+<u>See also</u>
+        MCI_CLOSE
+ 
+                                       -♦-
+</pre>
+</body>
+
+</html>

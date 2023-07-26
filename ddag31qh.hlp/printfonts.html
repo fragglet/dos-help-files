@@ -1,0 +1,127 @@
+<html>
+
+<head>
+<title>Fonts - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Fonts</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printer_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='printdibs.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+A printer driver provides support for the various fonts provided or
+supported by GDI.
+ 
+<b>Big Fonts</b>
+ 
+Some printer drivers use a new format for fonts when running in protected
+mode (with Windows running in either standard or 386 enhanced mode) on an
+80386 or 80486-based computer. This format allows for fonts that can exceed
+64K bytes of data, as well as some other options. In this situation, GDI
+will convert all the 2.x format fonts to the new format so that only one
+font file format is used in memory.
+ 
+If a printer driver prints GDI bitmap fonts directly, it should be modified
+to handle big fonts. In many cases, a driver will not need to be updated if
+it is a banding monochrome driver that uses only the brute functions. The
+brute functions are already aware of the new format. For more information
+about brute functions, see Section 4.1.25 "The Brute Functions," later in
+this topic.
+ 
+If a printer driver uses the color library, the library supports the big
+font format, as well as the old 2.x format.
+ 
+<b>TrueType</b>
+ 
+GDI provides TrueType support for any driver that supports GDI raster fonts
+(that is, it supports drivers that set the DT_RASPRINTER value in the
+<b>dpTechnology member of the GDIINFO s</b>tructure). To support TrueType on these
+printers, GDI generates a raster font from the TrueType outlines and passes
+the font to the driver just as with any other raster font. This means many
+Windows 3.0 printer drivers, especially drivers for dot-matrix printers,
+currently support TrueType──no code changes in the driver are required.
+ 
+Printer drivers that do not support raster fonts must be modified to support
+TrueType. Typically, the modification consists of adding code to convert
+TrueType fonts into a downloadable font format that the printer accepts. To
+simplify the task of adding TrueType support to nonraster printer drivers,
+GDI provides several TrueType service functions.
+ 
+<b>TrueType Service Functions</b>
+ 
+Printer drivers can use TrueType service functions to retrieve information
+about TrueType fonts, to retrieve bitmaps of individual glyphs in the fonts,
+and to realize a complete font, retrieving both information and bitmaps.
+Following are the service functions and brief descriptions.
+ 
+<b>Function              Description</b>
+────────────────────────────────────────────────────────────────────────────
+<b>EngineDeleteFont</b>      Deletes a realized TrueType font.
+ 
+<b>EngineEnumerateFont</b>   Enumerates TrueType fonts.
+ 
+<b>EngineGetCharWidth</b>    Retrieves character widths for TrueType fonts.
+ 
+<b>EngineGetGlyphBmp</b>     Retrieves the bitmap for a rasterized glyph.
+ 
+<b>EngineRealizeFont</b>     Realizes a TrueType font.
+ 
+<b>EngineSetFontContext</b>  Sets the context for rasterizing glyphs.
+ 
+<b>GetRasterizerCaps</b>     Specifies whether TrueType is available.
+ 
+A printer driver can determine whether TrueType is currently available by
+calling the GetRasterizerCaps function. Since users can turn TrueType off,
+it is important that a driver check for TrueType before generating output.
+ 
+If TrueType is on, the driver can call the EngineEnumFonts function whenever
+GDI calls the driver's EnumDFonts function. This gives the font engine the
+chance to enumerate the TrueType fonts having the specified font. The driver
+can call the EngineRealizeFont function whenever GDI calls the driver's
+<b>RealizeObject</b> function. This gives the TrueType font engine an opportunity
+to generate a physical font that matches the specified logical font. When
+the engine realizes a font, it fills a FONTINFO structure with information
+about the font as well as the bitmap data for the individual glyphs. A
+driver can use this information to create a downloadable font in the format
+recognized by the printer.
+ 
+In general, a printer driver should call the EngineRealizeFont and
+<b>EngineEnumerateFont</b> functions before processing its own device fonts (if
+any). If GDI requests that the driver delete a realized TrueType font (by
+calling RealizeObject), the driver must call the EngineDeleteFont function
+to delete the font.
+ 
+A printer driver can retrieve character width information for a realized
+TrueType font by using the EngineGetCharWidth function. It can retrieve
+bitmaps for individual glyphs in the font by using the EngineSetFontContext
+and EngineGetGlyphBmp functions. The driver must call EngineSetFontContext
+first to set the font before calling EngineGetGlyphBmp. Drivers for printers
+that accept individual glyph definitions (as opposed to full font
+definitions) can use the character width information and bitmap data to
+download individual glyphs.
+ 
+<b>Specifying the Spot Size</b>
+ 
+The spot size is a set of values that help the TrueType rasterizer create
+the best glyph bitmaps for a given printer. All printer drivers can benefit
+by setting the spot size in their GDIINFO structure regardless of whether
+the driver uses TrueType service functions. The spot size should be
+specified in the dpSpotSizeX and dpSpotSizeY members of the driver's
+<b>GDIINFO</b> structure. If these members are not zero, GDI passes the values to
+the TrueType engine to help it rasterize glyphs.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

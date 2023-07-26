@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>_DeAssign_Device_V86_Pages - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _DeAssign_Device_V86_Pages</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Device_V86_Page_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_Get_Device_V86_Pages_Array.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _DeAssign_Device_V86_Pages, &lt;VMLinrPage, nPages, VM, flags&gt;
+ 
+or      eax, eax        ; nonzero if unassigned, zero if error
+jz      not_unassigned
+ 
+The _DeAssign_Device_V86_Pages service unassigns a region in the V86 address
+space which was previously assigned using the _Assign_Device_V86_Pages
+service.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>VMLinrPage</i>  Specifies the linear page number of the first page to unassign.
+            The page number must be in the range 0 through 10Fh.
+ 
+<i>nPages</i>      Specifies the number of pages to unassign. All pages to unassign
+            must be within the V86 address space. If any a page is not
+            assigned, this service returns an error value.
+ 
+<i>VM</i>          Specifies a handle identifying a virtual machine. If this
+            parameter is a valid handle, the service unassigns pages
+            previously assigned to the virtual machine. If this parameter is
+            zero, the service unassigns pages that were previously assigned
+            to all virtual machines.
+ 
+<i>flags</i>       Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains a nonzero value if the service was successful.
+Otherwise, EAX contains zero to indicate an error such as a page in the
+range already unassigned or an invalid page range.
+ 
+<b>Comments</b>
+ 
+This service only works after device initialization is complete.
+ 
+A virtual device must not attempt to unassign pages that have not yet been
+assigned, or attempt to globally unassign pages that were only locally
+assigned.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_Assign_Device_V86_Pages</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

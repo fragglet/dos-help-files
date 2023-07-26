@@ -1,0 +1,96 @@
+<html>
+
+<head>
+<title>SETMITERLIMIT - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> SETMITERLIMIT</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Escapes.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='SET_POLY_MODE.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define SETMITERLIMIT 23 
+short Control(lpDevice, SETMITERLIMIT, lpInData, lpOutData)
+LPPDEVICE lpDevice;
+LPWORD lpInData;
+LPWORD lpOutData;
+ 
+The SETMITERLIMIT escape tells the driver how an application wants to clip
+off miter-type line joins when they become too long. It sets the current
+miter-limit parameter in the graphics state to a number greater than or
+equal to one.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<i>lpDevice   Points to a P</i>DEVICE structure specifying the destination device.
+ 
+<i>lpInData</i>   Points to a 16-bit variable that specifies the miter-limit value.
+           If this parameter is NULL, the escape does not change the
+           miter-limit value.
+ 
+<i>lpOutData</i>  Points to a 16-bit variable that receives the previous or current
+           miter-limit value (if the lpInData parameter is NULL). If this
+           parameter is NULL, the escape does not return to the previous
+           limit.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if the escape is successful. Otherwise, it is
+FALSE.
+ 
+<b>Comments</b>
+ 
+The miter limit controls the stroke operator's treatment of corners when
+miter joins have been specified. For more information about miter joins, see
+the SETLINEJOIN escape.
+ 
+When path segments connect at a sharp angle, a miter join results in a spike
+that extends well beyond the connection point. The purpose of the miter
+limit is to cut off such spikes when they become too long.
+ 
+At any given corner, the miter length is the distance from the point at
+which the inner edges of the strokes intersect to the point at which the
+outside edges of the strokes intersect (that is, the diagonal length of the
+miter). This distance increases as the angle between the segments decreases.
+If the ratio of the miter length to the line width exceeds the miter-limit
+parameter, the corner is treated with a bevel join instead of a miter join.
+ 
+The ratio of miter length to line width is directly related to the angle
+<i>alpha</i> between the segments by the formula:
+ 
+miter-length / line-width = 1 / sin(alpha/2)
+ 
+The following are examples of miter-limit values:
+ 
+♦  1.415 cuts off miters at angles less than 90 degrees, and converts them
+   to bevels.
+ 
+♦  2.0 cuts off miters at angles less than 60 degrees.
+ 
+♦  10.0 cuts off miters at angles less than 11 degrees.
+ 
+The default value of the miter limit is 10. Setting the miter limit to 1
+cuts off miters at all angles so that bevels are always produced even when
+miters are specified.
+ 
+<b>See Also</b>
+ 
+SETLINEJOIN, PDEVICE
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

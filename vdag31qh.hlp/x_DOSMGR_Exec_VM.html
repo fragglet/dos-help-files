@@ -1,0 +1,69 @@
+<html>
+
+<head>
+<title>_DOSMGR_Exec_VM - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _DOSMGR_Exec_VM</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_MS-DOS_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DOSMGR_Get_DOS_Crit_Status.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include dosmgr.inc
+ 
+VxDcall _DOSMGR_Exec_VM &lt;VM, V86Size, CallBack, RefData&gt;
+ 
+The _DOSMGR_Exec_VM service schedules the execution specified by previous
+call to the _DOSMGR_Set_Exec_VM_Data service and sets other parameters of
+the execution.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>VM</i>         Specifies the handle of the current virtual machine.
+ 
+<i>V86Size</i>    Specifies the size in pages of the virtual machine. This is equal
+           to the number of pages mapped using the MapIntoVM service
+           starting at the first page in the virtual machine. This service
+           does not map these pages; the value is simply used to set the
+           MS-DOS size of the virtual machine.
+ 
+<i>CallBk</i>     Specifies the callback procedure to call when the virtual machine
+           terminates. If this parameter is zero, no callback is called.
+ 
+<i>RefData</i>    Specifies reference data to pass to the callback procedure.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Comments</b>
+ 
+The system calls the callback when the virtual machine terminates. The
+callback receives the following input parameters:
+ 
+EBP     ; points to a Client_Reg_Struc
+EBX     ; virtual machine handle
+EDX     ; points to reference data
+ 
+The callback must preserve the EBX, EBP and segment registers. After the
+callback returns, the system carries out the normal virtual machine
+termination sequence. At this time the virtual machine is still in a running
+state. The callback can delay termination by delaying its return. However,
+the callback must simulate interrupts into the virtual machine to keep the
+scheduler moving if it is holding termination.
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>Begin_Control_Dispatch - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Begin_Control_Dispatch</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='VMM_Macros.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='BeginProc.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+Begin_Control_Dispatch DeviceName
+ 
+The Begin_Control_Dispatch macro builds a table for dispatching messages
+passed to the control procedure for the specified virtual device. This macro
+is used in conjunction with the Control_Dispatch and End_Control_Dispatch
+macros.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>DeviceName</i>  Specifies the name of the virtual device. The macro uses this
+            parameter to construct the label for the control procedure
+            (appends _Control to the end of this name). This control
+            procedure label must also be specified in the
+            Declare_Virtual_Device macro
+ 
+<b>Return Value</b>
+ 
+This macro has no return value.
+ 
+<b>Comments</b>
+ 
+The Control_Dispatch macro can be used without Begin_Control_Dispatch, but
+then it the programmer's responsibility to declare a procedure in locked
+code (VxD_LOCKED_CODE_SEG) and clear the carry flag for any messages not
+processed. The advantage in using Begin_Control_Dispatch macro is when a
+large number of messages are processed by a device. The macro builds a jump
+table which usually requires less code then the sequence of compare and jump
+instructions that are generated when Control_Dispatch is used alone.
+ 
+<b>Example</b>
+ 
+The following example builds a complete dispatch table for the virtual
+device named MyDevice:
+ 
+Begin_Control_Dispatch MyDevice
+Control_Dispatch  Device_Init, MyDeviceInitProcedure
+Control_Dispatch  Sys_VM_Init, MyDeviceSysInitProcedure
+Control_Dispatch  Create_VM,   MyDeviceCreateVMProcedure
+End_Control_Dispatch MyDevice
+ 
+<b>See Also</b>
+ 
+<b>Control_Dispatch, Declare_Virtual_Device, End_Control_Dispatch</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,66 @@
+<html>
+
+<head>
+<title>DIBs with Color-Palette Management - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DIBs with Color-Palette Management</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='dispstub.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+The color table for a device-independent bitmap (DIB) consists of 16-bit
+indexes used as the colors for the bitmap. For the SetDIBitsToDevice
+function, they are physical indexes; for the DeviceBitmapBits function, they
+are logical indexes.
+ 
+In the DeviceBitmapBits and SetDIBitsToDevice functions, the final
+parameter, lpTranslate, provides information that is useful only for
+palette-capable devices. However, all devices need to include this
+parameter.
+ 
+When DeviceBitmapBits is retrieving bits on a 256-color device, lpTranslate
+is a pointer to a translation table with the following results.
+ 
+<b>Bitcount  Result</b>
+────────────────────────────────────────────────────────────────────────────
+<i>1</i>         A palette-sized array of bytes, each one either 0x00H or 0xFFH.
+          The array is used to determine if the index in the bitmap
+          corresponds to a zero or a 1 in the DIB.
+ 
+<i>4</i>         A palette-sized array of bytes, each one containing a value
+          between 0x00H and 0xFFH. Each index in the bitmap will map to the
+          corresponding 4-bit values in the DIB.
+ 
+<i>8  </i>       lpTranslate will equal an identity table that can be ignored.
+ 
+<i>24</i>        A palette-sized array of 32-bit values, each one containing the
+          RGB value (and unused high byte) corresponding to the index in the
+          bitmap.
+ 
+On a palette-capable device when the source bitmap is a monochrome bitmap,
+<b>DeviceBitmapBits</b> passes in a translation table that has only two entries,
+instead of 256. Entry 0 has the color-table index for black and entry 1 has
+the color table index for white.
+ 
+When DeviceBitmapBits sets bitmap bits, GDI passes a pointer only if the
+bitcount is 24. The parameter points to data maintained by GDI. For every
+RGB value in the DIB, the display driver calls the DeviceColorMatch function
+(GDI.449) to match an RGB value with an index. This function returns an
+index to represent that color in the device-dependent bitmap.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

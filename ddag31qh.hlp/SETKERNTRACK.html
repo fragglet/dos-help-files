@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<title>SETKERNTRACK - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> SETKERNTRACK</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Escapes.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='SETLINECAP.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define SETKERNTRACK 770 
+short Control(lpDevice, SETKERNTRACK, lpInData, lpOutData)
+LPPDEVICE lpDevice;
+LPINT lpInData;
+LPINT lpOutData;
+ 
+The SETKERNTRACK escape specifies which kerning track a driver that supports
+automatic-track kerning should use. A kerning track of zero disables
+automatic-track kerning. When this escape is enabled, the driver
+automatically kerns all characters according to the specified track. The
+driver reflects this kerning both on the printer and in calls to the
+<b>GetTextExtent</b> (GDI.91) function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpDevice   Points to a P</i>DEVICE structure specifying the destination device.
+ 
+<i>lpInData</i>   Points to a 16-bit variable that specifies the kerning track to
+           use. A value of zero disables this feature. The etmKernTracks
+           member in the EXTTEXTMETRIC structure for the driver specifies
+           the maximum permitted value. Each permitted value corresponds to
+           a position in the track-kerning table (using one as the first
+           item in the table).
+ 
+<i>lpOutData</i>  Points to a 16-bit variable that receives the previous kerning
+           track.
+ 
+<b>Return Value</b>
+ 
+The return value is 1 if the escape is successful. Otherwise, it is 0 if it
+is not, or if the escape is not implemented.
+ 
+<b>Comments</b>
+ 
+The default state is zero, which means that automatic-track kerning is
+disabled.
+ 
+A driver does not have to support this escape just because it supplies the
+track-kerning table to the application using the GETTRACKKERNTABLE escape.
+In the case where GETTRACKKERNTABLE is supported but SETKERNTRACK is not, it
+is the application's responsibility to properly space the characters on the
+output device.
+ 
+<b>See Also</b>
+ 
+GETEXTENDEDTEXTMETRICS, GETTRACKKERNTABLE, EXTTEXTMETRIC, PDEVICE
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

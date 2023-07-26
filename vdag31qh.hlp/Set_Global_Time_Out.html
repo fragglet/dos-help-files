@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>Set_Global_Time_Out - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Set_Global_Time_Out</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Timing_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Set_VM_Time_Out.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, Time                       ; number of milliseconds to time-out
+mov     edx, OFFSET32 RefData           ; points to reference data
+mov     esi, OFFSET32 TimeOutCallback   ; points to callback procedure
+VMMcall Set_Global_Time_Out
+ 
+mov     [TimeOut], esi                  ; time-out handle
+ 
+The Set_Global_Time_Out service schedules a time-out to occur after the
+specified number of milliseconds have elapsed.
+ 
+<b>Parameter        Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Time</i>             Specifies the number of milliseconds to wait until calling
+                 the time-out callback procedure.
+ 
+<i>RefData</i>          Points to reference data to be passed to the callback
+                 procedure.
+ 
+<i>TimeOutCallback</i>  Points to the callback procedure. See the Comments section
+                 for more information about the procedure.
+ 
+<b>Return Value</b>
+ 
+The ESI register contains the handle of the time-out if the service is
+successful. Otherwise, the ESI is zero indicating that the time-out is not
+scheduled.
+ 
+<b>Comments</b>
+ 
+The system calls the time-out callback procedure when the specified number
+of milliseconds elapse. The system calls the procedure as follows:
+ 
+mov     ebx, VM                 ; current VM handle
+mov     ecx, Extra              ; number of milliseconds since time-out
+mov     edx, OFFSET32 RefData   ; points to reference data
+mov     ebp, OFFSET32 crs       ; points to Client_Reg_Struc
+call    [TimeOutCallback]
+ 
+The VM parameter is a handle specifying the current virtual machine. The
+<i>RefData</i> parameter points to the reference data for the callback procedure,
+and the crs parameter points to a Client_Reg_Struc structure that contains
+the register values for the current virtual machine.
+ 
+The Extra parameter specifies the number of milliseconds that have elapsed
+since the actual time-out occurred. Time-outs are often delayed by 10
+milliseconds or more because the normal system timer runs at 20 milliseconds
+or slower.
+ 
+If a virtual device needs more accurate time-outs, it must increase the
+timer interrupt frequency using virtual timer device (VTD) services.
+ 
+<b>Uses</b>
+ 
+ESI, Flags
+ 
+<b>See Also</b>
+ 
+<b>Set_VM_Time_Out</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

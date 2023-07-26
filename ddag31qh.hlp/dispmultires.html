@@ -1,0 +1,111 @@
+<html>
+
+<head>
+<title>Multiple-Resolution Drivers - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Multiple-Resolution Drivers</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='disppenext.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+A multiple-resolution display driver provides the code and resources needed
+to support all resolutions of a given display device. In previous versions
+of Windows, separate display drivers were required for each resolution. In
+Windows 3.1, a single display driver can handle all resolutions.
+ 
+A multiple-resolution driver must provide the following:
+ 
+♦  GetDriverResourceID function
+ 
+♦  Icons and cursors for each supported resolution
+ 
+♦  Installation information
+ 
+<b>Resources and Resource Mapping</b>
+ 
+In many cases, the only difference for the driver between the device
+resolutions is the size of the resources and the horizontal and vertical
+dimensions. A driver can support multiple resolutions as long as it can
+determine which resolution Windows expects it to use.
+ 
+To support multiple resolutions in a single display driver, Windows checks
+for the GetDriverResourceID function in the driver and calls it before
+loading the driver's resources and dimensions. This gives the driver a
+chance to check the SYSTEM.INI file using the GetPrivateProfileInt
+(KERNEL.127) or GetPrivateProfileString (KERNEL.128) functions for
+information specifying the desired resolution. The GetDriverResourceID
+function can then map the request resource identifier to the identifier of
+the corresponding resource for the desired resolution. In this way, the
+driver makes sure Windows loads the appropriate resources for the resolution
+to be used.
+ 
+When Windows calls the GetDriverResourceID function, the driver should at
+least check for the aspect entry in the [Boot.description] section of the
+SYSTEM.INI file. This entry specifies the resolution (in dots-per-inch) of
+the display. Drivers use this value to determine which fonts to use as well
+as to determine other resource that depend on the number of dots-per-inch
+the display generates.
+ 
+Display drivers that support multiple resolutions must export the
+<b>GetDriverResourceID</b> function and provide a set of appropriate resources for
+each resolution.
+ 
+<b>Installation Information</b>
+ 
+Users select the desired resolution for the display using the Setup program.
+To display each screen resolution, Setup checks the [Display] section in the
+SETUP.INF or OEMSETUP.INF file. There must be one line for each resolution.
+For example, if a video adapter named "ZGA" has three resolutions (640x480,
+800x600, and 1024x768), the [Display] section should look something like
+this:
+ 
+[display]
+zga1=1:zga.drv,"ZGA(640x480)","100,96,96",3:zgacolor.2gr,... ,zgalo
+zga2=1:zga.drv,"ZGA(800x600)","100,96,96",3:zgacolor.2gr,... ,zgamed
+zga3=1:zga.drv,"ZGA(1024x768)","100,120,120",3:zgacolor.2gr,... ,zgahi
+ 
+Setup installs the same driver (ZGA.DRV), grabbers, virtual-display device,
+and other related components. However, the last field in the line specifies
+an additional section in the SETUP.INF or OEMSETUP.INF file that contains
+resolution-specific information.
+ 
+The resolution-specific information allows Windows Setup to copy files and
+write profile data for later use by the display driver. Setup can write the
+information to the SYSTEM.INI file in the section and format the driver
+understands. When a display driver is initialized, it can use the Windows
+functions GetPrivateProfileInt or GetPrivateProfileString to read the
+user-specified screen resolution from the appropriate section of SYSTEM.INI.
+This will let the driver decide what resource ID to return to Windows by the
+<b>GetDriverResourceID</b> function.
+ 
+The following examples show how resolution-specific information sections
+might look in the SETUP.INF or OEMSETUP.INF file:
+ 
+[zgalo]
+4:zgalo.dll,0:system,,,,
+ 
+[zgamed]
+,,system.ini,zga.drv,,"ZGAres=800x600"
+ 
+[zgahi]
+4:zgahi.dll,0:system,system.ini,zga.drv,"ZGAres=800x600","ZGAMode=Hi"
+ 
+For more information about the resolution-specific information sections, see
+the <span class='grhilite'>◄</span><a href='[display].html'>[Display]</a><span class='grhilite'>►</span> section.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

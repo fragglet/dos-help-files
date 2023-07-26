@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>_TestGlobalV86Mem - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _TestGlobalV86Mem</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='V86_Address_Space_Mapping_and_Allocation.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='V86_Address_Space_Mapping_and_Allocation.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _TestGlobalV86Mem, &lt;VMLinAddr, nBytes, flags&gt;
+ 
+mov     [Result], eax           ; 0 if local, 1 if global, 2 if mixed,
+                                ; 3 if includes instance data region
+ 
+The _TestGlobalV86Mem service tests whether a V86 address range is global,
+local, or instanced.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>VMLinAddr</i>  Specifies the ring-0 linear address of the first byte of the V86
+           address range. For example, the linear address of the V86 address
+           02C1h:0FC5h is 3BD5h (02C10h + 0FC5h).
+ 
+<i>nBytes</i>     Specifies the size in bytes of the V86 address range.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains one of the following values:
+ 
+<b>Value  Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>0</i>      Address range either contains local memory, or is not a valid V86
+       address range.
+ 
+<i>1</i>      Address range contains global memory.
+ 
+<i>2</i>      Address range contains both local and global memory.
+ 
+<i>3</i>      Address range contains global memory, but also includes an instance
+       data region.
+ 
+<b>Comments</b>
+ 
+Global V86 memory has addresses that are valid and identical in all virtual
+machines. Local memory has addresses that are only valid in one virtual
+machine. Instanced memory has addresses that are valid in all virtual
+machines, but the content of the memory varies with each virtual machine.
+ 
+This service may incorrectly report the type of memory in addresses above
+page 0A0h (in the device adapter area). If this service returns global for
+memory in this area, it is global. If the service returns local, however,
+the memory may actually be global. Generally, this region is local.
+ 
+Operations involving global address ranges typically do not need to be
+virtualized since the range is valid and addressable in all virtual
+machines. Operations involving local address ranges may have to be
+virtualized since it is possible for software, such as an interrupt handler,
+to use a local address in the wrong virtual machine.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+                                      ♦
+</pre>
+</body>
+
+</html>

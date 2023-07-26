@@ -1,0 +1,124 @@
+<html>
+
+<head>
+<title>Interrupt 2Fh Function 1685h - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Interrupt 2Fh Function 1685h</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Windows_Interrupt_2Fh_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Interrupt_2Fh_Function_1686h.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+mov     bx, [VM_Id]             ; virtual-machine identifier
+mov     cx, [Flags]             ; switch conditions
+ 
+mov     dx, word ptr [Priority+2]
+mov     si, word ptr [Priority] ; dx:si contains 32-bit priority boost
+ 
+mov     es, seg [CallBack]
+mov     di, offset [CallBack]   ; es:di contains callback function address
+ 
+mov     ax, 1685h   ; Switch VMs and CallBack
+int     2Fh         ; multiplex interrupt
+ 
+Switch VMs and CallBack (Interrupt 2Fh Function 1685h) directs Windows to
+switch to a specific virtual machine and begin execution. After Windows
+switches, it calls the specified callback function allowing a device driver
+or TSR to access the data associated with the specified virtual machine.
+This function is typically used by MS-DOS device drivers and TSRs that
+support networks, and that need to perform functions in a specific virtual
+machine.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>VM_Id</i>      Identifies the virtual machine to switch to.
+ 
+<i>Flags</i>      Specifies when to switch. This parameter is a combination of the
+           following bit values.
+ 
+           Bit  Meaning
+           ─────────────────────────────────────────────────────────────────
+           0    Set to 1 to wait until interrupts are enabled.
+ 
+           1    Set to 1 to wait until critical section is released.
+ 
+           All other bits are reserved and must be 0.
+ 
+<i>Priority</i>   Specifies the priority boost for the virtual machine. It can be
+           one of the following values.
+ 
+           Value                   Meaning
+           ─────────────────────────────────────────────────────────────────
+           Critical_Section_Boost  VM priority is boosted by this value when
+                                   Begin_Critical_Section is called.
+ 
+           Cur_Run_VM_Boost        Time-slice scheduler boosts each VM in
+                                   turn by this value to force them to run
+                                   for their allotted time slice.
+ 
+           High_Pri_Device_Boost   Time critical operations that should not
+                                   circumvent the critical section boost
+                                   should use this boost.
+ 
+           Low_Pri_Device_Boost    Used by virtual devices that need an
+                                   event to be processed in a timely fashion
+                                   but that are not extremely time
+                                   critical.
+ 
+           Reserved_High_Boost     Reserved; do not use.
+ 
+           Reserved_Low_Boost      Reserved; do not use.
+ 
+           Time_Critical_Boost     Events that must be processed even when
+                                   another VM is in a critical section
+                                   should use this boost. For example, VPICD
+                                   uses this when simulating hardware
+                                   interrupts.
+ 
+           The DX register contains the high-order word, the SI register the
+           low-order word.
+ 
+<i>CallBack</i>   Points to the callback function.
+ 
+<b>Return Value</b>
+ 
+The return value is a cleared carry flag if successful. Otherwise, the
+function sets the carry flag and sets the AX register to one of the
+following error values.
+ 
+<b>Value  Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>0001h</i>  Invalid VM ID
+ 
+<i>0002h</i>  Invalid priority boost
+ 
+<i>0003h</i>  Invalid flags
+ 
+<b>Comments</b>
+ 
+Windows calls the callback function as soon as the conditions specified by
+the Flags parameter are met. This may be before or after Switch VMs and
+CallBack returns.
+ 
+The callback function can carry out any action, but must save and restore
+all registers it modifies. The function must execute an iret instruction to
+return to Windows. The priority for the virtual machine remains at the level
+specified by Priority until the callback function executes the iret
+instruction.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

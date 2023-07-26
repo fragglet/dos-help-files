@@ -1,0 +1,144 @@
+<html>
+
+<head>
+<title>Scan Codes - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Scan Codes</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Keyboard_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='kbdmisc.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+Windows applications send characters to other Windows applications with the
+<b>WM_KEYDOWN and WM_KEYUP messag</b>es. These messages are expected to get the
+appropriate virtual-key codes to send by using the VkKeyScan, OemKeyScan, or
+<b>MapVirtualKey</b> function. The applications must not assume any fixed
+translation of the VK_OEM_* keys. To support these functions, the keyboard
+driver can scan existing translation tables to locate the given ANSI or OEM
+character code and subsequently identify the scan code.
+ 
+<b>Key-Translation Tables</b>
+ 
+In the Microsoft retail keyboard driver, several of the translation tables
+are associative tables that map a virtual-key code or a combination of a
+virtual-key code and some other value (for example, shift state) into an
+ANSI character. All such tables in these drivers are assembled using special
+macros that arrange the tables so that the first column of the table is a
+single vector, which may be searched with a single-string scan instruction.
+ 
+<b>Table         Description</b>
+────────────────────────────────────────────────────────────────────────────
+<b>keyTrTab</b>      Maps scan codes to Windows virtual-key codes. Some entries in
+              this table in TABS.ASM may be overlaid when a
+              language-specific library is loaded.
+ 
+<b>USTransPatch</b>  Maps selected scan codes to virtual-key codes. This table
+              contains that part of the default keyTrTab table that can be
+              overlaid by language-specific libraries. The driver uses this
+              table to restore the default keyTrTab if an error occurs while
+              changing translation tables.
+ 
+Most of the remaining tables are either in a discardable segment in the
+driver or in a language-specific library. If they are in the driver,
+functions such as ToAscii that use the tables ensure that the table segment
+is loaded by calling the GetTableSeg function.
+ 
+The tables in the driver are for the U.S. keyboard. Several of the following
+tables are blank for the U.S. keyboard since it has no dead keys or CTRL+ALT
+keys.
+ 
+In the language-specific versions of these tables, there is often padding
+(with zeros) at the end of a table to allow for overlaying the tables.
+ 
+<b>Associative Table           Description</b>
+────────────────────────────────────────────────────────────────────────────
+<b>AscControlVK, AscControl    This tab</b>le translates the virtual-key code +
+                            CTRL to a control character, when the
+                            virtual-key code is not one for a letter. For
+                            letters, the table is not used.
+ 
+<b>AscCtlAltVK, AscCtlAlt      This </b>table translates the virtual-key code +
+                            CTRL + ALT to an ANSI character. This is empty
+                            for the U.S. keyboard.
+ 
+<b>AscShCtlAltVK, AscShCtlAlt  This table </b>translates the virtual-key code +
+                            CTRL + ALT + SHIFT to an ANSI character. This
+                            table is empty for the U.S. keyboard.
+ 
+<b>AscTranVK, AscTran         </b> This table translates the virtual-key codes to
+                            ANSI for unshifted and shifted key combinations.
+                            AscTranVK is a byte array of virtual-key codes;
+                            AscTran is a WORD array of their translations.
+                            In each WORD, the low byte is the unshifted
+                            translation, and the high byte is the shifted
+                            translation. If the virtual-key code is one for
+                            a letter (A..Z), this table is bypassed.
+ 
+<b>CapitalTable</b>                This table is a list of the virtual keys for
+                            which the CAPSLOCK key is effective, in addition
+                            to the letter keys (VK_A .. VK_Z). This table is
+                            empty for the U.S. keyboard.
+ 
+<b>DeadKeyCode, DeadChar       This </b>table translates a combination of a dead
+                            key and a letter into an accented letter. This
+                            table is accessed when the key after a dead key
+                            is pressed. If a translation is not found in
+                            this table, ToAscii will return two characters
+                            in its output buffer: the dead key plus the
+                            second character. This table is empty for the
+                            U.S. keyboard.
+ 
+<b>Morto, MortoCod</b>e            This table is searched to check if a particular
+                            virtual-key code and shift combination is for a
+                            dead key. If it is, the dead-key value is
+                            returned by ToAscii, with a negative-character
+                            count. This table is empty for the U.S.
+                            keyboard.
+ 
+<b>SGCapsVK, SGTrans       </b>    This table has entries only in the DLL for
+                            Swiss-German keyboards. It handles a special
+                            case where keys with SHIFT LOCK are translated
+                            differently from shifted keys.
+ 
+<b>Language-Specific Libraries</b>
+ 
+The translation tables for the language-specific libraries are in files that
+contain data in two segments: the CODE segment, which is load-on-call and
+discardable, and the DATA segment, which is fixed. Data from the CODE
+segment of the DLL is used to overlay the tables in the DATA segment of the
+main driver. Data in the DATA segment of the library is not copied; instead,
+a pointer in the driver is set to the library's DATA segment address.
+ 
+The initial values in the tables in the library's DATA segment are for
+enhanced keyboards. For other keyboard types, the tables in the library's
+DATA segment must be patched or overlaid from tables in the CODE segment.
+ 
+The GetKbdTable function performs the copying or overlaying. The driver
+calls the function after the driver loads the library. Once GetKbdTable is
+called, the driver accesses the library's fixed DATA segment directly. After
+initialization, the tables in the CODE segment of the library are no longer
+used.
+ 
+A header, containing offsets and sizes of the various tables in the
+library's DATA segment, is always copied to the driver no matter what type
+of keyboard is installed.
+ 
+Some language-specific libraries contain the function GetKeyString. The
+keyboard's GetKeyNameText function calls GetKeyString to obtain key name
+strings in the language appropriate to the keyboard.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

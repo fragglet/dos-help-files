@@ -1,0 +1,92 @@
+<html>
+
+<head>
+<title>MM_MCINOTIFY - Windows Multimedia DDK</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows Multimedia DDK (mddkqh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MM_MCINOTIFY</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MDDK_dot_h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+<b>MM_MCINOTIFY</b>
+ 
+        This message is sent to a window to notify an application that
+        an MCI device has completed an operation. MCI devices send this
+        message only when the MCI_NOTIFY flag is used with an MCI
+        command message or when the notify flag is used with an MCI
+        command string.
+ 
+<u>Parameters</u>
+        WPARAM wParam
+            Contains one of the following message:
+ 
+            MCI_NOTIFY_ABORTED
+                Specifies that the device received a command that
+                prevented the current conditions for initiating the
+                callback from being met. If a new command interrupts the
+                 current command and it also requests notification, the
+                device will send only this message and not
+                MCI_NOTIFY_SUPERCEDED.
+ 
+            MCI_NOTIFY_SUCCESSFUL
+                Specifies that the conditions initiating the callback
+                have been met.
+ 
+            MCI_NOTIFY_SUPERSEDED
+                Specifies that the device received another command with
+                the MCI_NOTIFY flag set and the current conditions for
+                initiating the callback have been superseded.
+ 
+            MCI_NOTIFY_FAILURE
+                Specifies that a device error occurred while the device
+                was executing the command.
+ 
+        LPARAM lParam
+            The low-order word specifies the ID of the device
+            initiating the callback.
+ 
+<u>Return value</u>
+        Returns zero if successful. Otherwise, it returns an MCI error
+        code.
+ 
+<u>Comments</u>
+        A device returns the flag MCI_NOTIFY_SUCCESSFUL with
+        MM_MCINOTIFY when the action for a command finishes. For
+        example, an audio CD device uses this flag for notification for
+        MCI_PLAY when the device finishes playing. The MCI_PLAY command
+        completes successfully only when it reaches the specified end
+        position or reaches the end of the media. Similarly, MCI_SEEK
+        and MCI_RECORD do not return MCI_NOTIFY_SUCCESSFUL until they
+        reach the specified end position or reach the end of the media.
+ 
+        A device returns the flag MCI_NOTIFY_ABORTED with MM_MCINOTIFY
+        only when it receives a command that prevents it from meeting
+        the notification conditions. For example, the command MCI_PLAY
+        would not abort notification for a previous play command
+        provided that the new command does not change the play
+        direction or change the ending position for the play command
+        with an active notify. The MCI_RECORD and MCI_SEEK commands
+        behave similarly.
+ 
+        MCI also does not send MCI_NOTIFY_ABORTED when MCI_PLAY or
+        MCI_RECORD is paused with MCI_PAUSE. Sending the MCI_RESUME
+        command will let them continue to meet the callback conditions.
+ 
+        When your application requests notification for a command, check
+        the error return of mciSendString or mciSendCommand. If these
+        functions encounter an error and return a nonzero value, MCI
+        will not set notification for the command.
+ 
+                                       -♦-
+</pre>
+</body>
+
+</html>

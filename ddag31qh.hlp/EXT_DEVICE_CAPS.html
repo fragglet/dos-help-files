@@ -1,0 +1,137 @@
+<html>
+
+<head>
+<title>EXT_DEVICE_CAPS - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> EXT_DEVICE_CAPS</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Escapes.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='FLUSHOUTPUT.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define EXT_DEVICE_CAPS 4099 
+short Control(lpDevice, EXT_DEVICE_CAPS, lpIndex, lpCaps)
+LPPDEVICE lpDevice;
+LPINT lpIndex;
+LPLONG lpCaps;
+ 
+The EXT_DEVICE_CAPS escape retrieves information about device-specific
+capabilities. It serves as a supplement to the GetDeviceCaps (GDI.80)
+function.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<i>lpDevice   Points to a P</i>DEVICE structure specifying the destination device.
+ 
+<i>lpIndex</i>    Points to a 16-bit variable specifying the index of the
+           capability to be retrieved. It can be one of the following
+           values.
+ 
+           Value                   Meaning
+           ─────────────────────────────────────────────────────────────────
+           R2_CAPS (1)             Specifies which of the 16-bit
+                                   binary-raster operations the device
+                                   driver supports. A unique bit is set for
+                                   each supported raster operation. For
+                                   example, the following code fragment sets
+                                   the bit for support of the R2_XORPEN
+                                   raster operation:
+ 
+                                   Caps = Caps | (1&lt;&lt;R2_XORPEN);
+ 
+                                   For more information about the
+                                   binary-raster operations, see the
+                                   DRAWMODE structure.
+ 
+           PATTERN_CAPS (2)        Specifies the maximum dimensions of a
+                                   pattern brush bitmap. The low-order 16
+                                   bits of the capability value contains the
+                                   maximum width of a pattern brush bitmap;
+                                   the high-order 16 bits contains the
+                                   maximum height.
+ 
+           PATH_CAPS (3)           Specifies whether the device is capable
+                                   of creating paths using alternate and
+                                   winding interiors, and whether the device
+                                   can do exclusive or inclusive clipping to
+                                   path interiors. The path capabilities is
+                                   a combination of two of the following:
+ 
+                                       PATH_ALTERNATE (1)
+                                       PATH_WINDING (2)
+                                       PATH_INCLUSIVE (3)
+                                       PATH_EXCLUSIVE (4)
+ 
+           POLYGON_CAPS(4)         Specifies the maximum number of polygon
+                                   points supported by the device. The
+                                   capability value is an unsigned value
+                                   specifying the maximum number of points.
+ 
+           PATTERN_COLOR_CAPS (5)  Specifies whether the device can convert
+                                   monochrome pattern bitmaps to color. The
+                                   capability value is one if the device can
+                                   do pattern bitmap color conversions and
+                                   zero if it cannot.
+ 
+           R2_TEXT_CAPS (6)        Specifies whether the device is capable
+                                   of performing binary raster operations on
+                                   text. The low-order 16 bits of the
+                                   capability value specifies which raster
+                                   operations are supported on text. A bit
+                                   is set for each supported raster
+                                   operation, as in the R2_CAPS escape. The
+                                   high-order 16 bits specifies to which
+                                   type of text the raster capabilities
+                                   apply. It can be a combination of the the
+                                   following values:
+ 
+                                       RASTER_TEXT (1)
+                                       DEVICE_TEXT (2)
+                                       VECTOR_TEXT (3)
+ 
+           POLYMODE_CAPS (7)       Specifies the polygon modes supported by
+                                   the device driver. The capability value
+                                   is obtained by setting a bit in the
+                                   corresponding position for each polygon
+                                   mode supported. For example, if a device
+                                   supports the PM_POLYSCANLINE and
+                                   PM_BEZIER polygon modes, the capability
+                                   value would be set as follows:
+ 
+           Caps = Caps | (1&lt;&lt;PM_POLYSCANLINE) | (1&lt;&lt;PM_BEZIER);
+ 
+<i>lpCaps</i>     Points to a 32-bit variable that receives the specified
+           capability.
+ 
+<b>Return Value</b>
+ 
+The return value is a nonzero value if the specified extended capability is
+supported. Otherwise, it is zero if the capability is not supported.
+ 
+<b>Comments</b>
+ 
+A device driver implementing this escape must not modify the value of the
+32-bit integer described by the lpCaps parameter unless it returns a valid
+value for the capability.
+ 
+<b>See Also</b>
+ 
+SET_POLY_MODE, DRAWMODE, PDEVICE
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

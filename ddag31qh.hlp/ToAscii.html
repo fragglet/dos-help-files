@@ -1,0 +1,147 @@
+<html>
+
+<head>
+<title>ToAscii - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ToAscii</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Keyboard_Driver_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VkKeyScan.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+int ToAscii(VirtKey, Scancode, lpKeyState, lpState, KeyFlags)
+WORD VirtKey;
+WORD Scancode;
+LPSTR lpKeyState;
+LPSTR lpState;
+WORD KeyFlags;
+ 
+The ToAscii function translates the virtual-key code passed to it, along
+with the current keyboard state, to an ANSI character.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<i>VirtKey</i>     Specifies a virtual-key code.
+ 
+<i>Scancode</i>    Specifies a hardware-scan code in the low-order byte, and a
+            shift state in the high-order byte. The bits in the shift state
+            have the following meaning.
+ 
+            Bit  Meaning
+            ────────────────────────────────────────────────────────────────
+            15   1 if the key is up; 0 if the key is down.
+ 
+            14   1 if the key was previously up; 0 if the key was previously
+                 down.
+ 
+            13   1 if the ALT key is down.
+ 
+            12   1 if Windows displays a menu.
+ 
+            11   1 if Windows displays a dialog box.
+ 
+            10   Not used.
+ 
+            9    Not used.
+ 
+            8    1 if the key is extended; 0 if it is not.
+ 
+            Bits 0 through 6 are the hardware-scan code (used mainly in the
+            translation of ALT+number-pad character code input). Bit 7 is
+            generally 0.
+ 
+<i>lpKeyState</i>  Points to virtual key-state array maintained by Windows.
+ 
+<i>lpState</i>     Points to state block. This is used mainly for the output of
+            ANSI characters.
+ 
+<i>KeyFlags</i>    Specifies duplicate shift-state information. The bits have the
+            following meaning.
+ 
+            Bit  Meaning
+            ────────────────────────────────────────────────────────────────
+            0    1 if a menu is display, 0 if not.
+ 
+            1    1 if an extended key, 0 if not.
+ 
+<b>Return Value</b>
+ 
+The return value is the number of characters returned in the state block.
+The number of characters, 1 byte per WORD is returned in the AX register.
+The lpState parameter points to the state block.
+ 
+The return value is one of the following values.
+ 
+<b>Value  Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>2</i>      Two characters are returned (mainly an accent and a dead-key
+       character, when a dead key cannot be translated otherwise).
+ 
+<i>1</i>      One ANSI character is returned.
+ 
+<i>0</i>      This virtual-key code has no translation (for the current state of
+       shift keys, and so on).
+ 
+<i>-1</i>     This key is a dead key. The character returned is normally an ANSI
+       accent character representing the dead key.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 4.
+ 
+The ToAscii function is called mainly whenever TranslateMessage is called to
+translate a virtual-key code (for example, for WM_KEYDOWN messages).
+ 
+The given parameters of ToAscii are not necessarily sufficient to translate
+the virtual-key code. This is because a previous dead key is stored
+internally in the driver. Also, the MS-DOS shift-state byte is accessed by
+<b>ToAscii</b>.
+ 
+<b>ToAscii</b> is responsible for maintaining the state of the keyboard LED
+indicator lights. For most AT-compatible computers, this is done by making a
+ROM BIOS interrupt 16H call; for others, I/O must be done directly through
+the keyboard.
+ 
+<b>ToAscii</b> also has a special case which, if it is called with the virtual-key
+code equal to 0, will only set the keyboard lights according to the state of
+the appropriate entries in the keyboard-state vector. This function is
+intended to be called from the SetKeyboardState function and not directly
+used by applications. The Scancode parameter is ignored. The vector pointed
+to by lpState should be different from the one used by ToAscii calls in the
+USER module. The vector should be at least 4 bytes long.
+ 
+Most translations are made on the basis of the Windows virtual-key code.
+However, the Scancode parameter's sign bit is used to distinguish key
+depressions (sign cleared) from key releases (sign set). Also, the scan code
+is used in the translation of ALT + number-key translations.
+ 
+The lpKeyState parameter points to a 256-byte array indexed by the
+virtual-key code. In each byte, the high-order bit indicates the state of
+the key and the low-order bit is toggled each time the key is pressed. The
+CAPSLOCK key is handled in a special manner for some European keyboards.
+ 
+The lpState parameter points to a data buffer that contains the translated
+character(s) and state information. The Inquire function in the KBINFO
+structure returns the size required for this state buffer.
+ 
+<b>See Also</b>
+ 
+<b>Inquire, KBINFO</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

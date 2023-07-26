@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>DOSMGR_Add_Device - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DOSMGR_Add_Device</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_MS-DOS_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DOSMGR_BackFill_Allowed.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include dosmgr.inc
+ 
+VxDcall DOSMGR_Add_Device
+ 
+The DOSMGR_Add_Device service adds a device to the device list.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>EBX</i>        Specifies the handle of the virtual machine to add device to. If
+           this parameter is zero, the device is added to all virtual
+           machines.
+ 
+<i>EAX</i>        Specifies the address of device header. This address must be in
+           low memory (less than 100000h).
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the service is successful. Otherwise, the carry
+flag is set if the device could not be added to device list.
+ 
+<b>Comments</b>
+ 
+The address of this device for the chain is computed as: (eax &gt;&gt; 4) &amp; 0FFFFh
+: (eax &amp; 000Fh)
+ 
+This service links the device into the list but does not call it. If the
+device needs to be initialized, the caller must do it. This service adds the
+device to the end of the device chain. Therefore, this service cannot be
+used to replace an existing device. This service applies to character
+devices only. Block devices cannot be added with this service.
+ 
+All devices put on the list this way are removed when Windows exits,
+including any devices added by virtual mode code.
+ 
+The only supported method to add a device globally is to use the
+<b>_Allocate_Global_V86_Data_Area</b> service to allocate memory to contain the
+device header, initialize it, then call this routine to add it to the list.
+Global devices must be added during the Device_Init message. They cannot be
+added later. Local devices must be added at the VM_Init, VM_Critical_Init or
+<b>Sys_VM_Init</b> message or they will be global because they will be part of the
+initial VM state.
+ 
+If this device hooks an interrupt and it is a local device, the vector must
+be set in the appropriate virtual machine during the VM_Init,
+<b>VM_Critical_Init or Sys_VM_Init message.</b>
+ 
+A global device can also work this way, hooking the vector in every virtual
+machine. This allows the global device to be removed before Windows exits.
+The other method for a global device is to hook the vector during the
+<b>Device_Init</b> message which makes the hook part of the initial virtual machine
+state. Such a hook must be removed during the Sys_Critical_Exit message or
+the vector will point to a nonexistent device after Windows exits.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

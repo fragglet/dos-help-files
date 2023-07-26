@@ -1,0 +1,199 @@
+<html>
+
+<head>
+<title>About the Services and Notifications - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> About the Services and Notifications</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Windows_Interrupt_2Fh_Services_and_Notifications.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Interrupt_2Fh_Function_1600h.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+The Interrupt 2Fh services are a set of functions that MS-DOS drivers and
+TSRs call to direct Windows to carry out specific actions. The
+<i>notifications</i> are a set of functions that Windows calls to notify drivers
+and programs of Windows-related events. Although these functions were
+initially designed for use by MS-DOS drivers and TSRs, some Windows device
+drivers, such as display drivers and grabbers, also use them to manage the
+multitasking features of Windows.
+ 
+A driver can call the service functions using the MS-DOS multiplex
+interrupt, Interrupt 2Fh. The driver sets one or more registers to specified
+values, sets the AX register to the desired function number, and issues the
+interrupt using the int instruction.
+ 
+A driver can receive notifications by installing its own interrupt-handling
+routine in the Interrupt 2Fh interrupt chain. Once the interrupt handler is
+installed, the driver checks the AX register on each interrupt for function
+numbers that match the notifications. When the driver matches a
+notification, it can carry out any related actions.
+ 
+<b>Service Functions</b>
+ 
+The service functions let drivers and TSRs obtain the Windows version
+number, obtain the current virtual-machine (VM) identifier, set critical
+sections, and retrieve the addresses of the entry points for virtual-device
+service functions. There are the following service functions:
+ 
+♦  Get Enhanced-Mode Windows Installed State (Interrupt 2Fh Function 1600h)
+ 
+♦  Get Enhanced-Mode Windows Entry-Point Address (Interrupt 2Fh Function
+   1602h)
+ 
+♦  Release Current VM Time-Slice (Interrupt 2Fh Function 1680h)
+ 
+♦  Begin Critical Section (Interrupt 2Fh Function 1681h)
+ 
+♦  End Critical Section (Interrupt 2Fh Function 1682h)
+ 
+♦  Get Current Virtual Machine ID (Interrupt 2Fh Function 1683h)
+ 
+♦  Get Device Entry Point Address (Interrupt 2Fh Function 1684h)
+ 
+♦  Switch VMs and CallBack (Interrupt 2Fh Function 1685h)
+ 
+♦  Detect Interrupt 31h Services (Interrupt 2Fh Function 1686h)
+ 
+The 386 enhanced-mode Windows display grabber uses the Get Device Entry
+Point Address (Interrupt 2Fh Function 1684h) to retrieve the entry point
+address for the virtual-display device (VDD). The grabber uses this address
+to call VDD service functions to carry out capturing display contexts and
+updating tasks.
+ 
+Both standard- and 386 enhanced-mode Windows issues Windows Initialization
+Notification (Interrupt 2Fh Function 1605h) and Windows Termination
+Notification (Interrupt 2Fh Function 1606h). These notifications gives
+MS-DOS drivers and TSR programs in either Windows environment the
+opportunity to free extended memory before Windows starts, and reallocate
+the memory when Windows stops.
+ 
+Standard- and 386 enhanced-mode Windows also support Detect Interrupt 31h
+Services. Supporting these services lets MS-DOS drivers and TSR programs
+check for and use these service functions.
+ 
+If the user starts a TSR program after Windows starts, the TSR program can
+always use Get Enhanced-Mode Windows Installed State (Interrupt 2Fh Function
+1600h) to determine whether Windows is running.
+ 
+<b>Notification Functions</b>
+ 
+Windows broadcasts the notification functions by setting registers and
+issuing Interrupt 2Fh. Drivers and TSRs use the notifications to load 386
+enhanced-mode Windows installable devices, free extended memory, and enable
+or disable various device services or features. There are the following
+notification functions:
+ 
+♦  Windows Initialization Notification (Interrupt 2Fh Function 1605)
+ 
+♦  Windows Termination Notification (Interrupt 2Fh Function 1606h)
+ 
+♦  Device Call Out (Interrupt 2Fh Function 1607h)
+ 
+♦  Windows Initialization Complete Notification (Interrupt 2Fh Function
+   1608h)
+ 
+♦  Windows Begin Exit (Interrupt 2Fh Function 1609h)
+ 
+MS-DOS device drivers, such as network drivers, use Windows Initialization
+Notification to direct 386 enhanced-mode Windows to load a protected-mode
+installable device that provides 32-bit support for the real-mode driver
+while 386 enhanced-mode Windows runs. Other MS-DOS drivers (for example,
+disk-cache drivers) use the same notification to free any extended memory
+before Windows starts. The TSRs also use Windows Termination Notification to
+reclaim the extended memory when Windows stops.
+ 
+If an MS-DOS driver or TSR programs installs a corresponding virtual device,
+that device can send notifications of its own to the driver or TSR using
+Device Call Out.
+ 
+<b>Critical Section Handling</b>
+ 
+Occasionally, an MS-DOS driver or TSR program may need to run for a period
+of time that may exceed its regular time slice. In such cases, the driver
+can create a critical section that prevents Windows from switching the CPU
+away from the driver or program.
+ 
+A driver starts a critical section by using Begin Critical Section
+(Interrupt 2Fh Function 1681h). While the critical section is in effect,
+only device interrupts can divert execution from the driver. A driver ends
+the critical section by using End Critical Section (Interrupt 2Fh Function
+1682h). In general, a driver should end the critical section as soon as
+possible to ensure that all drivers and programs in the system receive CPU
+time. If a driver starts a critical section n times, it must end the
+critical section n times before the critical section is actually released.
+ 
+Ordinarily, Windows prevents rescheduling of the current virtual machine if
+the one-byte, MS-DOS InDOS flag is nonzero. One exception is when a driver
+or program issues the MS-DOS Idle interrupt (Interrupt 28h). In such cases,
+Windows may reschedule regardless of the value of the InDOS flag. The only
+way to prevent this rescheduling is to start a critical section using Begin
+Critical Section. While in a critical section, Windows disregards Interrupt
+28h.
+ 
+In previous versions of Windows (for example, Windows/386(TM) version 2.x),
+service functions to support critical sections were not supplied. Drivers
+and programs achieved a similar effect by incrementing and decrementing the
+MS-DOS InDOS flag. Although this method was acceptable for previous versions
+of Windows, drivers should not use this method in versions of Windows that
+supply Begin Critical Section and End Critical Section (Interrupt 2Fh
+Function 1682h).
+ 
+Drivers and programs that use the InDOS flag method retrieve the address of
+the InDOS flag using Get InDOS Flag Address (Interrupt 21h Function 34h).
+The function returns the address in the ES:BX register pair. When using this
+method, drivers and programs check the flag value before decrementing
+because some error conditions (such as when the user types CTRL+C) set the
+InDOS flag to zero regardless of its current value. Decrementing the InDOS
+flag to a number less than zero is a serious error.
+ 
+<b>Releasing the Time Slice</b>
+ 
+MS-DOS applications can also use the Interrupt 2Fh service functions. In
+particular, applications can use Release Current VM Time Slice (Interrupt
+2Fh Function 1680h) to release the current virtual machine's time slice. An
+MS-DOS application typically uses this function when waiting for user input.
+This function helps 386 enhanced-mode Windows multitask more efficiently by
+letting it reschedule the CPU for other work immediately, rather than
+waiting for the idle application to spend its entire time slice.
+ 
+<b>Virtual-Display Device Services and Notifications</b>
+ 
+The virtual display device for 386 enhanced-mode Windows also provides
+Interrupt 2Fh service and notification functions. Windows display drivers
+use these functions to check for and manage screen switching. There are the
+following functions:
+ 
+♦  Enable VM-Assisted Save/Restore (Interrupt 2Fh Function 4000h)
+ 
+♦  Notify Background Switch (Interrupt 2Fh Function 4001h)
+ 
+♦  Notify Foreground Switch (Interrupt 2Fh Function 4002h)
+ 
+♦  Enter Critical Section (Interrupt 2Fh Function 4003h)
+ 
+♦  Exit Critical Section (Interrupt 2Fh Function 4004h)
+ 
+♦  Save Video Register State (Interrupt 2Fh Function 4005h)
+ 
+♦  Restore Video Register State (Interrupt 2Fh Function 4006h)
+ 
+♦  Disable VM-Assisted Save/Restore (Interrupt 2Fh Function 4007h)
+ 
+For more information about using these functions, see Chapter 2, "Display
+Drivers."
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

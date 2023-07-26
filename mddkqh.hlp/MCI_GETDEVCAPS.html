@@ -1,0 +1,283 @@
+<html>
+
+<head>
+<title>MCI_GETDEVCAPS - Windows Multimedia DDK</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows Multimedia DDK (mddkqh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MCI_GETDEVCAPS</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MDDK_dot_h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+<b>MCI_GETDEVCAPS</b>
+ 
+        This MCI command message is used to obtain static information
+        about a device. All devices must respond to this message. The
+        parameters and flags available for this message depend on the
+        selected device. Information is returned in the <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field of
+        the data structure identified by lpCapsParms.
+ 
+<u>Parameters</u>
+        DWORD dwFlags
+            The following standard and command-specific flags apply to
+            all devices:
+ 
+            MCI_NOTIFY
+                Specifies that MCI should post the MM_MCINOTIFY message
+                when this command completes. The window to receive this
+                message is specified in the <a href='MCI_GETDEVCAPS_PARMS.html'>dwCallback</a> field of the data
+                structure identified by lpCapsParms.
+ 
+            MCI_WAIT
+                Specifies that the query operation should finish before
+                MCI returns control to the application.
+ 
+            MCI_GETDEVCAPS_ITEM
+                Specifies that the <a href='MCI_GETDEVCAPS_PARMS.html'>dwItem</a> field of the data structure
+                identified by lpCapsParms contains a constant specifying
+                which device capability to obtain. The following
+                constants define which capability to return in the
+                <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field of the data structure:
+ 
+                MCI_GETDEVCAPS_CAN_EJECT
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to TRUE if the device can
+                    eject the media; otherwise, it is set to FALSE.
+ 
+                MCI_GETDEVCAPS_CAN_PLAY
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to TRUE if the device can
+                    play the media; otherwise, it is set to FALSE.
+ 
+                    If a device specifies TRUE, it implies the device
+                    supports MCI_PAUSE and MCI_STOP as well as MCI_PLAY.
+ 
+                MCI_GETDEVCAPS_CAN_RECORD
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to TRUE if the device
+                    supports recording; otherwise, it is set to FALSE.
+ 
+                    If a device specifies TRUE, it implies the device
+                    supports MCI_PAUSE and MCI_STOP as well as
+                    MCI_RECORD.
+ 
+                MCI_GETDEVCAPS_CAN_SAVE
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to TRUE if the device can
+                    save a file; otherwise, it is set to FALSE.
+ 
+                MCI_GETDEVCAPS_COMPOUND_DEVICE
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to TRUE if the device uses
+                    device elements; otherwise, it is set to FALSE.
+ 
+                MCI_GETDEVCAPS_DEVICE_TYPE
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to one of the following
+                    values indicating the device type:
+ 
+                    MCI_DEVTYPE_ANIMATION
+ 
+                    MCI_DEVTYPE_CD_AUDIO
+ 
+                    MCI_DEVTYPE_DAT
+ 
+                    MCI_DEVTYPE_DIGITAL_VIDEO
+ 
+                    MCI_DEVTYPE_OTHER
+ 
+                    MCI_DEVTYPE_OVERLAY
+ 
+                    MCI_DEVTYPE_SCANNER
+ 
+                    MCI_DEVTYPE_SEQUENCER
+ 
+                    MCI_DEVTYPE_VIDEODISC
+ 
+                    MCI_DEVTYPE_VIDEOTAPE
+ 
+                    MCI_DEVTYPE_WAVEFORM_AUDIO
+ 
+                MCI_GETDEVCAPS_HAS_AUDIO
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to TRUE if the device has
+                    audio output; otherwise, it is set to FALSE.
+ 
+                MCI_GETDEVCAPS_HAS_VIDEO
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to TRUE if the device has
+                    video output; otherwise, it is set to FALSE.
+ 
+                    For example, the field is set to TRUE for devices that
+                    support the animation or videodisc command set.
+ 
+                MCI_GETDEVCAPS_USES_FILES
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to TRUE if the device
+                    requires a filename as its element name; otherwise, it
+                    is set to FALSE.
+ 
+                    Only compound devices use files.
+ 
+        LPMCI_GETDEVCAPS_PARMS lpCapsParms
+            Specifies a far pointer to the MCI_GETDEVCAPS_PARMS data
+            structure. (Devices with extended command sets might replace
+            this data structure with a device-specific data structure.)
+ 
+        Animation Extensions
+ 
+        DWORD dwFlags
+            The following extensions apply to animation devices:
+ 
+            MCI_GETDEVCAPS_ITEM
+                Specifies that the <a href='MCI_GETDEVCAPS_PARMS.html'>dwItem</a> field of the data structure
+                identified by lpCapsParms contains a constant specifying
+                which device capability to obtain. The following
+                additional device-capability constants are defined for
+                animation devices and specify which value to return in
+                the <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field of the data structure:
+ 
+                MCI_ANIM_GETDEVCAPS_CAN_REVERSE
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to TRUE if the device can
+                    play in reverse; otherwise, it is set to FALSE.
+ 
+                MCI_ANIM_GETDEVCAPS_CAN_STRETCH
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to TRUE if the device can
+                    stretch the image to fill the frame; otherwise, it is
+                    set to FALSE.
+ 
+                MCI_ANIM_GETDEVCAPS_FAST_RATE
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to the standard fast play
+                    rate in frames per second.
+ 
+                MCI_ANIM_GETDEVCAPS_MAX_WINDOWS
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to the maximum number of
+                    windows that the device can handle simultaneously.
+ 
+                MCI_ANIM_GETDEVCAPS_NORMAL_RATE
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to the normal rate of
+                    play in frames per second.
+ 
+                MCI_ANIM_GETDEVCAPS_PALETTES
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to TRUE if the device
+                    can return a palette handle; otherwise, it is set to
+                    FALSE.
+ 
+                MCI_ANIM_GETDEVCAPS_SLOW_RATE
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to the standard slow
+                    play rate in frames per second.
+ 
+        LPMCI_GETDEVCAPS_PARMS lpCapsParms
+            Specifies a far pointer to the MCI_GETDEVCAPS_PARMS data
+            structure.
+ 
+        Videodisc Extensions
+ 
+        DWORD dwFlags
+            The following extensions apply to videodisc devices:
+ 
+            MCI_GETDEVCAPS_ITEM
+                Specifies that the <a href='MCI_GETDEVCAPS_PARMS.html'>dwItem</a> field of the data structure
+                identified by lpCapsParms contains a constant specifying
+                which device capability to obtain. The following
+                additional device-capability constants are defined for
+                videodisc devices and specify which value to return in
+                the <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field of the data structure:
+ 
+                MCI_VD_GETDEVCAPS_CAN_REVERSE
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to TRUE if the videodisc
+                    player can play in reverse; otherwise, it is set to
+                    FALSE.
+ 
+                    Some players can play CLV discs in reverse as well as
+                    CAV discs.
+ 
+                MCI_VD_GETDEVCAPS_FAST_RATE
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to the standard fast
+                    play rate in frames per second.
+ 
+                MCI_VD_GETDEVCAPS_NORMAL_RATE
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to the normal play
+                    rate in frames per second.
+ 
+                MCI_VD_GETDEVCAPS_SLOW_RATE
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to the standard slow
+                    play rate in frames per second.
+ 
+            MCI_VD_GETDEVCAPS_CLV
+                Indicates the information requested applies to CLV
+                format discs. By default, the capabilities apply to the
+                current disc.
+ 
+            MCI_VD_GETDEVCAPS_CAV
+                Indicates the information requested applies to CAV
+                format discs. By default, the capabilities apply to the
+                current disc.
+ 
+        LPMCI_GETDEVCAPS_PARMS lpCapsParms
+            Specifies a far pointer to the MCI_GETDEVCAPS_PARMS data
+            structure.
+ 
+        Video Overlay Extensions
+ 
+        DWORD dwFlags
+            The following extensions apply to video overlay devices:
+ 
+            MCI_GETDEVCAPS_ITEM
+                Specifies that the <a href='MCI_GETDEVCAPS_PARMS.html'>dwItem</a> field of the data structure
+                identified by lpCapsParms contains a constant specifying
+                which device capability to obtain. The following
+                additional device-capability constants are defined for
+                video overlay devices and specify which value to return
+                in the <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field of the data structure:
+ 
+                MCI_OVLY_GETDEVCAPS_CAN_FREEZE
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to TRUE if the device can
+                    freeze the image; otherwise, it is set to FALSE.
+ 
+                MCI_OVLY_GETDEVCAPS_CAN_STRETCH
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to TRUE if the device can
+                    stretch the image to fill the frame; otherwise, it is
+                    set to FALSE.
+ 
+                MCI_OVLY_GETDEVCAPS_MAX_WINDOWS
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to the maximum number of
+                    windows that the device can handle simultaneously.
+ 
+        LPMCI_GETDEVCAPS_PARMS lpCapsParms
+            Specifies a far pointer to the MCI_GETDEVCAPS_PARMS data
+            structure.
+ 
+        Waveform Audio Extensions
+ 
+        DWORD dwFlags
+            The following extended flag applies to waveform audio
+            devices:
+ 
+            MCI_GETDEVCAPS_ITEM
+                Specifies that the <a href='MCI_GETDEVCAPS_PARMS.html'>dwItem</a> field of the data structure
+                identified by lpCapsParms contains a constant specifying
+                which device capability to obtain. The following
+                additional device-capability constants are defined for
+                waveform audio devices and specify which value to return
+                in the <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field of the data structure:
+ 
+                MCI_WAVE_GETDEVCAPS_INPUT
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to the total number of
+                    waveform input (recording) devices.
+ 
+                MCI_WAVE_GETDEVCAPS_OUTPUT
+                    The <a href='MCI_GETDEVCAPS_PARMS.html'>dwReturn</a> field is set to the total number of
+                    waveform output (playback) devices.
+ 
+        LPMCI_GETDEVCAPS_PARMS lpCapsParms
+            Specifies a far pointer to the MCI_GETDEVCAPS_PARMS data
+            structure.
+ 
+<u>Return value</u>
+        Returns zero if successful. Otherwise, it returns an MCI error
+        code.
+ 
+                                       -♦-
+</pre>
+</body>
+
+</html>

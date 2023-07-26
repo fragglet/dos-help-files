@@ -1,0 +1,91 @@
+<html>
+
+<head>
+<title>VKD_Start_Paste - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VKD_Start_Paste</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_Keyboard_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Virtual_Keyboard_Device.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vkd.inc
+ 
+VxDcall VKD_Start_Paste
+ 
+The VKD_Start_Paste service puts a virtual machine into paste mode by
+simulating keyboard activity with keystrokes taken from the specified paste
+buffer. Depending on the mode set with the VKD_Define_Paste_Mode service
+(default is to try Interrupt 16h pasting), VKD waits for the virtual machine
+to poll the keyboard BIOS through its Interrupt 16h interface. If the
+virtual machine does keyboard input through the BIOS, then VKD simulates the
+keyboard input at this high level (plugging in ASCII codes.)  If the virtual
+machine fails to perform any Interrupt 16h within in a time-out period, or
+the mode has been set to avoid Interrupt 16h pasting, the VKD simulates the
+necessary hardware interrupts to perform the pasting. Hot keys are still
+processed while pasting is in progress.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>EAX</i>        Points to the paste buffer containing an array of key structures
+           having the following form:
+ 
+               OEM_ASCII_value     db  ?
+               scan_code           db  ?
+               shift_state         dw  ?
+ 
+           The shift_state field is 02h if a shift key is down and 04h is a
+           ctrl key is down.
+ 
+           The scan_code is 0FFh and the shift_state 0FFFFh, if the VKD
+           should convert the key to a ALT+numpad sequence. This information
+           is identical to what is given by the Window's keyboard routine
+           OEMKeyScan.
+ 
+<i>EBX</i>        Specifies the virtual machine handle.
+ 
+<i>ECX</i>        Specifies the number of paste entries in the paste buffer.
+ 
+<i>ESI</i>        Points to callback procedure. This parameter can be 0. See the
+           Comments section for more information about the procedure.
+ 
+<i>EDX</i>        Points to reference data to pass to the callback procedure.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the paste is started. Otherwise, the carry flag
+is set to indicate an error such as insufficient memory to copy the buffer.
+ 
+<b>Comments</b>
+ 
+The callback procedure is called when the paste is complete or canceled. The
+callback receives the following input parameters:
+ 
+EAX     ; Completion flags
+        ; Paste_Complete - paste completed successfully
+        ; Paste_Aborted  - paste canceled by user
+        ; Paste_VM_Term  - paste aborted because virtual machine terminated
+EBX     ; handle of virtual machine receiving the paste
+EDX     ; reference data
+ 
+The procedure can modify EAX, EBX, ECX, EDX, ESI, EDI, and Flags.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

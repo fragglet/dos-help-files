@@ -1,0 +1,68 @@
+<html>
+
+<head>
+<title>Begin_Use_Locked_PM_Stack - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Begin_Use_Locked_PM_Stack</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Protected-Mode_Execution_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='End_Use_Locked_PM_Stack.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall Begin_Use_Locked_PM_Stack
+ 
+The Begin_Use_Locked_PM_Stack service locks the protected-mode stack,
+preventing demand paging of the stack. Virtual devices use this service to
+ensure that a protected-mode application runs on a stack that will not be
+demand paged.
+ 
+This service has no parameters.
+ 
+<b>Return Value</b>
+ 
+The Client_SS and Client_SP registers contain the address of the locked
+stack if the stack was not already locked. Otherwise, these registers remain
+unchanged.
+ 
+<b>Comments</b>
+ 
+Before calling this service, the virtual device must ensure that the current
+virtual machine is running in protected mode. This means the VMStat_PM_Exec
+value must be specified in the CB_VM_Status field of the control block for
+the virtual machine.
+ 
+Since most virtual devices rely on the Begin_Nest_Exec service to switch
+stacks, this service is only useful for virtual devices, such as the virtual
+PIC device, which explicitly change the execution mode of a virtual
+machine.
+ 
+A virtual device can call this service any numbr of times. Only the first
+call switches stacks; all subsequent calls increment a counter. If a virtual
+device locks the stack, it must eventually unlock it using the
+<b>End_Use_Locked_PM_Stack</b> service.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Begin_Nest_Exec, End_Use_Locked_PM_Stack</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

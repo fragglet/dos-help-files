@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>Microsoft Windows for Pen Computing Extensions - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Microsoft Windows for Pen Computing Extensions</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='dispres.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+Display drivers that support Pen Extensions provide a set of functions and
+resources that permit the display drivers to carry out inking. Pen Windows
+is a version of Windows in which character-recognition software (Recognition
+Context (RC) Manager) allows a pen device to be used in place of a keyboard.
+Inking is drawing done by a display driver in response to input from the RC
+Manager.
+ 
+<b>Inking Functions</b>
+ 
+Display drivers that support inking must be prepared to process inking
+requests whenever pen input generates an interrupt. The drivers must export
+the GetLPDevice and InkReady functions.
+ 
+If the RC Manager requires inking, it calls the GetLPDevice function to
+retrieve a pointer to the display driver's PDEVICE structure. The RC Manager
+uses this pointer in subsequent calls to the display driver's Output
+function to complete the inking. The color and width of the ink is set by
+the RC Manager.
+ 
+Before calling Output, the RC Manager calls the InkReady function to notify
+the display driver that it is ready to ink. The display driver must
+determine whether any other drawing operation is under way. If so, the
+display driver must wait until the current operation is complete before
+completing the inking. In any case, the display driver calls a callback
+function supplied with the call to InkReady to complete the inking.
+ 
+<b>Inking Resources</b>
+ 
+Display drivers that support inking must provide the following cursor
+resources.
+ 
+<b>Value              Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>IDC_NEPEN (32630)</i>  Pen points to northeast.
+ 
+<i>IDC_NWPEN (32631)</i>  Pen points to northwest.
+ 
+<i>IDC_SEPEN (32632)</i>  Pen points to southeast.
+ 
+<i>IDC_PEN (32633)</i>    Default pen is same as IDC_SWPEN.
+ 
+<i>IDC_SWPEN (32633)</i>  Pen points to southwest.
+ 
+The pen cursors must be added to the driver in the same way as the standard
+Windows cursors.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

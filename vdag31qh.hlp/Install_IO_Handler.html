@@ -1,0 +1,121 @@
+<html>
+
+<head>
+<title>Install_IO_Handler - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Install_IO_Handler</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='I_sl_O_Trapping_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Install_Mult_IO_Handlers.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     esi, IOCallback     ; points to callback procedure
+mov     edx, Port           ; I/O port number
+VMMcall Install_IO_Handler
+ 
+jc      not_installed       ; carry set if procedure not installed
+ 
+The Install_IO_Handler service installs a callback procedure for I/O port
+trapping and enables trapping for the specified port. Only one procedure may
+be installed for a given port.
+ 
+This service is only available during initialization.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>IOCallback</i>  Points to the callback procedure. See the Comments for more
+            information about the callback procedure.
+ 
+<i>Port</i>        Specifies the I/O port to be trapped.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the service successfully installs the callback
+procedure. If the carry flag is set, a callback procedure is already
+installed for the specified port or the system limit for I/O callback
+procedures has been reached.
+ 
+<b>Comments</b>
+ 
+The system calls the callback procedure whenever a program in a virtual
+machine attempts to access the specified I/O port, and I/O trapping is
+enabled. The system calls the procedure as follows:
+ 
+mov     ebx, VM             ; current VM handle
+mov     ecx, IOType         ; type of I/O
+mov     edx, Port           ; port number
+mov     ebp, OFFSET32 crs   ; points to a Client_Reg_Struc
+mov     eax, Data           ; output data (if I/O type is output)
+call    [IOCallback]
+ 
+mov     [Data], eax         ; input data (if I/O type is input)
+ 
+The VM parameter specifies the current virtual machine, Port specifies the
+I/O port, and crs points to a Client_Reg_Struc structure containing the
+register contents for the current virtual machine.
+ 
+The IOType parameter specifies the type of input or output operation
+requested and determines whether the callback procedure receives data in the
+EAX register or must return data in the EAX register. The IOType parameter
+can be a combination of the following values:
+ 
+<b>Value         Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Byte_Input</i>    Input a single byte; place in AL if String_IO not given.
+ 
+<i>Byte_Output</i>   Output a single byte from AL if String_IO not given.
+ 
+<i>Word_Input</i>    Input a word; place in AX if String_IO not given.
+ 
+<i>Word_Output</i>   Output a word from AX if String_IO not given.
+ 
+<i>Dword_Input</i>   Input a double word; place in EAX if String_IO not given.
+ 
+<i>Dword_Output</i>  Output a double word from EAX if String_IO not given.
+ 
+<i>String_IO</i>     Input or output a string. The high 16-bits specifies segment
+              address of buffer containing the string to output or to
+              receive the string input.
+ 
+<i>Rep_IO</i>        Repeat the input or output string operation the number of
+              times specified by the Client_CX field in the
+              Client_Reg_Struc structure.
+ 
+<i>Addr_32_IO</i>    Use 32-bit address offsets for input or output string
+              operations. If this value is not given, the 16-bit offsets are
+              used.
+ 
+<i>Reverse_IO</i>    Decrement string address on each input or output operation. If
+              this value is not given, the string address is incremented on
+              each operation.
+ 
+A virtual machine can disable trapping of a port for every or for specific
+virtual machines by using the Disable_Global_Trapping and
+<b>Disable_Local_Trapping</b> services.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Disable_Global_Trapping, Disable_Local_Trapping, Install_Mult_IO_Handlers</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

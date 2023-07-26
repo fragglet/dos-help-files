@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>Sys_Critical_Init - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Sys_Critical_Init</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='VMM_Control_Messages.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Sys_VM_Init.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     ebx, SysVM                  ; system VM handle
+mov     esi, OFFSET32 CommandTail   ; points to WIN386 command tail
+mov     eax, Sys_Critical_Init
+VMMcall System_Control
+ 
+The Sys_Critical_Init message notifies the virtual device that Windows is
+starting. The system sends this message to direct virtual devices to carry
+out, as quickly as possible, the minimum number of tasks needed to prepare
+the device for enabled interrupts. While virtual devices process this
+message, interrupts are disabled.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>SysVM</i>        Specifies a handle identifying the system virtual machine.
+ 
+<i>CommandTail</i>  Points to the command tail retrieved from the program segment
+             prefix (PSP) of WIN386.EXE. The first byte in the command tail
+             specifies the length in bytes of the tail.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the virtual device initialized successfully.
+Otherwise, the carry flag is set to prevent the system from loading the
+virtual device.
+ 
+<b>Comments</b>
+ 
+While processing this message, virtual devices typically initialize any
+critical functions needed to support interrupts and claim any V86 pages
+required to support the device. For example, the virtual display device
+claims the video memory. If a virtual device provides services, it should
+initialize any data associated with those services.
+ 
+The virtual device must not use the Simulate_Int or Exec_Int services.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Device_Init, Sys_Critical_Exit</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

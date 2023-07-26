@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>Call_When_VM_Ints_Enabled - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Call_When_VM_Ints_Enabled</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Interrupts_and_Callback_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Disable_VM_Ints.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     edx, OFFSET32 RefData   ; points to reference data
+mov     esi, OFFSET32 Callback  ; points to callback procedure
+VMMcall Call_When_VM_Ints_Enabled
+ 
+The Call_When_VM_Ints_Enabled service installs a callback procedure that the
+system calls whenever the virtual machine enables interrupts. This service
+calls the callback procedure immediately if interrupts are already enabled.
+Virtual devices use this service to receive notification when the virtual
+machines enables interrupts.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>RefData</i>    Points to reference data to be passed to the callback procedure.
+ 
+<i>Callback</i>   Points to the callback procedure. See the Comments section for
+           more information about the procedure.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Comments</b>
+ 
+It is usually more convenient to use the Call_Priority_VM_Event service
+instead of calling this service directly. However, this service is faster.
+ 
+The system calls the callback procedure as follows:
+ 
+mov     ebx, VM                  ; current VM handle
+mov     edx, OFFSET32 RefData    ; points to reference data
+mov     ebp, OFFSET32 crs        ; points to a Client_Reg_Struc
+call    [Callback]
+ 
+The VM parameter is a handle identifying the current virtual machine,
+<i>RefData</i> points to the reference data specified when the callback procedure
+was installed, and crs points to a Client_Reg_Struc structure containing the
+register values for the virtual machine.
+ 
+The callback procedure may use EAX, EBX, ECX, EDX, ESI, EDI, and Flags.
+ 
+<b>Uses</b>
+ 
+Client_Flags, Flags
+ 
+<b>See Also</b>
+ 
+<b>Call_When_Idle, Call_When_Not_Critical, Call_When_Task_Switched</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

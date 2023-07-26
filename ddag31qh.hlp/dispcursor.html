@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<title>Cursor - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Cursor</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='dispesc.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+The USER module requires all display drivers to provide cursor support. A
+display driver must provide the following functions.
+ 
+<b>Function       Description</b>
+────────────────────────────────────────────────────────────────────────────
+<b>CheckCursor</b>    Draws the cursor if drawing is not disabled.
+ 
+<b>InquireCursor</b>  Retrieves information about the cursor.
+ 
+<b>MoveCursor</b>     Moves the cursor to a specified position on the display.
+ 
+<b>SetCursor</b>      Sets the cursor shape.
+ 
+When Windows first starts, USER calls the InquireCursor function to retrieve
+information about the cursor. It then sets a system timer to call the
+<b>CheckCursor</b> function on each timer interrupt and enables the mouse driver,
+allowing the Windows mouse-event routine to call MoveCursor at each mouse
+interrupt occurrence. USER and Windows applications subsequently set the
+shape of the cursor using SetCursor.
+ 
+Because USER calls MoveCursor on each mouse interrupt, MoveCursor should set
+a semaphore to prevent the function from being called before it can complete
+the current call. The function should set the semaphore using a
+noninterruptable instruction such as the xchg instruction. Once the
+semaphore is set, MoveCursor should retrieve the x and y coordinates of the
+current call, set a flag to indicate that the cursor is being redrawn, and
+clear the semaphore. Whenever MoveCursor is called, it should check this
+flag before continuing the request.
+ 
+The CheckCursor function is called on each timer interrupt. The function
+should determine whether the cursor needs redrawing and whether drawing is
+enabled. If so, the function should redraw the cursor.
+ 
+For displays that do not have hardware cursor, the display driver should
+exclude the cursor from the screen before carrying out drawing operations in
+functions such as BitBlt, Output, and ExtTextOut. The driver should check
+the current x and y coordinates and exclude the cursor if any part of the
+cursor lies within the drawing region as specified in the following.
+ 
+<b>Operation           Region</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Bit-block transfer</i>  Destination rectangle
+ 
+<i>Ellipse</i>             Bounding rectangle
+ 
+<i>Other line drawing</i>  Bounding rectangle
+ 
+<i>Polygon</i>             Clip rectangle
+ 
+<i>Polyline</i>            Clip rectangle
+ 
+<i>Scan line</i>           Whole scan line
+ 
+<i>Text</i>                Bounding rectangle and/or opaquing rectangle
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

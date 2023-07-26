@@ -1,0 +1,66 @@
+<html>
+
+<head>
+<title>Get_PM_Int_Vector - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Get_PM_Int_Vector</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Interrupts_and_Callback_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Get_V86_Int_Vector.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, Interrupt      ; number of interrupt to check
+VMMcall Get_PM_Int_Vector
+ 
+mov     [Segment], cx       ; segment selector for interrupt routine
+mov     [Offset], edx       ; offset to interrupt routine
+ 
+The Get_PM_Int_Vector service returns the address of the interrupt routine
+for the specified protected-mode interrupt in the current virtual machine.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Interrupt</i>  Specifies the number of the interrupt to check.
+ 
+<b>Return Value</b>
+ 
+The CX register contains the segment selector of the interrupt routine, and
+the EDX register contains the offset of the interrupt routine. If the code
+segment is a 16-bit segment, the high word of the EDX register is zero.
+ 
+The zero flag is set if the interrupt address points to the default
+interrupt handler; the flag is clear if a virtual device has hooked the
+interrupt.
+ 
+<b>Comments</b>
+ 
+The system maintains a protected-mode interrupt vector table for each
+virtual machine. By default, each table entry points to a protected-mode
+breakpoint procedure that reflects the interrupt to V86 mode.
+ 
+<b>Uses</b>
+ 
+ECX, EDX, Flags
+ 
+<b>See Also</b>
+ 
+<b>Get_PM_Int_Type, Set_PM_Int_Vector</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

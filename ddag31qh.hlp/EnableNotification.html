@@ -1,0 +1,107 @@
+<html>
+
+<head>
+<title>EnableNotification - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> EnableNotification</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Communication-Driver_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='getdcb.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+int EnableNotification(cid, hWnd, wInTrigger, wOutTrigger)
+int cid;
+HWND hWnd;
+WORD wInTrigger;
+WORD wOutTrigger;
+ 
+The EnableNotification function enables or disables communications message
+posting. When enabled, the driver posts the WM_COMMNOTIFY message to the
+specified window. USER calls this function when an application calls the
+<b>EnableCommNotification</b> function (USER.245).
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>cid</i>          Identifies the communication device.
+ 
+<i>hWnd        </i> Identifies the window to receive the WM_COMMNOTIFY message. If
+             this parameter is NULL, the function disables the
+             notification.
+ 
+<i>wInTrigger</i>   Specifies the minimum number of bytes to be received in the
+             communication device's input buffer before receive notification
+             is sent.
+ 
+<i>wOutTrigger</i>  Specifies the maximum number of bytes to remain in the
+             communication device's output buffer before transmit
+             notification is sent.
+ 
+<b>Return Value</b>
+ 
+The return value is TRUE if successful. Otherwise, the return value is
+FALSE.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 100.
+ 
+The WM_COMMNOTIFY message has the following parameters.
+ 
+<b>Parameter       Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>wParam          Sp</i>ecifies the communication-device identifier (the cid
+                parameter).
+ 
+HIWORD(lparam)  Not used; must be zero.
+ 
+LOWORD(lparam)  Specifies the notification status. It can be one of the
+                following values.
+ 
+                Value        Meaning
+                ────────────────────────────────────────────────────────────
+                CN_EVENT     An event enabled in the communication device's
+                             event mask (specified by the SetCommEventMask
+                             function) has occurred. The application should
+                             call the function GetCommEventMask to determine
+                             what event has occurred, and to clear the
+                             event.
+ 
+                             This status is sent when the communication
+                             device's event word changes. The application
+                             clears the appropriate event to ensure
+                             notification on subsequent events.
+ 
+                CN_RECEIVE   At least wInTrigger bytes are in the
+                             communication device's input buffer, or at
+                             least 1 byte is in the input buffer.
+                             Additionally, no more have been received before
+                             the end of an internal timeout period. The
+                             number of bytes in the input buffer must be
+                             lower than wInTrigger bytes before this message
+                             will be sent again.
+ 
+                CN_TRANSMIT  Fewer than wOutTrigger bytes remain in the
+                             communication device's output buffer to be
+                             transmitted. The number of bytes in the output
+                             buffer must exceed wOutTrigger bytes before
+                             this message will be sent again.
+ 
+The communication device event may be a line-status or printer error.
+Applications can determine the cause by using the GetCommError function
+immediately after the GetCommEventMask function (USER.209).
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

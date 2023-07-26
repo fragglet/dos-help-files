@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<title>_HeapReAllocate - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _HeapReAllocate</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Heap_Allocation.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Memory_Management_for_Protected-Mode.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _HeapReAllocate, &lt;hAddress, nbytes, flags&gt;
+ 
+or      eax, eax        ; zero if error
+jz      error
+mov     [Address], eax  ; address of reallocated block
+ 
+The _HeapReAllocate service reallocates or reinitializes an existing memory
+block.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hAddress</i>   Specifies the address of the memory block. This address must have
+           been previously returned from the _HeapAllocate or
+           _HeapReAllocate service.
+ 
+<i>nbytes</i>     Specifies the new size in bytes of the reallocated block. This
+           parameter must not be zero.
+ 
+<i>flags</i>      Specifies the allocation flags. This parameter can be a
+           combination of the following values:
+ 
+           Value           Meaning
+           ─────────────────────────────────────────────────────────────────
+           HeapZeroInit    Fills any new bytes in the memory block with
+                           zeros. All existing bytes remain unchanged.
+ 
+           HeapZeroReInit  Fills all bytes, new and existing, with zeros.
+ 
+           HeapNoCopy      Does not preserve contents of existing bytes. If
+                           this value is not given, the service preserves
+                           the contents of existing bytes by copying the
+                           contents of the old memory block into the new
+                           block.
+ 
+           All other values are reserved.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the ring-0 address of the new block if the service
+is successful. Otherwise, EAX contains zero to indicate an error such as
+insufficient memory to satisfy the request or an invalid address.
+ 
+<b>Comments</b>
+ 
+If this service is successful, it frees the old memory block, making the old
+address invalid. Virtual devices must never rely on the old and new
+addresses being the same. If this service returns an error, the old memory
+block is not freed and the old address remains valid.
+ 
+Since the system offers no protection on the heap, virtual devices must
+provide their own protection to prevent overrunning allocated blocks.
+ 
+The system offers no compaction on the heap; all memory blocks on the heap
+are fixed. Virtual devices must not not to use the heap in such a way as to
+severely fragment it.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_HeapAllocate, _HeapFree</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

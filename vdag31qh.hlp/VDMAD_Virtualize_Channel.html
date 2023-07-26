@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>VDMAD_Virtualize_Channel - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VDMAD_Virtualize_Channel</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_DMA_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Virtual_DMA_Device.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vdmad.inc
+ 
+VxDcall VDMAD_Virtualize_Channel
+ 
+The VDMAD_Virtualize_Channel service allows another virtual device to claim
+ownership of a standard DMA channel. The new owner registers a callback
+procedure that is called whenever the virtual state of the channel is
+changed as a result of I/O done in a virtual machine.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>EAX</i>        Specifies the channel number.
+ 
+<i>ESI</i>        Specifies the callback procedure. If this parameter is zero, no
+           callback procedure is called. See the Comments section for more
+           information about the procedure.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear and the EAX register contains the DMA handle if the
+service is successful. Otherwise, the carry flag is set if channel is
+already owned.
+ 
+<b>Uses</b>
+ 
+EAX, EDX, Flags
+ 
+<b>Comments</b>
+ 
+The system calls the callback procedure by passing it the following input
+parameters:
+ 
+EAX     ; DMA handle
+EBX     ; virtual machine handle
+ 
+The procedure can modify EAX, EBX, ECX, EDX, ESI, EDI, and Flags.
+ 
+In some cases a virtual device does not allow a virtual machine to perform
+DMA to a channel. Instead, the virtual device handles programming based on a
+private API and not on virtualized hardware I/O. This means it is possible
+to pass a zero to specify no callback procedure. VDMAD continues to trap the
+I/O for the channel, but never changes the physical state of the channel as
+a result of any virtual machine I/O.
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

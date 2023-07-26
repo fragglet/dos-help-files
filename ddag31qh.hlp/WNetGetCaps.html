@@ -1,0 +1,169 @@
+<html>
+
+<head>
+<title>WNetGetCaps - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WNetGetCaps</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Network_Driver_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WNetGetConnection.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD WNetGetCaps(nIndex)
+WORD nIndex;
+ 
+The WNetGetCaps function retrieves information about the network driver,
+such as the network functions it supports.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>nIndex</i>     Specifies the capabilities to retrieve. The parameter can have
+           the following values.
+ 
+           Value                         Meaning
+           ─────────────────────────────────────────────────────────────────
+           WNNC_SPEC_VERSION (0x0001)    Returns the major and minor version
+                                         numbers of the network driver
+                                         specification to which the driver
+                                         conforms. The high and low bytes of
+                                         the return value contain the major
+                                         and minor version numbers,
+                                         respectively. For Windows 3.1, it
+                                         returns 0x030A.
+ 
+           WNNC_NET_TYPE (0x0002)        Returns a network type. The high
+                                         byte contains the network type, and
+                                         the low byte may contain a subtype.
+                                         The network type can be one of the
+                                         following values:
+ 
+                                         WNNC_NET_None (0x0000)
+                                         WNNC_NET_MSNet (0x0100)
+                                         WNNC_NET_LanMan (0x0200)
+                                         WNNC_NET_NetWare (0x0300)
+                                         WNNC_NET_Vines (0x0400)
+                                         WNNC_NET_10NET (0x0500)
+                                         WNNC_NET_Locus (0x0600)
+                                         WNNC_NET_Sun PC NFS (0x0700)
+                                         WNNC_NET_LANstep (0x0800)
+                                         WNNC_NET_9TILES (0x0900)
+                                         WNNC_NET_LANtastic (0x0A00)
+ 
+           WNNC_DRIVER_VERSION (0x0003)  Returns the driver version number.
+ 
+           WNNC_USER (0x0004)            Returns a value specifying which
+                                         user functions are available. The
+                                         return value can be
+                                         WNNC_USR_GetUser (0x0001).
+ 
+           WNNC_CONNECTION (0x0006)      Returns a value specifying which
+                                         connection functions are available.
+                                         It can be a combination of the
+                                         following values:
+ 
+                                         WNNC_CON_AddConnection (0x0001)
+                                         WNNC_CON_CancelConnection (0x0002)
+                                         WNNC_CON_GetConnections (0x0004)
+                                         WNNC_CON_AutoConnect (0x0008)
+                                         WNNC_CON_BrowseDialog (0x0010)
+                                         WNNC_CON_RestoreConnection (0x0020)
+ 
+                                         The WNNC_CON_AutoConnect bit does
+                                         not represent a network driver
+                                         function. Instead, it means that
+                                         the network will support the
+                                         standard MS-DOS Open File with
+                                         Handle function (Interrupt 21h,
+                                         Function 3Dh) for automatically
+                                         connecting to network resources.
+ 
+           WNNC_PRINTING (0x0007)        Returns a value specifying which
+                                         printing functions are available.
+                                         It can be a combination of the
+                                         following values:
+ 
+                                         WNNC_PRT_OpenJob (0x0002)
+                                         WNNC_PRT_CloseJob (0x0004)
+                                         WNNC_PRT_HoldJob (0x0010)
+                                         WNNC_PRT_ReleaseJob (0x0020)
+                                         WNNC_PRT_CancelJob (0x0040)
+                                         WNNC_PRT_SetJobCopies (0x0080)
+                                         WNNC_PRT_WatchQueue (0x0100)
+                                         WNNC_PRT_UnwatchQueue (0x0200)
+                                         WNNC_PRT_LockQueueData (0x0400)
+                                         WNNC_PRT_UnlockQueueData (0x0800)
+                                         WNNC_PRT_ChangeMsg (0x1000)
+                                         WNNC_PRT_AbortJob (0x2000)
+                                         WNNC_PRT_WriteJob (0x8000)
+ 
+                                         The WNNC_PRT_ChangeMsg bit does not
+                                         represent a network driver
+                                         function, but rather means that the
+                                         driver will send SP_QUEUECHANGED
+                                         messages to Print Manager.
+ 
+           WNNC_DIALOG (0x0008)          Returns a value specifying which
+                                         dialog functions are available. It
+                                         can be a combination of the
+                                         following values:
+ 
+                                         WNNC_DLG_DeviceMode (0x0001)
+                                         WNNC_DLG_BrowseDialog (0x0002)
+                                         WNNC_DLG_ConnectDialog (0x0004)
+                                         WNNC_DLG_DisconnectDialog (0x0008)
+                                         WNNC_DLG_ViewQueueDialog (0x0010)
+                                         WNNC_DLG_PropertyDialog (0x0020)
+                                         WNNC_DLG_ConnectionDialog (0x0040)
+ 
+           WNNC_ADMIN (0x0009)           Returns a value specifying which
+                                         administrative functions are
+                                         available. It can be a combination
+                                         of the following values:
+ 
+                                         WNNC_ADM_GetDirectoryType (0x0001)
+                                         WNNC_ADM_DirectoryNotify (0x0002)
+                                         WNNC_ADM_LongNames (0x0004)
+ 
+           WNNC_ERROR (0x000A)           Returns a value specifying which
+                                         error functions are available. It
+                                         can be a combination of the
+                                         following values:
+ 
+                                         WNNC_ERR_GetError (0x0001)
+                                         WNNC_ERR_GetErrorInfo (0x0002)
+ 
+           WNNC_PRINTMGREXT (0x000B)     Returns a value specifying whether
+                                         Print Manager functions are
+                                         available. If the functions are
+                                         available, the function returns a
+                                         WINNET version number in standard
+                                         major or minor version number
+                                         format. Otherwise, it returns
+                                         zero.
+ 
+<b>Return Value</b>
+ 
+The return value is either a value or a bitmask specified by the nIndex
+parameter, if successful. Otherwise, the return value is zero if the driver
+doesn't support any functions.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 13.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,149 @@
+<html>
+
+<head>
+<title>System_Control - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> System_Control</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Miscellaneous_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Miscellaneous_Services.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, Message    ; system control message
+mov     ebx, VM         ; VM handle (if needed by message)
+mov     esi, Param1     ; message-specific parameter
+mov     edi, Param2     ; message-specific parameter
+mov     edx, Param3     ; message-specific parameter
+VMMcall System_Control
+ 
+jc      error           ; carry set if error
+ 
+The System_Control service sends system control messages to all the virtual
+devices and, depending on the message, to the VMM.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Message</i>    Specifies the system control message. This parameter can be one
+           of the following values:
+ 
+           Value                   Meaning
+           ─────────────────────────────────────────────────────────────────
+           Begin_PM_App            A protected-mode application is starting
+ 
+           Close_VM_Notify         A virtual machine is closing
+ 
+           Create_VM               A virtual machine is being created
+ 
+           Critical_Reboot_Notify  System is rebooting (interrupt disabled)
+ 
+           Debug_Query             Requests for virtual device's debugging
+                                   interface
+ 
+           Destroy_VM              A virtual machine is being destroyed
+ 
+           Device_Init             Virtual devices initializing (interrupts
+                                   enabled)
+ 
+           Device_Reboot_Notify    System is rebooting (interrupts enabled)
+ 
+           End_PM_App              A protected-mode application is ending
+ 
+           Init_Complete           All virtual devices have initialized
+ 
+           Power_Event             Power is being suspended or resumed
+ 
+           Reboot_Processor        Virtual device must reboot system if it
+                                   can
+ 
+           Set_Device_Focus        A virtual device is taking the focus
+ 
+           Sys_Critical_Exit       System is terminating (interrupt
+                                   disabled)
+ 
+           Sys_Critical_Init       Virtual devices initializing (interrupts
+                                   disabled)
+ 
+           Sys_VM_Init             System VM is being created
+ 
+           Sys_VM_Terminate        System VM is being destroyed
+ 
+           System_Exit             System is terminating (interrupts
+                                   enabled)
+ 
+           VM_Critical_Init        Virtual machine being created (interrupts
+                                   disabled)
+ 
+           VM_Init                 Virtual machine being created (interrupts
+                                   enabled)
+ 
+           VM_Not_Executeable      Virtual machine being destroyed
+ 
+           VM_Resume               Virtual machine execution resumed
+ 
+           VM_Suspend              Virtual machine execution suspended
+ 
+           VM_Terminate            Virtual machine begin destroyed
+ 
+           For more information about these messages, see the individual
+           message descriptions.
+ 
+<i>VM</i>         Specifies a handle identifying a virtual machine. This parameter
+           is not required by every system control message.
+ 
+<i>Param1</i>     Specifies a message-specific parameter.
+ 
+<i>Param2</i>     Specifies a message-specific parameter.
+ 
+<i>Param3</i>     Specifies a message-specific parameter.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the service is successful. Otherwise, the carry
+flag is set to indicate an error.
+ 
+If the Create_VM message is successful, the EBX register contains the new
+virtual machine handle.
+ 
+<b>Comments</b>
+ 
+Although virtual devices may receive many of the system control messages,
+they may send only the following messages:
+ 
+<b>Message           Restructions</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Create_VM</i>         May only be sent by the virtual shell device.
+ 
+<i>Destroy_VM</i>        May only be sent by the virtual shell device.
+ 
+<i>Set_Device_Focus</i>  May be sent by any virtual device. If the device ID is
+                  zero, all devices with settable focus must set their focus
+                  to the specified virtual machine.
+ 
+<i>End_PM_App</i>        May only be sent by the virtual MS-DOS manager.
+ 
+Virtual devices must send and reply to messages correctly to prevent erratic
+system behavior.
+ 
+This service uses the ECX register, therefore the register cannot be used to
+pass data through to the virtual device receiving the control message.
+ 
+<b>Uses</b>
+ 
+Flags, EBX if Create_VM
+ 
+                                      ♦
+</pre>
+</body>
+
+</html>

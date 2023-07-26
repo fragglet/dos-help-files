@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>_SelectorMapFlat - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _SelectorMapFlat</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Memory_Management_for_Protected-Mode.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_SetResetV86Pageable.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _SelectorMapFlat, &lt;VM, Selector, flags&gt;
+ 
+cmp     eax, 0FFFFFFFFh         ; 0FFFFFFFFh if error
+je      error
+mov     [Address], eax          ; base address of selector
+ 
+The _SelectorMapFlat service returns the base address of the specified GDT
+or LDT selector. The address mapper uses this service to convert pointers,
+consisting of selector and offset pairs, to flat-model linear addresses
+suitable for use as parameters for the _LinMapIntoV86 service.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>VM</i>         Specifies a handle identifying the virtual machine to which the
+           specified selector belongs. This parameter is not used if
+           Selector is a GDT selector. This parameter must be valid for LDT
+           selectors.
+ 
+<i>Selector</i>   Specifies a GDT or LDT selector.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the linear address of the base of the selector if
+the service is successful. Otherwise, EAX contains 0FFFFFFFFh to indicate an
+error, such as an invalid selector.
+ 
+<b>Comments</b>
+ 
+This service ignores the high 16 bits of the Selector parameter; the 80386
+CPU often sets these bits to somewhat random values when doubleword
+operations are performed on segment registers.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_LinMapIntoV86</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

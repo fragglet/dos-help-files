@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<title>PASSTHROUGH - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> PASSTHROUGH</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Escapes.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='QUERYESCSUPPORT.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define PASSTHROUGH 19 
+short Control(lpDevice,  PASSTHROUGH,  lpInData,  NULL)
+LPPDEVICE lpDevice;
+LPWORD lpInData;
+ 
+The PASSTHROUGH escape enables the application to send data directly to the
+printer, bypassing the standard printer-driver code.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpDevice   Points to a P</i>DEVICE structure specifying the destination device.
+ 
+<i>lpInData</i>   Points to a buffer in which the first 16 bits specifies the
+           number of remaining bytes in the buffer. The escape sends the
+           remaining bytes in the buffer to the printer.
+ 
+<b>Return Value</b>
+ 
+The return value is the number of bytes transferred to the printer if the
+escape is successful. Otherwise, the return value is zero if the escape is
+not successful, or if the escape is not implemented. If the return value is
+nonzero but less than the size of the data, an error prohibited transmission
+of the entire data block.
+ 
+<b>Comments</b>
+ 
+There may be restrictions on the kinds of device data an application may
+send to the device without interfering with the operation of the driver
+should not send commands that reset the printer or print the current page.
+Additionally, applications are strongly discouraged from performing
+functions that consume printer memory, such as downloading a font or a
+macro.
+ 
+The driver should invalidate its internal state variables such as "current
+position" and "current line style" when carrying out this escape. The
+application must be able to issue multiple, sequential PASSTHROUGH escapes
+without intervening "saves" and "restores" being inserted by the driver.
+ 
+This escape is also known as DEVICEDATA.
+ 
+<b>See Also</b>
+ 
+<b>PDEVICE</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

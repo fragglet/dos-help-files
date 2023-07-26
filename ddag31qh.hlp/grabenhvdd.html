@@ -1,0 +1,60 @@
+<html>
+
+<head>
+<title>Virtual-Display Device Services - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Virtual-Display Device Services</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Grabbers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='grabenhsel.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+The grabber calls several virtual-display device functions to carry out
+requests to update, paint, or grab the screen. To call a virtual-display
+device function, the grabber first retrieves the virtual-display device
+entry point address using Get Device Entry Point Address (Interrupt 2Fh
+Function 1684h). The grabber then can set registers and call the address to
+carry out a function.
+ 
+The grabber calls the Get_Version function to verify that it is matched with
+the correct virtual-display device. Whenever the grabber needs access to the
+video memory or the video controller context, it queries the virtual display
+device. The virtual-display device returns a structure describing the
+requested memory or controller context.
+ 
+The grabber calls the Get_Mem function to get the current contents of the
+video memory while updating the windowed display. The grabber calls the
+<b>Get_GrbMem</b> function to get a snapshot of the entire screen in response to
+the user pressing the ALT+PRNTSCRN key combination in a full-screen VM. The
+grabber calls the Free_Mem and Free_Grab functions to tell the
+virtual-display device that the grabber is no longer using this memory.
+<b>Get_State and Get_GrbState </b>return the current and grabbed controller
+context, respectively.
+ 
+The grabber calls the Get_Mod function to update the windowed display
+incrementally. Get_Mod returns a structure that indicates modifications to
+the current display. The grabber modifies only those parts of the window
+that have changed, and then calls the Clear_Mod function to inform the
+virtual-display device that the modifications have been carried out.
+ 
+To make sure that the video memory or context will not change when the
+grabber is accessing the memory, the VM should suspend operations
+immediately after a call to the Get_Mem or Get_Mod function. The VM can
+continue operations only after a call to the Free_Mem function or an
+explicit call to the Unlock_App function from the grabber.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

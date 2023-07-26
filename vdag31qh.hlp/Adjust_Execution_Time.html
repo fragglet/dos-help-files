@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>Adjust_Execution_Time - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Adjust_Execution_Time</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Time-Slice_Scheduler_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Get_Execution_Focus.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, Time       ; number of milliseconds to adjust time slice
+move    ebx, VM         ; VM handle
+VMMcall Adjust_Execution_Time
+ 
+The Adjust_Execution_Time service adjusts the amount of execution time a
+virtual machine is granted with each time slice. Virtual devices, such as
+the virtual COM device, use this service to temporarily boost the priority
+of a virtual machine, such as when the virtual machine is receiving an
+unusually high number of interrupts.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Time</i>       Specifies a signed integer value representing the number of
+           milliseconds to add or subtract from the current time-slice
+           granularity value.
+ 
+<i>VM</i>         Specifies a handle identifying the virtual machine to adjust.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Comments</b>
+ 
+This service has the same effect on all virtual machines regardless of their
+time-slice priority. If the specified virtual machine is not on the
+time-slice list, this service returns immediately (does nothing). This
+service never forces a nonrunnable virtual machine to execute. A virtual
+machine not already in the background cannot be forced to run in the
+background by boosting its execution time.
+ 
+This service can increase or decrease the execution time for a virtual
+machine. However, decreasing execution time is not recommended because it
+defeats the purpose of multitasking. Virtual devices should avoid using this
+service.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Get_Time_Slice_Granularity, Set_Time_Slice_Granularity</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

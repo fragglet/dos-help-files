@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<title>Get_Next_VM_Handle - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Get_Next_VM_Handle</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Information_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Get_Sys_VM_Handle.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     ebx, VM           ; VM handle
+VMMcall Get_Next_VM_Handle
+ 
+mov     [NextVM], ebx     ; next VM handle
+ 
+The Get_Next_VM_Handle service returns the handle of the next virtual
+machine in the virtual machine list maintained by the system. Although each
+virtual machine appears only once in the list, the order of the handles is
+not guaranteed. The list is circular, so a virtual device scanning the list
+should stop scanning when the latest handle returned is equal to the first
+handle returned.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>VM</i>         Specifies a handle identifying a virtual machine.
+ 
+<b>Return Value</b>
+ 
+The EBX register contains the handle of the next virtual machine in the
+list.
+ 
+<b>Example</b>
+ 
+The following example modifies the state of every virtual machine by using
+the Get_Next_VM_Handle service to retrieve handles of all valid virtual
+machines:
+ 
+    VMMcall Get_Cur_VM_Handle
+ 
+Scan_Loop:
+ 
+    ; modify the VM state
+ 
+    VMMcall Get_Next_VM_Handle
+    VMMcall Test_Cur_VM_Handle
+    jne     Scan_Loop
+ 
+<b>Uses</b>
+ 
+EBX, Flags
+ 
+<b>See Also</b>
+ 
+<b>Get_Cur_VM_Handle, Test_Cur_VM_Handle</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

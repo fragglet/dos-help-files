@@ -1,0 +1,124 @@
+<html>
+
+<head>
+<title>_Allocate_LDT_Selector - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _Allocate_LDT_Selector</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='GDT_sl_LDT_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_BuildDescriptorDWORDs.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _Allocate_LDT_Selector, &lt;VM, DescDWORD1, DescDWORD2, Count, flags&gt;
+ 
+The service creates a new selector or selectors and adds them to the Local
+Descriptor Table (LDT) for the specified virtual machine.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>VM</i>          Specifies a handle identifying the virtual machine to receive
+            the selectors.
+ 
+<i>DescDWORD1</i>  Specifies the high four bytes of the descriptor for the
+            selector. This parameter contains the high 16 bits of the base
+            address, the high 4 bits of the limit, and the status and type
+            bits.
+ 
+<i>DescDWORD2</i>  Specifies the low four bytes of the descriptor for the selector.
+            This parameter contains the low 16 bits of the base address and
+            limit.
+ 
+<i>Count</i>       Specifies the number of contiguous LDT selectors to allocate if
+            the flags parameter does not specify the ALDTSpecSel value.
+            Otherwise, this parameter specifies the LDT selector to
+            allocate.
+ 
+<i>flags</i>       Specifies the operation flags. This parameter can be the
+            following value:
+ 
+            Value        Meaning
+            ────────────────────────────────────────────────────────────────
+            ALDTSpecSel  Allocates the LDT selector specified by the Count
+                         parameter. The service copies the descriptor data
+                         to the specified LDT entry and returns the
+                         selector. If the LDT selector is already allocated,
+                         the service returns an error value instead.
+ 
+                         If this value is not given, the service allocates
+                         the number of selectors specified by Count.
+ 
+            All other values are reserved.
+ 
+<b>Return Value</b>
+ 
+If the service is successful, the EAX and EDX registers contain the
+following values:
+ 
+<b>Register  Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>EAX      </i> Contains the new selector. If Count is greater than 1, EAX
+          contains only the first selector. The second selector is EAX+8,
+          the third EAX+16, and so on. The high 16 bits of the selector is
+          always zero.
+ 
+<i>EDX</i>       Contains the selector for and the size of the local descriptor
+          table (LDT). The low 16 bits contains the selector for the LDT,
+          and the high 16 bits contains the size of the LDT expressed as the
+          number of selectors in the table.
+ 
+The EAX and EDX registers contain zero to indicate an error such as an
+invalid descriptor value, the LDT is full, an invalid virtual machine
+handle, or selector already allocated.
+ 
+<b>Comments</b>
+ 
+A virtual device can use the selector of the LDT to directly edit the
+selectors in the LDT. However, a virtual device should use the
+<b>_SetDescriptor</b> service to change an LDT selector rather than edit the LDT.
+ 
+This service sets the RPL of the selector to the DPL of the selector set in
+the DescDWORD1 parameter.
+ 
+LDT selectors are only valid when the virtual machine for which they are
+created is the current virtual machine. However, a virtual device can use
+the _SelectorMapFlat service to examine the region described by a LDT
+selector in virtual machines which are not the current virtual machine.
+ 
+Although this service can create multiple selectors, the _Free_LDT_Selector
+service cannot free multiple selectors. Multiple selectors must be freed
+individually.
+ 
+When this service creates multiple selectors, it gives each selector the
+same descriptor values. It does not change the base address for each
+selector. It is up to the virtual device to edit the selectors, and assign
+appropriate base addresses.
+ 
+Virtual devices should not rely on specific hard-coded LDT selectors, and
+therefore, they should avoid using the ALDTSpecSel value.
+ 
+<b>Uses</b>
+ 
+EAX, EDX
+ 
+<b>See Also</b>
+ 
+<b>_Allocate_GDT_Selector, _Free_LDT_Selector</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

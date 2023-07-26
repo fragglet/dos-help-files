@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>Get_Next_Profile_String - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Get_Next_Profile_String</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Initialization_Information_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Get_Profile_Boolean.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     edx, Profile    ; points to the previous entry value
+mov     edi, Keyname    ; points to the entry name
+VMMcall Get_Next_Profile_String
+ 
+jc      no_next         ; carry set if there is no next value
+mov     [Next], edx     ; points to entry value of next profile string
+ 
+The Get_Next_Profile_String service searches the SYSTEM.INI file for the
+first entry that follows the entry specified by the Profile parameter, and
+that has the given keyname. This service returns a pointer to this next
+entry if it is found.
+ 
+Virtual devices typically use this service if they have more than one entry
+having the same keyname. A virtual device retrieves the first string using
+the Get_Profile_String service, then uses Get_Next_Profile_String to
+retrieve all subsequent entries. In all cases, the virtual device must not
+modify the returned string.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Profile</i>    Points to a null-terminated string specifying the value of the
+           previous entry. The string must have been previously returned
+           using the Get_Profile_String or Get_Next_Profile_String service.
+ 
+<i>Keyname</i>    Points to a null-terminated string identifying the keyname for
+           the entry.
+ 
+<b>Return Value</b>
+ 
+If the carry flag is clear, the EDX register contains the address of the
+next string having the specified keyname. The carry flag is set if there are
+no more matching entries.
+ 
+<b>Uses</b>
+ 
+EDX, Flags
+ 
+<b>See Also</b>
+ 
+<b>Get_Profile_String</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

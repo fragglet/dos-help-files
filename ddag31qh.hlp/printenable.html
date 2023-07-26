@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<title>Enabling and Disabling Physical Devices - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Enabling and Disabling Physical Devices</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printer_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='printdc.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+GDI enables operation of the printer driver by calling the driver's Enable
+function and directing the driver to initialize a physical device for
+subsequent graphics output. A physical device is a PDEVICE structure that
+represents a printer and its current operating state. A printer driver uses
+the physical-device information to determine how to carry out specific
+tasks, such as which device-dependent graphics commands to use, and which
+output port to send the commands. The printer driver initializes the
+physical device by copying information to the PDEVICE structure.
+ 
+GDI calls the Enable function whenever an application calls the CreateDC
+function (GDI.53) to create a device context (DC) for the printer. GDI calls
+the function twice: once to retrieve a copy of the driver's GDIINFO
+structure, and a second time to initialize the PDEVICE structure. After the
+first call, GDI uses the dpDEVICEsize member in the GDIINFO structure to
+determine the size of the driver's PDEVICE structure. GDI then allocates
+memory for the structure and calls Enable for the second time, passing a
+pointer to the structure. With this call, the driver initializes the
+structure.
+ 
+To initialize the PDEVICE structure, the driver typically examines the names
+of the printer model and output device or file passed to Enable by GDI. It
+may also examine any printer environment passed to Enable. The driver then
+fills the PDEVICE structure with all the information that the output
+functions need to generate appropriate graphics commands for the given
+printer model and to send the commands to the given device or file.
+ 
+Although only the printer driver initializes and uses the PDEVICE structure,
+GDI allocates memory for the structure, determines when to pass it to the
+driver's output functions, and deletes the structure when it is no longer
+needed. Except for the first 16 bits of the PDEVICE structure, the content
+and format of the structure depends entirely on the printer driver. The
+first 16 bits, on the other hand, must be set to a nonzero value. GDI
+reserves zero to indicate a BITMAP structure. GDI creates and uses a BITMAP
+structure in place of a PDEVICE structure when an application creates a
+memory-device context.
+ 
+A printer driver can allocate additional structures and store their
+addresses in the PDEVICE structure. Because GDI may direct a printer driver
+to create a large number of physical devices, the printer driver should not
+allocate additional structures in the limited space of the driver's
+automatic data segment, especially if the driver allows multiple device
+contexts.
+ 
+GDI disables the physical device and possibly frees the printer driver
+whenever an application calls the DeleteDC function (GDI.68). GDI disables
+the physical device by calling the driver's Disable function. It expects the
+driver to complete any outstanding printing job and free any resources
+associated with the physical device. After the driver returns from the
+<b>Disable function, GDI</b> frees the memory it allocated for the PDEVICE
+structure. If there are no other device contexts for this printer driver,
+Windows frees the driver, removing any driver code and data from memory.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

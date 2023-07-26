@@ -1,0 +1,124 @@
+<html>
+
+<head>
+<title>_LinMapIntoV86 - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _LinMapIntoV86</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Memory_Management_for_Protected-Mode.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_LinPageLock.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _LinMapIntoV86, &lt;HLinPgNum, VM, VMLinPgNum, nPages, flags&gt;
+ 
+or      eax, eax            ; zero if error
+jz      not_mapped
+mov     [V86Address], eax   ; V86 address for mapped pages
+ 
+The _LinMapIntoV86 service maps one or more pages into the V86 address space
+of the specified virtual machine. This service is similar to the
+<b>_MapIntoV86</b> service but uses linear page numbers instead of memory handles.
+Virtual devices that have access to memory handles should use the
+<b>MapIntoV86</b> instead of this service.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>HLinPgNum</i>   Specifies the linear page number of the first page to map. A
+            linear page number is a ring-0 linear address shifted right by
+            12 bits.
+ 
+<i>VM</i>          Specifies a handle identifying the virtual machine for which
+            memory is mapped.
+ 
+<i>VMLinPgNum</i>  Specifies the linear page number of an address in the V86
+            address space. The service maps the specified pages to this
+            address if the HLinPgNum parameter does not already specify a
+            valid V86 address. This parameter must be a page number in the
+            range 10h through 10Fh.
+ 
+<i>nPages</i>      Specifies the number of pages to map.
+ 
+<i>flags</i>       Specifies the operation flags. This parameter must be set to
+            zero.
+ 
+<b>Return Value</b>
+ 
+If the EAX register contains a nonzero value, the EDX register contains the
+V86 address to which the specified pages are mapped. Otherwise, EAX contains
+zero to indicate an error such as an invalid address range, an invalid
+virtual machine handle, an illegal map range, a size discrepancy, or
+insufficient memory locking. The EDX register contents are valid only if the
+EAX register contains a nonzero value.
+ 
+<b>Comments</b>
+ 
+A virtual device typically uses this service to map buffers having
+protected-mode addresses into the V86 address space. This gives software
+running in the virtual machine a means of passing data to and receiving data
+from the virtual device.
+ 
+If HLinPgNum is a V86 page number (that is less than or equal to 100h), this
+service returns HLinPgNum immediately and does nothing else. Otherwise, the
+service returns VMLinPgNum.
+ 
+If the specified linear pages belong to a free physical region, this service
+calls the _PhysIntoV86 service to carry out the request.
+ 
+If the specified linear pages belong to the high addressing region for a
+virtual machine, this service maps the memory from that virtual machine into
+the virtual machine specified by the VM parameter. The V86MMGR device uses
+this capability to map a region of V86 address space which is currently
+local to one VM into a global region that is addressable by all virtual
+machines. Virtual devices must not use this capability directly; they should
+always use the V86MMGR services to map local memory into global memory.
+ 
+Although a virtual device can map the same page into multiple addresses in
+the V86 address space, this is not recommended.
+ 
+For each mapped page, this service sets the P_USER, P_PRES, and P_WRITE
+bits, but clears the P_DIRTY and P_ACC bits. The service sets the page type
+to be identical to the page type for the pages at the specified
+protected-mode linear address.
+ 
+If the virtual pageswap device uses MS-DOS or BIOS functions to write to the
+device, this service automatically locks all mapped pages and unlocks any
+previously mapped pages.
+ 
+If a virtual device no longer needs the mapped region, it should map the
+system nul page into the V86 address space using the _MapIntoV86 service. A
+virtual device can retrieve the handle for the system nul page using the
+<b>_GetNulPageHandle</b> service.
+ 
+This service accepts V86 page numbers between 10h and the page number
+returned by the _GetFirstV86Page service. This supports virtual devices that
+use the _Allocate_Global_V86_Data_Area service. Mapping a region which spans
+across the first V86 page is not allowed. Mapping pages in this region to
+other addresses can easily crash the system, and should be avoided.
+ 
+<b>Uses</b>
+ 
+EAX, EDX
+ 
+<b>See Also</b>
+ 
+<b>_Allocate_Global_V86_Data_Area, _GetFirstV86Page, _GetNulPageHandle,</b>
+<b>_MapIntoV86, _PageLock, _PhysIntoV86</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

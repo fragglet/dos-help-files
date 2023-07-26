@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<title>Hook_V86_Int_Chain - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Hook_V86_Int_Chain</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Interrupts_and_Callback_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Set_PM_Int_Type.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, Interrupt          ; number of interrupt to hook
+mov     esi, OFFSET32 HookProc  ; points to hook procedure
+VMMcall Hook_V86_Int_Chain
+ 
+jc      not_installed       ; carry set if procedure not installed
+ 
+The Hook_V86_Int_Chain service installs a hook procedure that the system
+calls whenever the specified interrupt occurs. Virtual devices use this
+service to monitor software interrupts and simulated hardware interrupts in
+V86 mode.
+ 
+This service is only available during initialization.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Interrupt</i>  Specifies the number of the interrupt for which to install the
+           hook procedure.
+ 
+<i>HookProc</i>   Points to the hook procedure. See the Comments section for more
+           information about this procedure.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the hook procedure is installed. The carry flag
+is set to indicate an error such as an invalid interrupt number.
+ 
+<b>Comments</b>
+ 
+The system calls the hook procedure whenever the corresponding interrupt
+occurs, a virtual device calls the Simulate_Int service, or the system
+simulates a hardware interrupt. This means a hook procedure must make no
+assumptions about the origin of the interrupt.
+ 
+The system calls the procedure as follows:
+ 
+mov     eax, Interrupt      ; number of interrupt hooked
+mov     ebx, VM             ; current VM handle
+mov     ebp, OFFSET32 crs   ; points to a Client_Reg_Struc
+call    [HookProc]
+ 
+jc      pass_to_next        ; carry set if interrupt not serviced
+ 
+The Interrupt parameter is the number of the current interrupt, VM is a
+handle identifying the current virtual machine, and crs points to a
+<b>Client_Reg_Struc</b> structure containing the register values of the current
+virtual machine. If the hook procedure services the interrupt, it must clear
+the carry flag to prevent the system from passing the interrupt to the next
+hook procedure.
+ 
+Any number of virtual devices can install a hook procedure for a given
+interrupt. The system always calls the last hook procedure first. A hook
+procedure either services the interrupt or directs the system to pass the
+interrupt to the next hook procedure. If no hook procedure services the
+interrupt, the system reflects the interrupt to the virtual machine.
+ 
+This service is recommended instead of hooking the V86 interrupt vector
+directly.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Set_V86_Int_Vector, Simulate_Int</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

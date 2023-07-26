@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<title>trmcom - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> trmcom</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Communication-Driver_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='COMSTAT.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+int trmcom(cid)
+int cid;
+ 
+The trmcom function closes the specified communications device and frees any
+memory allocated for the device's transmit and receive queues. All
+characters in the output queue are transmitted before the communications
+device is closed unless an error occurs. The trmcom function returns an
+error immediately if the cid parameter is not valid, and returns an error if
+a timeout occurs while attempting to send the characters.
+ 
+USER calls this function whenever an application calls the CloseComm
+function (USER.207).
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>cid</i>        Identifies the communications device.
+ 
+<b>Return Value</b>
+ 
+The return value is zero if the function is successful. The function returns
+-2 if an error occurred while transmitting the remaining characters from the
+transmit queue. If the cid parameter is not valid, trmcom will return
+0x8000.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 7.
+ 
+If the return value is -2, the function may have left some characters in the
+transmit queue, but may have successfully sent others. If an application
+subsequently calls the stacom through the GetCommError function (USER.203),
+the driver should set the cbOutQue member in the COMSTAT structure to allow
+the application to determine how many characters were actually transmitted.
+ 
+<b>See Also</b>
+ 
+<b>inicom</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

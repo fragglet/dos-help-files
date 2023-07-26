@@ -1,0 +1,122 @@
+<html>
+
+<head>
+<title>Control_Block - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Control_Block</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='VMM_Structures.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DemandInfoStruc.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     esi, VM                         ; VM handle
+mov     eax, [esi + CB_VM_Status]       ; virtual machine status
+mov     eax, [esi + CB_High_Linear]     ; high linear address
+mov     eax, [esi + CB_Client_Pointer]  ; points to a Client_Reg_Struc
+mov     eax, [esi + CB_VMID]            ; virtual machine ID
+ 
+The control block for a virtual machine contains information and status for
+the virtual machine. Virtual devices can use the following symbols to access
+useful fields in the control block:
+ 
+<b>Offset             Description</b>
+────────────────────────────────────────────────────────────────────────────
+<b></b><i>CB_VM_Status</i>       Specifies the status for the virtual machine. It can be a
+                   combination of the following values:
+ 
+                   Value                   Meaning
+                   ─────────────────────────────────────────────────────────
+                   VMStat_Exclusive        Virtual machine is in exclusive
+                                           mode.
+ 
+                   VMStat_Background       Virtual machine runs in the
+                                           background.
+ 
+                   VMStat_Creating         Virtual machine is being
+                                           created.
+ 
+                   VMStat_Suspended        Virtual machine is not
+                                           scheduled.
+ 
+                   VMStat_Not_Executeable  Virtual machine is partially
+                                           destroyed.
+ 
+                   VMStat_PM_Exec          Virtual machine execution
+                                           currently in a protected-mode
+                                           application.
+ 
+                   VMStat_PM_App           Virtual machine contains a
+                                           protected-mode application.
+ 
+                   VMStat_PM_Use32         Virtual machine contains a 32-bit
+                                           protected-mode application.
+ 
+                   VMStat_VxD_Exec         Virtual machine has received a
+                                           call from a virtual device.
+ 
+                   VMStat_High_Pri_Back    Virtual machine has high priority
+                                           background execution.
+ 
+                   VMStat_Blocked          Virtual machine is blocked on a
+                                           semaphore.
+ 
+                   VMStat_Awakening        Virtual machine is waking up
+                                           after being blocked on a
+                                           semaphore.
+ 
+                   VMStat_PageableV86      Virtual machine has pageable V86
+                                           memory (protected-mode
+                                           application). The default
+                                           behavior for one or more pages in
+                                           V86 memory has been modified and
+                                           the _GetV86PageableArray service
+                                           returns at least one nonzero bit
+                                           in the array.
+ 
+                   VMStat_V86IntsLocked    Virtual machine locks any V86
+                                           memory that is not pageable.
+                                           Locking regardless of the pager
+                                           type has been enabled for the
+                                           virtual machine.
+ 
+                   VMStat_TS_Sched         Virtual machine is scheduled by
+                                           the time slicer.
+ 
+                   VMStat_Idle             Virtual machine has released its
+                                           time slice.
+ 
+                   VMStat_Closing          Virtual machine has received a
+                                           Close_VM message.
+ 
+<b></b><i>CB_High_Linear</i>     Specifies the liner address in the VMM linear address
+                   space of the virtual machine memory. Virtual devices can
+                   add a V86 linear address to this value calculate the
+                   location of a virtual machine memory in the VMM address
+                   space.
+ 
+<b></b><i>CB_Client_Pointer  Specifies the address of a Clien</i>t_Reg_Struc structure
+                   containing the register values for the virtual machine.
+ 
+<b></b><i>CB_VMID</i>            Specifies the virtual machine identifier.
+ 
+<b>See Also</b>
+ 
+<b>Close_VM, Client_Reg_Str</b>uc
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

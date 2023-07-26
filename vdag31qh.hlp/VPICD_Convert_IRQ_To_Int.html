@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<title>VPICD_Convert_IRQ_To_Int - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VPICD_Convert_IRQ_To_Int</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_PIC_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VPICD_Force_Default_Behavior.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vpicd.inc
+ 
+mov     eax, IRQNum     ; IRQ number (not an IRQ handle!)
+mov     ebx, VM         ; VM handle
+VxDcall VPICD_Convert_IRQ_To_Int
+ 
+jc      not_valid       ; carry set if IRQ number is not valid
+mov     [VecNum], eax   ; interrupt vector number
+ 
+The VPICD_Convert_IRQ_To_Int service returns the interrupt vector number
+that corresponds to the specified IRQ number for the specified virtual
+machine.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>IRQNum</i>     Specifies an IRQ number.
+ 
+<i>VM</i>         Specifies the handle identifying the virtual machine.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear and the EAX register contains an interrupt vector
+number if the IRQ number is valid. Otherwise, the carry flag is set.
+ 
+<b>Comments</b>
+ 
+Since virtual machines can map IRQ numbers of the virtual PIC to any
+interrupt vector numbers, virtual devices should always explicitly check
+which interrupt vector is mapped to a particular IRQ.
+ 
+<b>Uses</b>
+ 
+EAX, Flags
+ 
+<b>See Also</b>
+ 
+<b>VPICD_Convert_Handle_To_IRQ, VPICD_Convert_Int_To_IRQ</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<title>Interrupt 2Fh Function 1680h - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Interrupt 2Fh Function 1680h</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Windows_Interrupt_2Fh_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Interrupt_2Fh_Function_1681h.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+mov     ax, 1680h   ; Release Current VM Time-Slice
+int     2Fh         ; multiplex interrupt
+ 
+Release Current VM Time-Slice (Interrupt 2Fh Function 1680h) directs Windows
+to suspend the time slice of the current VM and start a new time slice for
+another VM. MS-DOS programs use this function when they are idle, such as
+when waiting for user input, to allow 386 enhanced-mode Windows to run other
+programs that are not idle.
+ 
+<b>Return Value</b>
+ 
+The return value is 00h in the AL register if the function is supported.
+Otherwise, AL is unchanged (contains 80h).
+ 
+<b>Comments</b>
+ 
+Only non-Windows programs should use Release Current VM Time-Slice; Windows
+applications should yield by calling the WaitMessage function. A program can
+call this function at any time, even when running in environments other than
+386 enhanced-mode Windows environment. If the current environment does not
+support the function, the function returns and the program continues
+execution.
+ 
+Windows suspends the current VM only if there is another VM scheduled to
+run. If no other VM is ready, the function returns to the program and
+execution continues. A program should call the function frequently (for
+example, once during each pass of the program's idle loop) to give Windows
+ample opportunity to check for other VMs that are ready for execution.
+ 
+Before calling this function, a program should check that the Interrupt 2Fh
+address is not zero.
+ 
+<b>Example</b>
+ 
+The following example checks for for a valid Interrupt 2Fh address, then
+releases the current VM time slice:
+ 
+    mov     ax, 352Fh       ; Get Interrupt Vector
+    int     21h
+ 
+    mov     ax, es
+    or      ax, bx
+    jz      Skip_Idle_Call  ; es:bx is equal to 0:0
+ 
+    mov     ax, 1680h       ; otherwise, Release Current VM Time-Slice
+    int     2Fh
+Skip_Idle_Call:
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

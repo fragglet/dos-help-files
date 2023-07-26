@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>Hook_Device_V86_API - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Hook_Device_V86_API</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Miscellaneous_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Hook_Device_PM_API.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, ID                 ; device ID
+mov     esi, OFFSET32 Callback  ; points to new API callback
+VMMcall Hook_Device_V86_API
+ 
+The Hook_Device_V86_API service installs an API callback procedure allowing
+a virtual device to intercept calls to the V86 mode API of another virtual
+device. This service is intended to support virtual devices that need to
+monitor calls to the APIs of other virtual devices. Most virtual devices
+will never need this service.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>ID</i>         Specifies the identifier for the virtual device to monitor.
+ 
+<i>Handler</i>    Points to the callback proecdure to install. See the Comments
+           section for more information about the procedure.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear and the ESI register contains the address of the
+previous callback procedure if the service is successful. Otherwise, the
+carry flag is set to indicate the specified virtual device does not support
+an API.
+ 
+<b>Comments</b>
+ 
+The system calls the callback procedure whenever an application in a virtual
+machine calls the API for the specified virtual machine. The system calls
+the callback as follows:
+ 
+mov     ebx, VM             ; current VM handle
+mov     ebp, OFFSET32 crs   ; points to Client_Reg_Struc
+call    [Callback]
+ 
+The VM parameter is a handle identifying the current virtual machine and
+<i>crs point</i>s to a Client_Reg_Struc structure containing the regsiter values of
+the current virtual machine. Other registers contain the parameter values
+intended for the API.
+ 
+The callback procedure can carry out tasks but eventually must pass
+execution to the previous API callback procedure, preserving the EBX and EBP
+registers when it calls.
+ 
+<b>Uses</b>
+ 
+ESI, Flags
+ 
+<b>See Also</b>
+ 
+<b>Hook_Device_PM_API</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

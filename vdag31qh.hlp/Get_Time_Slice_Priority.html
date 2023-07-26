@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>Get_Time_Slice_Priority - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Get_Time_Slice_Priority</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Time-Slice_Scheduler_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Release_Time_Slice.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     ebx, VM             ; VM handle
+VMMcall Get_Time_Slice_Priority
+ 
+mov     [Flags], eax        ; flags from CB_VM_Status
+mov     [Foreground], ecx   ; foreground time-slice priority
+mov     [Background], edx   ; background time-slice priority
+mov     [CPUTime], esi      ; percentage of total CPU time used
+ 
+The Get_Time_Slice_Priority service returns the time-slice execution flags,
+the foreground and background priorities, and the percent of CPU usage for a
+specified virtual machine.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>VM</i>         Specifies a handle identifying the virtual machine for which to
+           retrieve information.
+ 
+<b>Return Value</b>
+ 
+The EAX, ECX, EDX, and ESI registers contain the following information:
+ 
+<b>Register  Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>EAX      </i> Specifies status flags from the CB_VM_Status field in the virtual
+          machine's control block. It can be one of the following values:
+ 
+          Value                 Meaning
+          ──────────────────────────────────────────────────────────────────
+          VMStat_Exclusive      Exclusive execution.
+ 
+          VMStat_Background     Background execution.
+ 
+          VMStat_High_Pri_Back  High-priority background execution.
+ 
+<i>ECX</i>       Specifies the foreground time-slice priority. The high word is
+          always 0.
+ 
+<i>EDX</i>       Specifies the background time-slice priority. The high word is
+          always 0.
+ 
+<i>ESI</i>       Specifies the percentage of total CPU time used by the virtual
+          machine.
+ 
+<b>Comments</b>
+ 
+The percentage of CPU time indicates the maximum amount of time the virtual
+machine can run. If the virtual machine releases its time slice, this actual
+amount of CPU time will be lower because the system grants the released time
+to other virtual machines.
+ 
+<b>Uses</b>
+ 
+EAX, ECX, EDX, ESI, Flags
+ 
+<b>See Also</b>
+ 
+<b>Get_Time_Slice_Granularity, Get_Time_Slice_Info</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<title>Build_Int_Stack_Frame - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Build_Int_Stack_Frame</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Interrupts_and_Callback_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Call_When_VM_Ints_Enabled.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     cx, Segment        ; code segment of routine to call
+mov     edx, Offset        ; offset of routine to call
+VMMcall Build_Int_Stack_Frame
+ 
+The Build_Int_Stack_Frame service prepares the current virtual machine to
+execute an interrupt routine. This service saves the current Client_CS,
+Client_IP, and Client_Flags registers on the virtual machine's stack and
+sets the Client_CS and Client_IP registers to the address of the interrupt
+routine specified by the Segment and Offset parameters. When execution
+resumes in the virtual machine (such as when the Resume_Exec service is
+called), the virtual machine executes the interrupt routine. The interrupt
+routine continues to run until it executes an iret instruction.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Segment</i>    Specifies the segment address or segment selector for the code
+           segment containing the interrupt routine.
+ 
+<i>Offset</i>     Specifies the offset of interrupt routine. If the specified code
+           segment is a 16-bit segment, the high word of this parameter must
+           be 0.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Example</b>
+ 
+The following example executes the interrupt routine in the code segment
+specified by My_Segment at the offset My_Offset:
+ 
+VMMcall Begin_Nest_Exec
+mov     cx, [My_Segment]
+mov     edx, [My_Offset]
+VMMcall Build_Int_Stack_Frame
+VMMcall Resume_Exec
+VMMcall End_Nest_Exec
+ 
+<b>Uses</b>
+ 
+Client_CS, Client_EIP, Client_ESP, Client_Flags, Flags
+ 
+<b>See Also</b>
+ 
+<b>Simulate_Far_Call</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

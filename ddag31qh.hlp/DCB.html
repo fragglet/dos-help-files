@@ -1,0 +1,176 @@
+<html>
+
+<head>
+<title>DCB - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DCB</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Communication-Driver_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='qdb.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+typedef struct {
+    char   Id;             /* internal device ID                 */
+    ushort Baudrate;       /* operating speed                    */
+    char   ByteSize;       /* transmit/receive byte size         */
+    char   Parity;         /* 0,1,2,3, or 4                      */
+    char   StopBits;       /* number of stop bits                */
+    ushort RlsTimeout;     /* timeout for RLSD to be set         */
+    ushort CtsTimeout;     /* timeout for CTS to be set          */
+    ushort DsrTimeout;     /* timeout for DSR to be set          */
+    ushort fBinary: 1;     /* binary-mode flag                   */
+    ushort fRtsDisable: 1; /* disable RTS                        */
+    ushort fParity: 1;     /* enable parity checking             */
+    ushort fDummy: 5;
+    ushort fOutX: 1;       /* enable output XON/XOFF             */
+    ushort fInX: 1;        /* enable input XON/XOFF              */
+    ushort fPeChar: 1;     /* enable parity-error replacement    */
+    ushort fNull: 1;       /* enable null stripping              */
+    ushort fChEvt: 1;      /* enable Rx character event          */
+    ushort fDtrflow: 1;    /* enable DTR flow control            */
+    ushort fRtsflow: 1;    /* enable RTS flow control            */
+    ushort fDummy2: 1;
+    char   XonChar;        /* transmit/receive XON character     */
+    char   XoffChar;       /* transmit/receive XOFF character    */
+    ushort XonLim;         /* transmit XON threshold             */
+    ushort XoffLim;        /* transmit XOFF threshold            */
+    char   PeChar;         /* parity error replacement character */
+    char   EofChar;        /* end-of-input character             */
+    char   EvtChar;        /* event-generating character         */
+    ushort TxDelay;        /* amount of time between characters  */
+} DCB;
+ 
+The DCB structure contains the RS-232 configuration parameters for a
+communication device.
+ 
+<b>Member       Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<b>Id</b>           Specifies the device ID byte (COM1 = 0, COM2 = 1, and so on).
+             This is also the value returned by the cOpen function, when
+             successful.
+ 
+<b>Baudrate</b>     Specifies the operating speed; any baud rate supported by the
+             hardware.
+ 
+<b>ByteSize</b>     Specifies the transmitting and receiving byte size; normally in
+             the range 4 through 8.
+ 
+<b>Parity</b>       Specifies the parity setting. The value can be one of the
+             following values.
+ 
+             Value  Meaning
+             ───────────────────────────────────────────────────────────────
+             0      None
+ 
+             1      Odd
+ 
+             2      Even
+ 
+             3      Mark
+ 
+             4      Space
+ 
+<b>StopBits</b>     Specifies the number of stop bits. The value can be one of the
+             following values.
+ 
+             Value  Meaning
+             ───────────────────────────────────────────────────────────────
+             0      1 stop bit
+ 
+             1      1.5 stop bits
+ 
+             2      2 stop bits
+ 
+<b>RlsTimeout</b>   Specifies the amount of time, in milliseconds, to wait for
+             receiving-line-signal detect (RLSD) to become high. RLSD flow
+             control can be achieved by specifying infinite timeout
+             (0xFFFF).
+ 
+<b>CtsTimeout</b>   Specifies the amount of time, in milliseconds, to wait for
+             clear-to-send signal (CTS) to become high. CTS flow control can
+             be achieved by specifying infinite timeout (0xFFFF).
+ 
+<b>DsrTimeout</b>   Specifies the amount of time, in milliseconds, to wait for
+             data-set-ready (DSR) to become high. DSR flow control can be
+             achieved by specifying infinite timeout (0xFFFF).
+ 
+<b>fBinary</b>      Specifies the binary-mode flag (0 is ASCII mode, 1 is binary).
+             In ASCII mode, the end-of-file character (EOFCHAR) is
+             recognized and remembered as the end of received data.
+ 
+<b>fRtsDisable</b>  Disables the receive-transmission signal (RTS) line for as long
+             as this device is open, if set. Normally, RTS is enabled when
+             the device is opened and disabled when closed.
+ 
+<b>fParity</b>      Enables parity checking, if set.
+ 
+<b>fOutX</b>        Indicates that XON/XOFF flow control is to be used during
+             transmission, if set. The transmitter halts when it receives an
+             XOFF character, and starts again when it receives an XON
+             character.
+ 
+<b>fInX</b>         Indicates that XON/XOFF flow control is to be used during
+             reception, if set.
+ 
+<b>fPeChar</b>      Indicates that characters received with parity errors are to be
+             replaced with the specified parity-checking characters
+             (PECHAR), if set.
+ 
+<b>fNull</b>        Specifies that the received null characters are to be
+             discarded, if set.
+ 
+<b>fChEvt</b>       Indicates that the reception of event-checking characters
+             (EVTCHAR) are to be flagged as an event, if set.
+ 
+<b>fDtrFlow</b>     Indicates that the data-terminal-ready signal (DTR) is to be
+             used for receive flow control, if set.
+ 
+<b>fRtsflow</b>     Indicates that the receive-transmission signal (RTS) is to be
+             used for receive flow control, if set.
+ 
+<b>XonChar</b>      Specifies the XON character for both transmit and receive.
+ 
+<b>XoffChar</b>     Specifies the XOFF character for both transmit and receive.
+ 
+<b>XonLim</b>       Specifies the threshold value for receive queue. When the
+             receive queue comes within 10 characters of being full, it
+             transmits an XOFF character. When the queue comes within 10
+             characters of being empty, an XON character will be
+             transmitted.
+ 
+<b>XoffLim</b>      Specifies the threshold value for send queue. When the number
+             of characters in the receive queue exceeds this value, an XOFF
+             character is sent (if XOFF flow control is enabled) and the
+             data-terminal-ready signal (DTR) is dropped (if enabled).
+ 
+<b>PeChar</b>       Specifies the character to be used as replacement when a parity
+             error occurs.
+ 
+<b>EofChar</b>      Specifies the character that signals the end of the input.
+ 
+<b>EvtChar</b>      Specifies the character that triggers an event flag.
+ 
+<b>TxDelay</b>      Specifies the minimum amount of time that must pass between
+             transmission of characters.
+ 
+<b>See Also</b>
+ 
+<b>getdcb, inicom, setcom</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

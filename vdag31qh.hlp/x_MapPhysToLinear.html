@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>_MapPhysToLinear - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _MapPhysToLinear</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Miscellaneous_Memory_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Page_Allocation_and_Management.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _MapPhysToLinear, &lt;PhysAddr, nBytes, flags&gt;
+ 
+cmp     eax, 0FFFFFFFFh     ; 0FFFFFFFFh if not addressable
+je      not_addressable
+mov     [Address], eax      ; address of first byte
+ 
+The _MapPhysToLinear service returns the linear address of the first byte in
+the specified range of physical addresses.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>PhysAddr</i>   Specifies the 32-bit physical address of the start of the region
+           to examine. Physical addresses start at 0, thus the address of
+           physical page 0A0h is 0A0000h.
+ 
+<i>nBytes</i>     Specifies the length in bytes of the physical region. The service
+           uses this parameter to verify that the entire range is
+           addressable.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the ring-0 linear address of the first byte of the
+physical region if this service is successful. Otherwise, EAX contains
+0FFFFFFFFh if the specified range is not addressable.
+ 
+<b>Comments</b>
+ 
+This service is intended to be used to examine device-specific physical
+memory. Virtual devices must not use this service for any other purpose.
+ 
+Since physical addresses do not move, the linear address returned by this
+service remains valid even after the virtual device returns from the
+<b>Device_Init</b> message.
+ 
+<b>Example</b>
+ 
+The following example returns a linear address for the physical page A0h:
+ 
+VMMcall _MapPhysToLinear,&lt;0A0000h,10000h,0&gt;
+ 
+Since physical memory is mapped contiguously, the linear address for page
+0A1h is 4096 bytes beyond the return linear address.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

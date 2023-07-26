@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>_PageGetSizeAddr - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _PageGetSizeAddr</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Page_Allocation_and_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_PageLock.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _PageGetSizeAddr, &lt;hMem, flags&gt;
+ 
+mov     ecx, eax            ; zero in eax and edx if error
+or      ecx, edx
+jz      error
+ 
+mov     [Pages], eax        ; number of pages in memory block
+mov     [Address], edx      ; ring-0 linear address of memory block
+ 
+The _PageGetSizeAddr service returns the size and linear address of an
+existing block of memory.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hMem</i>       Specifies a handle identifying the memory block for which to
+           return information. This handle must have been previously created
+           using the _PageAllocate or _PageReAllocate service.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter must be set to
+           zero.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the number of pages in the memory block, and EDX
+register contains the ring-0 linear address of the memory block. The EAX and
+EDX registers both contain zero to indicate an error, such as an invalid
+memory handle.
+ 
+<b>Comments</b>
+ 
+The returned number of pages specifies the total size of the block, not just
+the number of pages currently present.
+ 
+<b>Uses</b>
+ 
+EAX, EDX
+ 
+<b>See Also</b>
+ 
+<b>_PageAllocate, _PageReAllocate</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

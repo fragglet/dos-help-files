@@ -1,0 +1,105 @@
+<html>
+
+<head>
+<title>Printer Device Modes - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Printer Device Modes</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printer_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='printset.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+All printer drivers are required to export the DeviceMode function, which
+displays a dialog box to edit the default environment. This function sets
+the profile strings in the WIN.INI file for the options chosen by the user.
+It should also set the environment using the SetEnvironment function. The
+<b>DeviceMode function uses USER </b>functions, such as DialogBox (USER.240), to
+display dialog boxes.
+ 
+The most common way to call DeviceMode is with Control Panel. However, other
+applications that make heavy use of printer output, such as Microsoft Write
+or Microsoft Excel, may also provide a means for calling the printer
+driver's DeviceMode function.
+ 
+Windows 3.x drivers also export two environment-related functions,
+<b>ExtDeviceMode and DeviceCapabilities. T</b>hese functions are designed to allow
+greater application control over the printer environment. All printer
+drivers should implement these functions.
+ 
+<b>ExtDeviceMode</b> enables the application to call the driver to obtain device
+initialization data either from the user or from the application's
+modifications to the default environment. GDI then calls the Enable function
+with a pointer to this information, allowing the driver to preset its
+<b>GDIINFO and PDEVICE s</b>tructures according to the application's options,
+rather than the defaults. That way, the application can store different
+printer settings for itself and its documents or even request specific setup
+properties, such as orientation.
+ 
+<b>DeviceCapabilities</b> enables the application to get information about such
+things as what DeviceMode fields the driver uses and what limits, ranges, or
+selections are valid.
+ 
+<b>Indexes for the DeviceCapabilities Function</b>
+ 
+Printer drivers must process requests from applications for new
+<b>DeviceCapabilities indexes. A driver's DeviceCapabilit</b>ies function must
+check for and process the following values.
+ 
+<b>Value                     Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>DC_ENUMRESOLUTIONS (13)</i>   Retrieves a list of resolutions supported by the
+                          model.
+ 
+<i>DC_FILEDEPENDENCIES (14)</i>  Retrieves a list of filenames which also need to
+                          be installed when the driver is installed.
+ 
+<i>DC_TRUETYPE (15)</i>          Retrieves the driver's capabilities with regard to
+                          printing TrueType fonts.
+ 
+<i>DC_PAPERNAMES (16)</i>        Enumerates the actual string describing the paper
+                          names.
+ 
+<i>DC_ORIENTATION (17)</i>       Retrieves the relationship between Portrait and
+                          Landscape orientations in terms of the number of
+                          degrees that portrait orientation is to be rotated
+                          counterclock-wise to get landscape orientation.
+ 
+<i>DC_COPIES (18)</i>            Retrieves the maximum number of copies the device
+                          can print.
+ 
+The implementation of one or all of the indices is optional. If a driver
+does not implement a given index, the DeviceCapabilities function should
+return -1. For more information about the new indices, see the
+<i><span class='grhilite'>◄</span><a href='DeviceCapabilities.html'>DeviceCapabil</i>ities</a><span class='grhilite'>►</span> function.
+ 
+<b>New Paper Sizes</b>
+ 
+There are 21 new predefined paper sizes. The include file, PRINT.H, contains
+a complete list of all supported paper sizes. Applications typically call
+the DeviceCapabilities function to retrieve names and sizes of the supported
+paper sizes, so printer drivers must be ready to process the following
+<b>DeviceCapabilities</b> index values:
+ 
+<b>Value          Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>DC_PAPER</i>       Retrieves the identifiers of the listed paper sizes.
+ 
+<i>DC_PAPERNAMES</i>  Retrieves the names of the listed paper sizes.
+ 
+<i>DC_PAPERSIZES</i>  Retrieves the width and height of the listed paper sizes.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

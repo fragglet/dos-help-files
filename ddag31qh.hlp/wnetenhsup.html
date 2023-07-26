@@ -1,0 +1,203 @@
+<html>
+
+<head>
+<title>Network Support for Enhanced-Mode Windows - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Network Support for Enhanced-Mode Windows</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Network_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='wnetstdsup.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+Since 386 enhanced-mode Windows is a multitasking, protected-mode
+environment, the network driver or related software must support the
+following:
+ 
+♦  Asynchronous network requests
+ 
+♦  Application programming interface (API) mapping
+ 
+♦  Expanded Memory Specification (EMS) memory
+ 
+In 386 enhanced-mode Windows, much of the additional network support is
+provided by virtual devices.
+ 
+<b>VNETBIOS and DOSNET Virtual Devices</b>
+ 
+Microsoft provides two network-related virtual devices: VNETBIOS and DOSNET.
+The VNETBIOS device provides support for the NetBIOS interface; the DOSNET
+device supports the Microsoft LAN Manager and Microsoft Network interfaces.
+If the network support software is compatible with these interfaces, no
+additional work is required to support the network driver. If the support
+software is not compatible, a new or a modified virtual device may be
+required.
+ 
+The VNETBIOS and DOSNET virtual devices may be modified, extended, or
+replaced to fit a given network's needs. Notice, however, that the DOSNET
+device provides services that are also used by other virtual devices.
+Therefore, it is standard practice to replace it with a new device that has
+a different name, but which also uses the same device identifier as DOSNET.
+ 
+<b>Asynchronous Network Requests</b>
+ 
+The VNETBIOS device maps all asynchronous request arguments to a global
+buffer located between 640K and 1 megabyte. Furthermore, VNETBIOS sets up a
+dummy callback function for any requests in which the application provided a
+callback. The network software uses the global buffer and dummy callback to
+complete the asynchronous event. Later, VNETBIOS copies the data to the
+application's original buffer and calls the application's callback address.
+When either Windows or a virtual machine (VM) terminates, 386 enhanced-mode
+Windows cancels any outstanding asynchronous network requests as well as all
+local connections.
+ 
+Support for asynchronous network requests can also be added to the network
+software. Although this requires changes to the network software, no
+customizing of 386 enhanced-mode Windows is required. Network software can
+manage asynchronous requests by using virtual-machine identifiers or by
+using critical sections.
+ 
+Network software can always retrieve the identifier of the current virtual
+machine by using Get Current Virtual Machine ID (Interrupt 2Fh Function
+1683h). This means the software can always identify which virtual machine
+that initiates the asynchronous request by saving the identifier with the
+requests buffer or callback address. Later, when the network software needs
+to access these locations, it can again retrieve the current VM identifier
+and compare it with the saved identifier. If the identifiers match, the
+stored addresses are valid and the software can complete the operation. If
+they do not match, the network software can use Switch VMs and Callback
+(Interrupt 2Fh Function 1685h) to direct 386 enhanced-mode Windows to switch
+to the correct virtual machine. In such cases, Windows calls the given
+callback function which can carry out the network operation.
+ 
+Network software can also handle asynchronous requests by enclosing the
+request in a critical section. However, this method is not recommended.
+Windows does not switch tasks while in the critical section, so although an
+asynchronous request is guaranteed to complete in the correct virtual
+machine, the user will be left waiting for each asynchronous task to
+complete before being allowed to switch to another program or application.
+Since some asynchronous requests can be outstanding for a very long time,
+this can make the system less than useful. Network software can start and
+end a critical section by using Begin Critical Section and End Critical
+Section (Interrupt 2Fh Functions 1681h and 1682h).
+ 
+<b>API Mapping</b>
+ 
+In 386 enhanced-mode, MS-DOS, the BIOS, and all TSR programs (such as
+networks) run in virtual mode. If a Windows application needs to pass an
+address to MS-DOS, the BIOS, the network, or any other software loaded
+before Windows, it must map the address to a real mode address. Mapping
+applies to addresses pushed on stack as function parameters and addresses
+embedded in buffers passed as function parameters.
+ 
+In general, a mapper must hook the interrupts for MS-DOS, BIOS, or the
+network to determine the exact API being used. In every case where an
+address is being passed, the mapper must:
+ 
+1  Copy the passed data or buffer space down into virtual-mode memory.
+ 
+2  Replace the protected-mode address with a real-mode address pointing to
+   the data's new location.
+ 
+3  Simulate the original interrupt to let the recipient software handle it.
+ 
+When the MS-DOS, BIOS, or network software returns from the interrupt, the
+mapper must go through the same process but in reverse, copying data from
+the address to a protected-mode location, and readjusting the pointer to a
+protected-mode address again so that the original caller can use it
+correctly.
+ 
+<b>EMS Memory</b>
+ 
+Some network software minimize use of conventional memory by storing data
+and code in EMS memory. Although this frees memory before 386 enhanced-mode
+Windows starts, some EMS emulators are not compatible with Windows and may
+either prevent Windows from starting or make the network data and code
+unavailable while Windows runs.
+ 
+To ensure EMS compatibility with Windows, use a cooperating EMS emulator
+(such as EMM386.SYS). When starting, 386 enhanced-mode Windows checks for an
+EMS emulator and prints an error message and terminates if it detects an
+unknown emulator.
+ 
+If the computer has EMS hardware but no software has opened an EMS handle,
+386 enhanced-mode Windows bypasses and ignores EMS hardware. Instead, it
+provides simulated expanded memory to Windows applications and non-Windows
+applications. When Windows exits, it makes the EMS hardware available once
+again.
+ 
+If certain expanded memory emulators (such as Microsoft EMM386 version 4.0
+and Compaq CEMM) are running and no software has opened an EMS handle, 386
+enhanced-mode Windows turns off the emulator and provides simulated EMS to
+Windows applications and non-Windows applications. When Windows exits, it
+turns the EMS emulator back on.
+ 
+<b>Network-Virtual Device</b>
+ 
+With 386 enhanced-mode Windows, it is possible to write a virtual device
+that understands the network well enough to route events to the appropriate
+virtual machines.
+ 
+For example, when the network card generates an interrupt telling the
+network software that its information packet has arrived, the virtual device
+reads the packet and simulates the network interrupt for the real-mode
+network software. Otherwise, it can schedule an event for the target VM,
+including boosting its priority to get it to run as soon as possible, and,
+at that time, simulate the interrupt. Using this method, the network
+software always receives the interrupt in the proper VM context. Thus, the
+network software should not need to be modified at all.
+ 
+Notice also that the virtual device could take on some part of the network
+functionality, thus bypassing the normal network software in some or all
+cases. This would avoid the bottleneck of having to call the normal network
+software in virtual mode; the virtual device could copy the data directly to
+the target application's buffers, and so forth. This would also avoid
+data-overrun problems when 386 enhanced-mode Windows is unable to switch to
+the proper virtual machine in a reasonable amount of time because a virtual
+device can access any VM's address space at any time even when the VM is
+inactive. And finally, it could free up memory for non-Windows applications
+by, in effect, moving the entire network into protected mode.
+ 
+Most network software runs in conventional memory (the first 640K bytes of
+memory) and therefore competes with non-Windows applications for memory. To
+free the conventional memory otherwise occupied by the network software, it
+is recommended that the network software be moved to a virtual device.
+ 
+<b>Virtualized Connections</b>
+ 
+386 enhanced-mode Windows maintains a complete set of current drive and
+directory information for each VM. Network support may keep global
+connections or provide for separate connections in each VM, as appropriate.
+If the network support keeps global connections, it should also provide a
+mechanism to allow each new VM to inherit the current connections in
+Windows.
+ 
+Some networks may choose to handle the virtualization themselves rather than
+rely on a virtual device. By keeping track of the current virtual machine
+identifier, the network can maintain a separate state for each VM and manage
+these appropriately. The virtual device can inform the network software when
+virtual machines are created and destroyed. The virtual device can even
+manage instance data within the network software by transparently inserting
+the appropriate data for the current virtual-machine context.
+ 
+<b>Network-Control Blocks</b>
+ 
+The VNETBIOS device supports up to 4K of network-control blocks (NCB).
+Although this number of NCBs should be adequate for most situations, the
+limit can also be set with the NetHeapSize setting in the [Networks] section
+of the SYSTEM.INI file.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

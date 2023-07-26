@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<title>MODM_SETVOLUME - Windows Multimedia DDK</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows Multimedia DDK (mddkqh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MODM_SETVOLUME</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MDDK_dot_h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+<b>MODM_SETVOLUME</b>
+ 
+        This message is sent to a MIDI output device driver to set the
+        volume for a device.
+ 
+<u>Parameters</u>
+        DWORD dwParam1
+            Specifies the new volume level. The high-order word contains
+            the right channel setting and the low-order word contains the
+            left channel setting. A value of 0 is silence, and a value
+            of 0xFFFF is full volume. If the driver does not support
+            both left and right channel volume changes, it uses the
+            volume specified in the low-order word. The driver will
+            probably not support the full 16 bits of volume control and
+            should truncate the lower bits if necessary. However, the
+            original value requested with MODM_SETVOLUME should be
+            returned with MODM_GETVOLUME.
+ 
+        DWORD dwParam2
+            Unused.
+ 
+<u>Return value</u>
+        The return value is an error code, or zero (MMSYSERR_NOERROR) if
+        the operation is successful. Possible error codes are:
+ 
+        MMSYSERR_NOTENABLED
+            The driver failed to load or initialize.
+ 
+        MMSYSERR_NOTSUPPORTED
+            The driver does not support changes to volume level.
+ 
+<u>Comments</u>
+        This volume message is not the same as the MIDI volume controller
+        message which will be used by sequencers and the mapper. This
+        volume is the final output volume on the card; therefore, only
+        drivers for internal synthesizer devices can support volume
+        level changes. Drivers for MIDI output ports should return a
+        MMSYSERR_NOTSUPPORTED error for this message. Support for
+        volume level changes is optional for internal synthesizer
+        devices. When a driver receives a MODM_GETDEVCAPS message, it
+        should indicate support for volume level changes by setting or
+        clearing the MIDICAPS_VOLUME and MIDICAPS_LRVOLUME bits in the
+        <a href='MIDIOUTCAPS.html'>dwSupport</a> field of the MIDIOUTCAPS data structure. If a driver
+        supports the MODM_SETVOLUME message, then it must also support
+        MODM_GETVOLUME.
+ 
+<u>See also</u>
+        MODM_GETVOLUME
+ 
+                                       -♦-
+</pre>
+</body>
+
+</html>

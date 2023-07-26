@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>BlockDev_Command_Complete - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> BlockDev_Command_Complete</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Block_Device_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='BlockDev_Find_Int13_Drive.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include blockdev.inc
+ 
+mov     edi, OFFSET32 bdd   ; points to a BlockDev_Device_Descriptor
+mov     esi, OFFSET32 bcb   ; points to BlockDev_Command_Block
+VXDcall BlockDev_Command_Complete
+ 
+The BlockDev_Command_Complete service calls the callback procedure specified
+in the BlockDev_Device_Descriptor structure. After the callback procedure
+returns, BlockDev_Command_Complete sends the pending command (if any) to the
+block device's command procedure. The service sends pending commands only if
+the BDF_Serial_Cmd flag is set in the BDD_Flags field in the device's
+<b>BlockDev_Device_Descriptor</b> structure.
+ 
+A block device driver should call this service whenever it completes a
+command.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>bdd      </i>  Points to BlockDev_Device_Descriptor structure containing
+           information about the block device.
+ 
+<i>bcb      </i>  Points to a BlockDev_Command_Block structure containing
+           information about the command just completed.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Comments</b>
+ 
+The callback procedure preserves all registers and
+<b>BlockDev_Command_Complete</b> preserves the ESI and EDI registers.
+ 
+This service enables interrupts.
+ 
+<b>Uses</b>
+ 
+EAX, EBX, EDX returned from client, Flags
+ 
+<b>See Also</b>
+ 
+<b>BlockDev_Command_Block, BlockDev_Device_Descriptor</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

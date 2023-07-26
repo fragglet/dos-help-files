@@ -1,0 +1,136 @@
+<html>
+
+<head>
+<title>Screen Metrics - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Screen Metrics</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Display_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='dispoutput.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+The screen metrics, specified by the GDIINFO structure, define such items as
+width and height in millimeters, screen resolution, aspect ratio, and
+mapping modes. GDI uses screen metrics to generate coordinate data that is
+appropriate for the display hardware.
+ 
+<b>Logical Pixels Per Inch</b>
+ 
+A display driver sets the dpLogPixelsX and dpLogPixelsY members to specify
+the number of pixels per logical inch along horizontal and vertical lines on
+the screen. A display driver uses logical inches (about 40 percent larger
+than physical inches) for readability reasons.
+ 
+The GDI font mapper uses these values to determine which screen fonts to use
+with the display. The display driver should make sure the dpLogPixelsX and
+<b>dpLogPixelsY</b> members match an existing font. If these members do not match
+one of the default screen fonts, an appropriate font must be provided with
+the display driver.
+ 
+<b>Screen Resolution and Size</b>
+ 
+A display driver sets the dpHorzRes and dpVertRes members to specify the
+width and height of the screen in pixels, and sets the dpHorzSize and
+<b>dpVertSize</b> members to specify the width and height of the screen in
+millimeters. These values must have the following relationships:
+ 
+dpHorzSize = (dpHorzRes/dpLogPixelsX) * 25.4
+ 
+dpVertSize = (dpVertRes/dpLogPixelsY) * 25.4
+ 
+In these equations, 25.4 represents the number of millimeters per inch.
+ 
+<b>Aspect Ratios</b>
+ 
+The aspect ratio defines the relative dimensions of the display's pixels.
+The ratio consists of three values: an x-, y-, and an xy-aspect. These
+represent the relative width, height, and diagonal length (or hypotenuse) of
+a pixel. GDI uses the aspect ratio to determine how to draw squares and
+circles as well as drawing lines at an angle.
+ 
+The aspect values have the following relationship:
+ 
+dpAspectXY ** 2 == (dpAspectX ** 2) + (dpAspectY ** 2)
+ 
+Since the dimensions are given as relative values, they may be scaled as
+needed to get accurate integer values. They should be kept under 1000 for
+numerical stability in GDI calculations. For example, a device with a 1:1
+aspect ratio (such as a VGA) can use 100 for dpAspectX and dpAspectY and 141
+(100 * 1.41421...) for dpAspectXY.
+ 
+<b>Styled-Line Length</b>
+ 
+The styled-line length (dpStyleLen) specifies the length of the smallest
+line segment the display driver uses to build the dots and dashes of a
+styled line. GDI uses this number when it draws into bitmaps and on
+displays. To ensure consistency between displays and printers, the styled
+line segment length is always two times the value of the dpAspectXY member.
+ 
+<b>Standard Mapping Modes</b>
+ 
+Some Windows application programs rely on standard mapping modes to produce
+printer output with spacing that is proportional to the screen. By using the
+standard mapping modes, an application can show a border or graphic picture
+that is proportionately the same size on the printer as it is on the
+screen.
+ 
+All standard mapping-mode ratios must be the same because it might be
+preferable for an application to use the metric system rather than the
+inches/feet (English) system for its calculations. For example, Windows
+Write allows the user to choose whether to express the border widths in
+millimeters or inches. Therefore, it is up to the display driver to provide
+the correct numbers.
+ 
+Standard mapping modes are expressed as two coordinate pairs: the width and
+height (in logical units) of a "window" and the width and height (in
+physical units, that is, pixels) of a "viewport" that maps onto that window.
+The driver for a VGA adapter, for example, might set the coordinates pairs
+for the low-resolution metric mapping mode (tenths-of-millimeters) to
+(254,254) and (96,96). These coordinates map an 1-inch by 1-inch window
+(25.4 millimeters equals 1 inch) to a 96-pixel by 96-pixel viewport. These
+coordinate pairs define a set of equations that specify how coordinates in
+logical space are transformed to coordinates in device space.
+ 
+The standard mapping-mode members in the GDIINFO structure can be set as
+follows:
+ 
+dpMLoWin.x = dpHorzSize*10;    dpMLoWin.y = dpVertSize *10;
+dpMLoVpt.x = dpHorzRes;        dpMLoVpt.y = -dpVertRes;
+ 
+dpMHiWin.x = dpHorzSize*100;   dpMHiWin.y = dpVertSize *100;
+dpMHiVpt.x = dpHorzRes;        dpMHiVpt.y = -dpVertRes;
+ 
+dpELoWin.x = dpHorzSize*1000;  dpELoWin.y = dpVertSize *1000;
+dpELoVpt.x = dpHorzRes * 254;  dpELoVpt.y = -dpVertRes * 254;
+ 
+dpEHiWin.x = dpHorzSize*10000; dpEHiWin.y = dpVertSize *10000;
+dpEHiVpt.x = dpHorzRes * 254;  dpEHiVpt.y = -dpVertRes * 254;
+ 
+dpTwpWin.x = dpHorzSize*14400; dpTwpWin.y = dpVertSize *14400;
+dpTwpVpt.x = dpHorzRes * 254;  dpTwpVpt.y = -dpVertRes * 254;
+ 
+ 
+A twip is 1/20th of a printer's point (1/72 of an inch).
+ 
+Windows performs 16-bit, signed calculations on these values, so the numbers
+must not be greater than 32,768. However, if the screen is larger than just
+a few inches wide, the values will exceed this limit when calculating the
+English mapping modes and may even exceed it on the metric mapping modes.
+Fortunately, the values can be scaled down by dividing by some fixed
+amount.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

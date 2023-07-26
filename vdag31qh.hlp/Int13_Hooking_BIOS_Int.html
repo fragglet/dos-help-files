@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<title>Int13_Hooking_BIOS_Int - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Int13_Hooking_BIOS_Int</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_Interrupt_13_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Int13_Translate_VM_Int.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include int13.inc
+ 
+VxDcall Int13_Hooking_BIOS_Int
+ 
+The Int13_Hooking_BIOS_Int service notifies the virtual device that the BIOS
+Interrupt 13h interrupt has been hooked. The virtual block device calls this
+service.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>EAX</i>        Specifies the address (CS:IP) of the original Interrupt 13h BIOS
+           handler.
+ 
+<i>ECX</i>        Specifies the address (CS:IP) of the original ROM BIOS Interrupt
+           13h hook.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Comments</b>
+ 
+This service is always called at least once during initialization, but it
+<i>must</i> remain resident since it can also be called at system exit time.
+ 
+The virtual block device calls this service after the interrupt has been
+hooked. If the service needs to call the BIOS, it should use the
+<b>Build_Int_Stack_Frame and Resume_Exec services instead of the Exec_Int</b>
+service.
+ 
+This service should save the value in the ECX register to let the
+<b>Int13_Translate_VM_Int</b> service chain to the original ROM BIOS at any point
+in time. Since this virtual device always replaces the ROM BIOS, the EAX
+value can be ignored.
+ 
+<b>Uses</b>
+ 
+EAX, EBX, ECX, EDX, ESI, EDI, and Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,204 @@
+<html>
+
+<head>
+<title>Interrupt 2Fh Function 1605h - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Interrupt 2Fh Function 1605h</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Windows_Interrupt_2Fh_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Interrupt_2Fh_Function_1606h.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+xor     bx, bx
+mov     es, bx          ; es:bx contains 0000h:0000h
+ 
+mov     cx, 0000h
+mov     dx, [Flags]     ; bit 0 clear if 386 enhanced mode,
+                        ; set if standard mode
+ 
+mov     di, [Ver_Num]   ; major/minor version numbers
+                        ; (in high/low bytes)
+ 
+xor     si, si
+mov     ds, si          ; ds:si contains 0000h:0000h
+ 
+mov     ax, 1605h       ; Windows Initialization Notification
+int     2fh             ; multiplex interrupt
+ 
+cmp     cx, 0
+jne     no_initialize   ; if nonzero, don't continue initialization
+ 
+ 
+ 
+Windows Initialization Notification (Interrupt 2Fh Function 1605h) notifies
+MS-DOS device drivers and TSRs that standard- or 386 enhanced-mode Windows
+is starting. Windows calls this function as it starts allowing MS-DOS device
+drivers and TSRs that monitor Interrupt 2Fh the opportunity to prepare for
+running in the Windows environment.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Flags</i>      Specifies whether standard- or 386 enhanced-mode Windows is
+           initializing. 386 enhanced-mode Windows sets bit 0 to 0;
+           standard-mode Windows sets bit 0 to 1. Only bit 0 is used; all
+           other bits reserved and undefined.
+ 
+<i>Ver_Num</i>    Specifies the version number of Windows. The major version number
+           is in the high-order byte, the minor version number in low-order
+           byte.
+ 
+<b>Return Value</b>
+ 
+The return value is 0 in the CX register if all MS-DOS device drivers and
+TSRs monitoring Interrupt 2Fh can run in the Windows environment, and
+Windows can proceed with initialization. Otherwise, the CX register is
+nonzero and Windows must terminate.
+ 
+<b>Comments</b>
+ 
+Any MS-DOS device driver or TSR that either cannot run in the Windows
+environment, or must adapt its operation when in the Windows environment
+should add itself to the Interrupt 2Fh chain and watch for this function.
+ 
+If the device driver or TSR cannot run in the Windows environment, it should
+set the CX register to a nonzero value, display a message informing the user
+of its incompatibility with Windows, and return. Windows does not print a
+message of its own. Instead, it calls Windows Termination Notification
+(Interrupt 2Fh Function 1606h) and returns to MS-DOS.
+ 
+If the device driver or TSR can run in the Windows environment, it should do
+the following:
+ 
+1  Call the next device driver or TSR in the Interrupt 2Fh chain to allow
+   all device drivers and TSRs in the chain an opportunity to respond to
+   this function.
+ 
+2  Upon return from the interrupt chain, carry out the following actions:
+ 
+   ♦  Free any extended memory. The device driver or TSR takes this action
+      only if it has previously allocated extended memory using the Extended
+      Memory Specification (XMS) interface.
+ 
+   ♦  Switch the processor to real mode, or set the DS:SI register pair to
+      the address of an Enable/Disable Virtual 8086 Mode callback function.
+      The device driver or TSR takes this action only if it has previously
+      switched the processor to virtual 8086 mode. If standard-mode Windows
+      is starting, the device driver or TSR must switch the processor to
+      real mode──the callback function is permitted for 386 enhanced-mode
+      Windows only.
+ 
+   ♦  Initialize a Win386_Startup_Info_Struc structure, and copy the address
+      of the structure to the ES:BX register pair. The device driver or TSR
+      carries out this action only if 386 enhanced-mode Windows is
+      starting.
+ 
+3  Return (using the iret instruction) but without changing the CX
+   register.
+ 
+For more information about these procedures, see the following "Comments"
+section.
+ 
+The device driver or TSR must preserve all registers and restore the
+original values before returning. The only exceptions to this rule are
+changes made to the BX, CX, DS, ES, and SI registers as a result of
+following the previous procedure.
+ 
+<b>Enable/Disable Virtual 8086 Mode CallBack Function</b>
+ 
+Some device drivers and TSRs, such as expanded memory emulators, switch the
+processor to virtual 8086 mode. Because 386 enhanced-mode Windows cannot
+start successfully while the processor is in this mode, any device driver or
+TSR that switches to virtual 8086 mode must either switch back to real mode
+or supply the address of a callback function that can switch between real
+and virtual 8086 modes.
+ 
+Windows uses the callback function to disable virtual 8086 mode before
+Windows itself enters protected mode. Windows calls the callback function
+again to enable virtual 8086 mode after Windows exits protected mode.
+Windows calls the callback function using a far call instruction, and it
+specifies which action to take by setting the AX register to 0 or 1.
+ 
+To disable virtual 8086 mode, Windows sets the AX register to 0, disables
+interrupts, and calls the callback function. The function should switch the
+processor to real mode, clear the carry flag to indicate success, and
+return. If an error occurs, the function sets the carry flag and returns.
+Windows checks the carry flag and terminates if it is set.
+ 
+To enable virtual 8086 mode, Windows set the AX register to 1, disables
+interrupts, and calls the callback function. The function should switch the
+processor to virtual 8086 mode, clear the carry flag, and return. If an
+error occurs, the function sets the carry flag and returns. However, Windows
+ignores the carry flag, so if an error occurs no action is taken and the
+processor is left in real mode.
+ 
+Whether an error occurs when enabling or disabling virtual 8086 mode, it is
+up to the callback function to display any error message to the user. Also,
+the callback function must not enable interrupts unless an error occurs, and
+the function sets the carry flag.
+ 
+A device driver or TSR supplies a callback function by copying the address
+of the function to the DS:SI register pair when it processes the Windows
+Initialization Notification (Interrupt 2Fh Function 1605h). Windows permits
+only one callback function, so the device driver or TSR should first check
+to make sure that the DS and SI registers are both zero. If they are
+nonzero, the device driver or TSR should set the CX register to a nonzero
+value and return, directing Windows to terminate without starting.
+ 
+<b>Initializing a Win386_Startup_Info_Struc Structure</b>
+ 
+An MS-DOS device driver or TSR initializes a Win386_Startup_Info_Struc
+structure to direct 386 enhanced-mode Windows to load the virtual device and
+to reserve the instance data the device driver or TSR needs to operate in
+the Windows environment. The device driver or TSR is also responsible for
+establishing a chain of startup structures by copying the contents of the
+ES:BX register pair to the Next_Dev_Ptr member. It is assumed that any other
+device driver or TSR in the Interrupt 2Fh chain will have set the ES:BX
+register pair to the address of its own startup structure prior to
+returning.
+ 
+Any device driver or TSR can use a Windows virtual device to help support
+its operation in the 386 enhanced-mode Windows environment. To specify a
+virtual device, the device driver or TSR sets the SIS_Virt_Dev_File_Ptr
+member to the address of the virtual device's filename. The device file is
+assumed to be in the Windows SYSTEM directory. The device driver or TSR can
+also set the SIS_Reference_Data member to specify additional data to be
+passed to the virtual device when loaded.
+ 
+Any device driver or TSR can reserve instance data for itself. Instance data
+is one or more blocks of memory used by the device or TSR, and managed by
+Windows. For device drivers or TSRs loaded before 386 enhanced-mode Windows
+starts, reserving instance data allows the device driver or TSR to keep
+separate data for each virtual machine. Whenever Windows switches virtual
+machines, it saves the previous VMs instance data and loads the current VMs
+instance data. If a device driver or TSR does not specify instance data, the
+same data is used for all virtual machines.
+ 
+A device driver or TSR reserves instance data by appending an array of
+<b>Instance_Item_Struc structures to the Win386_Startup_Info</b>_Struc structure.
+The last structure in the array must be set to zero. Each
+<b>Instance_Item_Struc</b> structure specifies the starting address and size (in
+bytes) of an instance data block.
+ 
+The device driver or TSR must copy the address of its startup structure to
+the ES:BX register pair before returning.
+ 
+<b>See Also</b>
+ 
+<b>Win386_Startup_Info_Struc, Instance_Item_Struc</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

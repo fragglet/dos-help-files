@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>Claim_Critical_Section - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Claim_Critical_Section</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Primary_Scheduler_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Close_VM.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, Claims             ; number of times to claim critical section
+mov     ecx, Flags              ; flags for servicing interrupts
+VMMcall Claim_Critical_Section
+ 
+The Claim_Critical_Section service increments the claim count by the
+specified value. It has the same effect as calling the
+<b>Begin_Critical_Section</b> service repeatedly.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Claims</i>     Specifies the number of times to claim the critical section. Zero
+           is a valid number, but is ignored.
+ 
+<i>Flags</i>      Specifies actions to take when interrupts occur while the virtual
+           machine is blocked waiting for the critical section. This
+           parameter can be a combination of the following values:
+ 
+           Value                     Meaning
+           ─────────────────────────────────────────────────────────────────
+           Block_Svc_Ints            Service interrupts in the virtual
+                                     machine even if the virtual machine is
+                                     blocked.
+ 
+           Block_Svc_If_Ints_Locked  Service interrupts in the virtual
+                                     machine even if the virtual machine is
+                                     blocked and the VMStat_V86IntsLocked
+                                     flag is set.
+ 
+           Block_Enable_Ints         Service interrupts in the virtual
+                                     machine even if the virtual machine
+                                     does not currently have interrupts
+                                     enabled. This forces interrupts to be
+                                     enabled. This value is only relevant if
+                                     either Block_Svc_Ints or
+                                     Block_Svc_If_Ints_Locked is set.
+ 
+           The Block_Poll value is reserved and must not be used with this
+           service.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Adjust_Exec_Priority, Begin_Critical_Section, End_Critical_Section</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

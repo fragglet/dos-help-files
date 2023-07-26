@@ -1,0 +1,115 @@
+<html>
+
+<head>
+<title>EngineEnumerateFont - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> EngineEnumerateFont</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='TrueType_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='EngineGetCharWidth.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD EngineEnumerateFont(lpFaceName, lpCallbackFunc, lpClientData)
+LPSZ lpFaceName;          /* points to name of font face               */
+FARPROC lpCallbackFunc;   /* points to user-supplied callback function */
+LPVOID lpClientData;      /* points to user-supplied data              */
+ 
+The EngineEnumerateFont function returns information about TrueType fonts by
+passing the information to the specified callback function. A driver calls
+this function when processing its EnumDFonts function to determine what
+TrueType fonts are available.
+ 
+<b>Import Module.Ordinal</b>: GDI.300.
+ 
+<b>Parameter       Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpFaceName</i>      Points to the null-terminated string specifying the name of
+                a font face. If lpFaceName points to a name,
+                EngineEnumerateFont calls the callback function with
+                information for the fonts having the same font face name. If
+                there are no fonts of that face, the function returns 1.
+ 
+                If lpFaceName is NULL, EngineEnumerateFont selects one font
+                of each face at random and calls the callback function with
+                information for these fonts. If there are no fonts, the
+                function returns 1.
+ 
+<i>lpCallbackFunc</i>  Points to a user-supplied callback function. For more
+                information about the function, see the following "Comments"
+                section.
+ 
+<i>lpClientData</i>    Points to a buffer containing user-supplied data.
+                EngineEnumerateFont does not use this data; instead it
+                passes the data back to application through the callback
+                function.
+ 
+<b>Return Value</b>
+ 
+This function returns the last value returned by the callback function. The
+function returns 1 if there are no fonts having the specified font face
+name.
+ 
+<b>Comments</b>
+ 
+<b>EngineEnumerateFont</b> calls the callback function once for each font. It
+continues to call the callback function until there are no more fonts or the
+callback function returns zero.
+ 
+The callback function has the following form:
+ 
+<b>WORD CallbackFunction(lpLogFont, lpT</b>extMetrics, wFontType,
+    lpClientData)
+LPLOGFONT lpLogFont;
+LPTEXTMETRICS lpTextMetrics;
+WORD wFontType;
+LPVOID lpClientData;
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>lpLogFont      Points to a </i>LOGFONT structure defining the logical attributes
+               of a font.
+ 
+<i>lpTextMetrics  Points to a TEXTMETRIC s</i>tructure containing the same values
+               that would be returned by the GetTextMetrics function.
+ 
+<i>wFontType</i>      Specifies the type of the font. It can be one of the
+               following values:
+ 
+               Value            Meaning
+               ─────────────────────────────────────────────────────────────
+               RASTER_FONTTYPE  Indicates that the font is composed of a
+                                raster bitmap rather than vector strokes.
+ 
+<i>lpClientData</i>   Points to the user-supplied data passed to
+               EngineEnumerateFont. Sizes are in device units.
+ 
+The callback function must return a non-zero value to continue to receive
+information about the fonts. If the callback function returns zero,
+<b>EngineEnumerateFont</b> stops enumerating the fonts and returns to its caller.
+ 
+If the engine can generated scaled, emboldened, or italicized fonts,
+<b>EngineEnumerateFont</b> passes only information about the base font to the
+callback function. The callback function is responsible for inquiring about
+the engine's text transformation abilities to determine which additional
+fonts are available directly from the engine.
+ 
+<b>See Also</b>
+ 
+<b>EnumDFonts</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

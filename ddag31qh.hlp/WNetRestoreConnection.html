@@ -1,0 +1,96 @@
+<html>
+
+<head>
+<title>WNetRestoreConnection - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WNetRestoreConnection</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Network_Driver_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='WNetSetJobCopies.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD WNetRestoreConnection(hwndParent, lpszDevice)
+HWND hwndParent;
+LPSTR lpszDevice;
+ 
+The WNetRestoreConnection function reconnects one or more permanently
+connected devices.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hwndParent</i>  Identifies the window to be used as the owner of any dialog or
+            message boxes the network driver creates.
+ 
+<i>lpszDevice</i>  Points to a null-terminated device name, such as for a disk or a
+            printer. If this parameter is NULL, all devices are to be
+            reconnected. If this parameter is 1, WNetRestoreConnection
+            performs any initialization actions required by the driver and
+            then reconnects all devices.
+ 
+            File Manager calls this function with the 1 value exactly once
+            during its initialization, and does not make any calls with the
+            NULL value.
+ 
+<b>Return Value</b>
+ 
+The return value is one of the following values.
+ 
+<b>Value                 Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>WN_ACCESS_DENIED</i>      Permission violation.
+ 
+<i>WN_ALREADY_CONNECTED</i>  The device is already connected.
+ 
+<i>WN_BAD_PASSWORD</i>       The user supplied an inaccurate password.
+ 
+<i>WN_CANCELLED</i>          The user cancelled the reconnection when prompted.
+ 
+<i>WN_CONTINUE</i>           A failure occurred, but the network driver has already
+                      reported the error to the user, and File Manager
+                      should not post a message box. The device is not valid
+                      and the File Manager should not access it.
+ 
+<i>WN_NET_ERROR</i>          A network error has occurred.
+ 
+<i>WN_NOT_SUPPORTED</i>      The driver does not support permanant connections.
+ 
+<i>WN_OUT_OF_MEMORY</i>      Out of memory.
+ 
+<i>WN_SUCCESS</i>            The device is reconnected.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 23.
+ 
+During system initialization, the return value is ignored and the network
+driver should report all errors to the user.
+ 
+If a connection exists, this function should not override it.
+ 
+If a connection cannot be reestablished, an error is returned, but the
+device is not disconnected (that is, the connection is still remembered).
+ 
+If this function is not supported, a minimum level of functionality will be
+implemented by Windows, which will read a list of connections and attempt to
+connect to them using WNetAddConnection.
+ 
+<b>See Also</b>
+ 
+<b>WNetAddConnection</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

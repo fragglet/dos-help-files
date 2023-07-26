@@ -1,0 +1,202 @@
+<html>
+
+<head>
+<title>Screen Fonts for Windows - Printers and Fonts Kit(3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Printers and Fonts Kit(3.1) (pfk31qh.hlp) (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Screen Fonts for Windows</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printers_and_Fonts_Kit(3_dot_1).html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Metrics_File_Formats.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+Screen fonts provide a reasonable approximation of printer output on the
+screen. Microsoft Windows applications that compose text for printers need
+accurate screen fonts to ensure a WYSIWYG display. This means the screen
+fonts must match the printer fonts as closely as possible. The more accurate
+the representation, the more accurate the display. This topic presents the
+factors font vendors should consider when creating screen fonts.
+ 
+<b>Aspect-Ratio Classes for Display Devices</b>
+ 
+Font vendors should create one set of screen fonts for each of the popular
+aspect-ratio classes for displays. The aspect-ratio classes determine the
+relative shape of pixels on the device, and therefore affect the design and
+implementation of screen fonts. Windows recognizes two major aspect-ratio
+classes.
+ 
+<b>Class         Typical device</b>
+────────────────────────────────────────────────────────────────────────────
+<i>1.33:1 (4:3)</i>  The IBM Enhanced Graphics Adapter
+ 
+<i>1:1</i>           The IBM PS/2 MCGA, VGA, and 8514/a
+ 
+The actual dots-per-inch resolution is not a factor in determining the class
+of the device; only the aspect ratio is used.
+ 
+<b>Translating Point Sizes into Line Sizes</b>
+ 
+Because of the variation in screen resolutions, screen font sizes are
+discussed in terms of screen line sizes, not typographic point sizes. The
+equation for relating point size to equivalent screen line size is as
+follows:
+ 
+                    text point size  * lines-per-inch
+screen line size =  --------------------------------------
+                                    72
+ 
+The lines-per-inch value specifies the logical page size for the device.
+When possible, the lines-per-inch closely matches the physical size and
+aspect ratio. The common screen lines-per-inch sizes for devices supported
+by Windows are as follows:
+ 
+♦  For a 1:1 aspect ratio, 96:96 (VGA), 108:108, 120:120 (8514/a), and
+   144:144
+ 
+♦  For a 4:3 aspect ratio, 96:72 (IBM Enhanced Graphics Adapter)
+ 
+Since it is always better to select a smaller size when an exact match is
+not possible, the quotient in the equation is truncated if the result is a
+fractional line size.
+ 
+<b>Choosing the Correct Range of Line Sizes</b>
+ 
+To accurately represent a printer font on the screen, the font vendor must
+make available a reasonable range of screen fonts. However, each screen font
+uses memory. Therefore, a font vendor should carefully weigh performance
+against a large screen-font variety.
+ 
+The most important factor to consider when creating screen-font files is
+memory use. Fewer and smaller screen fonts use less memory, but may degrade
+the WYSIWYG quality of the display.
+ 
+Other factors to consider include the following:
+ 
+♦  Legibility Threshold. There is a certain size at which the fonts are
+   difficult, if not impossible, to read. For most screens, the value is 6
+   lines. For high-resolution screens, the value is around 9-10 lines.
+   Therefore, it does not make sense to provide fonts below these sizes.
+ 
+♦  Doubling and Tripling. The screen driver may double or triple a
+   small-size font to take the place of an unavailable large font. For
+   example, it may double an 18-line font to make a 36-line font, or it may
+   triple a 24-line font to make a 72-line font. Doubling is not attractive,
+   but acceptable and difficult to avoid. Tripling is unacceptable and can
+   be avoided by providing a well-chosen range of screen line sizes.
+ 
+♦  Specific Applications. The application can control how the screen driver
+   will select a font for such things as text greeking, doubling and
+   tripling, vector font substitution, and downsizing to match widths.
+ 
+<b>Greeking</b>
+ 
+Some applications stop displaying screen fonts below a certain line size and
+may display a gray shaded box or other graphic representation. This is
+referred to as "greeked" text. Greeking speeds up the screen display.
+ 
+<b>Proof Versus Draft Quality</b>
+ 
+In Windows, proof usually means good, and draft means poor but quick. The
+screen driver will never double or triple the size of a font for proof
+quality. However, it will double or triple the size of smaller fonts to get
+the exact size it wants for draft quality. If the correct size is available,
+the screen driver will always choose it.
+ 
+Doubling and tripling occur only when the exact size is not available. For
+example, assume the only screen sizes are 10 and 19 lines, and the
+application wants a 20-line screen font. In proof quality, the screen driver
+would choose the 19-line font. In draft quality, the screen driver would
+double the 10-line font.
+ 
+<b>Vector Font Substitution</b>
+ 
+Vector outline fonts are not as attractive as raster screen fonts, but they
+look better than doubled or tripled screen fonts. Also, the amount of memory
+used by vector fonts is constant while the amount of memory used by raster
+fonts increases as the font size increases.
+ 
+<b>Downsizing to Match Widths</b>
+ 
+When the screen fonts do not accurately represent the printer fonts (that
+is, the height-to-width ratio of the printer font is different from that of
+the screen font), an application can request a smaller font to get the
+correct width. The application can display the line more quickly and prevent
+the characters from overlapping using this method.
+ 
+This behavior can most often be observed when the font vendor does not
+supply matching screen fonts, or the screen fonts do not contain the same
+height-to-width ratio as their corresponding printer fonts.
+ 
+<b>Recommended Screen-Font Sizes</b>
+ 
+Nothing produces an accurate display representation than a wide range of
+screen font sizes. On the other hand, nothing affects system performance
+faster than a large number of screen fonts. Therefore, the selection of
+screen fonts must balance desired display quality with system performance.
+ 
+For example, consider two computers with different screen-font
+configurations. Computer A contains the screen font sizes 7, 10, and 16
+lines. Computer B contains the sizes 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+17, and 18 lines. If the user creates a page using all the fonts from
+Computer B, the differences in sizes will be visible. However, the computer
+will load 12 screen fonts to display the page.
+ 
+On Computer A, with doubling and tripling capabilities disabled, the
+computer displays the same range of sizes as follows:
+ 
+♦  7, 8, and 9 lines displayed with the 7-line font
+ 
+♦  10, 11, 12, 13, 14, and 15 lines displayed with the 10-line font
+ 
+♦  16, 17, and 18 lines displayed with the 16-line font
+ 
+Much of the WYSIWYG would be lost because several sizes are displayed with
+the same font. However, the computer only loaded three fonts to display the
+page.
+ 
+Computer B slowly displayed high quality, while Computer A quickly displayed
+poor WYSIWYG quality.
+ 
+A font vendor needs to consider the application the user will run with
+Windows. For example, Microsoft Excel generally uses body-size fonts (fonts
+in the size range of 8 to 12 points). Therefore, a wide range of font sizes
+is unnecessary. And Aldus PageMaker, although it uses a large range of
+sizes, switches to vector fonts above 24 lines (that is, the default "Vector
+text above" setting).
+ 
+Ideally, the user should decide which is more important: display quality or
+performance. Many font products contain a font generator that requires the
+user to specify which point sizes to build. For such programs, the user
+should be given the option to select a predetermined range of sizes.
+ 
+<b>Range        Sizes</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Publishing</i>   8, 9, 10, 12, 14, 18, and 24 lines.
+ 
+<i>Artwork</i>      7, 8, 9, 10, 11, 12, 14, 16, 18, 21, 24, 28, and 32 lines.
+ 
+<i>General use</i>  8, 10, 12, 18, and 24 lines.
+ 
+If the font-creation program requires the user to indicate exactly which
+sizes should be built (that is, there are no predetermined ranges), then the
+documentation should provide specific instructions on what numbers to enter,
+based upon the user's needs, or intended use for the product.
+ 
+For font packages that give the user no choice in the size range, the vendor
+should supply the "Publishing" size range of 8, 9, 10, 12, 14, 18, and 24
+lines.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

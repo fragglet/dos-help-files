@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>Hook_Device_Service - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Hook_Device_Service</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Miscellaneous_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Hook_Device_V86_API.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, Service            ; specifies the service to hook
+mov     esi, OFFSET32 HookProc  ; points to the hook procedure to install
+VMMcall Hook_Device_Service
+ 
+jc      not_installed           ; carry set if error
+mov     [Real_Proc], esi
+ 
+The Hook_Device_Service service allows one virtual device to monitor or
+replace the services of another virtual device or of the VMM itself.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Service</i>    Specifies the virtual device or VMM service to hook.
+ 
+<i>HookProc</i>   Points to the hook procedure to install. The hook procedure is
+           called with the same parameters as the service specified by the
+           Service parameter.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear and the ESI register contains the address of the
+service specifed by the Service parameter if this service is successful.
+Otherwise, the carry flag is set to indicate an error.
+ 
+<b>Comments</b>
+ 
+Virtual devices that use this service must use extreme care to preserve the
+full functionality of the virtual device whose services are monitored or
+replaced.
+ 
+More than one virtual device can hook a device service. The last hook
+installed is the first one called.
+ 
+The hook procedure must save and restore registers that are not modified by
+the hooked service. Also, if flags are a passed as an entry or exit
+parameter, the hook procedure must also preserve the flags.
+ 
+If the hooked service uses the C calling convention, the hook procedure must
+copy the entire parameter stack frame before attempting to call the hooked
+service.
+ 
+<b>Uses</b>
+ 
+ESI, Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

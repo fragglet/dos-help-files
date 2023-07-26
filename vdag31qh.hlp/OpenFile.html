@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>OpenFile - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> OpenFile</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Initialization_Information_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Initialization_Information_Services.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     edx, OFFSET32 Filename  ; points to name of file to open
+mov     edi, OFFSET32 Buffer    ; points to buffer to receive full path
+VMMcall OpenFile
+ 
+jc      not_found               ; carry flag is set if file not found
+mov     [Handle], eax           ; MS-DOS file handle
+ 
+The OpenFile service opens the file having the specified name. If the
+<i>Filename</i> parameter specifies only a filename (no drive letter or path
+separators included), this service searches for the file in the directories
+specified by the following:
+ 
+♦  WINDIR environment variable
+ 
+♦  First command-line argument (argv[0]) of Windows
+ 
+♦  Current working directory
+ 
+♦  PATH environment variable
+ 
+Otherwise, the service does not search for the file. In either case, the
+service attempts to opens the file for reading (in compatibility mode), and
+returns the MS-DOS file handle if it is successful.
+ 
+This service is only available during initialization.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Filename</i>   Points to a null-terminated string specifying the name of the
+           file to open.
+ 
+<i>Buffer</i>     Points to a buffer that receives the full path of the file (if
+           found). The buffer must be at least 128 bytes.
+ 
+<b>Return Value</b>
+ 
+If the carry flag is clear, the EAX register contains a valid MS-DOS file
+handle (in the low word). The handle can be used in subsequent MS-DOS
+functions to read from or close the file. If the carry flag is set, the file
+cannot be found.
+ 
+<b>Comments</b>
+ 
+If WINDIR and PATH environment variables are not well formed, this service
+cannot guarantee that the full path copied to the Buffer parameter will be
+well formed.
+ 
+This service fails if the current virtual machine cannot support a call to
+the Exec_Int service, or if the virtual machine has already used the
+<b>_Allocate_Temp_V86_Data_Area</b> service to allocate the temporary buffer.
+ 
+<b>Uses</b>
+ 
+EAX, Flags
+ 
+<b>See Also</b>
+ 
+<b>_Allocate_Temp_V86_Data_Area, Exec_Int</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

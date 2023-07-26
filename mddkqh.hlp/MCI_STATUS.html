@@ -1,0 +1,424 @@
+<html>
+
+<head>
+<title>MCI_STATUS - Windows Multimedia DDK</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows Multimedia DDK (mddkqh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> MCI_STATUS</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MDDK_dot_h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+<b>MCI_STATUS</b>
+ 
+        This MCI command message is used to obtain information about an
+        MCI device. All devices respond to this message. The parameters
+        and flags available for this message depend on the selected
+        device. Information is returned in the <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field of the data
+        structure identified by lpStatus.
+ 
+<u>Parameters</u>
+        DWORD dwFlags
+            The following standard and command-specific flags apply to
+            all devices:
+ 
+            MCI_NOTIFY
+                Specifies that MCI should post the MM_MCINOTIFY message
+                when this command completes. The window to receive this
+                message is specified in the <a href='MCI_STATUS_PARMS.html'>dwCallback</a> field of the data
+                structure identified by lpStatus.
+ 
+            MCI_WAIT
+                Specifies that the status operation should finish before
+                MCI returns control to the application.
+ 
+            MCI_STATUS_ITEM
+                Specifies that the <a href='MCI_STATUS_PARMS.html'>dwItem</a> field of the data structure
+                identified by lpStatus contains a constant specifying
+                which status item to obtain. The following constants
+                define which status item to return in the <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field
+                of the data structure:
+ 
+                MCI_STATUS_CURRENT_TRACK
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the current track
+                    number. MCI uses continuous track numbers.
+ 
+                MCI_STATUS_LENGTH
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the total media length.
+ 
+                MCI_STATUS_MODE
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the current mode of the
+                    device. The modes include the following:
+ 
+                    MCI_MODE_NOT_READY
+ 
+                    MCI_MODE_PAUSE
+ 
+                    MCI_MODE_PLAY
+ 
+                    MCI_MODE_STOP
+ 
+                    MCI_MODE_OPEN
+ 
+                    MCI_MODE_RECORD
+ 
+                    MCI_MODE_SEEK
+ 
+                MCI_STATUS_NUMBER_OF_TRACKS
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the total number of
+                    playable tracks.
+ 
+                MCI_STATUS_POSITION
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the current position.
+ 
+                MCI_STATUS_READY
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to TRUE if the device is
+                    ready; otherwise, it is set to FALSE.
+ 
+                MCI_STATUS_TIME_FORMAT
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the current time format
+                    of the device. The time formats include:
+ 
+                    MCI_FORMAT_BYTES
+ 
+                    MCI_FORMAT_FRAMES
+ 
+                    MCI_FORMAT_HMS
+ 
+                    MCI_FORMAT_MILLISECONDS
+ 
+                    MCI_FORMAT_MSF
+ 
+                    MCI_FORMAT_SAMPLES
+ 
+                    MCI_FORMAT_TMSF
+ 
+            MCI_STATUS_START
+                Obtains the starting position of the media. To get the
+                starting position, combine this flag with
+                MCI_STATUS_ITEM and set the <a href='MCI_STATUS_PARMS.html'>dwItem</a> field of the data
+                structure identified by lpStatus to MCI_STATUS_POSITION.
+ 
+            MCI_TRACK
+                Indicates a status track parameter is included in the
+                <a href='MCI_STATUS_PARMS.html'>dwTrack</a> field of the data structure identified by
+                lpStatus. You must use this flag with the
+                MCI_STATUS_POSITION or MCI_STATUS_LENGTH constants.
+ 
+                When used with MCI_STATUS_POSITION, MCI_TRACK obtains
+                the starting position of the specified track.
+ 
+                When used with MCI_STATUS_LENGTH, MCI_TRACK obtains the
+                length of the specified track. MCI uses continuous track
+                numbers.
+ 
+        LPMCI_STATUS_PARMS lpStatus
+            Specifies a far pointer to the MCI_STATUS_PARMS data
+            structure. (Devices with extended command sets might replace
+            this data structure with a device-specific data structure.)
+ 
+        Animation Extensions
+ 
+        DWORD dwFlags
+            The following extensions apply to animation devices:
+ 
+            MCI_STATUS_ITEM
+                Specifies that the <a href='MCI_STATUS_PARMS.html'>dwItem</a> field of the data structure
+                identified by lpStatus contains a constant specifying
+                which status item to obtain. The following additional
+                status constants are defined for animation devices and
+                indicate which item to return in the <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field of
+                the data structure:
+ 
+                MCI_ANIM_STATUS_FORWARD
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to TRUE if playing forward;
+                    otherwise, it is set to FALSE.
+ 
+                MCI_ANIM_STATUS_HPAL
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the handle of the
+                    palette.
+ 
+                MCI_ANIM_STATUS_HWND
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the handle of the
+                    playback window.
+ 
+                MCI_ANIM_STATUS_SPEED
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the animation speed.
+ 
+                MCI_ANIM_STATUS_STRETCH
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to TRUE if stretching
+                     is enabled; otherwise, it is set to FALSE.
+ 
+                MCI_STATUS_MEDIA_PRESENT
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to TRUE if the media is
+                    inserted in the device; otherwise, it is set to
+                    FALSE.
+ 
+        LPMCI_STATUS_PARMS lpStatus
+            Specifies a far pointer to the MCI_STATUS_PARMS data
+            structure.
+ 
+        Audio CD Extensions
+ 
+        DWORD dwFlags
+            The following extensions applies to audio CD devices:
+ 
+            MCI_STATUS_ITEM
+                Specifies that the <a href='MCI_STATUS_PARMS.html'>dwItem</a> field of the data structure
+                identified by lpStatus contains a constant specifying
+                which status item to obtain. The following additional
+                status constants are defined for audio CD devices and
+                indicate which item to return in the <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field of
+                the data structure:
+ 
+                MCI_STATUS_MEDIA_PRESENT
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to TRUE if the media is
+                    inserted in the device; otherwise, it is set to
+                    FALSE.
+ 
+        LPMCI_STATUS_PARMS lpStatus
+            Specifies a far pointer to the MCI_STATUS_PARMS data
+            structure. This parameter replaces the standard default
+            parameter data structure.
+ 
+        MIDI Sequencer Extensions
+ 
+        DWORD dwFlags
+            The following extensions apply to sequencers:
+ 
+            MCI_STATUS_ITEM
+                Specifies that the <a href='MCI_STATUS_PARMS.html'>dwItem</a> field of the data structure
+                identified by lpStatus contains a constant specifying
+                which status item to obtain. The following additional
+                status constants are defined for sequencers and indicate
+                which item to return in the <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field of the data
+                structure:
+ 
+                MCI_SEQ_STATUS_DIVTYPE
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to one of the following
+                    values indicating the current division type of a
+                    sequence:
+ 
+                    MCI_SEQ_DIV_PPQN
+ 
+                    MCI_SEQ_DIV_SMPTE_24
+ 
+                    MCI_SEQ_DIV_SMPTE_25
+ 
+                    MCI_SEQ_DIV_SMPTE_30
+ 
+                    MCI_SEQ_DIV_SMPTE_30DROP
+ 
+                MCI_SEQ_STATUS_MASTER
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the synchronization type
+                    used for master operation.
+ 
+                MCI_SEQ_STATUS_OFFSET
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the current SMPTE offset
+                    of a sequence.
+ 
+                MCI_SEQ_STATUS_PORT
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the MIDI device ID for
+                    the current port used by the sequence.
+ 
+                MCI_SEQ_STATUS_SLAVE
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the synchronization type
+                    used for slave operation.
+ 
+                MCI_SEQ_STATUS_TEMPO
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the current tempo of a
+                    MIDI sequence in beats-per-minute for PPQN files, or
+                    frames-per-second for SMPTE files.
+ 
+                MCI_STATUS_MEDIA_PRESENT
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to TRUE if the media for
+                    the device is present; otherwise, it is set to
+                    FALSE.
+ 
+        LPMCI_STATUS_PARMS lpStatus
+            Specifies a far pointer to the MCI_STATUS_PARMS data
+            structure. This parameter replaces the standard default
+            parameter data structure.
+ 
+        Videodisc Extensions
+ 
+        DWORD dwFlags
+            The following additional flags apply to videodisc devices:
+ 
+            MCI_STATUS_ITEM
+                Specifies that the <a href='MCI_STATUS_PARMS.html'>dwItem</a> field of the data structure
+                identified by lpStatus contains a constant specifying
+                which status item to obtain. The following additional
+                status constants are defined for videodisc devices and
+                indicate which item to return in the <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field of
+                the data structure:
+ 
+                MCI_STATUS_MEDIA_PRESENT
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to TRUE if the media is
+                    inserted in the device; otherwise, it is set to
+                    FALSE.
+ 
+                MCI_VD_STATUS_DISC_SIZE
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the size of the loaded
+                    disc in inches (8 or 12).
+ 
+                MCI_VD_STATUS_FORWARD
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to TRUE if playing forward;
+                    otherwise, it is set to FALSE.
+ 
+                MCI_VD_STATUS_MEDIA_TYPE
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the media type of the
+                    inserted media. The following media types can be
+                    returned:
+ 
+                    MCI_VD_MEDIA_CAV
+ 
+                    MCI_VD_MEDIA_CLV
+ 
+                    MCI_VD_MEDIA_OTHER
+ 
+                MCI_STATUS_MODE
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the current mode of the
+                    device. All devices can return the following
+                    constants to indicate the current mode:
+ 
+                    MCI_MODE_NOT_READY
+ 
+                    MCI_MODE_PAUSE
+ 
+                    MCI_MODE_PLAY
+ 
+                    MCI_MODE_STOP
+ 
+                    MCI_VD_MODE_PARK (videodisc devices)
+ 
+                MCI_VD_STATUS_SIDE
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to 1 or 2 to indicate which
+                    side of the disc is loaded. Not all videodisc
+                    devices support this flag.
+ 
+                MCI_VD_STATUS_SPEED
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the play
+                    speed in frames per second.
+ 
+                    MCIPIONR returns MCIERR_UNSUPPORTED_FUNCTION.
+ 
+        LPMCI_STATUS_PARMS lpStatus
+            Specifies a far pointer to the MCI_STATUS_PARMS data
+            structure. This parameter replaces the standard default
+            parameter data structure.
+ 
+        Waveform Audio Extensions
+ 
+        DWORD dwFlags
+            The following additional flags apply to waveform audio
+            devices:
+ 
+            MCI_STATUS_ITEM
+                Specifies that the <a href='MCI_STATUS_PARMS.html'>dwItem</a> field of the data structure
+                identified by lpStatus contains a constant specifying
+                which status item to obtain. The following additional
+                status constants are defined for waveform audio devices
+                and indicate which item to return in the <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field
+                of the data structure:
+ 
+                MCI_STATUS_MEDIA_PRESENT
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to TRUE if the media is
+                    inserted in the device; otherwise, it is set to
+                    FALSE.
+ 
+                MCI_WAVE_INPUT
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the wave input device
+                    used for recording. If no device is in use and no
+                    device has been explicitly set, then the error
+                    return is MCI_WAVE_INPUTUNSPECIFIED.
+ 
+                MCI_WAVE_OUTPUT
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the wave output device
+                    used for playing. If no device is in use and no
+                    device has been explicitly set, then the error
+                    return is MCI_WAVE_OUTPUTUNSPECIFIED.
+ 
+                MCI_WAVE_STATUS_AVGBYTESPERSEC
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the current bytes per
+                    second used for playing, recording, and saving.
+ 
+                MCI_WAVE_STATUS_BITSPERSAMPLE
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the current bits per
+                    sample used for playing, recording, and saving.
+ 
+                MCI_WAVE_STATUS_BLOCKALIGN
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the current block
+                    alignment used for playing, recording, and saving.
+ 
+                MCI_WAVE_STATUS_CHANNELS
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the current channel
+                    count used for playing, recording, and saving.
+ 
+                MCI_WAVE_FORMATTAG
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the current format tag
+                    used for playing, recording, and saving.
+ 
+                MCI_WAVE_STATUS_LEVEL
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the current record or
+                    playback level. The value is returned as an 8- or
+                    16-bit value, depending on the sample size used. The
+                    right or mono channel level is returned in the
+                    low-order word. The left channel level is returned
+                    in the high-order word.
+ 
+                MCI_WAVE_STATUS_SAMPLESPERSEC
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the current samples per
+                    second used for playing, recording, and saving.
+ 
+        LPMCI_STATUS_PARMS lpStatus
+            Specifies a far pointer to the MCI_STATUS_PARMS data
+            structure.
+ 
+        Video Overlay Extensions
+ 
+        DWORD dwFlags
+            The following additional flags apply to video overlay
+            devices:
+ 
+            MCI_STATUS_ITEM
+                Specifies that the <a href='MCI_STATUS_PARMS.html'>dwItem</a> field of the data structure
+                identified by lpStatus contains a constant specifying
+                which status item to obtain. The following additional
+                status constants are defined for video overlay devices
+                and indicate which item to return in the <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field
+                of the data structure:
+ 
+              MCI_OVLY_STATUS_HWND
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to the handle of the window
+                    associated with the video overlay device.
+ 
+              MCI_OVLY_STATUS_STRETCH
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to TRUE if stretching
+                     is enabled; otherwise, it is set to FALSE.
+ 
+              MCI_STATUS_MEDIA_PRESENT
+                    The <a href='MCI_STATUS_PARMS.html'>dwReturn</a> field is set to TRUE if the media is
+                    inserted in the device; otherwise, it is set to
+                    FALSE.
+ 
+        LPMCI_STATUS_PARMS lpStatus
+            Specifies a far pointer to the MCI_STATUS_PARMS data
+            structure.
+ 
+<u>Return value</u>
+        Returns zero if successful. Otherwise, it returns an MCI error
+        code.
+ 
+                                       -♦-
+</pre>
+</body>
+
+</html>

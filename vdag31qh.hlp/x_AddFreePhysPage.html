@@ -1,0 +1,85 @@
+<html>
+
+<head>
+<title>_AddFreePhysPage - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _AddFreePhysPage</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Free_Physical_Memory_Management.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_MapFreePhysReg.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _AddFreePhysPage, &lt;PhysPgNum, nPages, flags&gt;
+ 
+mov     [PagesAdded], eax       ; 0 = none, 1 = some, 2 = all
+ 
+The _AddFreePhysPage service adds one or more physical pages to the free
+memory pool. Virtual devices use this service to add pages that the Windows
+loader could not find, but that the virtual device did find. For example,
+the V86MMGR device adds any unused physical pages it finds when using the
+Global EMM Import function of a 386 LIMulator.
+ 
+This service is only available during initialization and only in Windows
+version 3.1 and later.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>PhysPgNum</i>  Specifies the physical page number of the first page to add. The
+           page number must be greater than or equal to 110h; only extended
+           memory pages may be added to the pool. The specified pages must
+           be read/write physical memory pages, and must be available for
+           use at any time.
+ 
+<i>nPages</i>     Specifies the number of physical pages to add.
+ 
+<i>flags</i>      Specifies the operation flags. This parameter must be set to 0.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains one of the following values:
+ 
+<b>Value  Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>0</i>      None of the specified physical pages were added to the free pool.
+ 
+<i>1</i>      Some, but not all, of the specified physical pages were added.
+ 
+<i>2</i>      All of the specified physical pages were added.
+ 
+<b>Comments</b>
+ 
+A virtual device must not attempt to use pages once it has added them to the
+free pool, or attempt to add pages that are already available to the
+system.
+ 
+This service returns an error if the number of pages to add exceeds the
+limit of the internal data structure the system uses the manage the free
+pool. The internal data structure is allocated during initialization and
+cannot be modified.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_GetFreePageCount</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

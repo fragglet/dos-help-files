@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<title>Call_When_VM_Returns - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Call_When_VM_Returns</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Break_Point_and_Callback_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Install_V86_Break_Point.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, TimeOut            ; milliseconds until time out
+mov     edx, OFFSET32 RefData   ; points to reference data
+mov     esi, OFFSET32 Callback  ; points to callback procedure to install
+VMMcall Call_When_VM_Returns
+ 
+The Call_When_VM_Returns service installs a callback procedure that receives
+control when a virtual machine executes the iret instruction for the current
+interrupt.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>TimeOut</i>    Specifies the number of milliseconds to wait before calling the
+           callback procedure. The time-out occurs only if the iret
+           instruction is not executed before the specified time elapses. If
+           this parameter is positive, the system calls the callback when
+           time elapses. If this parameter is negative, the system calls the
+           callback when time elapses and calls it again when the iret
+           instruction is executed. If this parameter is zero, the system
+           ignores the time-out.
+ 
+<i>RefData</i>    Points to reference data to be passed to the callback procedure.
+ 
+<i>Callback</i>   Points to the callback procedure to install. See the Comments
+           section for more information about this procedure.
+ 
+<b>Return Value</b>
+ 
+This service has no return value.
+ 
+<b>Comments</b>
+ 
+A virtual device typically uses this service in a callback procedure that it
+installed using the Hook_V86_Int_Chain service. This service directs the
+system to replace the return address for the interrupt with the address of
+the callback procedure. That is, the system pushes the callback procedure
+address on the stack when it creates the stack frame for the interrupt. The
+system then passes the interrupt to the virtual machine.
+ 
+When the virtual machine executes the iret instruction, the callback
+procedure receives control and can carry out tasks. After the callback
+procedure returns, the system restores the original interrupt return address
+and execution continues as if returning from the interrupt.
+ 
+The system calls this callback procedure as follows:
+ 
+mov     ebx, VM                 ; current VM handle
+mov     edx, OFFSET32 RefData   ; points to reference data
+mov     ebp, OFFSET32 crs       ; points to a Client_Reg_Struc
+call    [Callback]
+ 
+The VM parameter is a handle identifying the current virtual machine. The
+<i>RefData</i> parameter points to the reference data supplied when the callback
+procedure was installed, and crs points to a Client_Reg_Struc structure
+containing the register values for the virtual machine.
+ 
+If the system calls the callback procedure as a result of a time-out, it
+sets the carry flag before calling the procedure. If the system calls the
+callback a second time (once for a time-out and once for the iret
+instruction), the system sets the zero flag before calling the procedure.
+ 
+<b>Uses</b>
+ 
+Client_CS, Client_EIP, Flags
+ 
+<b>See Also</b>
+ 
+<b>Hook_V86_Int_Chain</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

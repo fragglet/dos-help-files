@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>DevInstall - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DevInstall</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printer-Specific_Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GetEnvironment.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD DevInstall(hWnd, lpModelName, OldPort, NewPort)
+HWND hWnd;
+LPSTR lpModelName;
+LPSTR OldPort;
+LPSTR NewPort;
+ 
+The DevInstall function changes port connections, and installs and removes
+printers. Control Panel calls this function whenever the user switches the
+port for a printer model.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>hWnd</i>         Identifies the parent window to use for any dialog boxes the
+             function creates.
+ 
+<i>lpModelName</i>  Points to a null-terminated string specifying the name of the
+             current printer model.
+ 
+<i>OldPort</i>      Points to a null-terminated string specifying the name of the
+             port being changed. If the OldPort parameter is NULL, the
+             function installs the new printer model.
+ 
+<i>NewPort</i>      Points to a null-terminated string specifying the name of the
+             port to be changed to. If the NewPort parameter is NULL, the
+             function removes printer model.
+ 
+<b>Return Value</b>
+ 
+The return value is one of the following values.
+ 
+<b>Value  Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>1</i>      Succeeded
+ 
+<i>0</i>      Doesn't support this function
+ 
+<i>-1</i>     Failed for unknown reason
+ 
+<b>Comments</b>
+ 
+When the function changes a port, it must change the port in the [ModelName,
+Port] section of the WIN.INI file. Also, the function should check for a
+font section with valid entries for the old port. If there are fonts, the
+function should warn the user with a message informing them that there are
+printer fonts installed for the old port. The user can install them using
+the Fonts button from the Printer Setup dialog box.
+ 
+When installing a new printer, the function must scan the WIN.INI file for a
+[DriverName, NewPort] section. If one is found and ModelName matches the
+printer index listed there, the function creates a new section [ModelName,
+NewPort] and moves all nonfont-related information from the [DriverName,
+Newport] section to this new [ModelName, NewPort] section. After this
+operation, the [DriverName, NewPort] section contains only the printer fonts
+listing. If the function doesn't find a [DeviceName, NewPort] section, no
+action is required.
+ 
+When removing a printer, the function must remove the [ModelName, OldPort]
+section including all settings there, but it must not remove the
+[DriverName, OldPort] section. Other models may be using fonts installed on
+this port.
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

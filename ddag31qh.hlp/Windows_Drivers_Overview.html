@@ -1,0 +1,275 @@
+<html>
+
+<head>
+<title>Windows Drivers Overview - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Windows Drivers Overview</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='ddagovr.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Display_Drivers.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+This topic describes the purpose and function of Microsoft Windows 3.1
+device drivers. You should create a Windows device driver for your device if
+it is not 100 percent compatible with the devices supported by the Windows
+3.1 retail device drivers, or if you want to offer Windows users access to
+unique features of your device.
+ 
+<b>What Is a Device Driver?</b>
+ 
+A Windows device driver is a dynamic-link library (DLL) that Windows uses to
+interact with a hardware device such as a display or a keyboard. Rather than
+access devices directly, Windows loads device drivers and calls functions in
+the drivers to carry out actions on the device. Each device driver exports a
+set of functions; Windows calls these functions to complete an action, such
+as drawing a circle or translating a keyboard scan code. The driver
+functions also contain the device-specific code needed to carry out actions
+on the device.
+ 
+Windows requires device drivers for the display, keyboard, and communication
+ports. Mouse, network, and printer drivers are required if the user adds
+these optional devices to the system. The following is a brief description
+of each type of driver.
+ 
+<b>Driver          Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Communications</i>  Supports serial and parallel device communications. Windows
+                loads and enables this driver, checking the COMM.DRV setting
+                in the SYSTEM.INI file to determine the filename of the
+                driver to load. The communications driver must provide
+                functions to enable and disable the communication device, to
+                get and set the device status, and read and write data
+                through the device. The USER module provides a general
+                interface for Windows applications to call, and translates
+                these calls into appropriate calls to the driver. The module
+                name for the communications driver is COMM.
+ 
+<i>Display</i>         Supports the system display and cursor for pointing devices.
+                Windows loads and enables the display driver, checking the
+                DISPLAY.DRV setting in the SYSTEM.INI file to determine the
+                filename of the driver to load. The display driver must
+                provide functions to enable and disable the device, get
+                information about the capabilities of the device, carry out
+                graphics operations such as drawing lines and transferring
+                bitmaps, and to show and hide a cursor. Windows and
+                Windows-based applications call functions in the GDI module
+                to carry out graphics operations on the display, and GDI
+                translates these calls into corresponding calls to the
+                driver. Depending on the capabilities of the display device,
+                GDI may generate many calls to the driver from a single call
+                from an application. The module name for the display driver
+                is DISPLAY.
+ 
+<i>Grabber</i>         Supports the management of non-Windows applications.
+                Although not technically a driver, a display grabber plays a
+                similar role as a device driver in helping the WINOLDAP
+                module manage non-Windows applications. A display grabber
+                provides the support Windows needs to share the display
+                device with non-Windows applications. WINOLDAP loads the
+                display grabbers and calls grabber functions to carry out
+                tasks such as capturing the contents of the screen, or
+                managing output from a non-Windows application. Windows
+                requires unique display grabbers for standard and 386
+                enhanced modes.
+ 
+<i>Keyboard</i>        Supports keyboard input. Windows loads and enables the
+                keyboard driver, checking the KEYBOARD.DRV setting in the
+                SYSTEM.INI file to determine the filename of the driver to
+                load. The keyboard driver must provide functions to enable
+                and disable the keyboard, and to translate keyboard scan
+                codes into character values and virtual-key codes. A
+                keyboard driver also replaces the MS-DOS keyboard-interrupt
+                handler with its own. When the driver is enabled, the USER
+                module provides the address of a callback function that the
+                driver calls whenever an event occurs, such a keystroke. The
+                module name for the keyboard driver is KEYBOARD.
+ 
+<i>Mouse</i>           Supports mouse or other pointing device input. Because a
+                mouse is optional, Windows checks the MOUSE.DRV setting in
+                the SYSTEM.INI file to determine whether to load a driver. A
+                mouse driver must provide functions to enable and disable
+                the mouse, retrieve information about the mouse, and allow
+                users to modify the operation of the mouse through Control
+                Panel. When the driver is enabled, the USER module provides
+                the address of a callback function that the driver calls
+                whenever an event occurs, such as a mouse movement. The
+                module name for the mouse driver is MOUSE.
+ 
+<i>Network</i>         Supports networks. Because a network is optional, Windows
+                checks the NETWORK.DRV setting in the SYSTEM.INI file to
+                determine whether to load a driver. A network driver must
+                provide functions to retrieve information about the network,
+                redirect local drives, and add jobs to a network print
+                queue. The network driver may use MS-DOS functions, NetBIOS
+                routines, and network software to complete these network
+                requests. Windows does not require a specific module name
+                for the network driver.
+ 
+<i>Printer</i>         Supports printer output. Windows applications indirectly
+                load printer drivers by calling the CreateDC function in the
+                GDI module. A printer driver must provide functions to
+                enable and disable the printer, to get information about the
+                capabilities of the printer, to carry out graphics
+                operations such as drawing lines and transferring bitmaps,
+                and to display dialog boxes to let the user change printer
+                settings. Windows and Windows-based applications call
+                functions in the GDI module to carry out graphics operations
+                on the printer, and GDI translates these calls into
+                corresponding calls to the driver. Windows does not require
+                a specific module name for a printer driver.
+ 
+Since the network and printer drivers are optional, their module names are
+not reserved. However, you should name your driver to represent your device
+appropriately. For example, you could use PSCRIPT for a PostScript(R)
+printer driver or MSNET for an MS(R)-Network driver.
+ 
+<b>Creating a Device Driver</b>
+ 
+You create a device driver either by adapting a sample driver, or writing a
+driver from scratch. You can write Windows device drivers in assembly
+language or in a high-level language such as the C language. Assembly
+language programmers can use the CMACROS assembly-language macro package.
+ 
+To create a device driver, you need to:
+ 
+1  Read the chapter in this manual that describes the driver for your type
+   of device.
+ 
+2  Write the required driver functions.
+ 
+3  Create and compile the required resources.
+ 
+   Every device driver must have at least a VERSIONINFO resource that
+   contains the version stamp for the driver. Setup and Control Panel both
+   look for this resource when installing drivers. For more information
+   about VERSIONINFO and other resources, see the Microsoft Windows
+<i>   Programmer's Reference</i>.
+ 
+4  Create a module-definition file that identifies the appropriate module
+   name for your driver, and exports the required functions.
+ 
+5  Assemble and link your driver.
+ 
+6  Test your driver using the debugging version of Windows.
+ 
+7  Create an installation file (OEMSETUP.INF) for your driver and related
+   files.
+ 
+8  Create your final distribution disk or disks.
+ 
+<b>Guidelines for Designing and Writing a Driver</b>
+ 
+When designing and writing your device driver, follow these guidelines:
+ 
+♦  Make every effort to make your device driver as small as possible;
+   reserve system memory for applications.
+ 
+♦  Use multiple, discardable code segments to help reduce the amount of
+   driver code needed in memory at any given time.
+ 
+♦  Use an automatic data segment only if necessary.
+ 
+♦  Make resources discardable, and lock them in memory only when needed.
+ 
+♦  Use the stack sparingly. Because device drivers use the stack of the
+   application that initiated the call to the driver, there is no way for
+   the driver to determine how much available space is on the stack.
+ 
+♦  Check for NULL pointers to avoid a general protection faults from using
+   an invalid selector.
+ 
+♦  Check the segment limits when reading from or writing to allocated
+   segments to avoid a general protection fault from attempting to access
+   data beyond the end of a segment.
+ 
+♦  Use the __ahincr constant when creating selectors for huge memory
+   (allocated memory greater than 64 kilobytes). Other methods of selector
+   arithmetic can create invalid selectors and cause general protection
+   faults.
+ 
+♦  Create code-segment aliases for any code to be executed from data
+   segments. Attempting to call or jump to a data segment address generates
+   a general protection fault.
+ 
+<b>Windows Calling Conventions</b>
+ 
+This manual presents the syntax of most functions in C-language notation.
+All such functions are assumed to be declared as FAR PASCAL functions, and
+Windows will call these functions as such. In general, exported functions in
+a device driver must execute the standard Windows prolog on entry and epilog
+on exit. For more information about the prolog and epilog, see the Microsoft
+<i>Windows Programmer's Reference</i>.
+ 
+The following list highlights the calling conventions:
+ 
+♦  Set the DS register to the selector of the driver's automatic data
+   segment.
+ 
+♦  Save and restore the following registers if used: SS, SP, BP, SI, DI, and
+   DS.
+ 
+♦  Clear the direction flag if it has been set or modified.
+ 
+♦  Place 16-bit return values in the AX register; 32-bit values in the DX:AX
+   register pair.
+ 
+♦  Execute a FAR return.
+ 
+Windows pushes all parameters on the stack in a left to right order (the
+last parameter shown in the function syntax is closest to the stack
+pointer). Windows also passes pointers parameters as 32-bit quantities,
+pushing the selector first then the offset. This allows exported functions
+to use the lds or les instructions to retrieve pointers from the stack.
+ 
+<b>Header Files</b>
+ 
+When writing assembly-language drivers, you may need to use the following
+header files.
+ 
+<b>File         Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>CMACROS.INC</i>  Contains a set of assembly-language macros that provide a
+             simplified interface to the function and segment conventions of
+             high-level languages, such as C and Pascal.
+ 
+<i>GDIDEFS.INC</i>  Contains definitions for symbolic constants and structures. To
+             shorten the assembly time and cross-reference lists, you can
+             selectively include parts of GDIDEFS.INC by defining equates
+             that tell the assembler which parts to include.
+ 
+             Equate             Description
+             ───────────────────────────────────────────────────────────────
+             incLogical equ 1   Includes logical pen, brush, and font
+                                definitions.
+ 
+             incDevice equ 1    Includes the symbolic names for GDIINFO
+                                definitions.
+ 
+             incFont equ 1      Includes the FONTINFO and TEXTXFORM
+                                definitions.
+ 
+             incDrawMode equ 1  Includes the DRAWMODE data structure
+                                definitions.
+ 
+             incOutput equ 1    Includes the output style constants.
+ 
+             incControl equ 1   Includes the escape number definitions.
+ 
+<i>WINDEFS.INC</i>  Contains definitions for symbolic constants and structures used
+             with Windows functions.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>Output(OS_BEGINNSCAN) - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Output(OS_BEGINNSCAN)</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Output(OS_CHORD).html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+WORD Output(lpDestDev, OS_BEGINNSCAN, 0, NULL, lpPPen, lpPBrush,
+            lpDrawMode, NULL)
+LPPDEVICE lpDestDev;
+LPPPEN lpPPen;
+LPPBRUSH lpPBrush;
+LPDRAWMODE lpDrawMode;
+ 
+The OS_BEGINNSCAN style specifies that the Output function prepares for a
+subsequent series of calls to the Output function in which the OS_SCANLINES
+style is specified.
+ 
+Every graphics driver (for Windows versions 2.0 and later) should support
+the OS_BEGINNSCAN style.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpDestDev   Points to a PDEVICE or PBITMAP st</i>ructure specifying the
+            destination device or bitmap.
+ 
+<i>lpPPen      Points</i> to a PPEN structure specifying the physical pen to draw
+            subsequent scan lines. If it is NULL, no pen is used.
+ 
+<i>lpPBrush    Points to a </i>PBRUSH structure specifying the physical brush to
+            draw subsequent scan lines. If it is NULL, no brush is used.
+ 
+<i>lpDrawMode  Points to a DRAWMO</i>DE structure containing drawing information
+            when drawing subsequent scan lines.
+ 
+<b>Return Value</b>
+ 
+The return value is 1.
+ 
+<b>Comments</b>
+ 
+GDI uses the OS_BEGINNSCAN and OS_ENDNSCAN styles to mark the beginning and
+end of a series of scan lines that use the same pen, brush, and drawing
+mode. GDI calls the Output function with the OS_BEGINNSCAN style to let the
+driver prepare the drawing mode and physical pen and brush for use in
+subsequent calls containing the OS_SCANLINE style. Drivers that preserve
+these objects between calls to Output can improve performance by minimizing
+the number of times the objects need to be set up. All subsequent calls
+using the OS_SCANLINE style will use the same objects until GDI calls with a
+matching OS_ENDNSCAN style.
+ 
+If a driver does not support the OS_BEGINNSCAN style, the driver can ignore
+the style. In all cases, GDI passes the physical pen, physical brush, and
+drawing mode on each subsequent call to the Output function regardless of
+whether the driver prepared these objects previously.
+ 
+<b>See Also</b>
+ 
+<b>Output(OS_ENDNSCAN)</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

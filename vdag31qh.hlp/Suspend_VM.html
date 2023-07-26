@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<title>Suspend_VM - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Suspend_VM</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Primary_Scheduler_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Wait_Semaphore.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     ebx, VM         ; VM handle
+VMMcall Suspend_VM
+ 
+jc      not_suspended   ; carry set if virtual machine not suspended
+ 
+The Suspend_VM service suspends the execution of a specified virtual
+machine. This service fails if the specified virtual machine either owns the
+critical section, or is the system virtual machine.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>VM</i>         Specifies a handle identifying the virtual machine to suspend.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the virtual machine is suspended. The carry flag
+is set to indicate an error.
+ 
+<b>Comments</b>
+ 
+An error occurs if the virtual machine is in a critical section or is the
+<i>VM</i> parameter specifies the system virtual machine.
+ 
+This service increments the suspend count for the virtual machine. If the
+virtual machine was not already suspended, the system notifies virtual
+devices of the suspension by sending a VM_Suspend command to the control
+procedure for each virtual device. A virtual device must not refuse to
+suspend a virtual machine. If a virtual machine remains suspended,
+subsequent calls to Suspend_VM do not cause the VM_Suspend notification.
+ 
+When a virtual machine is suspended, the system sets the VMStat_Suspended
+bit in the CB_VM_Status field of the virtual machine's control block.
+Although virtual devices may examine and modify the contents of the control
+block of a virtual machine, the virtual devices must not examine or modify
+any memory owned by a suspended virtual machine unless the virtual device
+previously locked that memory.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>No_Fail_Resume_VM, Resume_VM</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

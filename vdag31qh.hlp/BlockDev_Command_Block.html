@@ -1,0 +1,131 @@
+<html>
+
+<head>
+<title>BlockDev_Command_Block - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> BlockDev_Command_Block</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Block_Device_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='BlockDev_Device_Descriptor.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include blockdev.inc
+ 
+BlockDev_Command_Block  STRUC
+BD_CB_Next              dd      ?
+BD_CB_Command           dw      ?
+BD_CB_Cmd_Status        dw      ?
+BD_CB_Flags             dd      ?
+BD_CB_Cmd_Cplt_Proc     dd      ?
+BD_CB_Sector            dq      ?
+BD_CB_Count             dd      ?
+BD_CB_Buffer_Ptr        dd      ?
+BD_CB_Reserved_Client   dd      ?
+BD_CB_Reserved_BlockDev dd      ?
+BD_CB_Reserved_FastDisk dd      ?
+BlockDev_Command_Block  ENDS
+ 
+The BlockDev_Command_Block structure contains information about a block
+device command.
+ 
+<b>Member                   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<b>BD_CB_Next</b>               Points to the next command in the command list.
+ 
+<b>BD_CB_Command</b>            Specifies the command to carry out. It can be one
+                         of the following values:
+ 
+                         Value       Meaning
+                         ───────────────────────────────────────────────────
+                         BDC_Read    Read from device
+ 
+                         BDC_Write   Write to device
+ 
+                         BDC_Verify  Verify read or write
+ 
+                         BDC_Cancel  Cancel command
+ 
+                         Command values in the range 8000h through 0FFFFh
+                         are reserved for device-specific commands.
+ 
+<b>BD_CB_Cmd_Status</b>         Specifies the status of the command. It can be one
+                         of the following values:
+ 
+                         Value                      Meaning
+                         ───────────────────────────────────────────────────
+                         BDS_Success                Command completed
+                                                    successfully
+ 
+                         BDS_Success_With_Retries   Command completed
+                                                    successfully after
+                                                    repetition
+ 
+                         BDS_Success_With_ECC       Command completed
+                                                    successfully after error
+                                                    correction
+ 
+                         BDS_Invalid_Sector_Number  Invalid sector number
+ 
+                         BDS_Canceled               Command was canceled
+ 
+                         BDS_Cmd_In_Progress        Can't cancel command in
+                                                    progress
+ 
+                         BDS_Invalid_Cmd_Ptr        Cancel of invalid
+                                                    command pointer
+ 
+                         BDS_Media_Error            Read or write failed
+ 
+                         BDS_Device_Error           Device or adapter
+                                                    failed
+ 
+                         BDS_Invalid_Command        Invalid command
+ 
+                         All values below BDS_First_Error_Code (10h) imply
+                         successful completion; error values are greater
+                         than or equal to BDS_First_Error_Code.
+ 
+<b>BD_CB_Flags</b>              Specifies additional actions to take when carrying
+                         out the command. This field can be a combination of
+                         the following values:
+ 
+                         Value                Meaning
+                         ───────────────────────────────────────────────────
+                         BDCF_High_Priority   High priority
+ 
+                         BDCF_Scatter_Gather  Scatter or gather
+ 
+                         BDCF_Dont_Cache      Noncached command
+ 
+<b>BD_CB_Cmd_Cplt_Proc</b>      Points to the command-completion callback
+                         procedure.
+ 
+<b>BD_CB_Sector</b>             Specifies the count of sectors for the block
+                         device.
+ 
+<b>BD_CB_Count</b>              Specifies the count.
+ 
+<b>BD_CB_Buffer_Ptr</b>         Points to the buffer.
+ 
+<b>BD_CB_Reserved_Client</b>    Reserved.
+ 
+<b>BD_CB_Reserved_BlockDev</b>  Reserved.
+ 
+<b>BD_CB_Reserved_FastDisk</b>  Reserved.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

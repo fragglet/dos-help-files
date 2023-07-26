@@ -1,0 +1,515 @@
+<html>
+
+<head>
+<title>FONTINFO - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> FONTINFO</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Driver_Structures.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='GDIINFO.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+typedef struct tagFONTINFO {
+    short dfType;
+    short dfPoints;
+    short dfVertRes;
+    short dfHorizRes;
+    short dfAscent;
+    short dfInternalLeading;
+    short dfExternalLeading;
+    char  dfItalic;
+    char  dfUnderline;
+    char  dfStrikeOut;
+    short dfWeight;
+    char  dfCharSet;
+    short dfPixWidth;
+    short dfPixHeight;
+    char  dfPitchAndFamily;
+    short dfAvgWidth;
+    short dfMaxWidth;
+    char  dfFirstChar;
+    char  dfLastChar;
+    char  dfDefaultChar;
+    char  dfBreakChar;
+    short dfWidthBytes;
+    long  dfDevice;
+    long  dfFace;
+    long  dfBitsPointer;
+    long  dfBitsOffset;
+    char  dfReserved;
+    /* The following fields present only for Windows 3.x fonts */
+    long  dfFlags;
+    short dfAspace;
+    short dfBspace;
+    short dfCspace;
+    long  dfColorPointer;
+    long  dfReserved1[4];
+} FONTINFO;
+ 
+The FONTINFO structure contains information about a physical font. Depending
+on whether the font is realized by GDI or by a device driver, the FONTINFO
+structure may be immediately followed by a character width table and by font
+bitmap or vector information.
+ 
+The FONTINFO structure contains optional members (dfFlags through
+<b>dfReserved1</b>) that are present only if the font has been designed for Windows
+3.x. If GDI realizes a font for a driver, the font's corresponding FONTINFO
+structure will not include these optional members unless the RC_BIGFONT bit
+is set in the dpRaster member of the driver's GDIINFO structure.
+ 
+<b>Member             Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<b>dfType</b>             Specifies font type. The low-order byte, reserved for
+                   exclusive GDI use, is a combination of the following
+                   values.
+ 
+                   Value                        Meaning
+                   ─────────────────────────────────────────────────────────
+                   PF_RASTER_TYPE (0x0000)      Font is a raster font.
+ 
+                   PF_VECTOR_TYPE (0x0001)      Font is a vector font.
+ 
+                   PF_BITS_IS_ADDRESS (0x0004)  Indicates that the
+                                                dfBitsOffset member
+                                                specifies the absolute
+                                                memory address of the font
+                                                bitmap or vector
+                                                information.
+ 
+                   PF_DEVICE_REALIZED (0x0080)  Font has been realized by
+                                                the device driver.
+ 
+                   All other values in the low-order byte are reserved. In
+                   particular, the value 0x0008 in the dfType member is
+                   reserved for use with Asian fonts.
+ 
+                   The high-order byte is reserved for device use. GDI never
+                   inspects the high byte. If GDI realizes the font, it sets
+                   this byte to zero. If the device driver realizes the
+                   font, it can set this byte to any value.
+ 
+<b>dfPoints</b>           Specifies the point size at which this character set
+                   looks best.
+ 
+<b>dfVertRes</b>          Specifies the vertical resolution (dots-per-inch) at
+                   which this character set was digitized.
+ 
+<b>dfHorizRes</b>         Specifies the horizontal resolution (dots-per-inch) at
+                   which this character set was digitized.
+ 
+<b>dfAscent</b>           Specifies the distance from the top of a character
+                   definition cell to the baseline of the typographical
+                   font. It is useful for aligning the baseline of fonts of
+                   different heights.
+ 
+<b>dfInternalLeading</b>  Specifies the amount of leading inside the bounds set by
+                   the dfPixHeight member. Accent marks may occur in this
+                   area.
+ 
+<b>dfExternalLeading</b>  Specifies the amount of extra leading that the designer
+                   requests the application add between rows. Since this
+                   area is outside of the font proper, it contains no marks
+                   and will not be altered by text output calls in either
+                   the OPAQUE or TRANSPARENT mode.
+ 
+<b>dfItalic</b>           Specifies whether the character-definition data
+                   represents an italic font. The low-order bit is 1 if the
+                   flag is set. All other bits are zero.
+ 
+<b>dfUnderline</b>        Specifies whether the character-definition data
+                   represents an underlined font. The low-order bit is 1 if
+                   the flag is set. All other bits are zero.
+ 
+<b>dfStrikeOut</b>        Specifies whether the character definition data
+                   represents a struck-out font. The low-order bit is 1 if
+                   the flag is set. All other bits are zero.
+ 
+<b>dfWeight</b>           Specifies the weight of the characters in the character
+                   definition data, on a scale from 1-1000. A value of 400
+                   specifies regular weight type; 700 is bold; and so on.
+ 
+<b>dfCharSet</b>          Specifies the character set defined by this font. It can
+                   be one of the following values.
+ 
+                   Value  Meaning
+                   ─────────────────────────────────────────────────────────
+                   0      ANSI character set
+ 
+                   2      Symbol character set
+ 
+                   255    OEM hardware font
+ 
+<b>dfPixWidth</b>         Specifies the width of all characters in the font.
+ 
+                   For vector fonts, the dfPixWidth member is the width of
+                   the grid on which the font was digitized.
+ 
+                   For raster fonts, dfPixWidth is the width (in pixels) of
+                   each character bitmap. If that member is zero, the font
+                   has variable-width characters and these widths are
+                   specified in the character-width table immediately
+                   following this structure.
+ 
+<b>dfPixHeight</b>        Specifies the height of all characters in the font.
+ 
+                   For vector fonts, the dfPixHeight member is the height of
+                   the grid on which the font was digitized.
+ 
+                   For raster fonts, dfPixHeight is the height (in scan
+                   lines) of each character bitmap.
+ 
+<b>dfPitchAndFamily</b>   Specifies the pitch and font family. The pitch specifies
+                   whether the characters in the font have the same width or
+                   variable widths. The font family indicates, in a general
+                   way, the look of a font.
+ 
+                   The dfPitchAndFamily member can be a combination of the
+                   following values.
+ 
+                   Value                 Meaning
+                   ─────────────────────────────────────────────────────────
+                   0x01                  Variable-pitch font. If this value
+                                         is not given, the font is fixed
+                                         pitch.
+ 
+                   FF_ROMAN (0x10)       Proportionally spaced fonts with
+                                         serifs.
+ 
+                   FF_SWISS (0x20)       Proportionally spaced fonts without
+                                         serifs.
+ 
+                   FF_MODERN (0x30)      Fixed-pitch fonts.
+ 
+                   FF_SCRIPT (0x40)      Cursive or script fonts.
+ 
+                   FF_DECORATIVE (0x50)  Novelty fonts.
+ 
+                   If the high-order 4 bits is set to FF_DONTCARE (0x00),
+                   the font belongs to no specific family.
+ 
+<b>dfAvgWidth</b>         Specifies the width of characters in the font. For
+                   fixed-pitch fonts, this is the same as dfPixWidth. For
+                   variable-pitched fonts, this is the width of the
+                   character "X."
+ 
+<b>dfMaxWidth</b>         Specifies the maximum pixel width of any character in the
+                   font. For fixed-pitch fonts, this is simply dfPixWidth.
+ 
+<b>dfFirstChar</b>        Specifies the first character code defined by this font.
+                   Character definitions are stored only for the characters
+                   actually present in a font, so this field should be used
+                   when calculating indexes into the character-width table
+                   following this structure.
+ 
+<b>dfLastChar</b>         Specifies the last character code defined by this font.
+                   Notice that all the characters with codes between the
+                   dfFirstChar and dfLastChar member must be present in the
+                   character-width table.
+ 
+<b>dfDefaultChar</b>      Specifies the default character. A device driver uses
+                   this character as a substitute for any character in a
+                   string that is out of the range of the dfFirstChar
+                   through dfLastChar members. The character is given
+                   relative to dfFirstChar so that the actual value of the
+                   default character is the sum of dfDefaultChar and
+                   dfFirstChar. Ideally, the dfDefaultChar member should be
+                   a visible character in the current font, for example, a
+                   period (.).
+ 
+<b>dfBreakChar</b>        Specifies the word-break character. Applications use this
+                   character the separate words when wrapping or justifying
+                   lines of text. The character is given relative to
+                   dfFirstChar so that the actual value of the word-break
+                   character is the sum of the dfBreakChar and dfFirstChar
+                   members. In many fonts, dfBreakChar is zero and
+                   dfFirstChar is 32. This means that the word-break
+                   character value is 32, an ASCII space.
+ 
+<b>dfWidthBytes</b>       Specifies the number of bytes in each row of the font
+                   bitmap (raster fonts). This field is not used for vector
+                   fonts. The dfWidthBytes member is always an even quantity
+                   so that rows of the bitmap start on 16-bit boundaries.
+ 
+<b>dfDevice</b>           Specifies the offset from the beginning of the segment
+                   containing the FONTINFO structure to the null-terminated
+                   ASCII string specifying the device name. For a generic
+                   font, this value will be NULL.
+ 
+<b>dfFace</b>             Specifies the offset from the beginning of the segment
+                   containing the FONTINFO structure to the null-terminated
+                   ASCII string specifying the name of the font face.
+ 
+<b>dfBitsPointer</b>      Specifies the absolute machine address of the bitmap.
+                   This is set by GDI. The dfBitsPointer member is
+                   guaranteed to be even.
+ 
+<b>dfBitsOffset</b>       Specifies the offset from the beginning of the segment
+                   containing the FONTINFO structure to the beginning of the
+                   bitmap information.
+ 
+                   If the PF_BITS_IS_ADDRESS bit is set in dfType,
+                   dfBitsOffset is an absolute address of the bitmap or
+                   vector information. For example, this bit is set if the
+                   font bitmap or vector information is in ROM.
+ 
+                   For raster fonts, dfBitsOffset points to a sequence of
+                   bytes that make up the bitmaps for each character in the
+                   font.
+ 
+                   For vector fonts, dfBitsOffset points to a string of
+                   bytes or words (depending on the size of the grid on
+                   which the font was digitized) that specifies the strokes
+                   for each character of the font. The dfBitsOffset member
+                   must be even.
+ 
+<b>dfReserved</b>         Reserved; do not use. This member is present only for
+                   raster fonts. In Windows 2.x fonts, this member ensures
+                   that the character-width table (which immediately follows
+                   this member) starts on a 16-bit boundary.
+ 
+<b>dfFlags</b>            Specifies the format of the font bitmap information. It
+                   can be one of the following values.
+ 
+                   Value                         Meaning
+                   ─────────────────────────────────────────────────────────
+                   FSF_FIXED (0x0001)            Font is fixed pitch.
+ 
+                   FSF_PROPORTIONAL (0x0002)     Font is proportional pitch
+ 
+                   FSF_ABCFIXED (0x0004)         Font is an ABC fixed font.
+                                                 The advance width for each
+                                                 character in the font is
+                                                 the sum of the dfAspace,
+                                                 dfBspace, and dfCspace
+                                                 members.
+ 
+                   FSF_ABCPROPORTIONAL (0x0008)  Font is an ABC proportional
+                                                 font.
+ 
+                   FSF_1COLOR (0x0010)           Font is one color.
+ 
+                   FSF_16COLOR (0x0020)          Font is 16 color.
+ 
+                   FSF_256COLOR (0x0040)         Font is 256 color.
+ 
+                   FSF_RGBCOLOR (0x0080)         Font is RGB color.
+ 
+                   This member is present only for Windows 3.x fonts.
+ 
+<b>dfAspace           Speci</b>fies the global A space, if any. The dfAspace member
+                   is the distance from the current position to the left
+                   edge of the bitmap. This member is present only for
+                   Windows 3.x fonts.
+ 
+<b>dfBspace           Speci</b>fies the global B space, if any. The dfBspace member
+                   is the width of the character. This member is present
+                   only for Windows 3.x fonts.
+ 
+<b>dfCspace           Speci</b>fies the global C space, if any. The dfCspace member
+                   is the distance from the right edge of the bitmap to the
+                   new current position. This member is present only for
+                   Windows 3.x fonts.
+ 
+<b>dfColorPointer</b>     Specifies the offset to the color table (if any) for
+                   color fonts. This member is present only for Windows 3.x
+                   fonts, however, it is not presently used and should
+                   always be set to NULL.
+ 
+<b>dfReserved1</b>        This member is not used. This member is present only for
+                   Windows 3.x fonts.
+ 
+<b>Comments</b>
+ 
+The FONTINFO structure may be immediately followed by one or more of the
+following items.
+ 
+<b>Item                   Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Character-width table</i>  Specifies the widths of each character as well as
+                       specifies the offset to the corresponding bitmap or
+                       vector information.
+ 
+<i>Bitmaps</i>                Specifies the bits defining the shape of the
+                       characters in a raster font. The size of this item is
+                       whatever length the total bitmaps occupy. Each row of
+                       a raster bitmap must start on a 16-bit boundary. This
+                       implies that the end of each row must be padded to an
+                       even length.
+ 
+<i>Vectors</i>                Specifies the set of coordinates that define the
+                       shape of the characters in a vector font.
+ 
+<i>Font name</i>              Specifies a null-terminated ASCII character string
+                       specifying the name of the font. The size of this
+                       field is the length of the string plus a null
+                       character.
+ 
+<i>Device name</i>            Specifies a null-terminated ASCII character string
+                       specifying the name of the device if this font file
+                       is for a specific device. The size of this field is
+                       the length of the string plus a null character.
+ 
+All device drivers must support Windows 2.x fonts. If a device driver
+supports Windows 3.x fonts, it must set the RC_BIGFONT bit in the dpRaster
+member of its GDIINFO structure. Printer drivers can call the GetDeviceCaps
+function (GDI.80), and check for the RC_BIGFONT bit in the raster
+capabilities to determine whether the display driver uses Windows 3.x
+fonts.
+ 
+When a device driver realizes a font using the RealizeObject function, the
+<b>dfFace and dfDevic</b>e members must point to valid character strings containing
+the font and device names.
+ 
+<b>Windows 2.x Fonts</b>
+ 
+For Windows 2.x fonts the character-width table is either an array of
+integer values or an array of glyph-entry structures. The number of elements
+in the array is equal to:
+ 
+dfLastChar - dfFirstChar + 2
+ 
+That is, there is always one more element than the number of characters in
+the font. The extra entry is available for storing the size in bytes of the
+last character in a vector font. Although this extra entry applies only to
+vector fonts, it is present for all fonts.
+ 
+For fixed-pitch vector fonts, the character-width table is an array of
+integer values. In this case, each element of the array is an offset
+(relative to the start of the segment containing the FONTINFO structure) to
+the first byte or 16 bits of vector information for the given character. The
+number of bytes or words for a particular character is calculated by
+subtracting its character-width table entry from the entry for the next
+character.
+ 
+For variable-pitch vector fonts, the character width table is an array of
+<b>VECTORGLYPHENTRY structures. The VECTORGLYPHENTR</b>Y structure has the
+following form:
+ 
+typedef struct tagVECTORGLYPHENTRY {
+    short vgeOffset;    /* offset to vectors relative to segment start */
+    short vgeWidth;     /* width of character in pixels */
+} VECTORGLYPHENTRY;
+ 
+The vgeOffset member specifies the offset (relative to the start of the
+segment containing the FONTINFO structure) to the first byte or 16 bits of
+vector information for the given character. The vgeWidth member specifies
+the width for the character.
+ 
+For raster fonts, the character-width table is an array of RASTERGLYPHENTRY
+structures.
+ 
+The rgeWidth member specifies the width (in pixels) of the bitmap for the
+given character. The member also specifies the advance width for the given
+character. The rgeOffset member specifies the offset (relative to the start
+of the segment containing the FONTINFO structure) to the first byte of
+bitmap information for the character.
+ 
+Windows 2.x fonts cannot exceed 64K bytes.
+ 
+<b>Windows 3.x Fonts</b>
+ 
+Windows 3.x fonts are primarily designed for use on systems with more than
+average memory and a microprocessor (such as an 80386) that has instructions
+that use 32-bit address offsets.
+ 
+For Windows 3.x fonts, the format of the character-width table is dependent
+on the value of the dfFlags member.
+ 
+<b>Value                Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>DFF_FIXED            Specif</i>ies an array of RASTERGLYPHENTRY structures.
+ 
+<i>DFF_PROPORTIONAL     Specifies an array of RASTE</i>RGLYPHENTRY structures.
+ 
+<i>DFF_ABCFIXED         Specifies an ar</i>ray of ABCGLYPHENTRY structures.
+ 
+<i>DFF_ABCPROPORTIONAL  Specifies an array of ABCGLYPHENTRY </i>structures.
+ 
+<i>DFF_1COLOR           Specifies</i> an array of COLORGLYPHENTRY structures.
+ 
+<i>DFF_16COLOR          Specifies an</i> array of COLORGLYPHENTRY structures.
+ 
+<i>DFF_256COLOR         Specifies an ar</i>ray of COLORGLYPHENTRY structures.
+ 
+<i>DFF_RGBCOLOR         Specifies an ar</i>ray of COLORGLYPHENTRY structures.
+ 
+Windows presently supports only the DFF_FIXED and DFF_PROPORTIONAL values.
+ 
+The rgeWidth member specifies the width (in pixels) of the bitmap for the
+given character. The member also specifies the width for the character. The
+<b>rgeOffset</b> member specifies the offset (relative to the start of the segment
+containing the FONTINFO structure) to the first byte of bitmap information
+for the character.
+ 
+The ABCGLYPHENTRY structure has the following form:
+ 
+typedef struct tagABCGLYPHENTRY {
+    short ageWidth;     /* width of character bitmap in pixels */
+    long  ageOffset;    /* pointer to the bits */
+    FIXED ageAspace;    /* A space in fractional pixels (16.16) */
+    FIXED ageBspace;    /* B space in fractional pixels (16.16) */
+    FIXED ageCspace;    /* C space in fractional pixels (16.16) */
+} ABCGLYPHENTRY;
+ 
+The ageWidth member specifies the width (in pixels) of the bitmap for the
+given character. The ageOffset member specifies the offset (relative to the
+start of the segment containing the FONTINFO structure) to the first byte of
+bitmap information for the character. The sum of the ageAspace, ageBspace,
+and ageCspace members specify the width of the character.
+ 
+The COLORGLYPHENTRY structure has the following form:
+ 
+typedef struct tagCOLORGLYPHENTRY {
+    short cgeWidth;     /* width of character bitmap in pixels */
+    long  cgeOffset;    /* pointer to the bits */
+    short cgeHeight;    /* height of character bitmap in pixels */
+    FIXED cgeAspace;    /* A space in fractional pixels (16.16) */
+    FIXED cgeBspace;    /* B space in fractional pixels (16.16) */
+    FIXED cgeCspace;    /* C space in fractional pixels (16.16) */
+} COLORGLYPHENTRY;
+ 
+The cgeWidth member specifies the width (in pixels) of the bitmap for the
+given character. The cgeOffset member specifies the offset (relative to the
+start of the segment containing the FONTINFO structure) to the first byte of
+bitmap information for the character. The cgeHeight member specifies the
+height (in scan lines) of the bitmap. The sum of the cgeAspace, cgeBspace,
+and cgeCspace members specify the width of the character.
+ 
+The number of bits for each pixel in a character bitmap depends on the value
+of the dfFlags member.
+ 
+<b>Value         Bits per pixel</b>
+────────────────────────────────────────────────────────────────────────────
+<i>DFF_1COLOR</i>    Bitmap has 1 bit per pixel.
+ 
+<i>DFF_16COLOR</i>   Bitmap has 4 bits per pixel.
+ 
+<i>DFF_256COLOR</i>  Bitmap has 8 bits per pixel.
+ 
+<i>DFF_RGBCOLOR  Bitmap has 32 bits per</i> pixel (an RGBQUAD structure for each
+              pixel).
+ 
+All other font formats use 1 bit per pixel.
+ 
+Windows 3.x fonts can exceed 64K bytes.
+ 
+<b>See Also</b>
+ 
+<b>ExtTextOut, RealizeObject, StrBlt, FIXED</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

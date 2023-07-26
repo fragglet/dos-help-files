@@ -1,0 +1,451 @@
+<html>
+
+<head>
+<title>PostScript Printer Driver - Printers and Fonts Kit(3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Printers and Fonts Kit(3.1) (pfk31qh.hlp) (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> PostScript Printer Driver</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printers_and_Fonts_Kit(3_dot_1).html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='External_PostScript_Printers.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+The Microsoft Windows PostScript printer driver supports a wide variety of
+PostScript printers and fonts. This topic provides a brief overview of the
+features for the driver and in particular those features new for Windows
+3.1.
+ 
+<b>External Printer Installation</b>
+ 
+The PostScript driver can support printers that are not listed in its
+default list of the supported printers. Such "external" printers must have
+accompanying Windows printer description (WPD) files that provide the
+information the PostScript driver needs to access the printer correctly.
+Typically, printer vendors create the WPD files for and distribute them with
+their printers.
+ 
+In Windows 3.1, the PostScript driver uses the same process to install both
+internal and external printers. If a printer vendor supplies a WPD file and
+an OEMSETUP.INF file for the external printer, the user can use the Printers
+dialog box in Control Panel to install the printer. In this case, the
+OEMSETUP.INF file must have a statement having the same form as the
+following example:
+ 
+1:PSCRIPT.DRV,1:NEWPRN.WPD,"New PostScript printer","DEVICESPECIFIC"
+ 
+In this example, 1 represents a logical disk and is previously defined in a
+[Disks] section. Control Panel automatically installs both the PostScript
+driver (if necessary) and the WPD file to the SYSTEM directory. The first
+time the printer is used to print a document, the driver scans all the
+installed WPD files, and adds the new external printer to the list of
+installed external printers.
+ 
+In Windows 3.1, the maximum number of external printers a user can install
+depends on the available space in WIN.INI. The theoretical limit is 32,000
+printers.
+ 
+<b>Printer Font Metrics Support</b>
+ 
+For printers that have hard disks or resident fonts from some other source,
+external PFM files can be added to the WIN.INI file to make the driver aware
+of these fonts. This is similar to the way soft fonts are installed.
+ 
+<b>Printer Selection by Model Name</b>
+ 
+Windows 3.1 uses model names to identify printers. This means, for example,
+that applications create printer device contexts by passing a model name,
+such as "Apple LaserWriter IINT," instead of the generic driver name,
+"PostScript."
+ 
+This use of model name also affects printer selection. When installing a
+printer, the driver searches the list of installed internal and external
+printers and installed WPD files for the requested model name. This means
+the model name stored in the WPD file must exactly match the model name in
+the initialization file. If the driver is unable to find the requested
+model, it will use the default printer (Apple LaserWriter Plus).
+ 
+<b>Device Initialization</b>
+ 
+The PostScript driver supports the Windows device-initialization functions.
+This means that applications can maintain private, device-independent
+initialization data that is separate from the default configurations set
+using Control Panel. For more information about device-independent
+initialization data, see the ExtDeviceMode and DeviceCapabilities functions
+in the Microsoft Windows Device Driver Adaptation Guide.
+ 
+<b>Initialization File Entries for PostScript Printers</b>
+ 
+The PostScript printer driver uses global and per-port initialization
+sections in the WIN.INI file. These sections specify information about the
+PostScript printer.
+ 
+<b>Global Initialization Section</b>
+ 
+The global-initialization section, [Pscript], contains data that is not
+associated with a particular port. In particular, this section defines the
+installed external printers and the corresponding WPD files. The section has
+the following form:
+ 
+[PSCRIPT]
+External Printers=2
+printer1=abc_ps
+printer2=xyz_ps
+ 
+The External Printers setting indicates how many external printers there
+are. The printern setting indicates the base filename of a given WPD file
+associated with the external printer.
+ 
+<b>Per-Port Initialization Section</b>
+ 
+The per-port initialization section contains data that is specific to each
+port connection. In particular, it defines the printer settings for the
+printer connected to the given port. In Windows 3.1, each printer is
+identified by model name, so the heading for the per-port initialization
+section has the following form:
+ 
+[ModelName,port]
+ 
+The ModelName defines the printer (for example, Apple LaserWriter Plus) and
+the port specifies the communication port, such as COM1 or LPT1. The
+following is an example of a per-page initialization section:
+ 
+[Apple LaserWriter Plus,COM1]
+feed2=1
+feed15=5
+ 
+Windows saves the state of printer connections on a per-port basis. The
+printer number is no longer stored in the section. The number is derived
+from the model name.
+ 
+<b>Advanced Options Dialog Box</b>
+ 
+The Windows 3.1 PostScript driver provides an Advanced Options dialog box
+that gives the user control of most of the driver's advanced features, such
+as duplex printing, font management, TrueType support, and error handling.
+The driver displays the dialog box whenever the user chooses the Options
+button in the driver's Setup dialog box. Descriptions of the various
+advanced options are given in the following sections of this topic.
+ 
+<b>Multiple-Resolution Printer Support</b>
+ 
+In Windows 3.1, the user can set the resolution of the output by selecting
+the Resolution option in the Advanced Options dialog box. Some printers are
+capable of printing in multiple resolutions and all printers can emulate
+certain resolutions (without changing the physical size of the dots). The
+list of hardware-supported resolutions can be viewed by moving the scroll
+arrow. Items can be selected from the list or an arbitrary value can be
+entered.
+ 
+The halftone parameters (angle and frequency) do not update automatically
+when changing the hardware resolution. You must enter the correct values
+manually. Printers that only have one hardware resolution are acceptable.
+ 
+<b>Duplex Support</b>
+ 
+The Windows 3.1 driver supports duplex PostScript printers. If duplex
+printing is enabled (by the printer's WPD file), the driver expands the
+Options dialog box to give user control of duplex settings.
+ 
+<b>PostScript Header Support</b>
+ 
+The size of the PostScript header is less than 8K. Most header functions are
+efficient and compact. This minimizes the overhead of print jobs that
+include the header to just a few seconds.
+ 
+Users who want to reduce printing times as much as possible should download
+the header to their printer using the Print Options dialog to make all the
+functions used be resident in the printer. With the header in place,
+printing times are reduced by about 10 seconds. However, for sending files
+to service bureaus, the header must be included in the print job and not
+downloaded previously.
+ 
+<b>Automatic Error Handler</b>
+ 
+The Windows 3.1 driver automatically downloads an error handler that exists
+for the life of a job. The error handler provides valuable feedback for the
+user. If an error occurs, the handler prints a brief message telling the
+user what happened and what to do about it, followed by the command and a
+trace of the stack at the time of the error. This information can be used to
+correct the problem, or give the support staff help in determining the
+problem.
+ 
+<b>Automatic Handshaking</b>
+ 
+A common error is mismatched protocol settings between Control Panel and the
+PostScript driver. The Windows 3.1 driver will automatically download code
+to the printer to select the appropriate handshaking if the printer is
+connected to a serial port. If the printer is connected to a parallel port
+hardware, standard handshaking is used; network connections do not require
+handshaking. Consequently, the Handshake button has been removed.
+ 
+<b>EPS Printing</b>
+ 
+Users can produce an Encapsulated PostScript (EPS) file that can be imported
+into applications such as Aldus PageMaker with any Windows application that
+prints using the PostScript driver. This is done by selecting the Print to
+EPS File option from the PostScript Options dialog box, and then printing.
+The output of the print job is redirected into the PostScript-only EPS file
+specified in the Options dialog box. No alternate representation of the
+image (for example, metafile or TIFF image) is produced by the driver.
+ 
+By default, the bounding rectangle is the whole page (that is, the imageable
+area of the page). If the printing application issues a SET_BOUNDS escape,
+that rectangle will be used instead of the whole page. Therefore, before
+printing a page, every application that might possibly have its output sent
+to an EPS file should issue a SET_BOUNDS escape with the bounding rectangle
+of all the output.
+ 
+<b>Detectable Start of Page</b>
+ 
+In Windows 3.1, the PostScript driver calls the StartPage function at the
+beginning of each page. Users can define their own StartPage function to
+carry out any per-page processing.
+ 
+<b>Document-Structuring Convention Support</b>
+ 
+The Windows 3.1 PostScript driver can generate output that conforms to the
+document-structuring conventions defined by Adobe. These conventions make it
+easier for applications to parse and rearrange PostScript output to perform
+special operations, or print more efficiently. Users should request
+conforming output if they plan on using the PostScript output as input to
+another program that processes PostScript files. (This option does not need
+to be checked for EPS files.)
+ 
+The driver creates output that conforms to the Document-Structuring
+Convention (DSC) only if the user chooses the Generate Conforming Output
+option in the Advanced Setup dialog box. If this option is not explicitly
+set, the driver may optimize output for printing efficiency and therefore
+cannot guarantee conformance with DSC. In particular, the optimized output
+may not be "page independent" as specified by the conventions. That is,
+pages may need to be printed in a specific order, relying on fonts or other
+resources loaded from previous pages. For more information about
+DSC-conforming output, see version 3.0 of Adobe's Document Structuring
+Conventions.
+ 
+<b>Color</b>
+ 
+The PostScript driver is a one bit-per-pixel device. However, this does not
+mean it can represent only black and white. Bitmaps in a one bit-per-pixel
+format can use any color for the foreground and background.
+ 
+On black and white devices, colors are converted to gray levels by the
+PostScript color machinery. For example, when a bitmap is transferred to the
+printer, the foreground and background colors are examined to determine the
+two colors to use for the transfer.
+ 
+Windows uses brushes to fill objects. Patterned brushes are defined by an
+8x8 bitmap that is used to tile a region that is to be filled. However,
+since the PostScript driver is a one bit-per-pixel device, there is no color
+information stored in its brushes. When a brush is used to fill an object,
+the current text and background colors are used.
+ 
+In Windows 3.1, the user can force all colors (other than white) to print as
+black by setting the All Colors to Black option in the Advanced Options
+dialog box. This option is useful if a printout loses detail from thin,
+light-colored areas.
+ 
+<b>Color-Separation Support</b>
+ 
+To provide minimal support for color separation, the Windows 3.1 PostScript
+driver recognizes the scignore variable in the PostScript header. Setting
+this variable to True disables all color change commands allowing the
+application to perform multiple passes over the input, setting the current
+color to be the correct process color.
+ 
+Before starting color separation, an application must set the scignore
+variable using the PASSTHROUGH escape and the following string:
+ 
+/scignore true def
+ 
+<b>Device-Independent Bitmaps</b>
+ 
+Device-independent bitmaps (DIBs) are used to deal with more than one
+bit-per-pixel bitmaps. The implementation in the PostScript driver uses the
+PostScript image operator on black and white devices and the colorimage
+operator on color devices to render multiple bit-per-pixel images. (Notice,
+however, that this makes the output printer dependent.)
+ 
+Applications that want to print multiple bit-per-pixel images should use the
+<b>SetDIBitsToDevice or StretchDIBitsToDevice function</b> to render these images.
+GDI will simulate these if the driver does not support them.
+ 
+<b>StretchBlt Support</b>
+ 
+The PostScript driver supports arbitrary scaling of bitmap images. This
+means applications can call the StretchBlt function without GDI intercepting
+the call and carrying out the scaling on its own. With StretchBlt
+implemented in the PostScript driver, the source bitmap is transferred
+directly to the printer and stretched using the PostScript imagemask
+operator. A run-length encoding (RLE) compression scheme has also been
+implemented to reduce the amount of data that needs to be transferred to the
+printer.
+ 
+<b>Compressed Bitmaps</b>
+ 
+The user can direct the PostScript driver to compress bitmaps before sending
+them to the printer by setting the Compress Bitmap option in the Advanced
+Options dialog box. Compressing bitmaps speeds up the generation of the
+PostScript output but slows down the printer itself (PostScript printers
+need more time to decompress the bitmaps). This option is recommended only
+if the user is more concerned about having the printing application finish
+quickly than with how long it takes to get the printout.
+ 
+<b>Font Management</b>
+ 
+The Windows 3.1 PostScript driver encloses each page in a gsave/grestore
+pair to restore the graphics state (reclaim memory) without deleting
+downloaded fonts. Also, the driver now calculates memory consumption during
+the course of a print job, and will flush downloaded fonts at the start of
+any page if memory is low.
+ 
+Users can modify this behavior by setting the Printer VM and the Per Page
+Font Downloading options in the Advanced Options dialog box. The Printer VM
+option specifies how much available memory is in the printer. The driver
+uses this setting when calculating memory usage. The Per Page Font
+Downloading option directs the driver to flush printer memory at the end of
+every page regardless of how much free memory exists. Essentially, this
+option forces the driver to downloaded fonts with each page.
+ 
+<b>TrueType Support</b>
+ 
+The Windows 3.1 PostScript driver supports TrueType fonts allowing users to
+create and print document containing TrueType fonts on PostScript printers.
+The driver also provides a variety of advanced options that let the user
+determine how TrueType fonts are to be used with the printer. Depending on
+the capabilities of the printer, the user may want to convert TrueType fonts
+to an Abode format, or substitute the TrueType font with a printer-resident
+font.
+ 
+The PostScript driver may need to convert the fonts to PostScript
+device-font format before downloading to the printer. This is true if the
+printer does not support the TrueType font format itself. If the driver must
+convert TrueType fonts, it can convert them to either Adobe Type 3 bitmap
+fonts or Type 1 outline fonts. The user sets the type in the TrueType option
+in the Advanced Options dialog box. The TrueType to Type 1 conversion is not
+exact and may produce fonts of slightly inferior quality to the original
+TrueType font. However, using this conversion will reduce print time and
+require much less printer memory for documents containing lots of TrueType
+fonts at large point sizes.
+ 
+The user can direct the PostScript driver to substitute PostScript
+printer-resident fonts for TrueType fonts by using the Substitution option
+in the Advanced Options dialog box. This option displays another dialog box
+that lists the TrueType fonts and lets the user choose the substitution
+font. Using substitution fonts reduces print time and requires less printer
+memory.
+ 
+If the printer supports the TrueType font format, the user can also direct
+the driver to download TrueType fonts to the printer by using the
+Substitution option in the Advanced Options dialog box. In this case, the
+user sets the Download as a SoftFont option for a TrueType font instead of
+choosing a printer-resident font. The driver converts the TrueType font to a
+soft font and downloads it to the printer. This is the default for any
+TrueType font that hasn't been assigned a printer font in the substitution
+table.
+ 
+<b>Rotated Text</b>
+ 
+The PostScript driver can support printing text at any angle. Applications
+may create fonts using any Escapement value (that is, by specifying the
+angle of the baseline). The only limitation is that the Orientation (that
+is, the angle of individual characters) is ignored.
+ 
+<b>Escapes</b>
+ 
+There are four PostScript-related printer escapes: EPSPRINTING,
+POSTSCRIPT_DATA, POSTSCRIPT_IGNORE, and GETSETSCREENPARAMS.
+ 
+The EPSPRINTING escape is intended for applications that produce their own
+PostScript. It suppresses the Windows PostScript header. With this option
+on, no GDI output functions will work.
+ 
+The POSTSCRIPT_DATA escape is just like the PASSTHROUGH (also known as
+DEVICE_DATA) escape except that it is recognized only by PostScript devices.
+This escape is intended for applications that produce two representations of
+the output: one intended for PostScript devices and the other for
+non-PostScript devices. It should be used in conjunction with
+POSTSCRIPT_IGNORE to make the PostScript driver ignore the GDI
+representation.
+ 
+The POSTSCRIPT_IGNORE escape is used to make the PostScript driver ignore or
+accept all the output. The lpInData parameter points to a Boolean value that
+indicates whether the GDI functions should be ignored (TRUE) or not (FALSE,
+the default).
+ 
+The GETSETSCREENPARAMS escape, new for Windows 3.1, sets and retrieves the
+current screen parameters, such as angle and frequency, for halftoning. The
+user can also set these parameters by using the Halftone Frequency and
+Halftone Angle options in the Advanced Options dialog box.
+ 
+Detailed descriptions of other escapes are available in the Microsoft
+<i>Windows Device Driver Adaptation Guide</i> which has driver-oriented
+descriptions.
+ 
+<b>PostScript Printer Communications</b>
+ 
+Most PostScript printers support both serial and parallel ports. The fastest
+and most efficient way to connect your printer to your computer is usually
+with a parallel port (LPTx). If your printer has both a parallel and a
+serial port, the parallel port should be used.
+ 
+If you are using serial communications and have a newer PostScript printer,
+you may be able to increase the transmission rate from the standard 9600
+baud. Many printers support communications of 19,200 baud.
+ 
+The following is a PostScript program that can be sent to the printer to set
+it up for 19,200-baud communications. Save the following in a file called
+19200.PS and then use the MS-DOS copy command (COPY 19200.PS COM1:) to send
+it to the printer.
+ 
+% set laserwriter for 19200 baud
+%   set up hardware handshaking
+%   see page 121-122 of apple manual for details
+%   use ETX/ACK (cts/rts)
+serverdict begin 0 exitserver
+statusdict begin 25 19200 7 setsccbatch end
+% a ^D should be appended to this file in most cases
+ 
+<b>Note:</b>  This will set the speed permanently (even after a power cycle). Use
+       the following PostScript program to reset the communications channel
+       to the default 9600 baud.
+ 
+% set laserwriter for 9600 baud
+%   set up hardware handshaking
+%   see page 121-122 of apple manual for details
+%   use ETX/ACK (cts/rts)
+serverdict begin 0 exitserver
+statusdict begin 25 9600 0 setsccbatch end
+% a ^D should be appended to this file in most cases
+ 
+You will also have to set the port on the computer to this speed by issuing
+the following command, which should go in your AUTOEXEC.BAT file:
+ 
+MODE COM1:,19200,n,8,1
+ 
+<b>Driver Limitations</b>
+ 
+The following are limitations placed on the driver by PostScript:
+ 
+♦  PostScript does not support most raster operations (Rops). However, it
+   does support BLACKNESS, WHITENESS, and SRCCOPY.
+ 
+♦  PostScript has a 750-point polygon limit. This number is reduced by two
+   when filling with a hatch or pattern. This is because a clipping path
+   must be built as well as the path to fill and stroke. In cases where this
+   limit is reached, the driver will request that GDI simulate the polygon.
+   This is very slow. Applications should avoid generating large polygons.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

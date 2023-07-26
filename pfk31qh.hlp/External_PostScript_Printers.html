@@ -1,0 +1,533 @@
+<html>
+
+<head>
+<title>External PostScript Printers - Printers and Fonts Kit(3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Printers and Fonts Kit(3.1) (pfk31qh.hlp) (<a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> External PostScript Printers</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printers_and_Fonts_Kit(3_dot_1).html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Printers_and_Fonts_Kit(3_dot_1).html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+In addition to supporting a wide variety of PostScript printers, the
+Microsoft Windows PostScript printer driver can also support any new
+PostScript printers for which the user installs an external printer
+definition.
+ 
+For the user to be able to do this, the printer manufacturer must supply a
+Windows Printer Description (WPD) file that contains information about the
+new printer. Printer manufacturers create the WPD files by compiling
+Adobe-standard PostScript Printer Description (PPD) files with the MKPRN
+utility. This topic describes how font manufacturers can build the WPD files
+and distribution disks that will enable users to add a printer to the
+Microsoft Windows PostScript printer driver.
+ 
+<b>Building and Distributing WPD Files</b>
+ 
+To build Windows Printer Description files, a font manufacturer must first
+build PPD files for each printer and PFM files for the each printer's
+resident font or soft fonts. The font manufacturer then uses the MKPRN
+utility to generate the WPD file.
+ 
+To distribute WPD files, a font manufacturer copies the WPD file to disk
+along with a OEMSETUP.INF file that describes the external printers the WPD
+file supports.
+ 
+Once a WPD file is installed, it defines the following features of the
+external printer:
+ 
+♦  Resident fonts
+ 
+♦  Paper sizes and input trays
+ 
+♦  Commands that activate sizes and trays
+ 
+♦  Imageable area of each supported page size (that is, the area on which
+   the printer can actually mark)
+ 
+The following sections describe the formats of the various files.
+ 
+<b>PostScript Printer Description Files</b>
+ 
+The PostScript Printer Description file format, defined by Adobe and
+extended by the Microsoft, provides the basis for external printer
+descriptions. This ASCII file contains one or more statements, each
+consisting of a keyword and associated values.
+ 
+Each keyword defines a feature of the PostScript printer. The associated
+values specify whether the feature is available, or how the feature affects
+the operation of the printer. For example, the "*FileSystem" keyword
+specifies whether a printer supports fonts loaded on a hard drive. PPD files
+must be standard ASCII files with carriage return and line feed pairs
+terminating each line.
+ 
+To ensure the best performance for a printer, the PPD file should be as
+complete as possible. Windows 3.1 has defined new PPD keywords that should
+be added to existing PPD files to create new WPD files. If these keywords
+are not added, the driver can still use the old WPD files, but it will
+assign default values to any keywords not explicitly defined.
+ 
+The following provides descriptions of the PPD keywords.
+ 
+<b>Keyword               Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>*ColorDevice</i>          Indicates whether the printer supports color.
+ 
+<i>*DefaultFont</i>          The name of the default font (that is, the font used
+                      if none is selected). This setting must appear before
+                      any "*Font" settings.
+ 
+<i>*DefaultInputSlot</i>     The default input slot.
+ 
+<i>*DefaultResolution</i>    The default resolution of the printer.
+ 
+<i>*Duplex</i>               PostScript commands to set duplex mode. This feature
+                      is new for Windows 3.1.
+ 
+<i>*FileSystem</i>           Reserved; do not use.
+ 
+<i>*Font</i>                 The fonts resident in the printer.
+ 
+<i>*FreeVM</i>               Amount of free memory in standard printer
+                      configuration. This feature is new for Windows 3.1.
+ 
+<i>*ImageableArea</i>        The actual area that can be marked on for every paper
+                      size.
+ 
+<i>*InputSlot</i>            The PostScript code that is necessary to specify each
+                      input slot.
+ 
+<i>*ManualFeed False</i>     The PostScript code that is necessary to turn off
+                      manual feed. If present, it is assumed that manual
+                      feed is supported.
+ 
+<i>*ManualFeed True</i>      The PostScript code that is necessary to specify the
+                      manual feed operation. If present, it is assumed that
+                      manual feed is supported (and therefore PageRegion
+                      settings must be included).
+ 
+<i>*NickName</i>             The name that appears in the printer dialog box. It
+                      should be a unique description of the printer. This is
+                      also the name used for automatic printer recognition.
+ 
+<i>*PageRegion</i>           The PostScript code that is necessary to specify
+                      different page sizes when using manual feed.
+ 
+<i>*PageSize</i>             The PostScript code used to specify the different page
+                      sizes that are supported (when not in manual-feed
+                      mode).
+ 
+<i>*PaperDimension</i>       The size of all the used paper types. A Paper
+                      Dimension setting must be included for every size of
+                      paper supported. The sizes of the standard page types
+                      should be used. Only standard page types are
+                      recognized.
+ 
+<i>*SetResolution</i>        Used to determine the hardware resolution(s)
+                      supported. This feature is new for Windows 3.1.
+ 
+<i>*Transfer Normalized</i>  The normalized transfer function used to generate
+                      linear gray levels. This must be present. If none is
+                      required, include the nul function "{ }."
+ 
+The following is a list of PPD extensions.
+ 
+<b>Extension          Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>*AcceptsTrueType:</i>  True or false. If true, TrueType fonts will be downloaded
+                   natively using readhexsfnt operator. This is selected
+                   through the download option in the Advanced Options
+                   dialog box. If false, TrueType will not be displayed as a
+                   selection. This feature is new for Windows 3.1.
+ 
+<i>*EndOfFile</i>         Indicates whether ^D is required to indicate the end of
+                   the file. This is true by default, and only needs to be
+                   included if this is false (that is, "*EndOfFile False").
+ 
+<i>*SetPage</i>           True or false. If true, the PostScript driver allows a
+                   custom paper size to be defined. This is implemented
+                   through the use of the setpage operator. If your printer
+                   supports the setpage operator in the same manner as
+                   Linotronic(R) printers, you can use this option.
+ 
+<i>*TrueImageDevice:</i>  True or false. If true, the PostScript driver takes
+                   advantage of some optimizations available in TrueImage.
+                   Currently there is very little difference in the output.
+                   This feature is new for Windows 3.1.
+ 
+The following are the paper keywords used to show the paper sizes
+supported.
+ 
+<b>Keyword       Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>10x14</i>         10 x 14 inches physical size, oriented in portrait mode.
+ 
+<i>11x17</i>         11 x 17 inches physical size, oriented in portrait mode. Can
+              be used interchangeably with the keyword "Tabloid."
+ 
+<i>A3</i>            297 x 420 millimeters physical size, oriented in portrait
+              mode. Refers to the International Standards Organization
+              (ISO)/(JIS) A3 paper size.
+ 
+<i>A4</i>            210 x 297 millimeters physical size, oriented in portrait
+              mode.
+ 
+<i>A4Extra</i>       9.27 x 12.69 inches physical size.
+ 
+<i>A4Small</i>       210 x 297 millimeters physical size, but with a reduced-size
+              imageable area of 7.47 x 10.85 inches that is centered on an
+              A4 page. Supports the Adobe PostScript paper definitions.
+ 
+<i>A5</i>            148 x 210 millimeters physical size, oriented in portrait
+              mode.
+ 
+<i>B4</i>            250 x 354 millimeters physical size, oriented in portrait
+              mode. Refers to the Japanese Industrial Standard (JIS) B4
+              paper size.
+ 
+<i>B5</i>            182 x 257 millimeters physical size, oriented in portrait
+              mode.
+ 
+<i>Folio</i>         8.5 x 13 inches physical size, but with a reduced-size
+              imageable region, oriented in portrait mode and centered on
+              the folio sheet. Supports the Adobe PostScript paper
+              definitions.
+ 
+<i>Ledger</i>        17 x 11 inches physical size, oriented in landscape mode (that
+              is, the y-axis is on the shorter edge of the paper).
+ 
+<i>Legal</i>         8.5 x 14 inches physical size, oriented in portrait mode.
+ 
+<i>LegalExtra</i>    9.5 x 15 inches physical size.
+ 
+<i>Letter</i>        8.5 x 11 inches physical size. Refers to the standard paper
+              type.
+ 
+<i>LetterExtra</i>   9.5 x 12 inches physical size.
+ 
+<i>LetterSmall</i>   8.5 x 11 inches physical size, but with a reduced-size
+              imageable region that is centered on the page. Supports the
+              Adobe PostScript paper definitions.
+ 
+<i>Note</i>          8.5 x 11 inches physical size, but with a reduced-size
+              imageable region. This is used to reduce the size of the page
+              buffer to give print jobs more memory.
+ 
+<i>Quarto</i>        215 x 275 millimeters physical size, but with a reduced-size
+              imageable region, oriented in portrait mode and centered on
+              the quarto sheet.
+ 
+<i>Statement</i>     5.5 x 8.5 inches physical size, oriented in portrait mode.
+ 
+<i>Tabloid</i>       11 x 17 inches physical size, oriented in portrait or tabloid
+              mode (that is, the y-axis is on the longer edge of the
+              paper).
+ 
+<i>TabloidExtra</i>  11.69 x 18 inches physical size.
+ 
+For paper extensions, five standard envelope sizes are recognized. The two
+groups of numbers following the word Envelope indicate the size of the
+envelope in points (where each point equals 1/72 of an inch).
+ 
+<b>Extension         Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>Envelope.279.639</i>  #9 Envelope (3.875 x 8.875 inches)
+ 
+<i>Envelope.297.684</i>  #10 Envelope (4.125 x 9.5 inches)
+ 
+<i>Envelope.324.747</i>  #11 Envelope (4.5 x 10.375 inches)
+ 
+<i>Envelope.342.792</i>  #12 Envelope (4.75 x 11 inches)
+ 
+<i>Envelope.360.828</i>  #14 Envelope (5 x 11.5 inches)
+ 
+The following are the paper tray and bin keywords used to show and specify
+the input slots supported.
+ 
+<b>Keyword        Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>LargeCapacity</i>  This one can hold more than a standard amount of paper.
+ 
+<i>Lower</i>          If there is more than one tray, this one is on the bottom.
+ 
+<i>Middle</i>         This one is in the middle.
+ 
+<i>OnlyOne</i>        There is only one tray.
+ 
+<i>Upper</i>          If there is more than one tray, this one is on top.
+ 
+The following list describes the paper tray extensions.
+ 
+<b>Extension       Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>AutoSelect</i>      Printer can select automatically which feeder to use. This
+                is followed by the code (or a nul command if no code is
+                required) that is used to specify the autofeed mechanism.
+ 
+<i>Envelope</i>        There is an envelope feeder.
+ 
+<i>EnvelopeManual</i>  There is a manual envelope feeder.
+ 
+<i>None</i>            There are no input feeders. This is treated as being the
+                same as OnlyOne.
+ 
+The following keywords are required to support duplex printing.
+ 
+<b>Keyword                  Definition</b>
+────────────────────────────────────────────────────────────────────────────
+<i>*Duplex DuplexNoTumble:</i>  "statusdict begin false settumble true
+                         setduplexmode end"
+ 
+<i>*Duplex DuplexTumble:</i>    "statusdict begin true settumble true setduplexmode
+                         end"
+ 
+<i>*Duplex None:</i>            "statusdict begin false setduplexmode end"
+ 
+<i>*DefaultDuplex</i>           None
+ 
+If the PPD with correct *Duplex settings is built with the Windows 3.1 MKPRN
+utility, the driver expands the Options dialog box to give user control of
+duplex settings.
+ 
+<b>PFM Files for PostScript Printers</b>
+ 
+Because PostScript fonts are scalable, the PFM files for the PostScript
+fonts do not contain width tables. The files have the following form:
+ 
+PFMHEADER       Header;          /* font header */
+PFMEXTENSION    Extensions;      /* extensions */
+char            DeviceName[];    /* printer device name */
+char            FaceName[];      /* font face name */
+EXTTEXTMETRIC   ExtTextMetrics;  /* extended text metrics */
+WORD            ExtentTable[];   /* unscaled character widths */
+DRIVERINFO      DriverInfo;      /* driver-specific information */
+PAIRKERN        KerningPairs[];  /* pair-kerning table (optional)*/
+KERNTRACK       KerningTracks[]; /* track-kerning table (optional)*/
+ 
+The PostScript driver for Windows assumes all PostScript fonts are scalable
+fonts, so it ignores the dfPoints and dfPixHeight members in the PFM header.
+The members dfAvgWidth and dfMaxWidth are in units of 1000 units-per-em.
+ 
+Although the PostScript naming convention includes the attributes of the
+font (that is, bold and italic) in the font name, the attributes should be
+stripped from the font name and represented in the dfWeight and dfItalic
+members in the PFM header.
+ 
+The extent table is an array of 16-bit values containing the unscaled widths
+of the characters and assuming 1000 units-per-em. The range of the table
+should be from dfFirstChar to dfLastChar. The size of the table should be
+<b>dfLastChar - dfFirstChar + 1.</b>
+ 
+Pair-kern values should be in the same 1000 units-per-em measurement as the
+extents. As of this writing, we do not know of any application that uses the
+track-kern table.
+ 
+In the EXTTEXTMETRIC structure, the PostScript driver assumes the following
+values for each font:
+ 
+<b>dfVertRes</b> = 300
+ 
+<b>etmMasterHeight</b> = 300
+ 
+<b>etmMasterUnits</b> = 1000
+ 
+In other words, the driver assumes all fonts use Adobe's standard 1000
+units-per-em method for describing a font. You must build the extent table
+based upon 1000 units-per-em to be consistent with this restriction in the
+driver.
+ 
+The driver also assumes that the font may be scaled to any point size the
+application requests. We recommend that the true scaling range of the font
+be indicated in the etmMinScale and etmMaxScale members (in device units, at
+300 dpi). The driver currently ignores these members.
+ 
+Because the Windows PostScript driver assumes all PostScript fonts are
+scalable fonts, it ignores the etmPointSize member. The etmSize member is
+not the point size, but rather the size (that is, the number of bytes) of
+the EXTTEXTMETRIC structure.
+ 
+As of this writing, we do not know of any application that uses the members
+in the EXTTEXTMETRIC structure except for etmKernPairs. If your font
+contains kern pairs, you must fill in the EXTTEXTMETRIC structure to
+indicate the number of kern pairs. Do not leave the other members blank;
+fill them in with reasonable values in the event an application does use
+them.
+ 
+The driver-specific data structure pointed to by dfDriverInfo is a
+null-terminated string containing the PostScript name for the font. There
+are two names for the font:
+ 
+♦  The Windows name for the font which appears in the font list in the
+   application's font dialog box.
+ 
+♦  The PostScript name for the font, which can vary according to printer
+   manufacturer and which the driver sends to the printer to select the
+   font.
+ 
+Both strings must be null-terminated. The Windows name for the font is
+pointed to by dfFace and the PostScript name for the font is pointed to by
+<b>dfDriverInfo</b>.
+ 
+To create a PFM file for the internally-supported printers, Microsoft
+converts Font Metric (AFM) files to the PFM file format. These files,
+provided with the DDK, are ASCII files that define the metrics for each
+font. There are 63 AFM files supporting 63 unique fonts. Printers with
+resident fonts that are not supported in the current version of the driver
+will need to define those files as soft fonts.
+ 
+If you need to define a font that is not available currently in the
+PostScript printer driver, you will need to modify the driver sources to add
+additional AFM files. Please refer to the PostScript driver's MAKE file that
+is included on the DDK disks for more information on how the driver builds
+AFM and PFM files.
+ 
+<b>Printers Setup File</b>
+ 
+The printers setup file (OEMSETUP.INF) should reside on the disk distributed
+with the WPD file. This file follows the standard format used in the Windows
+CONTROL.INF file. It contains a [io.device] section that lists the
+PostScript printer names for each set of WPD files included on the disk. The
+file has the same form as the following example:
+ 
+[io.device]
+7:pscript.DRV,7:L630_52&amp;.WPD,"Linotronic 630","DEVICESPECIFIC"
+ 
+If the user tries to install a printer that is already installed, the
+printer driver will ask whether the previous WPD file should be updated.
+ 
+Manufacturers that are already supported internally in the driver should not
+provide WPD files with names that conflict with those used internally. If an
+update is required, add the PostScript version number to the printer name
+(in both the OEMSETUP.INF file and the "*NickName" section of the PPD
+file).
+ 
+<b>Compiling with the MKPRN Utility</b>
+ 
+The MKPRN utility, an MS-DOS utility, takes a PPD file and all the PFM files
+referenced in the PPD file, and produces the WPD file needed for a printer
+to be supported by the Windows PostScript printer driver. The utility has
+the following command syntax:
+ 
+<b>mkprn [/v] [/s]</b> ppd-file
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+<i>/v</i>         An optional verbose switch. This causes MKPRN to print messages
+           as it processes various elements in the PPD file. This may be
+           useful for debugging PPD files.
+ 
+<i>/s</i>         Suppresses combining the PSS, CAP, and DIR files into one WPD
+           file. This is used only when building the driver sources, and is
+           not intended for use by external printers.
+ 
+<i>ppd-file</i>   This is the base filename (with no extension) of the PPD file to
+           be processed. The WPD file shares this base filename.
+ 
+Error messages are printed for fonts that are not found and for identifiers
+that are not recognized. If fonts are not found, they are not built into the
+WPD file and have to be added as soft fonts as described in the next
+section.
+ 
+<b>Soft Fonts</b>
+ 
+A soft font installer is not available yet for the PostScript printer
+driver. Therefore, it is up to the printer manufacturer to install
+additional fonts as soft fonts by adding the appropriate WIN.INI entries.
+ 
+The softfontn settings in WIN.INI can be used for several different
+purposes. Basically, they inform the driver that a given printer has extra
+fonts available and, if necessary, indicate a file that needs to be
+downloaded to make that font available. If there is a second file listed in
+a softfontn setting, it is assumed that it needs to be downloaded to
+activate the given font. Thus, soft fonts can be used to support resident
+printer fonts that have been downloaded previously, that reside on a
+printer's hard drive, or that are available in some other form.
+ 
+The softfonts setting indicates how many soft fonts are installed and
+listed. The maximum number of soft fonts allowed is based on available
+memory and other considerations. The maximum number of soft fonts is at
+least 450.
+ 
+Each softfontn setting references the PFM file associated with a soft font
+and, optionally, the soft font that will be downloaded to the printer at
+print time. Each filename may be a complete pathname. The two forms of soft
+fonts supported are described in the following subsections.
+ 
+<b>Adobe Soft-Font Format</b>
+ 
+Adobe soft fonts (files with an .AGB extension) are recognized by the
+following string:
+ 
+%!PS-AdobeFont
+ 
+The string must be located at offset 6 in the file. The first 6 bytes are
+defined by the following data structure:
+ 
+typedef struct{
+        unsigned char flag;
+        char type;      /* 1 means data is ASCII, 2 means binary */
+                        /*    (convert to ascii) */
+        long length;    /* length of the data that follows */
+        } HDR;
+ 
+The members indicate the length of the soft font as well as the type (ASCII
+or binary). Binary forms are converted to hexadecimal ASCII by the driver;
+ASCII fonts are copied directly.
+ 
+<b>Non-Adobe Soft-Font Format</b>
+ 
+Fonts that do not have the above-mentioned signature are copied to the
+output stream. Therefore, the whole file must be in PostScript code that
+describes the font.
+ 
+<b>Testing the WPD Files</b>
+ 
+PostScript printer manufacturers should test their WPD files before
+distribution. Do the following:
+ 
+1  Copy the OEMSETUP.INF and WPD files to a disk.
+ 
+2  Install the printer by choosing the Add button in the Printers dialog box
+   in Control Panel. Select the appropriate printer and choose the Install
+   button.
+ 
+3  Select the newly installed printer from the Installed Printers list box,
+   and set it to be the default printer.
+ 
+4  Test the following features of your printer:
+ 
+   ♦  *NickName. Make sure that the model name in the Setup dialog box is
+      the same as the name in the OEMSETUP.INF file, and the *NickName field
+      of the PPD.
+ 
+   ♦  Paper Sizes. Make sure that all the paper sizes are available and that
+      the imageable areas are correct.
+ 
+   ♦  Paper Sources. Test that all the paper sources can be selected
+      properly.
+ 
+   ♦  Normalized Transfer Function. Use an application (for example,
+      Micrografx Designer 2.0) that can generate gradiated fills to make
+      sure that gray levels are represented in a linear fashion.
+ 
+If you find any problems, make the appropriate changes to the PPD file,
+rebuild the WPD file, and install the new WPD over the existing one.
+ 
+<b>Note:</b>  The description string in OEMSETUP.INF needs to match the "*NickName"
+       keyword from the PPD file.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

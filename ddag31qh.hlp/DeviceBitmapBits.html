@@ -1,0 +1,149 @@
+<html>
+
+<head>
+<title>DeviceBitmapBits - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DeviceBitmapBits</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DeviceMode.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+void DeviceBitmapBits(lpBitmap, fGet, iStart, cScans, lpDIBits,
+                      lpBitmapInfo, lpDrawMode, lpTranslate)
+LPPDEVICE lpBitmap;          /* points to device-specific bitmap   */
+WORD fGet;                   /* 0 to set bits, 1 to get bits       */
+WORD iStart;                 /* starting scan line                 */
+WORD cScans;                 /* number of scan lines to copy       */
+LPSTR lpDIBits;              /* points to the bitmap bits          */
+LPBITMAPINFO lpBitmapInfo;   /* points to bitmap information       */
+LPDRAWMODE lpDrawMode;       /* points to drawing-mode information */
+LPINT lpTranslate;           /* points to color-translation table  */
+ 
+The DeviceBitmapBits function either copies device-independent bitmap to a
+device-specific bitmap or copies a device-specific bitmap to a
+device-independent bitmap. The fGet parameter specifies which operation to
+carry out.
+ 
+A graphics driver must export a DeviceBitmapBits function if the
+RC_DI_BITMAP value is set in the dpRaster member of the driver's GDIINFO
+structure.
+ 
+<b>Parameter     Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpBitmap      Points to </i>a PBITMAP structure specifying a device-specific
+              memory bitmap.
+ 
+<i>fGet</i>          Specifies whether the function sets or retrieves bitmap bits.
+              If this parameter is zero, the function sets the bits; if the
+              parameter is 1, the function retrieves the bits.
+ 
+<i>iStart</i>        Specifies the starting scan number.
+ 
+<i>cScans</i>        Specifies the number of scans to set or retrieve.
+ 
+<i>lpDIBits</i>      Points to a buffer that contains or receives the bitmaps bits.
+              If the fGet parameter is zero, the function copies data from
+              the buffer into the bitmap; if fGet is 1, the function copies
+              the bits to the buffer from the bitmap. If the lpDIBits
+              parameter is NULL, the function fills the biSizeImage member
+              in the BITMAPINFO structure pointed to by the lpBitmapInfo
+              parameter, but does not copy bitmap bits.
+ 
+<i>lpBitmapInfo  Points to a BITMAPINFO</i> structure specifying the dimensions and
+              format of the device-independent bitmap.
+ 
+              The function must check the biPlanes and and biBitCount
+              members. If biPlanes is not 1 or biBitCount is not 1, 4, 8, or
+              24, the function returns an error.
+ 
+              The function compares the widths of the device-specific bitmap
+              and the device-independent bitmap. If the widths are not
+              equal, the function clips to the smaller of the two bitmaps.
+ 
+              If the RLE_FORMAT_4 or RLE_FORMAT_8 values are set in the
+              biCompression member of the BITMAPINFO structure, the
+              device-independent bitmap is in run-length-encoded (RLE)
+              format. In this case, the function must encode each scan line
+              as it copies the scan line data to the buffer pointed to by
+              lpDIBits or the function must decode the data as it retrieves
+              it from the buffer.
+ 
+<i>lpDrawMode    Points to a DRAW</i>MODE structure specifying the text
+              (foreground) and background colors to use if color conversion
+              is required.
+ 
+<i>lpTranslate</i>   Points to an array of color translation values for converting
+              palette colors to actual device colors. This parameter is
+              ignored by devices that do not use color palettes.
+ 
+<b>Return Value</b>
+ 
+The return value is the number of scan lines set or retrieved if the
+function is successful. Otherwise, it is zero if there is an error or -1 if
+the bits cannot be set or retrieved.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 19.
+ 
+Depending on the operation specified by the fGet parameter,
+<b>DeviceBitmapBits either converts the bits pointe</b>d to by lpDIBits to the
+format required by the bitmap specified by the lpBitmap parameter or
+converts the bits pointed to by lpDIBits to the format required by lpBitmap.
+To convert the bits, the function needs to compute the width and height of
+the bitmap to copy, needs to determine if color conversion is necessary, and
+needs to prepare for scan lines that cross the 64K boundaries.
+ 
+<b>DeviceBitmapBits</b> checks the color formats of the bitmap specified by
+<i>lpBitmap and the device-</i>independent bitmap specified by lpBitmapInfo. If the
+color formats are not the same, the function must convert the bitmap pixels
+to the same format as the destination. For example, if the function copies a
+device-independent bitmap to a monochrome bitmap, the function must convert
+color pixels to monochrome. In this case, DeviceBitmapBits converts all
+pixels that match the background color (as specified by the lpDrawMode
+parameter) to white (1), and converts all other pixels to black (0).
+ 
+To prepare for color conversion when fGet is zero, the function maps
+color-table information (if any) provided in the BITMAPINFO structure to the
+device-specific colors. If the biClrUsed member is zero, the function must
+use a default color table. The size of the default table depends on the
+number of bits per pixel (that is, 16 colors for 4 bits-per-pixel, 256
+colors for 8 bits-per-pixel, and so on). However, if biClrUsed is nonzero,
+the member specifies the size of the table; this size cannot be more than
+the default size. Since the default color table for a bitmap having 24 bits
+per pixel is exceptionally large, the function carries out the color mapping
+as it converts the bits rather than generating a table.
+ 
+To prepare for color conversion when fGet is 1, the function creates the
+logical-color table and copies it to the BITMAPINFO structure. If the device
+driver does not support a color palette, the function fills the
+logical-color table with whatever color it supports and use the
+corresponding indexes in the bitmap. It must also set the number of colors
+it is using in the biClrUsed member of the BITMAPINFO structure. For
+example, if the display device is a 4-plane device (16 colors) but the
+request is for a device-independent bitmap that has 8 bits-per-pixel (256
+colors), the function can specify just 16 colors and set the biClrUsed
+member to 16, or it can set remaining colors (entries 16 through 255) to
+zero and set the biClrUsed member to zero.
+ 
+<b>See Also</b>
+ 
+<b>SetDIBitsToDevice, StretchDIBits, BITMAPINFO, DRAWMODE, GDIINFO</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

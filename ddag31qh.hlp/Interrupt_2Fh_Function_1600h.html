@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<title>Interrupt 2Fh Function 1600h - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Interrupt 2Fh Function 1600h</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Windows_Interrupt_2Fh_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Interrupt_2Fh_Function_1602h.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+mov     ax, 1600h   ; Get Enhanced-Mode Windows Installed State
+int     2Fh         ; multiplex interrupt
+ 
+test    al, 7Fh
+jz      No_EM_Win   ; 386 enhanced-mode Windows not running
+ 
+Get Enhanced-Mode Windows Installed State (Interrupt 2Fh Function 1600h)
+determines whether 386 enhanced-mode Windows is running. If a program
+intends to use a 386 enhanced-mode Windows function, it must first use this
+function to make sure that 386 enhanced-mode Windows is running.
+ 
+This function is valid under all versions of 386 enhanced-mode Windows.
+ 
+<b>Return Value</b>
+ 
+The return value is 00h or 80h in the AL register if 386 enhanced-mode
+Windows is not running. If 386 enhanced-mode Windows is running, the return
+value depends on the version of Windows. Windows/386 version 2.x returns 01h
+or 0FFh. Windows version 3.x returns the major version number in the AL
+register, and the minor version number in the AH register.
+ 
+<b>Example</b>
+ 
+The following example determines whether 386 enhanced-mode Windows is
+running, then determines which version is running.
+ 
+mov     ax, 1600h
+int     2Fh
+test    al, 7Fh
+jz      No_EM_Win   ; 386 enhanced-mode Windows not running
+ 
+cmp     al, 1
+je      Ver_2x      ; Windows/386 version 2.x running
+cmp     al, -1
+je      Ver_2x      ; Windows/386 version 2.x running
+ 
+mov     byte ptr [MajorVer], al
+mov     byte ptr [MinorVer], ah
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

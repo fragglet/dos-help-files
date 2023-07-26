@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<title>DOSNET_Do_PSP_Adjust - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DOSNET_Do_PSP_Adjust</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_MS-DOS_Network_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DOSNET_Get_Version.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include dosnet.inc
+ 
+VxDcall DOSNET_Do_PSP_Adjust
+ 
+The DOSNET_Do_PSP_Adjust service specifies whether the virtual device
+requires unique PSP addresses for each virtual machine. The virtual MS-DOS
+manager calls this service to determine whether it should adjust PSP
+addresses for the virtual machines.
+ 
+This service has no parameters.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the virtual MS-DOS manager should adjust the PSP.
+Otherwise, the carry flag is set to prevent the virtual MS-DOS manager from
+adjusting the PSP.
+ 
+The EAX register contains zero if the virtual MS-DOS manager should check
+the SYSTEM.INI file to determine whether to override the action specified by
+the carry flag. Otherwise, the EAX register contains nonzero to prevent the
+virtual device from checking the file.
+ 
+<b>Comments</b>
+ 
+A network that uses the MS-DOS PSP addresses as part of an ID should clear
+the carry flag and return to direct the virtual MS-DOS manager to adjust PSP
+addresses. The manager adjusts PSP addresses by starting each virtual
+machine at a different paragraph address (using the virtual machine
+identifier as the basis of the adjustment). Even so this technique does not
+guaranteed unique PSP addresses. To ensure uniqueness, network software
+should always use Get Current Virtual Machine ID (Interrupt 2Fh, Function
+1683h) to retrieve the virtual machine identifier and use this identifier to
+create an unique network ID.
+ 
+<b>Uses</b>
+ 
+EAX, Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

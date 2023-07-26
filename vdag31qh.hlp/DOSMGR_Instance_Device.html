@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<title>DOSMGR_Instance_Device - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> DOSMGR_Instance_Device</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_MS-DOS_Manager.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='DOSMGR_LocalGlobalReg.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include dosmgr.inc
+ 
+VxDcall DOSMGR_Instance_Device
+ 
+The DOSMGR_Instance_Device service instances the indicated installed MS-DOS
+character device driver.
+ 
+This service is only valid during the Init_Complete message.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>ESI</i>        Points to the 8-character device name. This name must exactly
+           match the name as it found in the device header in low memory.
+           Characters must be in uppercase; case conversion is not
+           performed. Names shorter than 8 characters must be padded with
+           spaces. The colon (:) must not be used.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the device is instanced. Otherwise, the carry
+flag is set to indicate one of the following errors:
+ 
+♦  No device with this name in device list
+ 
+♦  Device is in MS-DOS RAM BIOS (Segment of device == 70h)
+ 
+♦  User overides with the GLOBAL setting in SYSTEM.INI
+ 
+<b>Comments</b>
+ 
+This service applies only to installed character devices (device segment not
+equal to 70h). It cannot instance devices that are in the MS-DOS RAM BIOS
+because there is no way to determine their start and end addresses. It is
+the job of the MS-DOS instancing to correctly instance things related to
+character devices in the MS-DOS RAM BIOS.
+ 
+This service instances the entire device. It cannot differentiate code and
+data.
+ 
+This service is available during the Init_Complete message only and cannot
+work until the DOSMGR_Device_Init service is complete. The service is in the
+ICODE segment so it becomes invalid after the Init_Complete message. Calls
+to the _AddInstanceItem service are also invalid after Init_Complete.
+ 
+Do not use this service to instance devices added with the
+<b>DOSMGR_Add_Device</b> service. To instance an added device, a virtual device
+must call the _AddInstanceItem service or use the GVDAInstance flag in the
+<b>_Allocate_Global_V86_Data_Area</b> service.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

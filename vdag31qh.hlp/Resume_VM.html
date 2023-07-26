@@ -1,0 +1,68 @@
+<html>
+
+<head>
+<title>Resume_VM - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Resume_VM</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Primary_Scheduler_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Signal_Semaphore.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     ebx, VM         ; VM handle
+VMMcall Resume_VM
+ 
+jc      not_resumed     ; carry set if virtual machine not resumed
+ 
+The Resume_VM service resumes the execution of a virtual machine previously
+suspended by the Suspend_VM service.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>VM</i>         Specifies a handle identifying the virtual machine to resume.
+ 
+<b>Return Value</b>
+ 
+The carry flag is clear if the suspend count is zero and the virtual machine
+is in the ready-processes queue. The carry flag is clear to indicate an
+error.
+ 
+<b>Comments</b>
+ 
+This service decrements the suspend count and places the virtual machine in
+the ready-processes queue if the new count is zero. The system carries out a
+task switch to the resumed virtual machine if the virtual machine has a
+higher priority than the current virtual machine.
+ 
+An error can occur if a virtual device cannot lock the memory handles for
+the specified virtual machine. The system notifies every virtual device of
+the request to resume a virtual machine, and any virtual device can deny the
+request. In such cases, this service returns with the carry flag set and the
+virtual machine remains suspended with a suspend count of 1.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>No_Fail_Resume_VM, Suspend_VM</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

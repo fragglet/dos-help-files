@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<title>Call_Global_Event - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Call_Global_Event</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Event_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Call_Priority_VM_Event.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     esi, OFFSET32 EventCallback ; points to callback procedure
+mov     edx, OFFSET32 RefData       ; points to reference data
+VMMcall Call_Global_Event
+ 
+mov     [Event], esi                ; event handle or zero if not scheduled
+ 
+The Call_Global_Event service either calls the event callback procedure
+immediately, or schedules a global event. This service schedules the event
+if the virtual device is processing a hardware interrupt that interrupted
+the VMM. In all other cases, the service calls the callback procedure
+without scheduling an event.
+ 
+This is an asynchronous service.
+ 
+<b>Parameter      Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>EventCallback</i>  Points to the callback procedure. See the Comments section
+               for more information about the procedure.
+ 
+<i>RefData</i>        Points to reference data to be passed to the event callback
+               procedure.
+ 
+<b>Return Value</b>
+ 
+The ESI register is zero if the service calls the callback procedure.
+Otherwise, the ESI register contains the event handle. The event handle can
+be used in subsequent calls to the Cancel_Global_Event service to cancel the
+event.
+ 
+<b>Comments</b>
+ 
+If the service schedules a global event, the system calls the event callback
+procedure immediately before the returning from the current interrupt. Any
+virtual machine can process the event, so the system does not switch tasks
+before calling the procedure.
+ 
+The callback procedure can carry out any actions, and use any VMM services.
+The system calls the event callback procedure as follows:
+ 
+mov     ebx, VM                 ; current VM handle
+mov     edx, OFFSET32 RefData   ; points to reference data
+mov     ebp, OFFSET32 crs       ; points to a Client_Reg_Struc
+call    [EventCallback]
+ 
+The VM parameter is a handle identifying the current virtual machine,
+<i>RefData</i> points to reference data supplied by the virtual machine that
+scheduled the event, and crs points to a Client_Reg_Struc structure
+containing the contents of the virtual machine's registers.
+ 
+The callback procedure can modify EAX, EBX, ECX, EDX, ESI, and EDI.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+<b>See Also</b>
+ 
+<b>Cancel_Global_Event, Schedule_Global_Event</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

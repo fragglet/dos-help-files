@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<title>Hook_V86_Fault - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Hook_V86_Fault</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Processor_Fault_and_Interrupt_Services.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Hook_VMM_Fault.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+mov     eax, Interrupt          ; interrupt number for fault
+mov     esi, OFFSET32 FaultProc ; points to a fault handler
+VMMcall Hook_V86_Fault
+ 
+jc      not_installed           ; carry set if not installed
+mov     [Previous], esi         ; points to previous fault handler (if any)
+ 
+The Hook_V86_Fault service installs a fault handler procedure for V86 mode.
+Virtual devices typically install fault handlers while processing the
+<b>Sys_Critical_Init</b> control message to handle faults, such as general
+protection faults, that the VMM's own fault handlers cannot handle. The VMM
+installs its fault handlers after the Sys_Critical_Init control message.
+Virtual devices install fault handlers after Sys_Critical_Init to handle
+faults before the fault is passed to the VMM's fault handlers.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>Interrupt</i>  Specifies the number of the interrupt for which to install the
+           fault handler. The interrupt number cannot be 02h and must not be
+           greater than 4Fh.
+ 
+<i>FaultProc</i>  Points to the fault handler to install. See the Comments section
+           for more information about this procedure.
+ 
+<b>Return Value</b>
+ 
+If the carry flag is clear, the ESI register contains the address of the
+previous fault handler. The register contains zero if there was no previous
+handler.
+ 
+If the carry flag is set, the specified fault number is not valid and the
+handler is not installed.
+ 
+<b>Comments</b>
+ 
+A virtual device can install a fault handler while processing the
+<b>Sys_Critical_Init</b> message or at a later time. Any fault handler a virtual
+device may install while processing the message receives a fault only after
+the VMM's own fault handlers have had a chance to process the fault.
+ 
+The system disables interrupts and calls the fault handler as follows:
+ 
+mov     ebx, VM                 ; current VM handle
+mov     ebp, OFFSET32 crs       ; points to a Client_Reg_Struc
+call    [FaultProc]
+ 
+The VM parameter is a handle identifying the current virtual machine, and
+the crs parameter points to a Client_Reg_Struc structure containing the
+register values for the current virtual machine.
+ 
+If the fault does not process the fault, it should pass the fault to the
+previous fault handler (if any), making sure that all registers are
+preserved (not just the registers containing input parameters).
+ 
+If the fault handler processes the fault or if there is no previous fault
+handler, the handler should return without chaining by executing a near ret
+instruction (not an iret instruction).
+ 
+The fault handler can modify EAX, EBX, ECX, EDX, ESI, and EDI.
+ 
+Do not use this service to install a fault handler for the Non-Maskable
+Interrupt (NMI). Instead, a virtual device must use the
+<b>Get_NMI_Handler_Addr and Set_NMI_Handler_Addr services.</b>
+ 
+Do not use this service to install handlers for hardware interrupts.
+Instead, a virtual device must use virtual PIC device services.
+ 
+<b>Uses</b>
+ 
+ESI, Flags
+ 
+<b>See Also</b>
+ 
+<b>Hook_PM_Fault, Hook_VMM_Fault</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

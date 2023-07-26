@@ -1,0 +1,108 @@
+<html>
+
+<head>
+<title>ENUMPAPERMETRICS - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> ENUMPAPERMETRICS</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Escapes.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='EPSPRINTING.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+#define ENUMPAPERMETRICS 34 
+short Control(lpDevice, ENUMPAPERMETRICS, lpInData, lpOutData)
+LPPDEVICE lpDevice;
+LPINT lpInData;
+LPRECT lpOutData;
+ 
+The ENUMPAPERMETRICS escape either retrieves the number of paper types
+supported by the driver, or fills an array of RECT structures with the
+dimensions of each paper type.
+ 
+The ExtDeviceMode function achieves the same results.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+ 
+<i>lpDevice   Points to a P</i>DEVICE structure specifying the destination device.
+ 
+<i>lpInData</i>   Points to an 16-bit variable that specifies what action to take.
+           If the variable is zero, the escape returns the number of paper
+           types. If zero, the escape fills an array of RECT structures with
+           paper dimensions.
+ 
+<i>lpOutData  Points to an arr</i>ay of RECT structures that receive the
+           coordinates of the imageable area of the page. The top-left
+           corner of the rectangle specifies the page margins, and the
+           bottom-right corner specifies the sum of the page margins and the
+           width and height of the imageable area. The units are device
+           coordinates. The orientation returned is always portrait.
+ 
+<b>Return Value</b>
+ 
+The return value is positive, if successful. Otherwise, it is zero if the
+escape is not implemented, and negative if an error occurs.
+ 
+<b>Comments</b>
+ 
+The following example illustrates the required actions:
+ 
+#define ENUMPAPERMETRICS    34
+#define INFORM              0
+#define PERFORM             1
+ 
+int cPaperTypes = CPAPERTYPES;
+RECT arectPage[CPAPERTYPES] = { ... };
+ 
+short Control(lpDevice, wFunction, lpInData, lpOutData)
+LPPDEVICE lpDevice;
+WORD wFunction;
+LPVOID lpInData;
+LPVOID lpOutData;
+{
+ 
+    LPRECT arect;
+ 
+    switch (wFunction) {
+ 
+    case ENUMPAPERMETRICS:
+        switch (*((LPINT)lpInData)) {
+        case INFORM:
+            return cPaperTypes;
+ 
+        case PERFORM:
+            arect = (LPRECT)lpOutData;
+            for (i=0; i&lt;cPaperTypes; arect++, i++)
+                CopyRect(arect, arectPage[i]);
+            return cPaperTypes;
+ 
+        default:
+            return 0;
+        }
+ 
+        .
+        .
+        .
+    }
+ 
+ 
+<b>See Also</b>
+ 
+<b>ExtDeviceMode, PDEVICE, RECT</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

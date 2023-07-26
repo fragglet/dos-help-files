@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<title>VDMAD_Lock_DMA_Region - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VDMAD_Lock_DMA_Region</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_DMA_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VDMAD_Mask_Channel.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vdmad.inc
+ 
+VxDcall VDMAD_Lock_DMA_Region
+ 
+The VDMAD_Lock_DMA_Region service attempts to lock a region of memory for a
+DMA transfer. It is called before a DMA transfer is started, that is, before
+the physical state is set for a channel and before it is unmasked.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>ESI</i>        Specifies the linear address of the actual DMA region.
+ 
+<i>ECX</i>        Specifies the numbers of bytes in the DMA region.
+ 
+<i>DL</i>         Specifies the alignment. This parameter can be one of the
+           following values:
+ 
+           Value  Meaning
+           ─────────────────────────────────────────────────────────────────
+           1      region must be aligned on 64K page boundary
+ 
+           2      region must be aligned on 128K page boundary
+ 
+<b>Return Value</b>
+ 
+The carry flag is set if the lock failed. The ECX register contains the
+number of bytes that are lockable in the region (starting from ESI), and the
+AL registers contains one of the following error values:
+ 
+<b>Value  Meaning</b>
+────────────────────────────────────────────────────────────────────────────
+<i>1</i>      DMA_Not_Contiguous: region not contiguous
+ 
+<i>2</i>      DMA_Not_Aligned: region crossed physical alignment boundary
+ 
+<i>3</i>      DMA_Lock_Failed: unable to lock pages
+ 
+The carry flag is clear if the lock is successful. The EDX register contains
+the physical address of the DMA region the region has been locked.
+ 
+<b>Comments</b>
+ 
+The service first verifies that the region is mapped to contiguous pages of
+physical memory, then it determines whether the region results in a DMA bank
+(page) wrap.
+ 
+On AT class machines each channel has a base address register and a page
+address register. The base address register is incremented after each byte
+or word transferred. If the increment of this 16-bit register results in the
+roll over from FFFFh to 0, then the transfer wraps to the start of the DMA
+bank because the page register is not updated. Normally MS-DOS watches for
+this condition and adjusts Interrupt 13h parameters to split transfers to
+avoid this wrap, but MS-DOS does not account for the difference between
+linear and physical addresses under Windows, so VDMAD checks again to
+prevent wrap from occurring.
+ 
+If these checks pass, the service calls the memory manager to lock the
+physical pages.
+ 
+This service does not check to see if the region is within some physical
+maximum constraint. If the region is lockable, then it locks the memory, and
+it is up to the caller to check to see if the physical region is acceptable.
+If the region is not acceptable, then the caller should unlock the region
+and perform a buffered DMA transfer.
+ 
+<b>Uses</b>
+ 
+EAX, ECX, EDX, Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

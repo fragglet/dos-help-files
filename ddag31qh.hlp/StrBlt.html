@@ -1,0 +1,136 @@
+<html>
+
+<head>
+<title>StrBlt - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> StrBlt</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Graphics_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='StretchBlt.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+DWORD StrBlt(lpDestDev, wDestXOrg, wDestYOrg, lpClipRect, lpString, wCount,
+             lpFontInfo, lpDrawMode, lpTextXForm)
+LPPDEVICE lpDestDev;
+WORD wDestXOrg;
+WORD wDestYOrg;
+LPRECT lpClipRect;
+LPSZ lpString;
+int wCount;
+LPFONTINFO lpFontInfo;
+LPDRAWMODE lpDrawMode;
+LPTEXTXFORM lpTextXForm;
+ 
+The StrBlt function writes text strings by converting characters in a
+specified string into raster, vector, or outline glyphs and copying the
+glyphs to the specified device or bitmap. Depending on the value of its
+parameters, StrBlt also computes the x and y extents of the bounding
+rectangle of the displayed string and clips the text to fit a given clipping
+rectangle. GDI may call StrBlt if an application calls the TextOut function
+(GDI.33), the ExtTextOut function (GDI.351), or the GetTextExtent function
+(GDI.91).
+ 
+The StrBlt function has been superseded by the ExtTextOut function. A
+graphics device driver must export the StrBlt function only if the
+RC_GDI20_OUTPUT value is not set in the dpRaster member of the driver's
+<b>GDIINFO</b> structure or only if the driver is intended to be installed under
+Windows version 1.x.
+ 
+<b>Parameter    Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>lpDestDev    Points to a PDEVICE or PBITMAP s</i>tructure specifying the device
+             or bitmap to receive the text output.
+ 
+<i>wDestXOrg    Specifies the </i>x-coordinate (in device units) of the starting
+             point for the string.
+ 
+<i>wDestYOrg    Specifies the </i>y-coordinate (in device units) of the starting
+             point for the string.
+ 
+<i>lpClipRect   Points to a RECT </i>structure specifying the clipping rectangle.
+ 
+<i>lpString</i>     Points to a null-terminated character string specifying the
+             characters to display.
+ 
+<i>wCount</i>       Specifies what action the function is to take as well as the
+             number of characters in the string. If the wCount parameter is
+             positive, the function draws the characters in the string using
+             the current font, text justification, escapement, rotation,
+             applying the clipping rectangle, and other factors. If the
+             function modifies the BreakErr member specified by the
+             lpDrawMode parameter, it must restore the member to its
+             original value.
+ 
+             If wCount is negative, the function computes the x and y
+             extents of the smallest rectangle that completely encloses the
+             displayed string, but does not generate output. In this case,
+             the absolute value of wCount specifies the number of characters
+             in the string. The function uses the current font, text
+             justification, and other factors to compute the bounding
+             rectangle, but does not apply the clipping rectangle. The
+             function updates the BreakErr member specified by lpDrawMode.
+ 
+<i>lpFontInfo   Points to a FONTI</i>NFO structure specifying the physical font to
+             use.
+ 
+<i>lpDrawMode   Points to a DRAWM</i>ODE structure specifying the current text
+             color, background mode, background color, text justification,
+             and character spacing.
+ 
+<i>lpTextXForm  Points to a TEXTXFOR</i>M structure specifying additional
+             information about the appearance of the characters when drawn.
+ 
+<b>Return Value</b>
+ 
+The return values are the x and y extents of the string's bounding
+rectangle; the x extent is in the low-order 16 bits and the y extent in the
+high-order 16 bits. If the x extent exceeds the maximum value for an extent
+(0x7FFF), the function returns 0x7FFF in the low-order 16 bits and the value
+of the wDestXorg parameter in the high-order 16 bits. The function returns
+0x80000000 if error occurred or no output was generated.
+ 
+<b>Comments</b>
+ 
+The export ordinal for this function is 11.
+ 
+To ensure backward compatibility, many graphics device drivers provide both
+<b>StrBlt and ExtTextOut function</b>s. In such cases, the StrBlt function does
+nothing more than call ExtTextOut as in the following example:
+ 
+DWORD StrBlt(lpDestDev, wDestXOrg, wDestYOrg, lpClipRect,
+             lpString, wCount, lpFontInfo, lpDrawMode, lpTextXForm)
+LPPDEVICE lpDestDev;
+WORD wDestXOrg;
+WORD wDestYOrg;
+LPRECT lpClipRect;
+LPSZ lpString;
+int wCount;
+LPFONTINFO lpFontInfo;
+LPDRAWMODE lpDrawMode;
+LPTEXTXFORM lpTextXForm;
+{
+    return ExtTextOut(lpDestDev, wDestXOrg, wDestYOrg, lpClipRect,
+                 lpString, wCount, lpFontInfo, lpDrawMode,
+                 lpTextXForm, (LPSHORT)NULL, (LPRECT)NULL, 0);
+}
+ 
+<b>See Also</b>
+ 
+<b>ExtTextOut</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

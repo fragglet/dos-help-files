@@ -1,0 +1,89 @@
+<html>
+
+<head>
+<title>Keyboard_Event - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Keyboard_Event</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Keyboard_Driver_Functions.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='AnsiToOem.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+mov     ah, UpDownFlag   ; 00h for down stroke, 80h for up stroke
+mov     al, VirtualKey   ; Windows virtual-key code
+mov     bh, PrefixFlag   ; 00h if no prefix, 1 if 0E0h prefix byte
+mov     bl, ScanCode     ; hardware scan code
+ 
+mov     si, word ptr [ExtraInfo]
+mov     di, word ptr [ExtraInfo+2]
+                         ; extra information
+ 
+call    [Keyboard_Event]    ; keyboard-event function
+ 
+The Keyboard_Event function records a keystroke. The keystroke may
+subsequently be used to generate a WM_KEYUP or WM_KEYDOWN message.
+ 
+The keyboard driver's interrupt handler calls this function.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>UpDownFlag</i>  Specifies whether the key is up or down. The parameter is 0x00h
+            for a down stroke and 80h for an up stroke.
+ 
+<i>VirtualKey</i>  Specifies a virtual-key code. The code must be a value in the
+            range 1 to 254.
+ 
+<i>PrefixFlag</i>  Specifies whether the scan code was preceded by the 0E0h prefix
+            byte. The parameter is 00h if there was no prefix byte, and is 1
+            if there was a prefix byte.
+ 
+<i>ScanCode</i>    Specifies the hardware-scan code for the key.
+ 
+<i>ExtraInfo</i>   Specifies an additional 32-bit value associated with the key
+            stroke.
+ 
+<b>Return Value</b>
+ 
+This function has no return value.
+ 
+<b>Comments</b>
+ 
+Although the keyboard driver passes the hardware-scan code (which is
+OEM-dependent) to Windows, Windows does not use the code. Instead, Windows
+subsequently passes the scan code to the ToAscii function, which may use it
+for special purposes. The interrupt handler sets the up/down bit in the scan
+code to 0.
+ 
+This interrupt handler may process some keystrokes without passing them to
+Windows through the keyboard-event callback function. In particular, the
+handler processes CTRL+ALT+SYSREQ keytrokes and generates a nonmaskable
+interrupt (NMI). Under certain circumstances, the driver's interrupt handler
+passes keystrokes to the original keyboard-interrupt handler. This is the
+case for CTRL+ALT+DELETE key combination and for the PAUSE key.
+ 
+Use the PRINTSCREEN key to take a screen snapshot, which is saved in the
+Windows clipboard. This is handled in the interrupt routine by calling the
+event procedure with VK_SNAPSHOT in the AL register, with the value equal to
+0 (for full-screen snapshot) or 1 (for active-window snapshot) in the BL
+register.
+ 
+<b>See Also</b>
+ 
+<b>Enable</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

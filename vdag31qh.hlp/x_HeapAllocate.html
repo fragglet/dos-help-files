@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<title>_HeapAllocate - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> _HeapAllocate</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Heap_Allocation.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='x_HeapFree.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vmm.inc
+ 
+VMMcall _HeapAllocate, &lt;nbytes, flags&gt;
+ 
+or      eax, eax            ; zero if error
+jz      not_allocated
+mov     [Address], eax      ; address of memory block
+ 
+The _HeapAllocate service allocates a block of memory from the heap.
+ 
+<b>Parameter  Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>nbytes</i>     Specifies the size in bytes of the block to allocate. This
+           parameter must not be zero.
+ 
+<i>flags</i>      Specifies the allocation flags. It can be the following value:
+ 
+           Value         Meaning
+           ─────────────────────────────────────────────────────────────────
+           HeapZeroInit  Fills the memory block with zeros. If this value is
+                         not given, the initial content of the memory block
+                         is undefined.
+ 
+           All other values are reserved.
+ 
+<b>Return Value</b>
+ 
+The EAX register contains the ring-0 address of the block if the service is
+successful. Otherwise, EAX contains zero to indicate an error such as
+insufficient memory to satisfy the request.
+ 
+<b>Comments</b>
+ 
+This service aligns allocated block on doubleword boundaries, however, the
+block size does not have to be a multiple of 4.
+ 
+Since the system offers no protection on the heap, virtual devices must
+provide their own protection to prevent overrunning allocated blocks.
+ 
+The system offers no compaction on the heap; all memory blocks on the heap
+are fixed. Virtual devices must not to use the heap in such a way as to
+severely fragment it.
+ 
+<b>Uses</b>
+ 
+EAX
+ 
+<b>See Also</b>
+ 
+<b>_HeapFree, _HeapReAllocate</b>
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

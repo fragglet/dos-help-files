@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<title>Per-Page Printer Settings - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Per-Page Printer Settings</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Printer_Drivers.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='printnames.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+Applications can now modify printer settings (that is, DEVMODE values) while
+printing a document. The ResetDC function lets applications update the
+printer device context at each new page. This means applications can print
+documents containing a mixture of page orientations, paper sources, and
+other printing options without having to divide the document into smaller
+documents.
+ 
+To support ResetDC, a printer driver must provide code for the RESETDEVICE
+escape. This escape, processed by the driver's Control function, copies
+printer output state information from one physical device context (PDEVICE)
+to another. GDI uses the escape to replace existing device contexts with new
+ones.
+ 
+When an application calls ResetDC, GDI first creates a new PDEVICE by
+calling the driver's Enable function. This new PDEVICE receives the new
+printer settings as specified by the application. GDI next uses the
+RESETDEVICE escape to copy output state information from the existing
+<b>PDEVICE</b> to the new one. The output state includes information such as job
+number and list of downloaded fonts. The escape must copy the state
+information without changing the printer settings in the new PDEVICE.
+Finally, GDI substitutes the new PDEVICE for the old one in the
+application's device context, discarding the old PDEVICE by calling the
+<b>Disable</b> function.
+ 
+When the printer driver receives the RESETDEVICE request, it must expect a
+subsequent call to Disable with no intervening call to the ENDDOC escape.
+The printer driver must also ensure that the new printer settings take
+affect starting on the next printed page. If a printer driver allocated
+bitmap or working buffers when it received the STARTDOC escape, the driver
+should free the buffers for the old PDEVICE and allocate new buffers for the
+new PDEVICE (an option is to reallocate the buffers).
+ 
+The ResetDC function cannot be used to change the driver name, device name,
+or the output port. When the user physically changes port connection or the
+device name, the application must delete the original device context and
+recreate a device context with the new device name and output port. Also the
+application must cancel the selection of all objects in its device context
+before calling ResetDC.
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

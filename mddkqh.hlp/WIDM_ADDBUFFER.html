@@ -1,0 +1,64 @@
+<html>
+
+<head>
+<title>WIDM_ADDBUFFER - Windows Multimedia DDK</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows Multimedia DDK (mddkqh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> WIDM_ADDBUFFER</div>
+<pre>                                                 <span class='grhilite'>◄</span><a href='index.html'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='MDDK_dot_h_dot_index.html'>Index</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Back</a><span class='grhilite'>►</span>
+────────────────────────────────────────────────────────────────────────────
+<b>WIDM_ADDBUFFER</b>
+ 
+        This message is sent to a waveform input device driver to add a
+        buffer to the input queue.
+ 
+<u>Parameters</u>
+        DWORD dwParam1
+            Specifies a far pointer to a WAVEHDR data structure
+            identifying the buffer.
+ 
+        DWORD dwParam2
+            Specifies the size of the WAVEHDR structure.
+ 
+<u>Return value</u>
+        The return value is an error code, or zero (MMSYSERR_NOERROR) if
+        the operation is successful. Possible error codes are:
+ 
+        MMSYSERR_NOTENABLED
+            The driver failed to load or initialize.
+ 
+        WAVERR_UNPREPARED
+            The specified data buffer has not been prepared for input.
+ 
+<u>Comments</u>
+        The driver should first check the WHDR_PREPARED bit in the
+        <a href='WAVEHDR.html'>dwFlags</a> field of the WAVEHDR structure. If the bit is not set,
+        the driver should return WAVERR_UNPREPARED. The driver should
+        clear the WHDR_DONE bit and set the WHDR_INQUEUE bit in the
+        header structure, and place the data block in its play queue.
+        Then the driver should return control to the client by returning
+        MMSYSERR_NOERROR. Input to the buffer should occur as an interrupt-
+        driven process. If data is received without any buffers in the
+        input queue, the data should be ignored without notifying the
+        client.
+ 
+        Recording begins when the driver receives a WIDM_START message.
+        Once the data block has been filled with data, the driver should
+        set the WHDR_DONE bit and clear the WHDR_INQUEUE bit before
+        notifying the client by using DriverCallback to send a
+        WIDM_DONE message.
+ 
+                                       -♦-
+</pre>
+</body>
+
+</html>

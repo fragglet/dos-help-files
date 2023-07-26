@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>VDD_Get_Mem - Virtual Devices (3.1)</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Virtual Devices (3.1) (vdag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> VDD_Get_Mem</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='Virtual_Display_Device.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='VDD_Get_Mod.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+include vdd.inc
+ 
+VxDcall VDD_Get_Mem
+ 
+The VDD_Get_Mem service returns the flat address and allocation bitmap for
+the specified virtual machine's video memory. This service returns the main
+video-save memory and boosts the scheduling priority of the system virtual
+machine.
+ 
+<b>Parameter   Description</b>
+────────────────────────────────────────────────────────────────────────────
+ 
+<i>EDX</i>         Specifies the system virtual machine handle.
+ 
+<i>EBX</i>         Specifies the handle of the virtual machine to retrieve the
+            memory for.
+ 
+<i>EDI</i>         Specifies the VDD control block pointer.
+ 
+<i>EBP      </i>   Points to the Client_Reg_Struc structure for the virtual
+            machine.
+ 
+<i>Client_EBX</i>  Specifies the virtual machine handle.
+ 
+<i>Client_ES</i>   Specifies the selector identifying the segment containing the
+            buffer to receive the VDA_Mem_State.
+ 
+<i>Client_EDI</i>  Specifies the address of the buffer to receive the
+            VDA_Mem_State.
+ 
+<i>Client_CX</i>   Specifies the size of the buffer to hold the VDA_Mem_State. This
+            is for debugging only.
+ 
+<b>Return Value</b>
+ 
+The Client_CX register contains the number of bytes copied to the buffer.
+Otherwise, it is zero to indicate an error such as the buffer is too small
+or an invalid selector.
+ 
+<b>Comments</b>
+ 
+To prevent memory from changing between calls to the VDD_Get_Mem and
+<b>VDD_Free_Mem</b> services, this service boosts the system virtual machine's
+priority using the Low_Priority_Device_Boost value. This inhibits normal
+scheduling but does not hamper scheduling of virtual machine's to handle
+events such as interrupts.
+ 
+The allocation of memory to the bitmap is dynamic. The grabber must call
+this service each time it accesses the memory.
+ 
+A call to the VDD_Get_Mem service must be followed by a call to the
+<b>VDD_Free_Mem</b> service as soon as possible. No other virtual machine will be
+scheduled until the call to VDD_Free_Mem is made.
+ 
+<b>Uses</b>
+ 
+Flags
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>

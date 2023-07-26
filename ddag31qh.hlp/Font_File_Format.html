@@ -1,0 +1,182 @@
+<html>
+
+<head>
+<title>Font File Format - Windows 3.1 Device Drivers</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+</form>
+Windows 3.1 Device Drivers (ddag31qh.hlp) (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="page-title"> Font File Format</div>
+<pre>                                                     <span class='grhilite'>◄</span><a href='ddagovr.html'>Up</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='Setup_Information_Files.html'>Next</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='javascript:history.back();'>Previous</a><span class='grhilite'>►</span>
+<b></b><i>────────────────────────────────────────────────────────────────────────────</i>
+ 
+Microsoft Windows font files contain the font glyph information the
+graphics-device interface (GDI) or a graphics driver needs to draw text on a
+given device. The font-file format supports both raster and vector fonts.
+Also, Windows extended the font file format for Windows 3.x to increase the
+maximum size of a font file beyond 64K bytes.
+ 
+This topic does not describe the format of Microsoft TrueType font files.
+ 
+<b>Font Files</b>
+ 
+Font files consist of a font header, a character-width table, and the glyph
+data. The font header has the following format:
+ 
+typedef struct tagFONTFILEHEADER {
+    short dfVersion;
+    long  dfSize;
+    char  dfCopyright[60];
+    FONTINFO dffi;
+} FONTFILEHEADER;
+ 
+The dfVersion member specifies the version of Windows for which the font was
+designed. For example, for fonts designed for Windows 3.1, this member is
+set to 0x30A. The dfSize member specifies the size in bytes of the entire
+font file and the dfCopyright member contains the font designer's
+null-terminated copyright string. The rest of the FONTFILEHEADER structure
+is identical to the FONTINFO structure.
+ 
+The character-width table for the font file immediately follows the
+<b>FONTFILEHEADER</b> structure. The format of the table depends on the font-file
+version and whether the font contains raster or vector glyphs. For more
+information about the character-width table formats, see the FONTINFO
+structure in Chapter 12, "Graphics-Driver Types and Structures."
+ 
+The glyph data usually follows the character-width table. However, the
+<b>dfBitsOffset member in the FONTINFO </b>structure always specifies the offset
+from the beginning of the file to the start of the data. The data represents
+either raster or vector glyphs. The following sections describe these
+formats in detail.
+ 
+<b>Raster Glyphs</b>
+ 
+A raster-font file contains individual bitmaps for each glyph in the file.
+Each glyph bitmap is stored as a contiguous set of bytes. The first byte
+contains the first eight bits of the first scan line (that is, the top line
+of the character). The second byte contains the first eight bits of the
+second scan line. This continues until what amounts to a first "column" is
+completely defined.
+ 
+The following byte contains the next eight bits of the first scan line,
+padded with zeros on the right if necessary (and so on, down through the
+second "column"). If the glyph is quite narrow, each scan line is covered by
+one byte, with bits set to zero as necessary for padding. If the glyph is
+very wide, a third or even fourth set of bytes can be present.
+ 
+All bitmaps must be stored contiguously and arranged in ascending order,
+that is, the bitmap for the first character is first and the last character
+is last.
+ 
+The following example shows the the bytes that form a 12 x 14 pixel
+character.
+ 
+00 06 09 10 20 20 20 3F 20 20 20 00 00 00   /* first column */
+00 00 00 80 40 40 40 C0 40 40 40 00 00 00   /* second column */
+ 
+Notice that in the second set of bytes, the second digit corresponds to the
+thirteenth through sixteenth pixels on the right side of the character.
+Since the character is only 12 bits wide, these bits should always be zero.
+ 
+The resulting character looks like this:
+ 
+ ............
+ .....**.....
+ ....*..*....
+ ...*....*...
+ ..*......*..
+ ..*......*..
+ ..*......*..
+ ..********..
+ ..*......*..
+ ..*......*..
+ ..*......*..
+ ............
+ ............
+ ............
+ 
+<b>Vector Glyphs</b>
+ 
+A vector-font file contains a series of vectors for each glyph in the file.
+Each vector is a signed coordinate pair specifying the amount to move the
+pen relative to the current position. The size of each coordinate depends on
+the size of the font. If either the dfPixHeight or dfMaxWidth members in the
+<b>FONTINFO</b> structure is greater than 128, the coordinates are stored as 2-byte
+quantities; otherwise, they are stored as 1-byte quantities.
+ 
+Each coordinate pair may be preceded by a value indicating whether the pen's
+tip should be lifted before moving. The tip-up value depends on the size of
+the coordinates. For 1-byte coordinates, the value is -128 (0x80) and for
+2-byte coordinates, the value is -32768 (0x8000).
+ 
+To draw the a vector glyph, a device moves the pen to the character cell
+origin. The origin is assumed to be at the upper-left corner of the
+character cell. The device moves the pen to new positions as specified by
+each vector. Positive coordinates move the pen down and to the right;
+negative coordinates up and to the left. If the tip-up value is given, the
+tip stays up for the subsequent coordinate pair only. The number of vectors
+for a glyph depends on the glyph. The number of bytes in the vector series
+is equal to the difference between the offsets from the character-width
+table for the given character and the next character.
+ 
+The following series of vectors draws an exclamation point:
+ 
+-128,   /* pen tip up */
+ 5,   4,
+-1,   2,
+ 1,  12,
+ 1, -12,
+-1,  -2,
+-128,   /* pen tip up */
+ 0,   2,
+ 0,   6,
+-128,   /* pen tip up */
+ 0,  11,
+-1,   1,
+ 1,   1,
+ 1,  -1,
+-1,  -1
+ 
+If the character is drawn in a 10 x 24 character cell, the resulting
+character looks like this:
+ 
+ ..........
+ ..........
+ ..........
+ ....*.....
+ ....*.....
+ ...***....
+ ...***....
+ ...***....
+ ...***....
+ ...***....
+ ...***....
+ ...***....
+ ....*.....
+ ....*.....
+ ....*.....
+ ....*.....
+ ....*.....
+ ....*.....
+ ..........
+ ..........
+ ..........
+ ..........
+ ....*.....
+ ...*.*....
+ ....*.....
+ 
+ 
+                                      ♦
+ 
+</pre>
+</body>
+
+</html>
