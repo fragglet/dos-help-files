@@ -49,6 +49,20 @@ HTML_TEMPLATE="""<html>
 <input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
 </form>
 %(heading)s</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
 <div class="page-title"> %(title)s</div>
 <pre>%(body)s</pre>
 </body>
