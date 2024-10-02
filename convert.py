@@ -128,7 +128,7 @@ def read_as_utf8(filename):
 		data = f.read()
 	result = []
 	for c in data:
-		result.append(u"%c" % cp437[ord(c)])
+		result.append(u"%c" % cp437[c])
 	return u"".join(result)
 
 def filename_for_context(context):
