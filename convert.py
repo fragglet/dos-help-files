@@ -32,6 +32,7 @@ CHAR_ESCAPES = {
 	".": "_dot_",
 	"@": "_at_",
 	" ": "_",
+	"~": "_tilde_",
 }
 
 HTML_TEMPLATE="""<html>
