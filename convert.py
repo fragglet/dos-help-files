@@ -47,7 +47,7 @@ HTML_TEMPLATE="""<html>
 <div class="page-heading">
 <form action="https://www.google.com/search" method="GET">
 <input name="as_q" id="search-box" placeholder="Search">
-<input type="hidden" name="as_sitesearch" value="fragglet.github.io/dos-help-files/*">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
 </form>
 %(heading)s</div>
 <div class="notice">
