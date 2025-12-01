@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<title>TIMER.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> TIMER.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM timer;
+ 
+{ TIMER.PAS demonstrates the use of GetIntVec and SetIntVec to install
+  an interrupt service routine to handle the timer interrupt, which is
+  called roughly 18.2 times per second.
+}
+ 
+USES
+    Crt, Dos;
+ 
+CONST
+    program_name = 'TIMER ';
+    program_desc = ' sets up an interrupt routine for the timer.';
+    timerint     = $1C;
+    maxtime      = 18;
+ 
+VAR
+    oldvect : POINTER;
+    clicks  : Integer;
+    key     : Char;
+ 
+PROCEDURE newtimer; INTERRUPT;
+{ Decrement counter with each call to timer interrupt. }
+BEGIN
+    IF( clicks &gt; 0 ) THEN
+        clicks := clicks - 1
+END;
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+    Writeln( 'Press a key to quit.' );
+ 
+    { Get and save original vector. }
+    GetIntVec( timerint, oldvect );
+ 
+    clicks := maxtime;
+ 
+    { Revector interrupt to point at new function. }
+    SetIntVec( timerint, @newtimer );
+ 
+    { Continue until key is pressed. }
+    WHILE (KeyPressed = False) DO
+        BEGIN
+        { Has counter been cleared by interrupt? }
+        IF ( clicks = 0 ) THEN
+            BEGIN
+            Writeln( 'Timer cleared!' );
+            clicks := maxtime;
+            END;
+        END;
+    key := ReadKey;
+ 
+    { Set vector back to original value. }
+    SetIntVec( timerint, oldvect );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

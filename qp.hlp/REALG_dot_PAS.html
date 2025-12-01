@@ -1,0 +1,174 @@
+<html>
+
+<head>
+<title>REALG.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> REALG.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM realg;
+ 
+{ REALG.PAS : Demonstrates real-coordinate graphics }
+ 
+USES
+    MSGraph, Crt;
+ 
+CONST
+    bananas : ARRAY[0..20] OF Single =
+            ( -0.3,   -0.2, -0.224, -0.1,   -0.5, +0.21, +2.9,
+              +0.3,   +0.2,  0.0,   -0.885, -1.1, -0.3,  -0.2,
+               0.001, 0.005, 0.14,   0.0,   -0.9, -0.13, +0.3 );
+ 
+VAR
+    halfx, halfy, a : Integer;
+    vc              : _VideoConfig;
+    ch              : Char;
+    orig_mode       : Word;
+ 
+{============================= four_colors =============================
+  Function four_colors sets the graphics mode with the most colors.
+}
+ 
+FUNCTION four_colors : Boolean;
+BEGIN
+    four_colors := False;
+    IF (_SetVideoMode( _MaxColorMode ) &gt; 0) THEN
+        BEGIN
+        _GetVideoConfig( vc );
+        IF (vc.NumColors &gt;= 4) THEN
+            four_colors := True;
+        END;
+END;
+ 
+{============================= grid_shape ==============================
+  Procedure grid_shape draws the grid.
+}
+ 
+PROCEDURE grid_shape;
+ 
+VAR
+    i, x1, y1, x2, y2  : Integer;
+    x, y               : Real;
+    s                  : STRING[80];
+ 
+BEGIN
+    FOR i := 1 TO vc.NumColors DO
+        BEGIN
+        _SetTextPosition( i, 2 );
+        _SetTextColor( i );
+        Str( i, s );
+        _OutText( 'Color ' + s );
+        END;
+ 
+    _SetColor( 1 );
+    _Rectangle_w( _GBorder, -1.0,  -1.0,  1.0,  1.0  );
+    _Rectangle_w( _GBorder, -1.02, -1.02, 1.02, 1.02 );
+ 
+    x := -0.9;
+    i := 0;
+    WHILE x &lt; 0.9 DO
+        BEGIN
+        _SetColor( 2 );
+        _MoveTo_w( x, -1.0 );    _LineTo_w( x, 1.0 );
+        _MoveTo_w( -1.0, x );    _LineTo_w( 1.0, x );
+        _SetColor( 3 );
+        _MoveTo_w( x - 0.1, bananas[i] );
+        Inc( i );
+        _LineTo_w( x, bananas[i] );
+        x := x + 0.1;
+        END;
+ 
+    _MoveTo_w( 0.9, bananas[i] );
+    Inc(i);
+    _LineTo_w( 1.0, bananas[i] );
+    END;
+ 
+{============================ three_graphs =============================
+ Procedure three_graphs displays graphs in three viewports.
+}
+ 
+PROCEDURE three_graphs;
+ 
+VAR
+    upleft, botright            : _WXYCoord;
+    xwidth, yheight, cols, rows : Integer;
+ 
+BEGIN
+    _ClearScreen( _GClearScreen );
+    xwidth  := vc.NumXPixels;
+    yheight := vc.NumYPixels;
+    halfx   := xwidth  DIV 2;
+    halfy   := yheight DIV 2;
+    cols    := vc.NumTextCols;
+    rows    := vc.NumTextRows;
+ 
+    { first window }
+    _SetViewport( 0, 0, halfx-1, halfy-1 );
+    _SetTextWindow( 1, 1, rows DIV 2, cols DIV 2 );
+    _SetWindow( False, -2.0, -2.0, 2.0, 2.0 );
+    grid_shape;
+    _Rectangle( _GBorder, 0, 0, halfx-1, halfy-1 );
+ 
+    { second window }
+    _SetViewport( halfx, 0, xwidth-1, halfy-1 );
+    _SetTextWindow( 1, cols DIV 2+1, rows DIV 2, cols );
+    _SetWindow( False, -3.0, -3.0, 3.0, 3.0 );
+    grid_shape;
+    _Rectangle_w( _GBorder, -3.0, -3.0, 3.0, 3.0 );
+ 
+    { third window }
+    _SetViewport( 0, halfy, xwidth-1, yheight-1 );
+    _SetTextWindow( rows DIV 2+2, 1, rows, cols );
+    _SetWindow( True, -3.0, -1.5, 1.5, 1.5 );
+    grid_shape;
+    upleft.Wx   := -3.0;
+    upleft.Wy   := -1.5;
+    botright.Wx :=  1.5;
+    botright.Wy :=  1.5;
+    _Rectangle_wxy( _GBorder, upleft, botright);
+END;
+ 
+BEGIN { main program }
+ 
+    orig_mode := LastMode;
+    TextMode( Lo( LastMode ) + Font8x8 );
+    IF four_colors THEN
+        three_graphs
+    ELSE
+        _OutText( 'This program requires a CGA,' +
+                  ' EGA, or VGA graphics card' );
+ 
+    ch := ReadKey;
+    a := _SetVideoMode( _DefaultMode );
+    TextMode( orig_mode );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

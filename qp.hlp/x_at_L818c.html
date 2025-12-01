@@ -1,0 +1,83 @@
+<html>
+
+<head>
+<title>Seek Procedure - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> Seek Procedure</div>
+<pre>  <span class='grhilite'>◄</span><a href='Seek.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#records.pas'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+  Arguments
+ 
+    file_variable    Open typed or untyped file
+ 
+    index            Integer expression representing a position in
+                     the file; must be nonnegative and in the range
+                     of a LongInt
+ 
+  Description
+ 
+    The Seek procedure sets the current position within an open nontext
+    file. The new position is at the beginning of the component located
+    at a given index. The next file operation is performed at the new
+    position.
+ 
+    Seek allows random access (forward and backward movement) within
+    nontext files. Typed or untyped files can be directly modified.
+ 
+    Seek cannot be applied to text file variables. To move randomly
+    within a text file, declare file_variable as FILE OF Char.
+ 
+    Components are numbered from 0 through the positive integers. The
+    last component has an index one less than the number of components
+    in the file.
+ 
+    To append to a nontext file, Seek to the end of the file. Use the
+    FileSize function to find the current number of components in the
+    file. Then Seek to one place beyond the last component, as in
+ 
+       Seek( file_variable, FileSize( file_variable ) );
+ 
+    Do not Seek beyond one past the current last index.
+ 
+    To move relative to the current position in a file, use Seek with
+    the FilePos function. Seek to the current position plus or minus
+    the desired number of records. For example, to reread a record,
+    back up one place:
+ 
+       Seek( file_variable, FilePos( file_variable ) - 1 );
+ 
+    If file_variable is not associated with a file or if the file is
+    not open when Seek is called, an I/O error occurs.
+ 
+    To prevent a program from halting with a run-time error when an I/O
+    error occurs, turn off I/O checking with {$I-} and check the return
+    value of the IOResult function.
+ 
+</pre>
+</body>
+
+</html>

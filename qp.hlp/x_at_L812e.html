@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<title>GetMem Procedure - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> GetMem Procedure</div>
+<pre>  <span class='grhilite'>◄</span><a href='GetMem.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#avail.pas'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+  Arguments
+ 
+    pointer_variable    Pointer of any type, either undefined or
+                        pointing to a variable
+ 
+    size                Bytes to be allocated
+ 
+  Description
+ 
+    The GetMem procedure allocates memory from the heap and sets
+    pointer_variable to the address of the first byte of the memory
+    area.
+ 
+    The pointer_variable argument may be undefined or set to an
+    existing variable. Use caution when pointer_variable is currently
+    set to a dynamic variable. GetMem always sets pointer_variable to
+    a new address. If pointer_variable is the only reference to a
+    dynamic variable, the reference is permanently lost, and the memory
+    area cannot be recovered for reallocation.
+ 
+    The size argument specifies the size in bytes of the area to be
+    allocated. GetMem cannot allocate a variable larger than 65520
+    bytes.
+ 
+    After allocation, refer to the new variable by dereferencing the
+    pointer. Append a caret (^) to pointer_variable and use the result
+    as a variable of the type of pointer_variable.
+ 
+    GetMem is similar to the New procedure, which allocates a dynamic
+    variable of a specified type. Use FreeMem to free memory allocated
+    by GetMem. Use Dispose to free a variable allocated by New.
+ 
+    QuickPascal uses a free list to manage areas returned to the heap
+    by Dispose and FreeMem. The free list is a list of pointers that
+    grows downward (toward 0) from the top of the heap segment.
+    FreePtr, defined in the System unit, points to the free list.
+    Deallocated areas below the current top of the heap are pointed to
+    by pointers kept in the free list. GetMem and New allocate from the
+    free list before taking any new memory from the heap.
+ 
+    Use caution when mixing methods for deallocating variables. Dynamic
+    allocation and deallocation are usually done with the related pairs
+    of procedures New/Dispose and GetMem/FreeMem. The Mark and Release
+    procedures allow freeing of large areas of the heap at one time.
+    Release clears the entire free list when called.
+ 
+    If the heap does not have sufficient free space to allocate a
+    variable of the type of pointer_variable, the HeapError function
+    provided at start-up causes a run-time error. It is possible to
+    replace the default HeapError function with a custom function.
+    Check the available heap space with the MaxAvail and MemAvail
+    functions.
+ 
+    Use GetMem to allocate an array dynamically:
+ 
+       GetMem( array_pointer, elements * SizeOf( element_type ) );
+ 
+    New allocates enough space for the largest part of a variant
+    record. Use GetMem instead of New to allocate a smaller variant
+    record. Pass GetMem the size of the desired variant.
+ 
+</pre>
+</body>
+
+</html>

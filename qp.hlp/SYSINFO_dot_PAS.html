@@ -1,0 +1,112 @@
+<html>
+
+<head>
+<title>SYSINFO.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> SYSINFO.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM sysinfo;
+ 
+{ SYSINFO.PAS demonstrates the use of interrupt calls to DOS and the ROM
+  BIOS, including the following:
+ 
+      Intr    MsDos    RunError
+ 
+    This short program determines total RAM installed on a machine, total
+    RAM available, total space on the current drive, and total available
+    space on the current drive. Any errors on the DOS interrupt are
+    handled by RunError.
+}
+ 
+USES
+    Dos;
+ 
+CONST
+    program_name = 'SYSINFO ';
+    program_desc = ' demonstrates the use of interrupt calls.';
+    int_memory   = $12;
+    fnc_freedsk  = $36;
+ 
+VAR
+    regs : Registers;
+    Mem  : LongInt;
+    disk : LongInt;
+    Size : LongInt;
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+ 
+    { Make call to ROM BIOS memory function. }
+    Intr( int_memory, regs );
+ 
+    { Get number of kilobytes of memory installed. }
+    Mem := regs.AX;
+ 
+    { Calculate bytes of memory installed. }
+    Size := Mem * $0400;
+    Write( 'Total memory        : ' );
+    Writeln( Size );
+ 
+    { Get bytes of memory available. }
+    Size := MemAvail;
+    Write( 'Available memory    : ' );
+    Writeln( Size );
+ 
+    { Call DOS function to get current disk information and check for
+      error returned in AX.
+    }
+    regs.AH := fnc_freedsk;
+    regs.DL := 0;
+    MsDos( regs );
+    IF( regs.AX = $FFFF ) THEN
+        BEGIN
+        Writeln( 'Error in DOS call!' );
+        RunError( 1 );
+        END;
+ 
+    { Calculate bytes per cluster on disk. }
+    disk := regs.CX * regs.AX;
+ 
+    { Calculate total disk space. }
+    Size := disk * regs.DX;
+    Write( 'Total disk space    : ' );
+    Writeln( Size );
+ 
+    { Calculate available disk space. }
+    Size := disk * regs.BX;
+    Write( 'Available disk space: ' );
+    Writeln( Size );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,87 @@
+<html>
+
+<head>
+<title>DISK.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> DISK.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM disk;
+ 
+{ DISK.PAS illustrates low-level disk access using the following
+  functions:
+ 
+      DiskFree    DiskSize    GetDir
+}
+ 
+USES
+    Dos;
+ 
+CONST
+    program_name = 'DISK ';
+    program_desc = 'displays disk size and number of free bytes.';
+    program_synt = 'Syntax: DISK &lt;letter&gt; (default is current drive)';
+ 
+VAR
+    disk_drive   : Word;
+    current_dir  : STRING;
+    drive_letter : STRING;
+    total_size   : LongInt;
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln( program_synt );
+    Writeln;
+ 
+    IF ParamCount = 0 THEN
+        BEGIN
+        disk_drive := 0;
+        GetDir( disk_drive, current_dir );
+        drive_letter := Copy( current_dir, 1, 1 );
+        END
+    ELSE BEGIN
+        drive_letter := Copy( ParamStr( 1 ), 1, 1 );
+        drive_letter[1] := UpCase( drive_letter[1] );
+        disk_drive := Ord( drive_letter[1] ) - 64;
+        END;
+ 
+    total_size := DiskSize( disk_drive );
+    IF (total_size = -1) THEN
+       Writeln( drive_letter, ': Invalid drive.' )
+    ELSE BEGIN
+        Writeln( 'Total size of disk ', drive_letter, ': is ',
+                 total_size, '.' );
+        Writeln( DiskFree( disk_drive ), ' bytes are free.' );
+        END;
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,589 @@
+<html>
+
+<head>
+<title>README File - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> README File</div>
+<pre> 
+ 
+              Release Notes for Microsoft(R) QuickPascal
+ 
+              (C) Copyright Microsoft Corporation, 1989
+ 
+  This on-line file contains information about Microsoft(R) QuickPascal
+  for MS-DOS(R). The information in this on-line file is more up to
+  date than that in the manuals.
+ 
+  Microsoft improves its language documentation at the time of
+  reprinting, so some of the information in this on-line file may
+  already be included in your manuals. Where the information in this
+  file conflicts with the manuals, assume that this file contains the
+  correct information.
+ 
+ 
+  ============================&lt; Contents &gt;=============================
+ 
+ 
+  This file has two parts.
+ 
+     Part     Topic
+     ----     -----
+     1        Additional Functionality and QuickPascal Description
+ 
+     2        Recommendations and Limits
+ 
+ 
+  ===&lt; Part 1: Additional Functionality and QuickPascal Description &gt;==
+ 
+ 
+  Additional Graphics Function
+  ----------------------------
+  QuickPascal contains a new MSGraph function, _GrStatus, which returns
+  the status of the most recently executed graphics routine. _GrStatus
+  lets your programs check for errors that can occur when executing
+  graphics routines.
+ 
+  _GrStatus is not covered in "Pascal by Example," but it is completely
+  documented in the on-line help system. See the on-line program
+  PALETTE1 for an example of how to use _GrStatus.
+ 
+ 
+  Additional Graphics Procedure
+  -----------------------------
+  The graphics unit, MSGraph, includes two procedures that draw
+  polygons. The procedures have the form:
+ 
+  PROCEDURE _Polygon( control : Integer; VAR pointarray;
+                      numpoints : Integer );
+ 
+  PROCEDURE _Polygon_wxy( control : Integer; VAR pointarray;
+                      numpoints : Integer );
+ 
+  They both draw a polygon in the current color. They either draw
+  just the outline of the shape or fill the entire shape depending
+  on the value of control, either _GBorder or _GFillInterior.
+  The variable pointarray is an array of _XYCoords (or _WXYCoords
+  for _Polygon_wxy), each of which specifies one of polygon's
+  verticies. The argument numpoints indicates the number of elements
+  in pointarray (the number of verticies).
+ 
+  _SetWriteMode, _SetLineStyle, and _SetFillMask all effect the
+  output from _Polygon and _Polygon_wxy.
+ 
+  Possible return values by _GrStatus for _Polygon and _Polygon_wxy
+  are: _GrNotInProperMode, _GrInvalidParameter, _GrInsufficientMemory,
+  _GrNoOutput, and _GrClipped.
+ 
+  For related procedures see _LineTo, _Rectangle, _FloodFill,
+  _SetColor, _SetWriteMode, _SetLineStyle, and _SetFillMask.
+ 
+ 
+  Additional Graphics Routines for Appendix D
+  -------------------------------------------
+  The following routines appear in the on-line help, but were omitted
+  from Appendix D, under MSGraph, in "Pascal by Example":
+ 
+  PROCEDURE _GetGTextVector( VAR x, y : Integer );
+  Returns the orientation of text as set by _SetGTextVector and used by
+  _OutGText. _GetGTextVector appears in Appendix D, but uses the wrong
+  parameters.
+ 
+  FUNCTION _GrStatus : Integer;
+  Returns the status of the most recently called graphics routine.
+ 
+  FUNCTION _GetWriteMode : Integer;
+  Returns the current operand applied to line drawing: _GOR, _GAND,
+  _GPRESET, _GPSET, or _GXOR.
+ 
+  PROCEDURE _Polygon( control : Integer; VAR pointarray;
+                      numpoints : Integer);
+  Draws a polygon at the current cursor location. See the general
+  description in the previous README entry under "Additional Graphics
+  Functions."
+ 
+  PROCEDURE _Polygon_wxy( control : Integer; VAR pointarray;
+                      numpoints : Integer);
+  Draws a polygon at the current cursor location. See the general
+  description in the previous README entry under "Additional Graphics
+  Functions."
+ 
+ 
+  Additional Compiler Directives
+  ------------------------------
+  The $E, $G, and $O compiler directives have been added to
+  QuickPascal. $N+ and $N- are also discussed here to add more
+  information to the general description of compiler directives that
+  is given in Appendix B of "Pascal by Example."
+ 
+  The plus (+) and minus (-) turn the instructions on or off,
+  respectively. (Remember you can also set any functional compiler
+  directive from within the QuickPascal environment.)
+ 
+  $E+/- Included for Turbo Pascal compatibility.
+ 
+  $G+/- Generates instructions for the 286 processor. This directive
+        lets your programs take advantage of the additional speed
+        provided by 80286 processors. Default is $G- (no 286
+        instructions). Programs compiled with $G+ will run only on
+        computers that use the 286, 386, or 486 processors.
+ 
+  $N+   Generates instructions for the 8087 family of math
+        coprocessors. All floating types are supported with their full
+        range and precision (19-20 digits). Programs compiled with $N+
+        require a math coprocessor to run.
+ 
+  $N-   Invokes the alternate math package, which does not require a
+        math coprocessor. Note that this is not an emulator.
+ 
+        Alt math supports all long floating-point types, but Extended
+        and Comp types do not have the range or precision available
+        with a coprocessor. With $N-, Extended data have the same range
+        and precision as Double types. The Comp type has the same range
+        as with $N+ but precision is limited to 15-16 digits.
+ 
+        (See the on-line help for more information about type ranges
+        and precision.) $N- is the default (no coprocessor required).
+ 
+  $O+/- Ignored. Included for Turbo Pascal compatibility.
+ 
+ 
+  QP.EXE Command-Line Arguments
+  -----------------------------
+  The QuickPascal integrated environment does not use many command-line
+  arguments. Mostly, parameters are set within the environment. For
+  this reason, the only command-line arguments that are needed are
+  those that enable the environment to start properly.
+ 
+  Choose one of the following options to specify the color palette for
+  QuickPascal to use in its interface:
+ 
+      /1
+      /2
+      /3
+      /B  For monochrome or LCD
+      /S  Save Color Palette - VGA only (default not saved)
+ 
+  Use the /S option to save the color palettes on the VGA. By default
+  this switch is not active. /S must be used if you have a VGA and your
+  graphics program is manipulating the VGA color palettes. This switch
+  causes the color palettes to be saved to disk or memory. QP swaps the
+  palettes back when returning to the QP environment from your program.
+ 
+  Choose one of the following options to specify how many display rows
+  to use:
+ 
+      /25
+      /43
+      /50
+ 
+  Depending on your computer's memory configuration, you can choose how
+  QuickPascal works with a temporary file that it creates, called a
+  'swap file'. (/SWAP options tell QuickPascal how to handle the swap
+  file.):
+ 
+        /SWAP:{ON[=file]|OFF|EMS|DISK[=file]}
+ 
+  OFF   Turns off all swapping. The default option is OFF.
+  ON    Swaps to Expanded Memory Specification (EMS) if present or to
+        disk (if there is no EMS). This requires 1024K bytes of hard
+        disk space.
+  EMS   Swaps to EMS.
+  DISK  Swaps to disk. This option is particularly useful when
+        developing very large or memory-intensive applications.
+ 
+  The ON and DISK options let you specify a name for the swap file
+  with the '=file' option. QuickPascal will remember this name until
+  you explicitly remove it (by specifying '=' with no file name). The
+  default file name is QP###### (no extension). The # are randomly
+  generated. QuickPascal decides where to place the swap file
+  by looking for a TEMP (or TMP if you do not use TEMP) environment
+  variable, and placing the swap file in that directory. If you do not
+  provide a TEMP or TMP directory, QuickPascal will put the swap file
+  in the current directory.
+ 
+  QuickPascal saves the /SWAP options in the QP.INI file, so you only
+  need to specify the option once. Thereafter, QuickPascal always
+  starts with that option. To change the option, specify a different
+  /SWAP option when you start QuickPascal.
+ 
+  If QuickPascal crashes for any reason, delete the swap file (if
+  you do not keep temporary files in a RAM disk). If you plan to swap
+  to your disk or to EMS, you need a minimum of one megabyte of free
+  space. Run the CHKDSK (check disk) command if you are unsure
+  of the amount of available space on your system.
+ 
+  In addition to the display parameters, you may include one or more
+  (up to nine) source file names on the command line:
+ 
+      qp [ filename [ ... filename ]]
+ 
+  QuickPascal attempts to open a window for each listed file. It
+  detects listed files that do not exist and asks whether they should
+  be created.
+ 
+ 
+  QPL.COM Command-Line Arguments
+  ------------------------------
+  The command-line version of the compiler makes extensive use of
+  command-line parameters to control the compilation process:
+ 
+  /DIdentifier[;...;Identifier]
+ 
+  This option lets you define symbols that can be tested in the source
+  code with {$IFDEF} or {$IFNDEF}.
+ 
+  The following options specify the directories to use when searching
+  for or creating files.
+ 
+  Option Syntax                Files
+  -------------------------    -----
+  /E Directory                .EXE
+  /P Directory [;Directory]   .PAS
+  /I Directory [;Directory]   .INC
+  /O Directory [;Directory]   .OBJ
+  /U Directory [;Directory]   .QPU
+ 
+ 
+  /B
+ 
+  This option tells the compiler to build the specified file(s). If
+  /B is not given, QuickPascal simply compiles the file(s).
+ 
+  The /B compiler option directs QuickPascal to check all of the
+  dependencies of the file being compiled. If any of the source
+  files have been modified since they were last compiled, they
+  are compiled now. This ensures that the new .EXE file always
+  reflects the contents of the most recent source code.
+ 
+  /R
+ 
+  This command-line switch forces a compile of all the units and files
+  upon which the file being compiled is dependent. Compilation occurs
+  whether or not the unit or file has changed.
+ 
+  /$ {x[+|-]|M[sss],[nnn],[xxx]} [,x([+|-] | M[sss],[nnn],[xxx])]...
+ 
+  Use the /$ option to enable or disable QuickPascal directives. The
+  syntax of this command is identical to the syntax used within a
+  source program. For example, to turn off range-checking in a source
+  program, either insert a {$R-} directive directly into a program:
+ 
+      {$R-}
+      PROGRAM source;
+      BEGIN
+      ...
+      END.
+ 
+  or specify /$R- on the command line:
+ 
+      QPL /$R- source.pas
+ 
+  The /$ option may be used to set any compile-time directive:
+ 
+  A    Align data
+  B    Boolean complete evaluation
+  D    Debug information
+  F    Force far calls
+  G    Generate instructions for 80286
+  I    I/O checking
+  M    Method calls checking
+  M    Set memory parameters
+  N    Numeric processing
+  R    Range checking
+  S    Stack checking
+  V    VAR string checking
+ 
+  Note that the M directive has two uses. When followed by + or -, it
+  turns method-call checking on or off. When followed by numbers it
+  specifies memory usage (number of bytes reserved for the default
+  memory usage, number of bytes for the heap, and the maximum heap size
+  in bytes).
+ 
+  The command line may specify filenames and options in any order,
+  although the options usually appear first:
+ 
+      QPL [options] filename [file ...]
+ 
+  If you specify multiple filenames, each file is processed
+  sequentially, using the same set of options for each.
+ 
+  NOTE: The defaults for the environment and the command-line compilers
+  are the same EXCEPT for the debug information and local symbol data
+  directives (/$D and /$L). By default, they are both ON in the
+  environment, and OFF for the command line.
+ 
+ 
+  The "QPL" Environment Variable
+  ------------------------------
+  QPL.COM looks at the DOS environment area to see if the"QPL" variable
+  has been set. Use the QPL variable to specify a default set of
+  options. The syntax is the same as the QPL command line. For example:
+ 
+      SET QPL=/$R-,M- /UC:\QP\UNITS /IC:\QP\INCLUDES
+ 
+  QuickPascal uses the following priorities to process compilation
+  directions and options:
+ 
+  1.  It looks at the source code (for any "{$...}" directives).
+  2.  It looks at any command-line arguments (QPL.COM).
+  3.  It looks at the QPL environment variable.
+ 
+  The QPL environment variable identifies the default options, but
+  directives in the source code have the final say.
+ 
+ 
+  Circular Referencing in Units
+  -----------------------------
+  Chapter 7, "Units," of "Pascal by Example" erroneously states that
+  QuickPascal does not allow some forms of circular referencing
+  (units A -&gt; B -&gt; C -&gt; A). QuickPascal DOES allow circular referencing
+  in a unit's IMPLEMENTATION section (but not in the INTERFACE
+  section).
+ 
+ 
+  If You Plan to Use Turbo Pascal Units in QuickPascal
+  ----------------------------------------------------
+  Although QuickPascal can compile virtually all Turbo Pascal source
+  code without modification, QuickPascal cannot use units compiled with
+  Turbo Pascal (.TPU files). To use an existing Turbo Pascal unit,
+  recompile the source code with QuickPascal.
+ 
+ 
+  No Overlay Unit
+  ---------------
+  QuickPascal does not support an overlay unit.
+ 
+ 
+  Calling Interlanguage Procedures
+  --------------------------------
+  QuickPascal supports calls to procedures written in Microsoft
+  Assembler (MASM) or a compatible assembler, but does not support
+  calls to procedures written in any other language.
+ 
+ 
+  QuickPascal Linking Order
+  -------------------------
+  The memory map described in "Pascal by Example," page 150, is
+  incorrect. QuickPascal always links the System unit first, placing it
+  at the lowest memory position (memory offset 0). QuickPascal links the
+  remaining units in the order they appear in the USES statement.
+ 
+ 
+  Untyped Parameters in MSGraph
+  -----------------------------
+  The help system's summary of _RemapAllPalette, _GetImage, and
+  _PutImage all include variables without type declarations. This is
+  intentional. You can declare these variables as a variety of types
+  (as arrays, reals, etc.). Choose the one that best suits your
+  purpose. For example, large images are typically stored as arrays of
+  type Byte.
+ 
+ 
+  Turning On the Pascal Syntax Command
+  ------------------------------------
+  By default QuickPascal displays .PAS and .INC files with the Pascal
+  Syntax command on (keywords, strings, comments, etc. appear in
+  different colors). Files with other extension are not displayed in
+  color (Pascal Syntax off), even if they contain Pascal programs.
+  Just choose the Pascal Syntax command (Edit menu) if you want to
+  see the program in different colors.
+ 
+ 
+  Correction to Book Examples
+  ---------------------------
+  Chapter 14, "Using Fonts," of "Pascal by Example" contains an example
+  on page 220 in which _SetFont is checked for a return value of -1
+  (indicating an error). As a general rule, check for error values &lt; 0
+  (as opposed to just -1).
+ 
+  The sample code fragment at the top of page 177 of "Pascal by Example"
+  (Chapter 13, "Using Graphics") contains a misplaced comma. Replace
+  the lines
+ 
+  _GetVideoConfig( ,vc );
+  Writeln( 'mode: 'vc.Mode );
+ 
+  with
+ 
+  _GetVideoConfig( vc );
+  Writeln( 'mode: ',vc.Mode );
+ 
+ 
+  On-Line Example Programs
+  ------------------------
+  The REALG.PAS sample program in "Pascal by Example" differs from the
+  one in the on-line help system. The help version contains these
+  enhancements:
+ 
+  1. It resets the monitor to 43/50 line mode before making any
+     graphics calls.
+ 
+  2. An IF...THEN...ELSE statement in the main program prints a message
+     on the screen only if there is no acceptable graphics mode.
+ 
+  3. The program resets the monitor to its original state when the
+     program terminates.
+ 
+  The on-line version of ANIMATE.PAS differs from the version in
+  "Pascal by Example" on page 212. The on-line version compares the
+  size of the image against both MaxAvail and max_buffer, to ensure
+  that the heap has enough space.
+ 
+  The example program OBJECTS.PAS on page 234 of "Pascal by Example"
+  has been changed in the on-line version. In the book, the function
+  geo_shape.get_area incorrectly assigns Self.height to the function
+  name get_area. This has been corrected in the on-line OBJECTS.PAS
+  program.
+ 
+ 
+  Descriptions of the Disk-Based Sample Programs
+  ----------------------------------------------
+  BIGMEM.PAS is a simple program that uses the unit BIGHEAP.PAS.
+  BIGHEAP.PAS redefines the GetMem and FreeMem procedures to allocate
+  and free memory blocks larger than 65520 bytes.
+ 
+  SORTDEMO.PAS is a program that illustrates several different sorting
+  algorithms.
+ 
+  OBJECTS.PAS is a simple program that uses the QuickPascal
+  object-oriented extensions.
+ 
+  GRDEMO.PAS is a graphics demonstration program that the use two
+  units, TURTLE.PAS (for turtle graphics) and MENU.PAS (for menu
+  input and output).
+ 
+ 
+  Selected Text Command Shortcut for International Keyboards
+  ----------------------------------------------------------
+  QuickPascal supports the Selected Text command keyboard shortcut
+  CRTL+F3 in addition to the CTRL+\ shortcut shown on the Search menu.
+  Use whichever command is easier on your keyboard.
+ 
+ 
+  ===============&lt; Part 2: Recommendations and Limits &gt;===============
+ 
+ 
+  If You Run QuickPascal Under DOS 4.X
+  ------------------------------------
+  Computers that run QuickPascal under any version of DOS 4.X in the
+  43 line mode, and have ANSI.SYS installed, display only 25 lines on
+  the screen after leaving QuickPascal. The display remains in 43 line
+  mode, but only 25 lines appear before the display starts to scroll.
+ 
+  To return the display to its normal 43 line mode, type:
+  MODE CO80,43 (at the DOS prompt).
+ 
+ 
+  Special Instructions for QP Express
+  -----------------------------------
+  You may have difficulty running the QP Express Computer-Based
+  Training (CBT) program due to your video driver/graphics card
+  combination. Try the following:
+ 
+  1. Make a backup copy of the QP Express or QP Express/QP Advisor
+     disk. Use the backup copy for the remainder of this procedure.
+ 
+  2. On the backup copy of the QP Express or QP Express/QP Advisor disk
+     you will find files with the extension .VID. Each of these files
+     is a driver for a specific type of graphics card. The following
+     drivers support the indicated graphics cards:
+ 
+     ATT6300.VID       For Olivetti and ATT PCs.
+     CGASNO.VID        For CGA cards that produce a snow effect.
+     ERICSSON.VID      For Ericsson PCs
+     HERC102.VID       For the Hercules 102 card
+     HERC112.VID       For the Hercules 112 card
+ 
+     If you use one of these computers/displays, rename the appropriate
+     driver to SCREEN.VID. For example, if you run an AT&amp;T computer,
+     type: RENAME ATT6300.VID SCREEN.VID
+ 
+  3. You can now resume SETUP or run the CBT directly by typing: LEARN.
+ 
+ 
+  Storing Screen Images Larger than 65520 Bytes
+  ---------------------------------------------
+  If you store screen images smaller than 65520 bytes you can allocate
+  the necessary memory with the GetMem procedure. If your image
+  requires more than 65520 bytes, you can allocate larger sections of
+  memory with the sample unit BIGHEAP.PAS. The sample program
+  BIGMEM.PAS shows how to call the unit's routines.
+ 
+ 
+  Maximum Number of Units
+  -----------------------
+  A program can use a maximum of 81 units.
+ 
+ 
+  Maximum File Size
+  -----------------
+  The documentation states that the maximum file size is 64K. The
+  actual maximum file size is 64K - 16 bytes.
+ 
+ 
+  MSGrUtil Unit
+  -------------
+  The MSGraph unit uses the MSGrUtil unit. For graphics to function
+  properly, make sure MSGRAPH.QPU has access to MSGRUTIL.QPU. To ensure
+  access, keep the two files in the same directory (the SETUP program
+  does this automatically).
+ 
+ 
+  Extending the Scope of Identifiers
+  ----------------------------------
+  All identifiers (variable, constant, procedure, and function names)
+  can be "fully qualified" in order to extend their scope.
+ 
+  For example, if a procedure named 'Proc1' declares a variable A1, then
+  the scope of A1 is Proc1. If Proc1 contains a procedure called 'Proc2'
+  that also declares a variable A1, the value of A1 in Proc2 and the
+  value of A1 in Proc1 do not interfere with each other. The A1 in Proc1
+  normally has a scope limited to just Proc1. However, you can refer to
+  A1 (or any other variable) from Proc1 in Proc2 by using the fully
+  qualified name 'Proc1.A1'.
+ 
+  Chapter 7, "Units," in "Pascal by Example" indicates that you can use
+  this method to refer to procedure names, but does not indicate that
+  you can also extend it to all identifiers.
+ 
+  Block Indents
+  -------------
+  You can indent an entire block of code simultaneously by selecting
+  the lines to indent and pressing TAB. You can similarly outdent
+  by pressing SHIFT+TAB
+ 
+ 
+  Commenting Out Code
+  -------------------
+  Both { and } and (* and *) delimit comments in QuickPascal. If you
+  normally use { and } to delimit comments in your programs, use (* and
+  *) to quickly comment out large sections of code for debugging
+  purposes, or vice versa.
+</pre>
+</body>
+
+</html>

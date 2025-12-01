@@ -1,0 +1,122 @@
+<html>
+
+<head>
+<title>COPY2.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> COPY2.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM copy2;
+ 
+{ COPY2.PAS copies one file to another. It illustrates file I/O and
+  dynamic memory allocation functions, including:
+ 
+      Addr      BlockRead     Eof         FreeMem    MaxAvail    Rewrite
+      Assign    BlockWrite    FileSize    GetMem     Reset
+ 
+  It uses the following standard variable:
+ 
+      HeapError
+ 
+  The program also demonstrates value type-casting.
+}
+ 
+CONST
+    program_name = 'COPY2 ';
+    program_desc = 'copies one file to another' +
+                   ' using a large memory buffer';
+ 
+VAR
+    infile, outfile : FILE;
+    buf             : POINTER;
+    file1, file2    : STRING;
+    buf_size        : LongInt;
+    result          : Word;
+    wrote           : Word;
+ 
+{=========================== heap_err_hdlr ============================}
+{ Simple heap error handler causes GetMem to return NIL if it cannot
+  allocate the requested size, rather than generating a run-time error.
+  This routine must use far calls.
+}
+ 
+{$F+}
+FUNCTION heap_err_hdlr( size : Word ) : Integer;
+{F-}
+ 
+BEGIN
+    heap_err_hdlr := 1;
+END;
+ 
+{============================ main program ============================}
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+ 
+    { Install heap error function. }
+    HeapError := Addr( heap_err_hdlr );
+ 
+    Write( 'Input file: ' );
+    Readln( file1 );
+    Write( 'Output file: ' );
+    Readln( file2 );
+ 
+    Assign( infile, file1 );
+    Reset( infile, 1 );
+ 
+    Assign( outfile, file2 );
+    Rewrite( outfile, 1 );
+ 
+    { Try to allocate a buffer as large as the file. }
+    buf_size := FileSize( infile );
+    IF (buf_size &gt; $FFF0) THEN
+       buf_size := $FFF0;
+    GetMem( buf, Word(buf_size) );
+    IF (buf = NIL) THEN
+        BEGIN
+        buf_size := MaxAvail;
+        GetMem( buf, Word(buf_size) );
+        END;
+ 
+    { Read-write until there's nothing left. }
+    WHILE (NOT Eof( infile )) DO
+        BEGIN
+        BlockRead( infile, buf^, buf_size, result );
+        BlockWrite( outfile, buf^, result, wrote );
+        END; { while loop }
+ 
+    { Free the memory. }
+    FreeMem( buf, buf_size );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,116 @@
+<html>
+
+<head>
+<title>SAMPLER.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> SAMPLER.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM sampler;
+ 
+{ SAMPLER.PAS : Demonstrates using different fonts }
+ 
+USES
+    Crt, MSGraph;
+ 
+CONST
+    crlf   = #13 + #10;
+    nfonts = 6;
+ 
+    texttypes : ARRAY [1..2, 1..nfonts] OF CSTRING[8] =
+            (
+            ( 'roman', 'courier', 'helv', 'tms rmn', 'modern', 'script'),
+            ( 'ROMAN', 'COURIER', 'HELV', 'TMS RMN', 'MODERN', 'SCRIPT')
+            ) ;
+ 
+    faces : ARRAY [1..nfonts] OF CSTRING[12] =
+            ( 't''roman''',
+              't''cour''',
+              't''helv''',
+              't''tms rmn''',
+              't''modern''',
+              't''script'''
+            );
+    fontpath : CSTRING = '*.FON';
+ 
+VAR
+    list : CSTRING;
+    vc   : _VideoConfig;
+    i,a  : Integer;
+    stra : STRING[3];
+    ch   : Char;
+ 
+BEGIN    { Begin main program }
+ 
+    { Read header information from all .FON files in
+      the current directory.
+    }
+    a := _RegisterFonts( fontpath );
+    IF (a &lt; 0) THEN
+        BEGIN
+        _OutText( 'Error: Cannot register fonts.' );
+        Halt( 1 );
+        END;
+ 
+    { Set the highest available video mode. }
+    a := _SetVideoMode( _MaxResMode );
+ 
+    { Copy video configuration into structure vc. }
+    _GetVideoConfig( vc );
+ 
+    { Display six lines of sample text. }
+    FOR i := 1 TO nfonts DO
+        BEGIN
+        list := faces[i] + 'bh24w24';
+        a:= _SetFont( list );
+ 
+        IF (a &lt;&gt; -1) THEN
+            BEGIN
+            _SetColor( i + 1 );
+            _MoveTo( 0, i * 30 );
+            _OutGText( texttypes[2,i] );
+            _MoveTo( vc.NumXPixels DIV 2, i * 30 );
+            _OutGText( texttypes[1,i] + crlf );
+            END { if a &lt;&gt; -1 }
+        ELSE
+            BEGIN
+            a := _SetVideoMode( _DefaultMode );
+            _OutText( 'Error: Cannot set font.' );
+            Halt( 1 );
+            END; { else clause }
+        END; { FOR statement }
+ 
+    ch := ReadKey;
+    a := _SetVideoMode( _DefaultMode );
+    _UnRegisterFonts;    { Returns memory used by fonts }
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

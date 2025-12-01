@@ -1,0 +1,124 @@
+<html>
+
+<head>
+<title>Assign Procedure - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> Assign Procedure</div>
+<pre>  <span class='grhilite'>◄</span><a href='Assign.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#buftest.pas'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+  Arguments
+ 
+    file_variable    Unopened typed, untyped, or text file
+ 
+    filename         String expression representing an external file
+                     name, device name, or null string; maximum 79
+                     characters
+ 
+  Description
+ 
+    The Assign procedure associates a file variable with an external
+    file name. After a successful assignment, all operations directed
+    to file_variable act on the external file represented by filename.
+    The file_variable remains associated with filename until Assign is
+    called for file_variable again with another filename argument.
+ 
+    The filename argument can be one of the following:
+ 
+      1. A simple file name or a full DOS path name of the form
+         drive:path\file.ext where
+ 
+             drive is a disk-drive identifier ( A..Z │ a..z ). If not
+             designated, the current drive is assumed.
+ 
+             path is zero or more directory names, each separated by a
+             backslash (\). Shorthand directory notation '.' and '..'
+             may be used. A path starting with a backslash begins at
+             the root; otherwise, it begins from the current directory.
+             If not designated, DOS assumes the current directory for
+             file.ext.
+ 
+             file.ext is a DOS name for an external file of any type and
+             includes both the base name and the file extension.
+ 
+      2. A hardware device such as one of the following:
+ 
+      Filename                  Standard Device               I or O
+      ══════════════════════    ═════════════════════════     ══════
+ 
+      'AUX'                     Auxiliary (COM1 synonym)      I/O
+      'COM1', 'COM2', 'COM3'    Communication ports 1-3       I/O
+      'CON'                     Console with keyboard         I/O
+      'LPT1', 'LPT2', 'LPT3'    Printer ports 1-3             O only
+      'NUL'                     Null device ("bit bucket")    I/O
+      'PRN'                     Printer (LPT1 synonym)        O only
+ 
+      3. A null (empty) string, given as ''. To be able to specify
+         file_variable when doing standard I/O, Assign file_variable to
+         a null string, then Reset or Rewrite file_variable. Standard
+         I/O involves the standard files Input and Output and is usually
+         directed to the keyboard and screen. Either can be redirected
+         to a file by using the DOS operators for input redirection
+         (&lt;), and output redirection (&gt;). This redirection ability
+         depends on whether the Crt unit is used.
+ 
+         When the Crt unit is not used, the redirection operators
+         associate standard I/O with files specified on the DOS command
+         line when the program is run. If Read and Write are called
+         with no file specified or if file_variable (assigned to a null
+         string) is specified, I/O is performed on the redirected
+         files.
+ 
+         When the Crt unit is used, the unit assigns I/O to the Crt and
+         overrides I/O redirection. Redirection is reenabled in two
+         ways:
+ 
+             To Read and Write through file_variable, Assign
+             file_variable to a null string and then Reset or Rewrite
+             file_variable. Specify file_variable when doing I/O on the
+             redirected file.
+ 
+             To Read or Write through the standard text files Input or
+             Output, Assign the name Input or Output to a null string,
+             call Reset or Rewrite, and do I/O on the redirected file
+             without specifying a file name. If this second method is
+             used, I/O to the console is unavailable unless the
+             AssignCrt procedure is used.
+ 
+    If no external file exists by the name filename, the call succeeds.
+    A subsequent call to Rewrite creates a file. A call to Append or
+    Reset will fail with an I/O error.
+ 
+    If Assign is passed a file_variable already associated with an open
+    file, the previous file assignment is lost.
+ 
+    If Assign is passed a filename that is the name of an open file,
+    no error occurs, but later behavior may be unpredictable.
+ 
+</pre>
+</body>
+
+</html>

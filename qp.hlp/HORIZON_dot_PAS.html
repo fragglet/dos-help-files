@@ -1,0 +1,103 @@
+<html>
+
+<head>
+<title>HORIZON.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> HORIZON.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM horizon;
+ 
+{ HORIZON.PAS : Demonstrates VGA graphics with cycling of 256 colors }
+ 
+USES
+    Crt, MSGraph;
+ 
+CONST
+    Red  = $00002a;
+    grn  = $002a00;
+    blu  = $2a0000;
+    wht  = $2a2a2a;
+    step = 21;
+ 
+VAR
+    vc        : _VideoConfig;
+    rainbow   : ARRAY [1..512] OF LongInt;
+    i, a      : Integer;
+    col, gray : LongInt;
+    rec       : _XYCoord;
+ 
+BEGIN    { Begin main program }
+ 
+    a := _SetVideoMode( _MRes256Color );
+    IF (a = 0) THEN
+        BEGIN
+        Writeln( 'This program requires a VGA or MCGA card' );
+        Halt( 0 );
+        END;
+ 
+    FOR col := 0 TO 63 DO
+        BEGIN
+        gray := col OR (col SHL 8) OR (col SHL 16);
+        rainbow[col] :=   blu AND gray;
+        rainbow[col + 256] := blu AND gray;
+        rainbow[col + 64] := blu OR gray;
+        rainbow[col + 64 + 256] := blu OR gray;
+        rainbow[col + 128] := Red OR (wht AND NOT gray);
+        rainbow[col + 128 + 256] := Red  OR (wht AND NOT gray);
+        rainbow[col + 192] := Red OR NOT gray;
+        rainbow[col + 192 + 256] := Red OR NOT gray;
+        END;
+ 
+    _SetViewOrg( 160, 85, rec );
+ 
+    FOR i := 0 TO 254 DO
+        BEGIN
+        _SetColor( 255 - i );
+        _MoveTo( i, i - 255 );
+        _LineTo( -i, 255 - i );
+        _MoveTo( -i, i - 255 );
+        _LineTo( i, 255 - i );
+        _Ellipse( _GBorder, -i, -i DIV 2, i, i DIV 2 );
+        END;
+ 
+    i := 0;
+    WHILE NOT KeyPressed DO
+        BEGIN
+        _RemapAllPalette( rainbow[i] );
+        i := i + step;
+        IF (i &gt;= 256) THEN i := 0;
+        END;
+ 
+    a := _SetVideoMode( _DefaultMode );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

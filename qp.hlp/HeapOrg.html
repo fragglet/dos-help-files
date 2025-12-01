@@ -1,0 +1,98 @@
+<html>
+
+<head>
+<title>Heap Constants - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> Heap Constants</div>
+<pre>  <span class='grhilite'>◄</span><a href='../unknown.html#system'>System Unit</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#copy2.pas'>Example</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                      <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+  CONST
+      HeapOrg   : POINTER = NIL;    { pointer to heap origin }
+      HeapPtr   : POINTER = NIL;    { pointer to top of heap }
+      FreePtr   : POINTER = NIL;    { pointer to free list }
+      FreeMin   : Word    = 0;      { heap margin }
+      HeapError : POINTER = NIL;    { pointer to heap-error function }
+ 
+  Unit:     System (used automatically)
+ 
+  Context:  Dispose, FreeMem, GetMem, Mark, MaxAvail, MemAvail,
+            New, Release
+ 
+  Description
+ 
+    Several procedures for memory allocation and heap management use
+    these typed constants. The heap memory area stores dynamically
+    allocated memory.
+ 
+    HeapOrg holds the address of the bottom of the heap. The heap grows
+    upward (toward FFFF) from the bottom of the heap segment as memory
+    is allocated. HeapPtr holds the address of the current top of the
+    heap.
+ 
+    Deallocated areas that lie below the top of the heap are managed in
+    the free list. FreePtr points to the free list, which grows
+    downward (toward 0) from the top of the heap segment. This address
+    is also the top of free memory in the heap.
+ 
+    FreeMin holds the size in bytes of the minimum free space allowable
+    on the heap. This space is reserved for the free list. If the area
+    between the top of the heap and the bottom of the free list is less
+    than FreeMin, further memory allocation is denied. This ensures
+    room for the free list to store records of deallocated space. To
+    reserve space for freeing n blocks, set FreeMin to n*8.
+ 
+    The MaxAvail and MemAvail functions subtract FreeMin before
+    returning the size of the largest free block or the size of the
+    total free heap.
+ 
+    The Release procedure sets HeapPtr to an address set by Mark.
+    Release then clears the free list by setting FreePtr to the free
+    list origin.
+ 
+    HeapError points to a heap-error function to be called when
+    insufficient memory exists to fill an allocation request. The
+    function is custom designed and has a declaration of
+ 
+       {$F+} FUNCTION HeapFunc( size : Word ) : Integer; {$F─}
+ 
+    The argument passes the allocation request in bytes. Returning 0
+    from HeapFunc causes GetMem or New to generate a run-time error.
+    Returning 1 prevents a run-time error and causes GetMem or New to
+    return NIL. Setting it to 2 causes the allocation to be attempted
+    again.
+ 
+    Install the custom function by an assignment using the (@)
+    operator:
+ 
+       HeapError := @HeapFunc;
+ 
+    Control the total size of the heap with the $M compiler directive.
+ 
+</pre>
+</body>
+
+</html>

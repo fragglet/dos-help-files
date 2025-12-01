@@ -1,0 +1,94 @@
+<html>
+
+<head>
+<title>Exec Procedure - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> Exec Procedure</div>
+<pre>  <span class='grhilite'>◄</span><a href='Exec.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#exec_pgm.pas'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+  Arguments
+ 
+    pathname        String expression representing name of the child
+                    process to be executed
+ 
+    command_line    String expression representing the command line for
+                    executing the child process
+ 
+  Description
+ 
+    The Exec procedure loads and runs a child process. It suspends the
+    parent process that called Exec. The arguments specify the program
+    to be run and the command line to pass to the program.
+ 
+    The pathname argument passes the name of the program to be executed,
+    which can be a base name with an extension or a fully qualified DOS
+    path name including drive letter and subdirectories. Exec assumes
+    the current directory if no directory is specified. The argument is
+    of type PathStr, defined in the Dos unit.
+ 
+    The command_line argument passes commands or options to pass to the
+    child process. These commands are the arguments that would be given
+    after the name of the program on the DOS command line. If the
+    program needs no arguments, pass an empty string. The argument is
+    of type ComStr, defined in the Dos unit.
+ 
+    Exec does not allocate memory for the child process. To ensure
+    enough memory, use the {$M} directive at the beginning of the
+    parent program. To leave room for the child process to load and
+    run, set the stack and heap to the minimum possible settings.
+ 
+    Exec does not save any interrupt handlers for the parent. To
+    protect existing vectors from interference by the child process,
+    call the SwapVectors procedure before and after calling Exec.
+ 
+    Use the DosExitCode function to obtain the exit code returned by
+    the child process.
+ 
+    To execute a DOS command as the child process, specify COMMAND.COM
+    as the pathname argument. Specify the desired DOS command as the
+    command_line argument, preceded by a /c switch, which is not
+    case-sensitive. The /c switch tells DOS that the COMMAND.COM being
+    run is another copy. For example, to see a listing of executable
+    files in the current directory:
+ 
+       Exec( 'COMMAND.COM', '/C DIR *.EXE' );
+ 
+    Exec reports error conditions in DosError. Possible error values
+    are 2, 8, 10, and 11:
+ 
+      Value    Error
+      ═════    ═══════════════════
+ 
+      2        File not found
+      8        Not enough memory
+      10       Invalid environment
+      11       Invalid format
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,139 @@
+<html>
+
+<head>
+<title>exithalt.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> exithalt.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM exithalt;
+ 
+{ Exithalt demonstrates the following procedures:
+ 
+      Exit    Halt    ParamCount    ParamStr
+}
+ 
+CONST
+    program_name = 'EXITHALT ';
+    program_desc = 'demonstrates the Exit and Halt procedures.';
+ 
+VAR
+    p1, p2    : STRING;
+    first_str : STRING;
+    last_str  : STRING;
+ 
+{============================= get_string =============================}
+{ The function get_string prints a prompt on the screen and returns a
+  string.
+}
+ 
+FUNCTION get_string( prompt : STRING ) : STRING;
+ 
+VAR
+    in_str : STRING;
+ 
+BEGIN
+ 
+     Write( prompt );
+     Readln( in_str );
+ 
+     { If user types a null string, quit; else return it. }
+     IF Length( in_str ) = 0 THEN
+        BEGIN
+        Writeln( 'Halting in function get_string.' );
+        Halt( 1 );
+        END
+     ELSE get_string := in_str;
+ 
+END; {function get_string}
+ 
+{============================ read_string =============================}
+{ The procedure read_string prints a prompt on the screen and
+  returns a string.
+}
+ 
+PROCEDURE read_string(     prompt : STRING;
+                       VAR in_str : STRING);
+ 
+BEGIN
+ 
+    { If prompt is null, return immediately. }
+    IF prompt = '' THEN
+        BEGIN
+        Writeln( 'Exiting from procedure read_string.' );
+        Exit;
+        END;
+ 
+    Write( prompt );
+    Readln( in_str );
+ 
+    { If user types a null string, quit; else return it. }
+    IF Length( in_str ) = 0 THEN
+        BEGIN
+        Writeln( 'Halting in procedure read_string.' );
+        Halt( 1 );
+        END;
+ 
+END; { procedure read_string }
+ 
+{============================ main program ============================}
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+    Writeln( program_name, 'prints each of its parameters as a prompt.');
+    Writeln( '   To halt the program, type RETURN.');
+    Writeln( '   If you specify only one parameter, the program Exits' );
+    Writeln( '   from its second prompting routine.' );
+ 
+    CASE ParamCount OF
+        0 : BEGIN
+            Writeln( 'SYNTAX exithalt &lt;prompt1&gt; &lt;prompt2&gt;' );
+            Halt( 1 );
+            END;
+        1 : BEGIN
+            p1 := ParamStr( 1 );
+            p2 := '';
+            END;
+        2 : BEGIN
+            p1 := ParamStr( 1 );
+            p2 := ParamStr( 2 );
+            END;
+        END; { case }
+ 
+    first_str := get_string( p1 );
+    read_string( p2, last_str );
+ 
+    Writeln( 'You have typed ' + first_str + last_str );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<title>Dispose Procedure - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> Dispose Procedure</div>
+<pre>  <span class='grhilite'>◄</span><a href='Dispose.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#dynamic.pas'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+  Argument
+ 
+    pointer_variable    Pointer of any type, pointing to variable
+                        previously allocated on heap
+ 
+  Description
+ 
+    The Dispose procedure deallocates a dynamic variable, returning it
+    to the heap. An assignment statement or call to the New procedure
+    must have previously set the pointer_variable argument to a
+    location of a dynamic variable in the heap.
+ 
+    The pointer can be of any type.
+ 
+    After the call to Dispose, the pointer is undefined. The area that
+    the pointer pointed to is no longer valid. Dispose does not affect
+    other heap memory.
+ 
+    Dispose is similar to the FreeMem procedure, which deallocates an
+    area in memory of a specified size in bytes. Use Dispose to free a
+    variable allocated by New. Use FreeMem to free memory allocated by
+    GetMem.
+ 
+    QuickPascal uses a free list to manage areas returned to the heap
+    by Dispose and FreeMem. The free list is a list of pointers that
+    grows downward (toward 0) from the top of the heap segment.
+    FreePtr, defined in the System unit, points to the free list.
+    Deallocated areas below the current top of the heap are pointed to
+    by pointers kept in the free list. GetMem and New allocate from the
+    free list before taking any new memory from the heap.
+ 
+    Use caution when mixing methods for deallocating variables. Dynamic
+    allocation and deallocation are usually done with the related pairs
+    of procedures New/Dispose and GetMem/FreeMem. The Mark and Release
+    procedures allow freeing of large areas of the heap at one time.
+    Release clears the entire free list when called.
+ 
+    If pointer_variable does not point to a dynamic variable in the
+    heap, the HeapError function provided at startup causes a run-time
+    error. It is possible to replace the default HeapError function
+    with a custom function.
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,100 @@
+<html>
+
+<head>
+<title>SHOW.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> SHOW.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM show;
+ 
+{ SHOW.PAS displays a file, a screen at a time, using direct I/O as
+  defined in the Crt unit. It demonstrates the routines:
+ 
+      ClrScr    Eof    LastMode    ReadKey    UpCase    Write    Writeln
+ 
+  In addition, it uses the following routines for normal text file
+  operations:
+ 
+      Assign    Close    Readln    Reset
+}
+ 
+USES
+    Crt;    { by default, I/O to screen will bypass DOS }
+ 
+CONST
+    program_name = 'SHOW ';
+    program_desc = ' displays the file named on the command line.';
+ 
+VAR
+    show_file : Text;
+    a_line    : STRING;
+    i         : Integer;
+    n_lines   : Integer;
+    answer    : Char;
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+ 
+    IF ParamCount &lt;&gt; 1 THEN
+        BEGIN
+        Writeln( 'SYNTAX: show &lt;filename&gt;' );
+        Exit;
+        END;
+ 
+     Assign( show_file, ParamStr( 1 ) );
+     Reset( show_file );
+ 
+    { Test video mode and use maximum lines for this mode. }
+    IF ((LastMode AND Font8x8) &gt; 0) THEN
+        n_lines := 42
+    ELSE
+        n_lines := 24;
+ 
+    REPEAT
+        ClrScr;
+        FOR i := 1 TO n_lines DO
+            BEGIN
+            Readln( show_file, a_line );
+            Writeln( a_line );
+            END;
+        Write( 'Press ENTER for more or ''q'' to quit&gt;' );
+        answer := ReadKey;
+        Writeln( answer );
+    UNTIL (Eof( show_file ) OR (UpCase( answer ) = 'Q'));
+ 
+    Writeln;
+    Close( show_file );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

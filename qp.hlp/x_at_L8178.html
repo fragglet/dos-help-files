@@ -1,0 +1,122 @@
+<html>
+
+<head>
+<title>Read Procedure - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> Read Procedure</div>
+<pre>  <span class='grhilite'>◄</span><a href='Read.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#textio.pas'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+  Arguments
+ 
+    file_variable    Optional; text or typed file (default is
+                     standard file Input)
+ 
+    variables        One required, others optional; for text files,
+                     variable of any simple type except Boolean; for
+                     typed files, variable of same type as component
+                     type of file
+ 
+  Description
+ 
+    The Read procedure copies one or more values from a disk file or a
+    device and places them into variables. The file must be open.
+    After reading the file, Read advances the current file position to
+    the next component.
+ 
+    If the file is a text file, it must be opened for input by using
+    the Reset procedure. A text file is read sequentially.
+ 
+    If the file is a typed file, it can be opened with either Reset
+    or the Rewrite procedure. A typed file can be read from or written
+    to at any position.
+ 
+    If no input file is specified, Read reads from the standard text
+    file Input. Standard input is from the keyboard unless redirected
+    from a file by the DOS redirection operator, (&lt;). Read waits for all
+    arguments to be entered when reading multiple arguments from the
+    keyboard. Each input ends after a delimiting character for that
+    type is entered. All types end when Enter is pressed. Keyboard
+    input is echoed on the screen.
+ 
+    Input redirection is disabled when the Crt unit is used. Use the
+    Assign procedure with a null string to reenable DOS redirection
+    when using Crt.
+ 
+    Read copies values depending on the input and the variable types:
+ 
+      1. Character input is read without use of delimiters.
+ 
+         When Read is called with a text file and character variable,
+         and the current position is at end-of-line, it reads a
+         carriage return (ASCII 13) and moves the current position to
+         the character following the carriage return.
+ 
+         When Read is called for a text file and a char variable, and
+         the current position is at end-of-file, it reads a CTRL+Z
+         (ASCII 26). Subsequent calls to Read get CTRL+Z.
+ 
+      2. Number input is delimited by blanks, tabs, or end-of-line
+         markers. Read skips delimiters preceding an integer or real,
+         and stops reading the number input when a delimiter occurs.
+ 
+         For text files, Read gets a 0 if the current position is at
+         end-of-file, skipping delimiters.
+ 
+         If the input does not match the format of the variable
+         receiving the value, an I/O error occurs.
+ 
+      3. String input is delimited by an end-of-line or end-of-file,
+         and the string that is read does not include the delimiter.
+         Read moves the current position to the delimiter. A subsequent
+         Read from a text file would get a zero-length string. It is
+         better to use Readln to get string input. Read checks the
+         length of the string variable and truncates the input if
+         necessary.
+ 
+    For text files, Read treats CTRL+Z as an end-of-file. However, if
+    the Crt unit is used, the effect of reading a CTRL+Z changes.
+    CheckEOF is a Boolean variable defined in the Crt unit. When
+    CheckEOF is False (default), a CTRL+Z is treated as any other
+    input. When set to True, a CTRL+Z causes the end of input.
+ 
+    If Read is called for a typed file when the current position is at
+    end-of-file, an I/O error occurs.
+ 
+    If Read is called for a text file opened for writing with the
+    Append or Rewrite procedures, an I/O error occurs.
+ 
+    If file_variable is not associated with a file or if the file is
+    not open when Read is called, an I/O error occurs.
+ 
+    To prevent a program from halting with a run-time error when an
+    I/O error occurs, turn off I/O checking with {$I-} and check the
+    return value of the IOResult function.
+ 
+</pre>
+</body>
+
+</html>

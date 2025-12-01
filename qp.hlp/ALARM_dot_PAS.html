@@ -1,0 +1,188 @@
+<html>
+
+<head>
+<title>ALARM.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> ALARM.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM alarm;
+ 
+{ ALARM.PAS illustrates in-line assembly and routines related
+  to Terminate-and-Stay-Resident programs, including:
+ 
+      GetIntVec    Keep    SetIntVec
+ 
+  Keywords illustrated include:
+ 
+      INLINE    INTERRUPT
+ 
+  WARNING:  You must run ALARM from the DOS command line. The
+  QuickPascal environment does not permit TSRs to be installed from
+  inside it, since this would cause subsequent memory problems.
+}
+ 
+USES
+    Crt, Dos;
+ 
+{ Keep memory sizes minimal to reduce the amount of memory that will be
+  made resident. Notice that no heap is requested, since the program
+  never uses one. Notice, also, that stack checking is not needed.
+}
+{$M $1000, 0, 0 }
+{$S-}
+ 
+CONST
+    tick_per_min = 1092;
+    min_per_hour = 60;
+    DING = 392;    { G }
+    DONG = 296;    { D }
+ 
+    { Typed constant. }
+    chk_time : Boolean = True;
+ 
+VAR
+    { Variables that will be accessed inside TSR must be global. }
+    segTsrStack, offTsrStack : Word;
+    segAppStack, offAppStack : Word;
+    goal_tick, minute, hour  : Longint;
+    dummy                    : Integer;
+    old_timer                : POINTER;
+ 
+PROCEDURE call_int( vector : POINTER );
+BEGIN
+    INLINE
+        (
+        $9C/           { pushf           ; Push flags and clear }
+        $FA/           { cli             ; ints to simulate INT }
+        $FF/$5E/$04    { call  [bp+4]    ; Call the old vector  }
+        );
+END; { procedure call_int }
+ 
+{============================== new_timer ==============================
+  Our timer interrupt compares current time to goal. If earlier, it just
+  continues. If later, it beeps and sets a flag to quit checking.
+}
+ 
+PROCEDURE new_timer; INTERRUPT;
+BEGIN
+ 
+    { Call the original timer interrupt to do its work. }
+    call_int( old_timer );
+ 
+    { If time is up, we do our work. }
+    IF (chk_time) AND (MemL[$40:$6C] &gt; goal_tick) THEN
+        BEGIN
+ 
+        { If time is up, set flag so we'll never return. }
+        chk_time := FALSE;
+ 
+        { Save current stack of application, and set old stack of TSR.
+          This is for safety since we don't know the state of the
+          application stack, but we do know the state of our own stack.
+          Turn off interrupts during the stack switch.
+        }
+        INLINE
+            (
+            $FA/                { cli                                  }
+            $89/$26/offAppStack/{ mov offAppStack, sp ; Save app stack }
+            $8C/$16/segAppStack/{ mov segAppStack, ss                  }
+            $8B/$26/offTsrStack/{ mov sp, offTsrStack ; Load TST stack }
+            $8E/$16/segTsrStack/{ mov ss, segTsrStack                  }
+            $FB                 { sti                                  }
+            );
+ 
+        { Now do the TSR task. At this point you can use any function or
+          procedure that accesses memory or hardware directly. The
+          Sound, NoSound, and Delay procedures qualify. To use DOS and
+          BIOS interrupts safely, you must use additional techniques
+          which are not explained here.
+        }
+        Sound( DING );
+        Delay( 750 );
+        Sound( DONG );
+        Delay( 500 );
+        NoSound;
+ 
+        { Restore application stack. }
+        INLINE
+            (
+            $FA/                    { cli                  }
+            $8B/$26/offAppStack/    { mov  sp, offAppStack }
+            $8E/$16/segAppStack/    { mov  ss, segAppStack }
+            $FB                     { sti                  }
+            );
+ 
+        END;
+ 
+END; { procedure new_video }
+ 
+{============================ main program ============================}
+BEGIN
+ 
+    { Save stack of TSR for later use. }
+    INLINE
+        (
+        $89/$26/offTsrStack/    { mov  offTsrStack, sp }
+        $8C/$16/segTsrStack     { mov  offTsrStack, ss }
+        );
+ 
+    { If no command line parameters, show syntax and quit. }
+    IF (ParamCount &lt;&gt; 1) THEN
+        BEGIN
+        Writeln( 'Syntax: ALARM &lt;hhmm&gt; ' );
+        Writeln( '  where &lt;hhmm&gt; is 24-hour format time to ring alarm' );
+        Halt( 1 );
+        END;
+ 
+    { Convert time to ticks past midnight. }
+    Val( ParamStr( 1 ), minute, dummy );
+    minute := minute MOD 100;
+    Val( ParamStr( 1 ), hour, dummy );
+    minute := minute + ((hour DIV 100) * min_per_hour);
+    goal_tick := minute * tick_per_min;
+ 
+    { Make sure time isn't already past. }
+    IF (MemL[$40:$6C] &gt; goal_tick) THEN
+        BEGIN
+        Writeln( 'It''s past that time now.' );
+        Halt( 1 );
+        END;
+ 
+    { Replace existing timer routine with ours. }
+    GetIntVec( $1c, old_timer );
+    SetIntVec( $1c, @new_timer );
+ 
+    { Terminate with program resident. }
+    Keep( 0 );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

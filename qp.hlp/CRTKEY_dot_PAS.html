@@ -1,0 +1,100 @@
+<html>
+
+<head>
+<title>CRTKEY.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> CRTKEY.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM crtkey;
+ 
+{ CRTKEY.PAS illustrates how to process ASCII or extended keys.
+  Functions illustrated include:
+ 
+      Ord    ReadKey    UpCase
+ 
+  This program also uses the CheckBreak variable to disable CTRL/BREAK.
+}
+ 
+USES
+    Crt;
+ 
+CONST
+    program_name = 'CRTKEY ';
+    program_desc = 'uses the Crt unit to read and echo keystrokes.';
+ 
+VAR
+    key : Char;
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+    CheckBreak := False;
+    Writeln( 'Press any key (ESC to quit): ' );
+ 
+    { Read and display keys until ESC is pressed. }
+    WHILE True DO
+        BEGIN
+ 
+        { If first key is 0, then get second extended. }
+        key := ReadKey;
+        IF (key = #0) THEN
+            BEGIN
+            key := ReadKey;
+            Write( 'ASCII: no     Char: NA   ');
+            END {IF first key is 0}
+ 
+        { Otherwise there's only one key. }
+        ELSE
+            BEGIN
+            Write( 'ASCII: yes     ' );
+            CASE Ord( key ) OF
+                8  : Write( 'Char: BKSP ' );
+                9  : Write( 'Char: TAB ' );
+                13 : Write( 'Char: ENTER ' );
+                ELSE Write( 'Char: ', key );
+                END; { case }
+            END; { ELSE processing one key }
+        Writeln( '     Decimal: ', Ord( key ) );
+ 
+        { Echo character response to prompt. }
+        IF key = #27 THEN
+            BEGIN
+            Write( 'Do you really want to quit? (Y/N) ' );
+            key := ReadKey;
+            Writeln( key );
+            IF (UpCase( key ) = 'Y') THEN Exit;
+            END; { IF user types ESC }
+        END; { WHILE true }
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

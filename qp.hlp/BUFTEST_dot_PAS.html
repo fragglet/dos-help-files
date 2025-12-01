@@ -1,0 +1,188 @@
+<html>
+
+<head>
+<title>BUFTEST.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> BUFTEST.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM buftest;
+ 
+{ BUFTEST.PAS illustrates buffer control for I/O on text files.  It
+  uses the procedures:
+ 
+      Assign    Exit       Inc         Readln    SetTextBuf
+      Eof       GetTime    IOResult    Reset
+}
+ 
+USES
+    Dos;
+ 
+CONST
+    program_name = 'BUFTEST ';
+    program_desc = ' demonstrates the use of text buffers.';
+    buf_size     = 2048;
+ 
+TYPE
+    time_t = RECORD
+        hr     : Word;
+        Min    : Word;
+        Sec    : Word;
+        sec100 : Word
+        END;
+ 
+VAR
+    buf         : ARRAY[1..buf_size] OF Char;
+    start, stop : time_t;
+    text_file   : TEXT;
+    elapsed     : STRING;
+    c           : LongInt;
+ 
+{============================ count_lines =============================}
+{ Function count_lines counts the lines in a text file and then closes
+  the file.
+}
+ 
+FUNCTION count_lines( VAR t : TEXT ) : LongInt;
+ 
+VAR
+    c : LongInt;
+    l : STRING;
+ 
+BEGIN
+    c := 0;
+    WHILE NOT Eof( t ) DO
+        BEGIN
+        Readln( t );
+        Inc( c );
+        END;
+ 
+    count_lines := c;
+END; { function count_lines }
+ 
+{============================ elapsed_time ============================}
+{ Procedure elapsed_time calculates the elapsed time and returns it as a
+  string in the form hh:mm:ss.ss.
+}
+ 
+PROCEDURE elapsed_time(     start    : time_t;
+                            stop     : time_t;
+                        VAR interval : STRING );
+VAR
+    temp : STRING[2];
+    i    : Word;
+ 
+BEGIN
+ 
+    { Convert for arithmetic as necessary. }
+    IF stop.sec100 &lt; start.sec100 THEN
+        BEGIN
+        stop.sec100 := stop.sec100 + 100;
+        stop.Sec := stop.Sec - 1;
+        END;
+    IF stop.Sec &lt; start.Sec THEN
+        BEGIN
+        stop.Sec := stop.Sec + 60;
+        stop.Min := stop.Min - 1;
+        END;
+    IF stop.Min &lt; start.Min THEN
+        BEGIN
+        stop.Min := stop.Min + 60;
+        stop.hr := stop.hr - 1;
+        END;
+    IF stop.hr &lt; start.hr THEN    { next day }
+       stop.hr := stop.hr + 24;
+ 
+    Str( (stop.hr - start.hr):2, temp );
+    interval := temp + ':';
+    Str( (stop.Min - start.Min):2, temp );
+    interval := interval + temp + ':';
+    Str( (stop.Sec - start.Sec):2, temp );
+    interval := interval + temp + '.';
+    Str( (stop.sec100 - start.sec100):2, temp );
+    interval := interval + temp;
+    FOR i := 1 TO Length( interval ) DO
+        IF (interval[i] = ' ') THEN interval[i] := '0';
+ 
+END; { procedure elapsed_time }
+ 
+{============================ main program ============================}
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+ 
+    { Check parameters. }
+    IF (ParamCount &lt;&gt; 1) THEN
+        BEGIN
+        Writeln( 'SYNTAX: buftest &lt;filename&gt;' );
+        Exit;
+        END;
+ 
+    { Use standard buffer of 128. }
+    Assign( text_file, ParamStr( 1 ) );
+{$I-}
+    Reset( text_file );
+    IF IOResult &lt;&gt; 0 THEN
+        BEGIN
+        Writeln( 'Cannot open file for read access.' );
+        Exit;
+        END;
+{$I+}
+    WITH start DO GetTime( hr, Min, Sec, sec100 );
+    c := count_lines( text_file );
+    WITH stop DO GetTime( hr, Min, Sec, sec100 );
+    elapsed_time( start, stop, elapsed );
+ 
+    Writeln( 'Time:  ', elapsed, ' Buffer: default' );
+ 
+    { Use a larger buffer. }
+    Assign( text_file, ParamStr( 1 ) );
+    SetTextBuf( text_file, buf );
+{$I-}
+    Reset( text_file );
+    IF IOResult &lt;&gt; 0 THEN
+        BEGIN
+        Writeln( 'Cannot open file for read access.' );
+        Exit;
+        END;
+{$I+}
+    WITH start DO GetTime( hr, Min, Sec, sec100 );
+    c := count_lines( text_file );
+    WITH stop DO GetTime( hr, Min, Sec, sec100 );
+    elapsed_time( start, stop, elapsed );
+ 
+    Writeln( 'Time:  ', elapsed, ' Buffer: ', buf_size );
+    Writeln( 'File ', ParamStr( 1 ), ' has ', c, ' lines.' );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

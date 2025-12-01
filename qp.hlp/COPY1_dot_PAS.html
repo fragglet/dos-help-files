@@ -1,0 +1,155 @@
+<html>
+
+<head>
+<title>COPY1.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> COPY1.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM copy1;
+ 
+{ COPY1.PAS copies one file to another. It illustrates file I/O and
+  dynamic memory allocation functions, including:
+ 
+      Assign       BlockWrite    IOResult    Reset      SizeOf
+      BlockRead    Dispose       New         Rewrite
+}
+ 
+CONST
+    program_name = 'COPY1 ';
+    program_desc = 'copies files using BlockRead and BlockWrite.';
+    buf_size     = 4096;
+ 
+TYPE
+    access_t   = (read_acc, overwrite_acc, append_acc);
+    file_buf_t = ARRAY [1..buf_size] OF Char;
+ 
+VAR
+    infile, outfile : FILE;
+    mode            : access_t;
+ 
+{============================= open_file ==============================}
+ 
+FUNCTION open_file( VAR myfile : FILE;
+                        mode   : access_t ) : Integer;
+ 
+BEGIN
+    IF mode = read_acc THEN Reset( myfile, 1 )
+    ELSE IF mode = overwrite_acc THEN Rewrite( myfile, 1 );
+ 
+    open_file := IOResult;
+END; { function openfile }
+ 
+{============================= copy_file ==============================}
+{ Function copy_file copies one file to another with the BlockRead and
+  BlockWrite procedures, through an internal buffer.
+}
+ 
+FUNCTION copy_file( VAR source : FILE;
+                    VAR destin : FILE ) : Boolean;
+ 
+VAR
+    buf    : ^file_buf_t;
+    result : Word;
+    wrote  : Word;
+ 
+BEGIN
+ 
+    copy_file := True;
+    New( buf );
+ 
+    { Read-write until there's nothing left. }
+    WHILE( NOT Eof( source ) ) DO
+        BEGIN
+        { Read and write input. }
+        BlockRead( source, buf^, SizeOf( buf^ ), result );
+        IF (IOResult &lt;&gt; 0) THEN
+            BEGIN
+            copy_file := False;
+            Writeln( 'Read error.' );
+            Exit;
+            END;
+        BlockWrite( destin, buf^, result, wrote );
+        IF (IOResult &lt;&gt; 0) THEN
+            BEGIN
+            copy_file := False;
+            Writeln( 'Write error.' );
+            Exit;
+            END;
+        END; { while loop }
+ 
+    Dispose( buf );
+ 
+END; { function copy_file }
+ 
+{============================ main program ============================}
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+ 
+    IF (ParamCount = 2) THEN
+{$I-}
+        BEGIN
+        { Assign and open the files. }
+        Assign( infile, ParamStr( 1 ) );
+        IF (IOResult &lt;&gt; 0) THEN
+            Writeln( 'Unable to find input file ', ParamStr( 1 ) );
+        IF (open_file( infile, read_acc ) &lt;&gt; 0) THEN
+            BEGIN
+            Writeln( 'Error opening input file ', ParamStr( 1 ) );
+            Exit;
+            END; { if error on openfile }
+ 
+        Assign( outfile, ParamStr( 2 ) );
+        IF (IOResult &lt;&gt; 0) THEN
+            Writeln( 'Unable to open file ', ParamStr( 2 ) );
+        IF (open_file( outfile, overwrite_acc ) &lt;&gt; 0) THEN
+            BEGIN
+            Writeln( 'Error opening output file ', ParamStr( 2 ) );
+            Exit;
+            END; { if error on openfile }
+ 
+        IF (copy_file( infile, outfile )) THEN
+            Writeln( 'Copy successful.' )
+        ELSE
+            Writeln( 'Copy failed.' );
+{$I+}
+        Close( infile );
+        Close( outfile );
+ 
+        END { if clause }
+    ELSE
+        Writeln( '  SYNTAX: COPY1 &lt;source&gt; &lt;target&gt;' );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

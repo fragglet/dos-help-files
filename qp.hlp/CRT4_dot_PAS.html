@@ -1,0 +1,144 @@
+<html>
+
+<head>
+<title>CRT4.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> CRT4.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM crt4;
+ 
+{ CRT4.PAS: Demonstrates screen color and text window. }
+ 
+USES
+    Crt;
+ 
+CONST
+    wait           = 500;
+    message        = 'More text!';
+    msg_len : Byte = Length( message );
+ 
+VAR
+    c                 : Char;
+    i, j,
+    wind_x1, wind_x2,
+    wind_y1, wind_y2  : Byte;
+    orig_attr         : Byte;
+ 
+BEGIN
+ 
+    { Save original characteristics. }
+    orig_attr := TextAttr;
+ 
+    { Set screen mode to 80x25 text screen in color. }
+    TextMode( CO80 );
+    TextBackground( Cyan );
+    TextColor( LightBlue );
+    ClrScr;
+    Writeln( 'The case of the moving window!' );
+ 
+    { Set initial coordinates and foreground color for window. }
+    wind_x1 := 10;
+    wind_y1 := 5;
+    wind_x2 := 30;
+    wind_y2 := 10;
+    TextColor( LightMagenta );
+ 
+    { Create a window and make it appear to move around the screen. }
+    FOR i := 0 TO 10 DO
+        BEGIN
+        TextBackground( Blue );
+        Window( wind_x1+i, wind_y1+i, wind_x2+i, wind_y2+i );
+        ClrScr;
+        Write( 'This text line wraps around the window' );
+        GotoXY( 3, 3 );
+        Write( message );
+        GotoXY( 1, 4 );
+        Write( 'Using GotoXY( 1, 4 )' );
+        Delay( wait );
+        GotoXY( 3 + msg_len, 3 );
+        { move cursor backward }
+        FOR j := 1 TO msg_len DO GotoXY( WhereX-1, WhereY );
+ 
+        ClrEol;    { clear text of message }
+        Delay( wait DIV 3 );
+        Sound( 100 + 100 * i );
+        Delay( 50 );
+        NoSound;
+ 
+        { Clear window to same color as screen background. }
+        TextBackground( Cyan );
+        ClrScr;
+        END; { FOR loop }
+ 
+    { Move and grow a window containing text. }
+    FOR i := 0 TO 30 DO
+        BEGIN
+        TextBackground( Blue );
+        { Move window for first 10 iterations, then expand it. }
+        IF (i &lt; 10) THEN
+           Window( wind_x1 + i, wind_y1, wind_x2 + i, wind_y2 )
+        ELSE
+           Window( wind_x1, wind_y1, wind_x2 + i, wind_y2 );
+ 
+        { Clear window to new background color. }
+        ClrScr;
+        Write( 'This text line wraps around small windows' );
+        GotoXY( 1, 4 );
+        Write( 'Using GotoXY( 1, 4 )' );
+        Delay( wait DIV 4 );
+        Sound( 100 + 50 * i );
+        Delay( 50 );
+        NoSound;
+ 
+        { Clear window to same color as screen background. }
+        TextBackground( Cyan );
+        ClrScr;
+ 
+        END; { FOR loop }
+ 
+    { Reset window to entire screen. }
+    Window( 1, 1, 80, 25 );
+ 
+    { Erase previous message }
+    GotoXY( 1, 25 );
+    ClrEol;
+    TextColor( LightBlue );
+ 
+    Write( 'Press any key to end the program ...' );
+    c := ReadKey;
+ 
+    { Reset original text attributes. }
+    TextAttr := orig_attr;
+    ClrScr;
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

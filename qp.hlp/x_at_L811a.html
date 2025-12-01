@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<title>FreeMem Procedure - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> FreeMem Procedure</div>
+<pre>  <span class='grhilite'>◄</span><a href='FreeMem.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#avail.pas'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+  Arguments
+ 
+    pointer_variable    Pointer of any type, pointing to memory
+                        previously allocated on heap
+ 
+    size                Number of bytes to be deallocated
+ 
+  Description
+ 
+    The FreeMem procedure deallocates memory of a specified size,
+    returning it to the heap. An assignment statement or call to the
+    GetMem procedure must have previously set the pointer_variable
+    argument to a location in the heap.
+ 
+    The pointer can be of any type.
+ 
+    The size argument specifies the size in bytes of the area to be
+    deallocated.
+ 
+    After the call to FreeMem, the pointer is undefined. The variable
+    that the pointer pointed to is no longer valid. FreeMem does not
+    affect other heap memory.
+ 
+    FreeMem is similar to the Dispose procedure, which deallocates a
+    dynamic variable of a specified type. Use FreeMem to free memory
+    allocated by GetMem. Use Dispose to free a variable allocated
+    by New.
+ 
+    QuickPascal uses a free list to manage areas returned to the heap
+    by Dispose and FreeMem. The free list is a list of pointers that
+    grows downward (toward 0) from the top of the heap segment.
+    FreePtr, defined in the System unit, points to the free list.
+    Deallocated areas below the current top of the heap are pointed to
+    by pointers kept in the free list. GetMem and New allocate from the
+    free list before taking any new memory from the heap.
+ 
+    Use caution when mixing methods for deallocating variables. Dynamic
+    allocation and deallocation are usually done with the related pairs
+    of procedures New/Dispose and GetMem/FreeMem. The Mark and Release
+    procedures allow freeing of large areas of the heap at one time.
+    Release clears the entire free list when called.
+ 
+    If the size passed to FreeMem does not match the size of the
+    variable intended for deallocation, memory errors can occur.
+ 
+    If pointer_variable does not point to a memory location in the
+    heap, the HeapError function provided at start-up causes a run-time
+    error. It is possible to replace the default HeapError function
+    with a custom function.
+ 
+</pre>
+</body>
+
+</html>

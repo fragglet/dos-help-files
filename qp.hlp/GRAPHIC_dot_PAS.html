@@ -1,0 +1,144 @@
+<html>
+
+<head>
+<title>GRAPHIC.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> GRAPHIC.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM graphic;
+ 
+{ GRAPHIC.PAS : Displays every graphic mode }
+ 
+USES
+    Crt, MSGraph;
+ 
+CONST
+    modes : ARRAY [0..11] OF Integer =
+          ( _MRes4Color, _MResNoColor, _HResBW, _HercMono,
+            _MRes16Color, _HRes16Color, _EResNoColor, _EResColor,
+            _VRes2Color, _VRes16Color, _MRes256Color, _OResColor );
+ 
+VAR
+    vc        : _VideoConfig;
+    ch, key   : Char;
+    which     : Char;
+    a         : Integer;
+ 
+{============================= print_menu ==============================
+  Prints a menu on the screen
+}
+ 
+PROCEDURE print_menu;
+ 
+BEGIN
+    Writeln( 'Please choose a graphics mode' );
+    Writeln( 'Type "x" to exit' );
+    Writeln;
+    Writeln( '0  _MRES4COLOR' );
+    Writeln( '1  _MRESNOCOLOR' );
+    Writeln( '2  _HRESBW' );
+    Writeln( '3  _HERCMONO' );
+    Writeln( '4  _MRES16COLOR' );
+    Writeln( '5  _HRES16COLOR' );
+    Writeln( '6  _ERESNOCOLOR' );
+    Writeln( '7  _ERESCOLOR' );
+    Writeln( '8  _VRES2COLOR' );
+    Writeln( '9  _VRES16COLOR' );
+    Writeln( 'a  _MRES256COLOR' );
+    Writeln( 'b  _ORESCOLOR' );
+END;
+ 
+{============================== show_mode ==============================
+  Shows the various video modes.
+}
+ 
+PROCEDURE show_mode( which : Char );
+ 
+VAR
+    nc, i  : Integer;
+    height : Integer;
+    width  : Integer;
+    Mode   : STRING;
+    r      : Real;
+    e,m    : Integer;
+ 
+BEGIN
+    Mode := which;
+    IF (Mode &lt; '0') OR (Mode &gt; '9') THEN
+       IF Mode = 'a' THEN
+           Mode := '10'
+       ELSE IF Mode = 'b' THEN
+           Mode := '11'
+           ELSE Halt; { Exit procedure }
+    Val( Mode, r, e );
+    m := Trunc( r );
+    a :=  _SetVideoMode( modes[m] );
+    IF (a  &lt;&gt; 0) THEN
+        BEGIN
+        _GetVideoConfig( vc );
+        nc := vc.NumColors;
+        width := vc.NumXPixels DIV nc;
+        height := vc.NumYPixels DIV 2;
+        FOR i := 1 TO ( nc - 1 ) DO
+            BEGIN
+            _SetColor( i );
+            _Rectangle( _GFillInterior, i * width,
+                        0, (i + 1 ) * width, height );
+            END;
+        END { IF a not equal to 0 }
+    ELSE
+        BEGIN
+        Writeln( 'Video mode ', which, ' is not available.' );
+        Writeln( 'Please press ENTER.' );
+        END;
+ 
+    Readln;    { Wait for ENTER to be pressed }
+    a := _SetVideoMode( _DefaultMode );
+    print_menu;
+END;
+ 
+{============================ main program ============================}
+ 
+BEGIN
+ 
+    key := ' ';
+    a := _SetVideoMode( _DefaultMode );
+    _ClearScreen( _GClearScreen );
+    print_menu;
+    WHILE ( key  &lt;&gt; 'x') DO
+        BEGIN
+        key := ReadKey;
+        show_mode( key );
+        END;
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

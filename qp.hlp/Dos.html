@@ -1,0 +1,173 @@
+<html>
+
+<head>
+<title>Dos Unit Interface - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> Dos Unit Interface</div>
+<pre>  <span class='grhilite'>◄</span><a href='units-1st.html'>Standard Units</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                             <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+  {──────────────────────────────────────────────────────────────────────
+ 
+                            Dos Unit Interface
+ 
+                   Microsoft QuickPascal Version 1.00
+                Copyright (C) 1989, Microsoft Corporation
+                           All rights reserved.
+ 
+  ──────────────────────────────────────────────────────────────────────}
+ 
+  UNIT Dos;
+ 
+  {$D-, I-, S-}
+ 
+  INTERFACE
+ 
+  CONST
+      { bit masks for Flags register }
+      FCarry     = $0001;    FParity   = $0004;
+      FAuxiliary = $0010;    FZero     = $0040;
+      FSign      = $0080;    FOverflow = $0800;
+ 
+      { file access modes }
+      FMClosed   = $D7B0;    FMInput   = $D7B1;
+      FMOutput   = $D7B2;    FMInOut   = $D7B3;
+ 
+      { bit masks for DOS file attributes }
+      ReadOnly   = $01;      Hidden    = $02;
+      SysFile    = $04;      VolumeID  = $08;
+      Directory  = $10;      Archive   = $20;
+ 
+      AnyFile    = $3F;      { bit mask for all files }
+ 
+  TYPE
+      { string types }
+      ComStr  = STRING[127];    { DOS command line }
+      PathStr = STRING[79];     { full file path (filespec) }
+      DirStr  = STRING[67];     { drive and directory }
+      NameStr = STRING[8];      { file name }
+      ExtStr  = STRING[4];      { file extension }
+ 
+      { record to simulate processor registers }
+      Registers = RECORD
+          CASE Integer OF
+              0 : (AX, BX, CX, DX, BP, SI, DI, DS, ES, Flags : Word);
+              1 : (AL, AH, BL, BH, CL, CH, DL, DH : Byte);
+          END;
+ 
+      { record for typed and untyped files }
+      FileRec = RECORD
+          Handle   : Word;    { DOS file handle }
+          Mode     : Word;    { access mode (FMxxx constants) }
+          RecSize  : Word;
+          Private  : ARRAY[1..26] OF Byte;    { reserved }
+          UserData : ARRAY[1..16] OF Byte;
+          Name     : ARRAY[0..79] OF Char;    { full name of file }
+          END;
+ 
+      { record for text files }
+      TextBuf = ARRAY[0..127] OF Char;
+      TextRec = RECORD
+          Handle    : Word;       { DOS file handle }
+          Mode      : Word;       { access mode (FMxxx constants) }
+          BufSize   : Word;       { buffer size }
+          Private   : Word;       { reserved }
+          BufPos    : Word;       { current buffer position }
+          BufEnd    : Word;       { end of buffer position }
+          BufPtr    : ^TextBuf;
+          OpenFunc  : POINTER;
+          InOutFunc : POINTER;
+          FlushFunc : POINTER;
+          CloseFunc : POINTER;
+          UserData  : ARRAY[1..16] OF Byte;
+          Name      : ARRAY[0..79] OF Char;    { full name of file }
+          Buffer    : TextBuf;    { default buffer }
+          END;
+ 
+      { record for FindFirst and FindNext }
+      SearchRec = RECORD
+          Fill : ARRAY[1..21] OF Byte;    { reserved }
+          Attr : Byte;                    { file attributes }
+          Time : LongInt;                 { last modification, packed }
+          Size : LongInt;                 { file size in bytes }
+          Name : STRING[12];              { base name and extension }
+          END;
+ 
+      { record for unpacked date and time format }
+      DateTime = RECORD
+          Year, Month, Day, Hour, Min, Sec : Word;
+          END;
+ 
+  VAR
+      DosError : Integer;    { DOS error code }
+ 
+  {───────────────────────────────────────────────────────────────────
+                    Dos Procedures and Functions
+  ───────────────────────────────────────────────────────────────────}
+ 
+  FUNCTION DiskFree( drive : Byte ) : LongInt;
+  FUNCTION DiskSize( drive : Byte ) : LongInt;
+  FUNCTION DosExitCode : Word;
+  FUNCTION DosVersion : Word;
+  FUNCTION EnvCount : Integer;
+  FUNCTION EnvStr( index : &lt;integer type&gt; ) : &lt;string type&gt;;
+  PROCEDURE Exec( pathname : PathStr ; command_line : ComStr );
+  FUNCTION FExpand( pathname : PathStr ) : PathStr;
+  PROCEDURE FindFirst(     pathname : PathStr ; attributes : Word;
+                       VAR result : SearchRec );
+  PROCEDURE FindNext( VAR result : SearchRec );
+  FUNCTION FSearch( filename : PathStr; directories : &lt;string type&gt;
+                  ) : PathStr;
+  PROCEDURE FSplit(     pathname  : PathStr; VAR directory : DirStr;
+                    VAR filename  : NameStr; VAR extension : ExtStr );
+  PROCEDURE GetCBreak( VAR state : Boolean );
+  PROCEDURE GetDate( VAR year, month, day, weekday : Word );
+  FUNCTION GetEnv( name : &lt;string type&gt; ) : &lt;string type&gt;;
+  PROCEDURE GetFAttr( VAR file_variable; VAR attributes : Word );
+  PROCEDURE GetFTime( VAR file_variable; VAR time : LongInt );
+  PROCEDURE GetIntVec(     vector_number  : Byte;
+                       VAR vector_address : POINTER );
+  PROCEDURE GetTime( VAR hours, minutes, seconds, hundredths : Word );
+  PROCEDURE GetVerify( VAR state : Boolean );
+  PROCEDURE Intr(     interrupt_number : Byte;
+                  VAR register_values  : Registers );
+  PROCEDURE Keep( code : Word );
+  PROCEDURE MsDos( VAR register_values : Registers );
+  PROCEDURE PackTime( VAR date_time : DateTime; VAR time : LongInt );
+  PROCEDURE SetCBreak( state : Boolean );
+  PROCEDURE SetDate( year, month, day : Word );
+  PROCEDURE SetFAttr( VAR file_variable; attributes : Word );
+  PROCEDURE SetFTime( VAR file_variable; time : LongInt );
+  PROCEDURE SetIntVec( vector_number : Byte; vector_address : POINTER );
+  PROCEDURE SetTime( hours, minutes, seconds, hundredths : Word );
+  PROCEDURE SetVerify( state : Boolean );
+  PROCEDURE SwapVectors;
+  PROCEDURE UnpackTime( time : LongInt; VAR date_time : DateTime );
+ 
+</pre>
+</body>
+
+</html>

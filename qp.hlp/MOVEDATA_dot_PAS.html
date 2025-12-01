@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<title>MOVEDATA.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> MOVEDATA.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM movedata;
+ 
+{ MOVEDATA.PAS uses routines to initialize and move blocks of data,
+  independent of type, including:
+ 
+      FillChar    FreeMem    GetMem    Move    SizeOf
+}
+ 
+CONST
+    program_name = 'MOVEDATA ';
+    program_desc = 'initializes a buffer in memory' +
+                   ' and moves it to a string.';
+    nbytes       = 64;
+ 
+TYPE
+    int32arr = ARRAY[1..32] OF Word;
+    string64 = ARRAY[1..64] OF Char;
+ 
+VAR
+    memptr    : ^int32arr;
+    equiv_str : string64;
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+ 
+    { Get a block of memory to play with. }
+    GetMem( memptr, SizeOf( int32arr ) );
+    Writeln( 'Memory allocated. ');
+ 
+    { Fill it with a value. }
+    FillChar( memptr^, SizeOf( memptr^ ), 'P' );
+    Writeln( '32-word array filled with ''P''' );
+ 
+    { Copy this to a real string. }
+    Move( memptr^, equiv_str, SizeOf( memptr^ ) );
+    Writeln( '64 bytes moved to 64-character array:' );
+ 
+    { Verify. }
+    Writeln( equiv_str );
+ 
+    FreeMem( memptr, SizeOf( int32arr ) );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

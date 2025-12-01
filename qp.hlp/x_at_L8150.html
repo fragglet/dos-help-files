@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<title>MaxAvail and MemAvail Functions - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> MaxAvail and MemAvail Functions</div>
+<pre>  <span class='grhilite'>◄</span><a href='MaxAvail.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#avail.pas'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+  Return
+ 
+    LongInt    Size in bytes of largest block available for allocation
+               (MaxAvail) or of total free space in heap (MemAvail)
+ 
+  Description
+ 
+    The MaxAvail function returns the size of the largest heap block
+    available for allocation. The largest block is either the largest
+    disposed variable in the free list or the size of the remaining
+    free heap.
+ 
+    The MemAvail function returns the total size in bytes of all the
+    free space on the heap. The total includes both the deallocated
+    blocks in the free list and the unallocated space on the heap.
+ 
+    QuickPascal uses a free list to manage areas returned to the heap
+    by the procedures Dispose and FreeMem. The free list is a list of
+    pointers that grows downward (toward 0) from the top of the heap
+    segment. FreePtr, defined in the System unit, points to the free
+    list. Deallocated areas below the current top of the heap are kept
+    in the free list. The procedures GetMem and New allocate from the
+    free list before taking any new memory from the heap.
+ 
+    HeapPtr, a pointer variable defined in the System unit, always
+    points to the top of the heap. Allocation causes the heap to grow
+    upward (toward FFFF) from the bottom of the heap segment. The
+    unallocated part of the heap includes memory above the top of the
+    heap, as well as the blocks in the free list.
+ 
+    MaxAvail returns either the size of the largest block in the free
+    list or the size of the unallocated heap above the address in
+    HeapPtr, whichever is greater. MemAvail returns the sum of the
+    block sizes in the free list and the size of the unallocated heap
+    above HeapPtr.
+ 
+    If MaxAvail returns a value smaller than the memory needed, the
+    memory cannot be allocated. To check that sufficient memory is
+    available, compare the return value of MaxAvail with the return
+    from the SizeOf function. Call the Dispose, FreeMem, or Release
+    procedures to free heap space.
+ 
+    The value returned by MemAvail does not necessarily give the size
+    of a variable that can be allocated, because the free space may be
+    fragmented. Call MaxAvail to find the size of the largest available
+    block.
+ 
+    The {$M} compiler directive and FreeMin, defined in the System unit,
+    both affect the values returned by MaxAvail and MemAvail.
+ 
+</pre>
+</body>
+
+</html>

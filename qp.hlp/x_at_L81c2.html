@@ -1,0 +1,130 @@
+<html>
+
+<head>
+<title>Write Procedure - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> Write Procedure</div>
+<pre>  <span class='grhilite'>◄</span><a href='Write.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#writer.pas'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+  Arguments
+ 
+    file_variable    Optional; text or typed file (default is the
+                     standard file Input)
+ 
+    &lt;expression&gt;     One required, others optional; for text files, an
+                     expression of any simple type; for typed files, a
+                     variable of the same type as the component type of
+                     the file
+ 
+    &lt;format&gt;         Optional; depends on type of expression (applies
+                     only to text files)
+ 
+  Description
+ 
+    The Write procedure writes one or more values to a disk file or
+    device. The file must be open. If no output file is specified,
+    Write writes to the standard text file Output.
+ 
+    For a text file, the current position is always at the end, and
+    Write appends to the file. Write does not end output to a text
+    file with an end-of-line character. Use Writeln to write lines of
+    text.
+ 
+    For a typed file, if the current position is at end-of-file, Write
+    appends to the file. Otherwise, Write overwrites existing data and
+    advances the current file position to the next component. The file
+    must be opened for output by using the Append or Rewrite procedures.
+ 
+    Standard output goes to the screen unless redirected to a file by
+    the DOS redirection operator, (&gt;). Use the Assign procedure to
+    reenable redirection when using the Crt unit.
+ 
+    The format argument is optional and varies with the expression
+    type:
+ 
+      1. For character, Boolean, or string output, the format is
+ 
+         ■ &lt;expression&gt; [ : width ]
+ 
+         The width argument is a positive integer expression giving a
+         minimum field width. The characters are right justified within
+         the field if they fit. If they do not fit or if width is
+         omitted, the characters take as much space as needed.
+ 
+         For Boolean expressions, the output is a string of text,
+         either 'TRUE' or 'FALSE'.
+ 
+      2. For numeric output, the format is
+ 
+         ■ &lt;expression&gt; [ : width [ : places ] ]
+ 
+         The width and places arguments are positive integer
+         expressions that control the conversion format. The
+         expression is either an integer or a real type. The
+         formatting specification is the same as that passed to
+         the Str procedure.
+ 
+         The width argument gives the minimum field width. The number
+         is right justified within the field if it fits. For an
+         integer, if the number does not fit or if width is omitted,
+         the number takes as much space as needed. For a real number,
+         if width is less than 8, the value is ignored and a field
+         width of 8 is used. If width is omitted, a width of 23 is
+         assumed. The field width includes the decimal point and any
+         places after the decimal. A negative width is ignored.
+ 
+         The places argument gives the number of places to the right of
+         the decimal. This parameter applies only to real arguments
+         when width is specified. If places is greater than 18 or is
+         negative, 18 decimal places are used. Omit places or give a
+         negative value to write in scientific (engineering) notation.
+         Specify 0 places to round a real to the nearest whole number.
+ 
+    The output string for an integer has the form:
+ 
+       [-] &lt;decimal digits&gt;
+ 
+    The output string for a real number has the form:
+ 
+       [-] &lt;digits&gt; [.&lt;digits&gt;] [ {E│e} [+│-] &lt;digits&gt; ]
+ 
+    Numeric output in hexadecimal format is not possible.
+ 
+    If file_variable is not associated with a file or if the file is
+    not open when Write is called, an I/O error occurs.
+ 
+    If Write is called for a text file opened for reading with Reset,
+    an I/O error occurs.
+ 
+    To prevent a program from halting with a run-time error when an I/O
+    error occurs, turn off I/O checking with {$I-} and check the return
+    value of the IOResult function.
+ 
+</pre>
+</body>
+
+</html>

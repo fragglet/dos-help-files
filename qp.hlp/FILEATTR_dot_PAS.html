@@ -1,0 +1,222 @@
+<html>
+
+<head>
+<title>FILEATTR.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> FILEATTR.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM fileattr;
+ 
+{ FILEATTR.PAS illustrates reading and changing file attributes and
+  file time using the following routines:
+ 
+      GetFAttr    GetFTime    SetFAttr    SetFTime
+}
+ 
+USES
+    Dos;
+ 
+CONST
+    program_name = 'FILEATTR ';
+    program_desc = 'changes the attributes of its first parameter.';
+ 
+TYPE
+    date_or_time_t = SET OF (date, time);
+    str_t          = STRING[8];
+ 
+VAR
+    testfile                     : FILE;
+    attr, orig_attr              : Word;
+    ftime, new_ftime, orig_ftime : LongInt;
+    time_rec, new_time_rec       : DateTime;
+    datestr, timestr             : str_t;
+    fstring                      : STRING;
+    change                       : Char;
+    s100, wd                     : Word;
+ 
+{============================= date_time ==============================}
+{ Procedure date_time takes a DateTime record and returns strings
+  representing the date and time.
+}
+ 
+PROCEDURE date_time(     todo     : date_or_time_t;
+                         in_rec   : DateTime;
+                     VAR date_str : str_t;
+                     VAR time_str : str_t );
+ 
+VAR
+    temp : STRING[2];
+    i    : Integer;
+ 
+BEGIN
+ 
+    IF (date IN todo) THEN
+        BEGIN
+        Str( in_rec.Month:2, temp );
+        date_str := temp + '/';
+        Str( in_rec.Day:2, temp );
+        date_str := date_str + temp + '/';
+        Str( (in_rec.Year - 1900):2, temp );    { only good until 2000 }
+        date_str := date_str + temp;
+        FOR i := 1 TO Length( date_str ) DO
+            IF (date_str[i] = ' ') THEN date_str[i] := '0';
+        END;
+ 
+    IF (time IN todo) THEN
+        BEGIN
+        Str( in_rec.Hour:2, temp );
+        time_str := temp + ':';
+        Str( in_rec.Min:2, temp );
+        time_str := time_str + temp + ':';
+        Str( in_rec.Sec:2, temp );
+        time_str := time_str + temp;
+        FOR i := 1 TO Length( time_str ) DO
+            IF (time_str[i] = ' ') THEN time_str[i] := '0';
+        END;
+ 
+END; { procedure date_time }
+ 
+{============================= file_info ==============================}
+{ Procedure file_info interprets a file attribute, returning a string
+  suitable for printing on standard output.
+}
+ 
+PROCEDURE file_info(     attr : Word;
+                     VAR fstr : STRING);
+ 
+BEGIN
+ 
+    fstr := '';
+ 
+    IF ((Directory AND attr) &gt; 0) THEN
+        fstr := 'Directory'
+    ELSE IF ((VolumeID AND attr) &gt; 0) THEN
+        fstr := 'Label'
+    ELSE IF ((Archive AND attr) &gt; 0) THEN
+        fstr := 'Archive';
+ 
+    IF ((ReadOnly AND attr) &gt; 0) THEN
+        fstr := fstr + ' RDO';
+    IF ((Hidden AND attr) &gt; 0) THEN
+        fstr := fstr + ' HID';
+    IF ((SysFile AND attr) &gt; 0) THEN
+        fstr := fstr + ' SYS';
+ 
+END; {procedure file_info }
+ 
+{============================ main program ============================}
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+ 
+    IF (ParamCount &lt;&gt; 1) THEN
+        BEGIN
+        Writeln( 'SYNTAX: fileattr &lt;filename&gt;' );
+        Exit;
+        END;
+ 
+    { File must be assigned, but not open, for GetFAttr. }
+    Assign( testfile, ParamStr( 1 ) );
+    GetFAttr( testfile, attr );
+    IF DosError &lt;&gt; 0 THEN
+        BEGIN
+        Writeln( 'Cannot read attributes of file.' );
+        Exit;
+        END;
+ 
+    orig_attr := attr;    { save original attribute }
+ 
+    { File must be open file to read times. }
+    Reset( testfile );
+    GetFTime( testfile, ftime );
+    orig_ftime := ftime;    { save original time }
+    UnpackTime( ftime, time_rec );
+ 
+    { Translate and display time and attribute. }
+    date_time( [date, time], time_rec, datestr, timestr );
+    file_info( attr, fstring );
+    Writeln( 'Time and attribute for file ', ParamStr( 1 ), ':' );
+    Writeln( '    ', timestr:9, datestr:9, fstring:Length( fstring )+1 );
+    Writeln;
+ 
+    { Update file time. }
+    WITH new_time_rec DO
+        BEGIN
+        GetTime( Hour, Min, Sec, s100 );    { ignore s100 }
+        GetDate( Year, Month, Day, wd );    { ignore weekday }
+        END;
+    PackTime( new_time_rec, new_ftime );
+    SetFTime( testfile, new_ftime );
+ 
+    { Read new time. }
+    GetFTime( testfile, ftime );
+    UnpackTime( ftime, time_rec );
+    Close( testfile );    { File cannot be open for SetFAttr. }
+ 
+    Write( 'Attribute to change:  (R)ead only  (H)idden  (S)ystem  ' );
+    Readln( change );
+    CASE UpCase( change ) OF
+        'R' : { Toggle read only }
+              SetFAttr( testfile, (attr XOR ReadOnly) );
+        'H' : { Toggle hidden    }
+              SetFAttr( testfile, (attr XOR Hidden) );
+        'S' : { Toggle system    }
+              SetFAttr( testfile, (attr XOR SysFile) );
+        ELSE Writeln( 'Nothing to change.' );
+        END; { case }
+ 
+    { Read changed attribute. }
+    GetFAttr( testfile, attr );
+    IF DosError &lt;&gt; 0 THEN
+        BEGIN
+        Writeln( 'Cannot read new attributes of file.' );
+        Exit;
+        END;
+ 
+    { Display new settings. }
+    date_time( [date, time], time_rec, datestr, timestr );
+    file_info( attr, fstring );
+    Writeln( 'New time and attribute for ', ParamStr( 1 ), ':' );
+    Writeln( '    ', timestr:9, datestr:9, fstring:Length( fstring )+1 );
+    Writeln;
+ 
+    { Reset original attribute and time. }
+    Writeln( 'Resetting original date, time, and attribute.' );
+    SetFAttr( testfile, orig_attr );
+    Reset( testfile );
+    SetFTime( testfile, orig_ftime );
+    Close( testfile );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

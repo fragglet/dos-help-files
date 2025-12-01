@@ -1,0 +1,221 @@
+<html>
+
+<head>
+<title>EXCOPY.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> EXCOPY.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM excopy;
+ 
+{ EXCOPY.PAS implements an extended version of the DOS copy command.
+  Multiple wildcards are allowed on the command line. If no file names
+  are specified, the *.* wildcard is assumed. Only the first ten
+  wildcards are used; any more are ignored.  All files are copied from
+  the current directory.
+ 
+     EXCOPY &lt;target dir&gt; &lt;list of wildcard file names&gt;
+}
+ 
+{$M 20480, 0, 655360}
+{$V-}
+ 
+USES
+    Dos;
+ 
+CONST
+    max_wildcards = 10;
+ 
+TYPE
+    wildcard_array = ARRAY [1..max_wildcards] OF STRING[20];
+    node_ptr       = ^node;
+    node = RECORD
+        file_data : SearchRec;
+        left      : node_ptr;
+        right     : node_ptr;
+        END;
+ 
+VAR
+    tree_root       : node_ptr;
+    wild_card       : wildcard_array;
+    i, num_wildcard : 0..max_wildcards;
+    file_count      : Word;
+    file_info       : SearchRec;
+    target_dir      : STRING[64];
+    a_key           : Char;
+ 
+{=============================== insert ================================
+  Procedure insert adds file information to the binary tree.
+}
+ 
+PROCEDURE Insert( VAR root : node_ptr;
+                      item : SearchRec );
+ 
+BEGIN
+    IF (root = NIL) THEN
+        BEGIN
+        New( root );
+        root^.file_data := item;
+        root^.left := NIL;
+        root^.right := NIL;
+        END
+    ELSE
+        WITH root^ DO
+            IF (item.Name &lt; file_data.Name) THEN
+                Insert( left, item )
+            ELSE IF (item.Name &gt; file_data.Name) THEN
+                Insert( right, item )
+            ELSE
+                Exit; { do not insert duplicate filename }
+END; { procedure insert }
+ 
+{ ============================= copy_file ==============================
+  Procedure copy_file does the work of copying the files.
+}
+ 
+PROCEDURE copy_file( source, target : STRING );
+ 
+CONST
+    buffer_size = 16384;
+ 
+VAR
+    source_file, target_file : FILE;
+    num_read, num_write      : Word;
+    Buffer                   : ARRAY [1..buffer_size] OF Char;
+ 
+BEGIN
+    { Assign and open source file. }
+    Assign( source_file, source );
+    {$I-}
+    Reset( source_file, 1 );
+    {$I+}
+    IF (IOResult &lt;&gt; 0) THEN Exit;
+ 
+    { Make sure target directory name ends with a backslash,
+      then assign and open the target file
+    }
+    IF (Pos( '\', target[Length( target )] ) &lt;&gt; 1) THEN
+        target := target + '\';
+    Assign( target_file, target + source );
+    {$I-}
+    Rewrite( target_file, 1 );
+    {$I+}
+    IF IOResult &lt;&gt; 0 THEN Exit;
+ 
+    { Use block I/O to read/write files. }
+    REPEAT
+        BlockRead( source_file, Buffer, buffer_size, num_read );
+        BlockWrite( target_file, Buffer, num_read, num_write );
+        { Is target disk full? }
+        IF (num_read &lt;&gt; num_write) THEN
+            BEGIN
+            Writeln( 'Could not copy file ', source:13 );
+            Close( source_file );
+            Erase( target_file );
+            Close( target_file );
+            Exit;
+            END;
+    UNTIL num_read = 0;
+ 
+    Inc( file_count );
+    Close( source_file );
+    Close( target_file );
+    Write( 'Copied file ', source:13 );
+    Writeln( ' to ', target + source:-13 );
+END; { procedure copy_file }
+ 
+{============================= copy_files ==============================
+  Procedure copy_files recursively goes through the tree, copying files.
+}
+ 
+PROCEDURE copy_files( root : node_ptr );
+ 
+BEGIN
+    IF root &lt;&gt; NIL THEN
+        BEGIN
+        copy_files( root^.left );
+        copy_file( root^.file_data.Name, target_dir );
+        copy_files( root^.right );
+        END;
+END; { copy_files }
+ 
+{============================ main program ============================}
+ 
+BEGIN
+ 
+    num_wildcard := 1;
+    IF (ParamCount &lt; 1) THEN
+        BEGIN
+        Write( 'SYNTAX: EXCOPY &lt;target dir&gt; ' );
+        Writeln( '[&lt;list of wildcard file names&gt;]' );
+        Writeln;
+        Halt;
+        END;
+ 
+    target_dir := ParamStr( 1 );
+ 
+    { Get parameters that name files to be copied. }
+    IF ParamCount &gt; 1 THEN
+        BEGIN
+        IF (ParamCount &gt; (max_wildcards + 1)) THEN
+            num_wildcard := max_wildcards
+        ELSE
+            num_wildcard := ParamCount-1;
+        FOR i := 1 TO num_wildcard DO
+            wild_card[i] := ParamStr( i + 1 );
+        END { If more than one rfile name parameter }
+    ELSE
+        wild_card[1] := '*.*';
+ 
+    file_count := 0;
+    tree_root := NIL;
+ 
+    { Search for files matching the wildcards, and build a binary tree
+      that contains their names.
+    }
+    FOR i := 1 TO num_wildcard DO
+        BEGIN
+        FindFirst( wild_card[i], Archive, file_info );
+        WHILE (DosError = 0) DO
+            BEGIN
+            Insert( tree_root, file_info );
+            FindNext( file_info );
+            END; { WHILE }
+        END; { FOR }
+ 
+    { Do the work and display the count when done. }
+    copy_files( tree_root );
+    Writeln;
+    Writeln( file_count, ' file(s) copied' );
+    Writeln;
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

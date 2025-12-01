@@ -1,0 +1,114 @@
+<html>
+
+<head>
+<title>Readln Procedure - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> Readln Procedure</div>
+<pre>  <span class='grhilite'>◄</span><a href='Readln.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#buftest.pas'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+  Arguments
+ 
+    file_variable    Optional; text file (default is standard
+                     file Input)
+ 
+    variables        Optional; variable of any simple type except
+                     Boolean
+ 
+  Description
+ 
+    The Readln procedure copies one or more values from a disk file or
+    a device and places them into variables. The file must be a text
+    file opened for input with Reset. After reading the file, Readln
+    moves the current file position to the character following the
+    next end-of-line marker or else to the end-of-file. A text file is
+    read sequentially only.
+ 
+    If no input file is specified, Readln reads from the standard text
+    file Input. Standard input is from the keyboard unless redirected
+    from a file by the DOS redirection operator, (&lt;). Readln waits for
+    all arguments to be entered when reading from the keyboard. Each
+    input ends after a delimiting character for that type is entered.
+    All input ends when ENTER is pressed. Keyboard input is echoed on
+    the screen.
+ 
+    Input redirection is disabled when the Crt unit is used. Use the
+    Assign procedure with a null string to reenable DOS redirection
+    when using Crt.
+ 
+    If Readln is called with no arguments, it moves the current file
+    position to the character following the next end-of-line or else to
+    the end-of-file.
+ 
+    Readln reads input according to the type of variable:
+ 
+      1. Character input is read without use of delimiters.
+ 
+         When Readln is called with a character variable and the
+         current position is at end-of-line, it reads a carriage
+         return (ASCII 13). It then moves the current position to the
+         character following the carriage return.
+ 
+         When Readln is called with a char variable and the current
+         position is at end-of-file, it reads a CTRL+Z (ASCII 26).
+         Subsequent calls to Read get CTRL+Z.
+ 
+      2. Number input is delimited by blanks, tabs, or end-of-line
+         markers. Read skips delimiters preceding an integer or real,
+         and stops reading the number input when a delimiter occurs.
+ 
+         For text files, Readln gets a 0 if end-of-file is true, or
+         if it becomes true after skipping delimiters.
+ 
+         If the input does not match the format of the variable
+         receiving the value, an I/O error occurs.
+ 
+      3. String input is delimited by an end-of-line or end-of-file,
+         and the string that is read does not include the delimiter.
+         Readln moves the current position to the character following
+         the delimiter. Readln checks the length of the string variable
+         and truncates the input if necessary.
+ 
+    Readln treats CTRL+Z as an end-of-file. However, if the Crt
+    unit is used, the effect of reading a CTRL+Z changes. CheckEOF is
+    a Boolean variable defined in the Crt unit. When CheckEOF is False
+    (default), an input of CTRL+Z is treated as any other input. When
+    set to True, an input of CTRL+Z causes the end of input.
+ 
+    If Readln is called with a file opened with the Append or Rewrite,
+    procedures, an I/O error occurs.
+ 
+    If file_variable is not associated with a file or if the file is
+    not open when Readln is called, an I/O error occurs.
+ 
+    To prevent a program from halting with a run-time error when an
+    I/O error occurs, turn off I/O checking with {$I-} and check the
+    return value of the IOResult function.
+ 
+</pre>
+</body>
+
+</html>

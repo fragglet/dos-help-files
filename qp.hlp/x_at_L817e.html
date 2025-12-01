@@ -1,0 +1,84 @@
+<html>
+
+<head>
+<title>Release Procedure - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> Release Procedure</div>
+<pre>  <span class='grhilite'>◄</span><a href='Release.html'>Summary</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span>Details<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#token.pas'>Example</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+  Argument
+ 
+    heap_mark    A pointer of any type, usually untyped,
+                 already assigned by Mark
+ 
+  Description
+ 
+    The Release procedure reclaims allocated memory by resetting the
+    top of the heap to the address in heap_mark. It disposes all
+    memory from heap_mark to the current top of the heap. Release
+    clears the entire free list; any blocks in the list are lost.
+ 
+    The Mark procedure stores the current value of HeapPtr in
+    heap_mark. The heap_mark argument is a pointer of any type,
+    usually untyped. HeapPtr, a pointer variable defined in the System
+    unit, always points to the top of the heap.
+ 
+    Allocation causes the top of the heap to grow upward (toward FFFF)
+    from the bottom of the heap segment. Deallocation may lower the top
+    of the heap or may leave a free block in the heap.
+ 
+    QuickPascal uses a free list to manage areas returned to the heap
+    by the procedures Dispose and FreeMem. The free list is a list of
+    pointers──pointed to by FreePtr──that grows downward (toward 0000)
+    from the top of the heap segment. Deallocated areas below the
+    current top of the heap are pointed to by pointers kept in the free
+    list. GetMem and New allocate from the free list before taking any
+    new memory from the heap.
+ 
+    Release frees allocated memory above heap_mark. After the call to
+    Mark, allocation of memory is above the address in heap_mark if the
+    requested size could not be allocated from the free list. Release
+    does not release memory allocated after the call to Mark that was
+    taken from the free list and lying below heap_mark.
+ 
+    Note that pointers to the disposed areas remain defined; however,
+    they should not be used unless reallocated with GetMem or New.
+ 
+    Release clears the entire free list, not just the pointers to
+    memory it releases. Any free blocks that lie between the heap
+    origin (held in the System variable HeapOrg) and heap_mark are
+    lost and unavailable for later allocation.
+ 
+    Use caution when mixing methods for deallocating variables. Dynamic
+    allocation and deallocation are usually done with related pairs of
+    routines. Dispose frees a variable that New allocates, and FreeMem
+    frees a variable that GetMem allocates.
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,163 @@
+<html>
+
+<head>
+<title>SYSTIME.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> SYSTIME.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM systime;
+ 
+{ SYSTIME.PAS illustates getting and setting the DOS time and date using:
+ 
+      GetTime    GetDate    SetDate
+ 
+  It does not reset the time, but the call SetTime is similar.
+}
+ 
+USES
+    Dos;
+ 
+TYPE
+    days_t = ARRAY[0..6] OF STRING[3];
+ 
+CONST
+    program_name  = 'SYSTIME ';
+    program_desc  = 'demonstrates DOS date and time calls.';
+    days : days_t = ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat');
+ 
+VAR
+    Hour, Min, Sec, s100          : Word;
+    Year, mon, date, wkdy         : Word;
+    s_hour, s_min, s_sec, s_s100  : Word;
+    s_year, s_mon, s_date, s_wkdy : Word;
+    tempstr                       : STRING[8];
+ 
+{============================== date_str ==============================
+  Function date_str takes numeric date information and returns a string
+  containing the date.
+}
+ 
+FUNCTION date_str( mon, date, Year, wkdy : Word ) : STRING;
+ 
+VAR
+    temp    : STRING[2];
+    builder : STRING;
+    i       : Integer;
+ 
+BEGIN
+    Str( mon:2, temp );
+    builder := temp + '/';
+    Str( date:2, temp );
+    builder := builder + temp + '/';
+    Str( (Year - 1900):2, temp );    { only good until 2000 }
+    FOR i := 1 TO Length( builder ) DO
+        IF (builder[i]  = ' ') THEN builder[i] := '0';
+ 
+    builder := builder + temp + ' ' + days[wkdy];
+    date_str := builder;
+END; { function date_str }
+ 
+{============================== time_str ===============================
+  Function time_str takes numeric time information and returns a string
+  containing the time.
+}
+ 
+FUNCTION time_str( Hour, Min, Sec : Word ) : STRING;
+ 
+VAR
+    temp    : STRING[2];
+    i       : Integer;
+    builder : STRING;
+ 
+BEGIN
+    Str( Hour:2, temp );
+    builder := temp + ':';
+    Str( Min:2, temp );
+    builder := builder + temp + ':';
+    Str( Sec:2, temp );
+    builder := builder + temp;
+    FOR i := 1 TO Length( builder ) DO
+        IF (builder[i])  = ' ' THEN builder[i] := '0';
+    time_str := builder;
+END; { function time_str }
+ 
+{============================ extract_date =============================
+  Extract_date extracts date components from a string. It assumes a
+  string in the form mm/dd/yy.
+}
+ 
+PROCEDURE extract_date(     datestr    : STRING;
+                        VAR yr, mn, dt : Word );
+ 
+VAR
+    t1     : STRING;
+    status : Integer;
+ 
+BEGIN
+    t1 := Copy( datestr, 1, 2 );
+    Val( t1, mn, status );
+    t1 := Copy( datestr, 4, 2 );
+    Val( t1, dt, status );
+    t1 := Copy( datestr, 7, 2 );
+    Val( t1, yr, status );
+    yr := yr + 1900;
+END; { procedure extract_date }
+ 
+{============================ main program ============================}
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+ 
+    { Get current date and time. }
+    GetDate( s_year, s_mon, s_date, s_wkdy );
+    GetTime( s_hour, s_min, s_sec, s_s100 );
+    Writeln( 'Date: ', date_str( s_mon, s_date, s_year, s_wkdy ) );
+    Writeln( 'Time: ', time_str( s_hour, s_min, s_sec ) );
+ 
+    { Get new date string. If length is not 0 (for CR), use it. }
+    Write( 'Enter new date [mm/dd/yy]: ' );
+    Readln( tempstr );
+    IF Length( tempstr ) &gt; 0 THEN
+        extract_date( tempstr, Year, mon, date );
+ 
+    { Set new date. If date is bad, DOS ignores it. }
+    SetDate( Year, mon, date );
+    GetDate( Year, mon, date, wkdy );
+    Writeln( 'New date: ', date_str( mon, date, Year, wkdy ) );
+ 
+    Writeln( 'Resetting date to original value.' );
+    SetDate( s_year, s_mon, s_date );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

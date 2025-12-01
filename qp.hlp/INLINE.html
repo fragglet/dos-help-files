@@ -1,0 +1,136 @@
+<html>
+
+<head>
+<title>INLINE Keyword - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> INLINE Keyword</div>
+<pre>  <span class='grhilite'>◄</span><a href='keywords-1st.html'>Keywords</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+  INLINE( &lt;element list&gt; )
+ 
+<b>  </b>Description
+ 
+    The INLINE keyword initiates a sequence of machine code. This is
+    convenient for optimizing code or handling tasks that cannot be
+    done in Pascal. The INLINE keyword can be used in two different
+    contexts:
+ 
+      ■ INLINE sequences of assembly-language code in the inline
+        format (described below) can be used inside normal functions
+        or procedures.
+ 
+      ■ INLINE directives can be used to insert functions or
+        procedures in inline format directly into the instruction
+        stream. This feature is similar to assembly-language macros.
+ 
+    Each inline element can be either a constant representing part of
+    an encoded assembly-language instruction or a variable identifier.
+    Elements must be separated from each other by slashes.
+ 
+    Each constant element generates one byte of code if it is in the
+    8-bit range (0..255) or one word (least-significant byte first)
+    if it is in the 16-bit range. Variable identifiers in the data
+    segment generate the offset of the variable. Constant values may
+    be added or subtracted from the identifier to encode relative
+    offsets. Variable identifiers in the stack segment generate a word
+    offset from SS:BP.
+ 
+    In the following examples, assume that the hexadecimal offset of
+    DVar is 10C2 and that SVar is a word argument at SS:[BP+4]:
+ 
+       INLINE
+           ( { Inline code      Assembly code        Hex Bytes Encoded }
+           $59/               { pop  cx              59                }
+           $B8/$1A07/         { mov  ax, 1A07h       B8 07 1A          }
+           $89/$16/DVar/      { mov  DVar, dx        89 16 C2 10       }
+           $8B/$1E/DVar+2/    { mov  bx, DVar        8B 1E C4 10       }
+           $FF/$86/SVar/      { inc  WORD PTR [bp+4] FF 46 04 00       }
+           $CD/$10            { int  10h             CD 10             }
+           );
+ 
+    Default size assumptions can be overridden with the (&lt;) and (&gt;)
+    operators. The (&lt;) operator specifies a byte element; the (&gt;)
+    operator specifies a word. For example, &lt;$3C79 is encoded as $3C
+    and &gt;$F2 is encoded as $F2, $00.
+ 
+    An inline sequence must preserve BP, SP, SS, and DS. Other
+    registers may be safely modified within the sequence.
+ 
+    The INLINE keyword can be applied to a procedure or function to
+    make it insert instructions directly into the instruction stream
+    without the normal entry and exit sequence. For example, the
+    following procedure generates one byte of code, an STI
+    instruction:
+ 
+       PROCEDURE Enable; INLINE( $FB { sti } );
+ 
+    INLINE functions and procedures can have arguments, but these
+    arguments cannot be accessed by name. The compiler pushes the
+    arguments onto the stack. They can be accessed by popping them
+    into registers in reverse order. Values returned by INLINE
+    functions must be returned in the normal registers (AX for 2-byte
+    values or DX:AX for four-byte values). For example,
+ 
+       FUNCTION Power2( Value : Word; Count : BYTE ) : WORD;
+           INLINE
+               (
+               $59/       { pop  cx        ; Load Value             }
+               $58/       { pop  ax        ; Load Power             }
+               $D3/$E0    { shl  ax, cl    ; Multiply by power of 2 }
+               );
+ 
+    This code could be written as a normal function as shown below:
+ 
+       FUNCTION Power2( Value : Word; Count : BYTE ) : WORD;
+       VAR
+           Ret : WORD;
+ 
+           BEGIN
+           INLINE
+               (
+               $8B/$86/Value/ { mov  ax, Value ; Load Value             }
+               $8A/$8E/Power/ { mov  cl, Count ; Load Count             }
+               $D3/$E0/       { shl  ax, cl    ; Multiply by power of 2 }
+               $89/$86/Ret    { mov  Reg, ax   ; Put in Ret variable    }
+               );
+           Power2 := Ret;
+           END;
+ 
+    Note that the first example generates less code and will thus be
+    faster, but the code is generated each time the function is used.
+    The second example generates more code, but the code appears only
+    once in the executable program regardless of how many times the
+    function is called. Because of the potential overhead involved,
+    INLINE functions and procedures should be short--normally less
+    than 10 bytes.
+ 
+  See also:  EXTERNAL, {$L}
+ 
+</pre>
+</body>
+
+</html>

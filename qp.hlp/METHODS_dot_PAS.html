@@ -1,0 +1,193 @@
+<html>
+
+<head>
+<title>METHODS.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> METHODS.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM methods;
+ 
+{ METHODS.PAS demonstrates object techniques with geometric shapes.
+  It uses the Member function and the $M directive.
+}
+ 
+{$M+}
+ 
+CONST
+    program_name = 'METHODS ';
+    program_desc = 'shows object creation and simple object techniques.';
+ 
+TYPE
+    geo_shape = OBJECT
+        area  : Real;
+        height: Real;
+        what  : STRING;
+        PROCEDURE geo_shape.init;
+        PROCEDURE geo_shape.say_what;
+        FUNCTION geo_shape.get_area : Real;
+        END;
+ 
+    rectangle = OBJECT(geo_shape)
+        len: Real;
+        FUNCTION rectangle.is_square : Boolean;
+        PROCEDURE rectangle.init; OVERRIDE;
+        FUNCTION rectangle.get_area : Real; OVERRIDE;
+        END;
+ 
+    circle = OBJECT(geo_shape)
+        radius: Real;
+        PROCEDURE circle.init; OVERRIDE;
+        FUNCTION circle.get_area : Real; OVERRIDE;
+        END;
+ 
+{ Object Procedures and Functions }
+ 
+{======================== geo_shape.init =======================
+ geo_shape.init initializes an object of type geo_shape.
+}
+ 
+PROCEDURE geo_shape.init;
+BEGIN
+    SELF.area := 0;
+    SELF.height := 0;
+    SELF.what := 'Geometric shape';
+END;
+ 
+{======================== geo_shape.say_what =======================
+ geo_shape.say_what displays a string identifying the object.
+}
+ 
+PROCEDURE geo_shape.say_what;
+BEGIN
+    Write( SELF.what );
+END;
+ 
+{======================== geo_shape.get_area =======================
+ geo_shape.get_area calculates the area of the object.
+}
+ 
+FUNCTION geo_shape.get_area : Real;
+BEGIN
+    SELF.area := SELF.height * SELF.height;
+    get_area := SELF.area;
+END;
+ 
+{======================== circle.init =========================
+ circle.init initializes a geometric object of subclass circle.
+}
+PROCEDURE circle.init;
+BEGIN
+    INHERITED SELF.init;  { use generic procedure }
+    SELF.radius := 4;
+    SELF.what := 'Circle';
+END;
+ 
+{======================== circle.get_area =======================
+ circle.get_area calculates the area of a circle.
+}
+FUNCTION circle.get_area: Real;
+BEGIN
+    SELF.area := Pi * Sqr( SELF.radius );
+    get_area := SELF.area;
+END;
+ 
+{======================== rectangle.init =======================
+ rectangle.init calculates the area of a rectangle.
+}
+PROCEDURE rectangle.init;
+BEGIN
+    INHERITED SELF.init;
+    SELF.height := 5;
+    SELF.len := 5;
+    SELF.what := 'Rectangle';
+END;
+ 
+{======================== rectangle.is_square =======================
+ rectangle.is_square returns True if the rectangle is a square.
+}
+FUNCTION rectangle.is_square: Boolean;
+BEGIN
+    is_square := False;
+    IF SELF.len = SELF.height THEN
+        is_square := True;
+END;
+ 
+{======================== rectangle.get_area =======================
+ rectangle.get_area returns the area of the rectangle.
+}
+FUNCTION rectangle.get_area: Real;
+BEGIN
+    SELF.area := SELF.len * SELF.height;
+    get_area := SELF.area;
+END;
+ 
+{============================ main program ============================}
+ 
+VAR    { Global variables }
+ 
+    the_circle : circle;
+    the_rect   : rectangle;
+ 
+BEGIN  { main program body }
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+ 
+    Writeln( 'Creating and initializing two objects.' );
+    New( the_circle );
+    the_circle.init;
+    New( the_rect );
+    the_rect.init;
+ 
+    the_circle.say_what;
+    Writeln( ' area: ', the_circle.get_area:4:2 );
+    the_rect.say_what;
+    Writeln( ' area: ', the_rect.get_area:4:2 );
+ 
+    Writeln;
+    Writeln( 'Object Class Membership':40 );
+    Writeln( '-----------------------':40 );
+    Writeln( 'Geo_shape':20, 'Circle':8, 'Rectangle':11);
+    Writeln;
+    the_circle.say_what;
+    Writeln( Member( the_circle, geo_shape ):14,
+             Member( the_circle, circle ):8,
+             Member( the_circle, rectangle ):11 );
+    the_rect.say_what;
+    Writeln( Member( the_rect, geo_shape ):11,
+             Member( the_rect, circle ):8,
+             Member( the_rect, rectangle ):11 );
+    Dispose( the_circle );
+    Dispose( the_rect );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

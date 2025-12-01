@@ -1,0 +1,137 @@
+<html>
+
+<head>
+<title>RECORDS.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> RECORDS.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM records;
+ 
+{ RECORDS.PAS illustrates reading and writing of file records using seek
+  functions, including:
+ 
+    FilePos    FileSize    Reset    Rewrite    Seek    Truncate    Write
+}
+ 
+TYPE
+    filerec_t = RECORD
+        int16  : Integer;
+        int32  : LongInt;
+        real32 : Real;
+        ch1    : Char;
+        END;
+ 
+CONST
+    program_name = 'RECORDS ';
+    program_desc = ' demonstrates record-structured file operations.';
+ 
+VAR
+    c         : Integer;
+    new_rec   : filerec_t;
+    rec_seek  : LongInt;
+    rec_file  : FILE OF filerec_t;
+    answer    : Char;
+    file_name : STRING;
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+ 
+    { Initialize record variable. }
+    WITH new_rec DO
+        BEGIN
+        int16 := 0;
+        int32 := 1;
+        real32 := 1000.0;
+        ch1 := '`';
+        END; { with new_rec }
+ 
+    { Create and open temporary file. }
+    Write( 'Name for file to create: ' );
+    Readln( file_name );
+    Assign( rec_file, file_name );
+    Rewrite( rec_file );
+ 
+    { Write 10 unique records to file. }
+    FOR c := 1 TO 10 DO
+        BEGIN
+        WITH new_rec DO
+            BEGIN
+            int16 := c;
+            int32 := int32 * 3;
+            real32 := real32 / (c+1);
+            ch1 := Chr( Ord( ch1 ) + 1 );
+            END; { WITH statement }
+        Write( rec_file, new_rec );
+        END; { FOR statement }
+ 
+    { Find a specific record. }
+    REPEAT
+        Write( 'Enter record number from 1 to 10 (or 0 to quit): ' );
+        Readln( rec_seek );
+ 
+        { Find and display valid records. }
+        IF ((rec_seek &gt;= 1) AND (rec_seek &lt;= 10)) THEN
+            BEGIN
+            Seek( rec_file, rec_seek - 1 ); { first record is 0 }
+            Read( rec_file, new_rec );
+            Writeln( 'Integer:        ', new_rec.int16 );
+            Writeln( '32-bit integer: ', new_rec.int32 );
+            Writeln( 'Real number:    ', new_rec.real32 );
+            Writeln( 'Character:      ', new_rec.ch1 );
+            END; { IF rec_seek between 1 and 10 }
+ 
+    UNTIL (rec_seek = 0);
+ 
+    { Starting at first record, scan each for specific value. }
+    Reset( rec_file );
+    REPEAT
+        Read (rec_file, new_rec);
+    UNTIL (new_rec.int32 &gt;= 1000);
+ 
+    Writeln;
+    Writeln( 'First 32-bit integer above 1000 is ', new_rec.int32,
+             ' in record ', FilePos( rec_file ));
+    Writeln( 'Truncating file at this record.' );
+    Truncate( rec_file );
+    Writeln( 'File contains ', FileSize( rec_file ), ' records.' );
+ 
+    { Close and delete file. }
+    Close( rec_file );
+    Write( 'Delete ', file_name, '? [Y or N] ' );
+    Readln( answer );
+    IF (UpCase( answer ) = 'Y') THEN
+        Erase( rec_file );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

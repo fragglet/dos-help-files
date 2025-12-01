@@ -1,0 +1,179 @@
+<html>
+
+<head>
+<title>CRT1.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> CRT1.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM crt1;
+ 
+{ CRT1.PAS : Demonstrates use of Crt procedures for keyboard input. }
+ 
+USES
+    Crt, Dos;
+ 
+CONST
+    wait        = 100;
+    achar       = 'o';
+    up_arrow    = #72;
+    down_arrow  = #80;
+    left_arrow  = #75;
+    right_arrow = #77;
+    F1_key      = #59;
+    F2_key      = #60;
+    music       = True; { play music at the end of the program }
+ 
+VAR
+    posx, posy, lasty : Byte;
+    c1, c2, akey      : Char;
+    wait_sec          : LongInt;
+ 
+{============================= cursor_off ==============================
+  Procedure cursor_off turns off the text cursor.
+}
+ 
+PROCEDURE cursor_off;
+ 
+VAR
+    regs : Registers;
+ 
+BEGIN
+    WITH regs DO BEGIN
+        AX := $0100;
+        CX := $2000;
+        Intr( $10, regs )
+    END;
+END; { procedure cursor_off }
+ 
+{============================ main program ============================}
+ 
+BEGIN
+    ClrScr;
+    Writeln( 'Press the arrow keys to move the letter "o"' );
+    Writeln( 'Press the [F1] function key to stop' );
+    Writeln( 'Press the [F2] function key to see the char bounce' );
+    cursor_off;
+    c1 := ' ';
+    c2 := ' ';
+    GotoXY( 5,5 );
+    posx := WhereX;
+    posy := WhereY;
+    Write( achar );
+    WHILE NOT ((c1 = #0) AND (c2 = F1_key)) DO BEGIN
+        WHILE NOT KeyPressed DO;    { nothing }
+        c1 := ReadKey;
+        IF (c1 = #0) THEN BEGIN
+            c2 := ReadKey;
+            CASE c2 OF
+                up_arrow : BEGIN
+                    GotoXY( WhereX-1, WhereY );
+                    Write( ' ' );
+                    IF (posy &gt; 1) THEN Dec( posy )
+                    ELSE posy := 25;
+                    GotoXY( posx, posy );
+                    Write( achar );
+                    END;
+                down_arrow : BEGIN
+                    GotoXY( WhereX-1, WhereY );
+                    Write( ' ' );
+                    IF (posy &lt; 25) THEN Inc( posy )
+                    ELSE posy := 1;
+                    GotoXY( posx, posy );
+                    Write( achar );
+                    END;
+                left_arrow : BEGIN
+                    GotoXY( WhereX-1, WhereY );
+                    Write( ' ' );
+                    IF (posx &gt; 1) THEN Dec( posx )
+                    ELSE posx := 79;
+                    GotoXY( posx, posy );
+                    Write( achar );
+                    END;
+                right_arrow : BEGIN
+                    GotoXY( WhereX-1, WhereY );
+                    Write( ' ' );
+                    IF (posx &lt; 79) THEN Inc( posx )
+                    ELSE posx := 1;
+                    GotoXY( posx, posy );
+                    Write( achar );
+                    END;
+                F2_key : BEGIN
+                    wait_sec := wait;
+                    lasty := posy;
+                    WHILE (lasty &lt;= 25) AND (NOT KeyPressed) DO
+                        BEGIN
+                        WHILE (posy &lt; 25) AND (NOT KeyPressed) DO
+                            BEGIN
+                            GotoXY( WhereX-1, WhereY );
+                            Write( ' ' );
+                            Inc( posy );
+                            GotoXY( posx, posy );
+                            Write( achar );
+                            Delay( wait_sec )
+                            END; { while posy &lt; 25... }
+                        WHILE (posy &gt; lasty) AND (NOT KeyPressed) DO
+                            BEGIN
+                            GotoXY( WhereX-1, WhereY );
+                            Write( ' ' );
+                            Dec( posy );
+                            GotoXY( posx, posy );
+                            Write( achar );
+                            Delay( wait_sec )
+                            END; { while posy &gt; lasty ... }
+                        Inc( lasty );
+                        wait_sec := wait_sec - 10;
+                        IF wait_sec &lt; 1 THEN wait_sec := 10;
+                        END; { while lasty &lt;= 25... }
+                    END; { F2_key }
+                ELSE Write( ^G );
+                END; { CASE }
+            END; { IF }
+        END; { WHILE }
+ 
+    GotoXY( 1, 24 );
+    ClrEol;
+    Write( 'Press any key to continue ...' );
+    akey:= ReadKey;
+ 
+    IF music THEN
+        BEGIN
+        Sound( 500 ); Delay( 300 ); NoSound;
+        Sound( 600 ); Delay( 400 ); NoSound;
+        Sound( 400 ); Delay( 250 ); NoSound;
+        Sound( 1000 ); Delay( 400 ); NoSound;
+        Sound( 800 ); Delay( 500 ); NoSound;
+        Sound( 900 ); Delay( 400 ); NoSound;
+        Sound( 500 ); Delay( 1000 ); NoSound;
+        END;
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,114 @@
+<html>
+
+<head>
+<title>CRTTEXT.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> CRTTEXT.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM crttext;
+ 
+{ PROGRAM CRTTEXT.PAS demonstrates text colors and backgrounds
+  with the following routines:
+ 
+      ClrScr       LowVideo     TextBackground    TextMode
+      HighVideo    NormVideo    TextColor
+ 
+  and the standard variables:
+ 
+      Blink        Font8x8      LastMode
+ 
+  It also uses the following functions:
+ 
+      Dec          Inc          Lo                ReadKey
+}
+ 
+USES
+    Crt;
+ 
+CONST
+    program_name = 'CRTTEXT ';
+    program_desc = 'displays text in various background colors.';
+ 
+VAR
+   i              : Byte;
+   done           : Char;
+   mode           : Word;
+   color1, color2 : Byte;
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+    Writeln( 'Press a key to start.' );
+    done := ReadKey;
+ 
+    { Save initial mode. }
+    mode := LastMode;
+    ClrScr;
+    color1 := 0;
+    color2 := 15;
+ 
+    { set to 43/50 lines for VGA }
+    TextMode( Lo( LastMode ) + Font8x8 );
+    FOR i := 7 DOWNTO 0 DO
+         BEGIN
+         TextBackground( i );
+         TextColor( color1 );
+         Write( 'Background: ',i, ' Color: ', color1 );
+         TextColor( color1 + Blink );
+         Write( ' Blink ' );
+         Inc( color1, 2 );
+         TextColor( color2 );
+         Write( ' Color: ', color2 );
+         TextColor( color2 + Blink );
+         Writeln( ' Blink ' );
+         Dec( color2, 2 );
+         END;
+ 
+    Writeln;
+    Writeln;
+    TextColor( Yellow );
+    TextBackground( Blue );
+    LowVideo;
+    Writeln( 'Low intensity Yellow text on Blue background.' );
+    HighVideo;
+    Writeln;
+    Writeln( 'High intensity Yellow text on Blue background.' );
+    NormVideo;
+ 
+    { Wait until a key is pressed to look at output. }
+    done := ReadKey;
+ 
+    TextMode( mode );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

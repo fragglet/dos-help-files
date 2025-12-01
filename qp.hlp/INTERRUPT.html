@@ -1,0 +1,132 @@
+<html>
+
+<head>
+<title>INTERRUPT Keyword - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> INTERRUPT Keyword</div>
+<pre>  <span class='grhilite'>◄</span><a href='keywords-1st.html'>Keywords</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                   <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+  PROCEDURE &lt;identifier&gt;[( Flags, CS, IP, AX, BX,
+                           CX, DX, SI, DI, DS, ES, BP : Word )];
+  INTERRUPT;
+    BEGIN
+      .
+      .
+    END;
+ 
+  Description
+ 
+    The INTERRUPT keyword can be placed just before the statement block
+    of a procedure to specify that the procedure is an interrupt
+    handler. An interrupt handler differs from other procedures in that
+    it terminates with an IRET instruction rather than a RET. Interrupt
+    procedures are always far. It is not necessary to use the $F
+    directive to make them far.
+ 
+    Dummy stack parameters can be specified for an interrupt procedure
+    to represent 80x86 machine registers. The actual register values
+    at the time the interrupt is called will be placed in these
+    parameters for use inside the handler. Any parameters changed by
+    statements inside the handler will be returned in actual registers
+    when the handler terminates.
+ 
+    The parameters are optional──one or more may be left out of the
+    parameter list. However, there is a restriction. The parameters
+    must be excluded in order──from Flags to BP. In other words, AX
+    through BP must be included if AX is a chosen parameter. For
+    example,
+ 
+       PROCEDURE IntHandler( AX, BX, CX, DX, SI, DI, DS, ES, BP : Word );
+       INTERRUPT;
+       BEGIN
+           IF (AX = 0) THEN
+               CX := 4;
+           .
+           .
+           .
+       END;
+ 
+    In this example, if the actual value of AX was 0 when the interrupt
+    was called, then the actual value of CX will be set to 4 when the
+    interrupt terminates. Note that this does not mean that the CX
+    register is set to 4 inside the handler when the statement
+    "CX := 4" is executed. It only means that the CX register will get
+    the value of the CX parameter on termination.
+ 
+    When an interrupt is called, other interrupts are disabled
+    (equivalent to a CLI instruction). INTERRUPT procedures do not
+    automatically perform an STI instruction to reenable interrupts
+    after executing. Use the following INLINE procedure to enable
+    interrupts before doing any significant processing inside the
+    handler.
+ 
+       PROCEDURE Enable; INLINE( $FB )    { STI }
+ 
+    Although the dummy parameters of an interrupt procedure are stored
+    on the stack, the entry and exit sequences are significantly
+    different than the sequence for normal procedures. The following
+    code is generated on entry:
+ 
+       push   ax               ; [BP+16] := AX
+       push   bx               ; [BP+14] := BX
+       push   cx               ; [BP+12] := CX
+       push   dx               ; [BP+10] := DX
+       push   si               ; [BP+8]  := SI
+       push   di               ; [BP+6]  := DI
+       push   ds               ; [BP+4]  := DS
+       push   es               ; [BP+2]  := ES
+       push   bp               ; Save BP
+       mov    bp, sp           ;   and set up stack frame
+       sub    sp, localsize    ; Adjust for any local variables
+       mov    ax, SEG DATA     ; Load program data segment
+       mov    ds, ax           ;   into DS
+ 
+    Note that the program data segment is loaded into DS so that global
+    variables can be accessed inside the handler. The exit sequence is
+    shown below:
+ 
+       mov    sp, bp            ; Restore stack frame
+       pop    bp                ;   and BP
+       pop    es                ; ES := [BP+2]
+       pop    ds                ; DS := [BP+4]
+       pop    di                ; DI := [BP+6]
+       pop    si                ; SI := [BP+8]
+       pop    dx                ; DX := [BP+10]
+       pop    cx                ; CX := [BP+12]
+       pop    bx                ; BX := [BP+14]
+       pop    ax                ; AX := [BP+16]
+ 
+    A thorough knowledge of assembly-language programming and how
+    interrupts work is recommended before programming interrupt
+    handlers.
+ 
+  See also:  GetIntVec, INLINE, Intr, Registers, SetIntVec
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,121 @@
+<html>
+
+<head>
+<title>ANIMATE.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> ANIMATE.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM animate;
+ 
+{ ANIMATE.PAS : Demonstrates animation using image buffers }
+ 
+USES
+    MSGraph, Crt;
+ 
+CONST
+    max_buffer = 65520;
+ 
+VAR
+    q      : Integer;
+    vc     : _VideoConfig;
+    buffer : POINTER;
+    imsize : LongInt;
+    x0, y0 : Integer;
+    x, y   : Integer;
+ 
+BEGIN    { Begin main program. }
+ 
+    _ClearScreen( _GClearScreen);
+ 
+    { Set the video mode and check for success }
+    q := _SetVideoMode( _MaxResMode );
+    IF (q = 0) THEN
+        BEGIN
+        Writeln( 'Graphics mode unavailable; hit Return to continue' );
+        Readln;
+        q := _SetVideoMode( _DefaultMode );
+        Halt( 0 );
+        END;
+ 
+    { Find out some screen characteristics. }
+    _GetVideoConfig( vc );
+ 
+    { Draw and store a simple figure. }
+    _SetColor( 3 );
+    x := vc.NumXPixels DIV 4;
+    y := vc.NumYPixels DIV 4;
+ 
+    _Rectangle( _GFillInterior, 0, 0, x, y );
+    imsize := _ImageSize( 0, 0, x, y );
+    IF (imsize &gt; max_buffer) OR (imsize &gt; MaxAvail) THEN
+        BEGIN
+        Writeln( 'Image too big.' );
+        Readln;
+        Halt( 0 );
+        END
+    ELSE
+        BEGIN
+        GetMem( buffer, imsize );
+        IF (buffer = NIL) THEN
+            BEGIN
+            Writeln( 'Cannot allocate image buffer.' );
+            Readln;
+            Halt( 0 );
+            END;
+        END;
+ 
+    _GetImage( 0, 0, x, y, buffer^ );
+    _ClearScreen( _GClearScreen );
+ 
+    { Draw axes centered on the screen }
+    _SetColor( 2 );
+    x0 := vc.NumXPixels DIV 2 -1;
+    y0 := vc.NumYPixels DIV 2 -1;
+    _MoveTo( x0 ,0);
+    _LineTo( x0, vc.NumYPixels );
+    _MoveTo( 0, y0 );
+    _LineTo( vc.NumXPixels, y0 );
+ 
+    _SetTextPosition( 1, 1 );
+    _OutText( '_GXOR');
+    WHILE NOT KeyPressed DO
+        BEGIN
+        _PutImage( Random( vc.NumXPixels - x ),
+                   Random( vc.NumYPixels - y ), buffer^, _GXOR );
+        Delay( 500 );
+        END;
+ 
+    _ClearScreen( _GClearScreen );
+    q := _SetVideoMode( _DefaultMode );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

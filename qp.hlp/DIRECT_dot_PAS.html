@@ -1,0 +1,116 @@
+<html>
+
+<head>
+<title>DIRECT.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> DIRECT.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM direct;
+ 
+{ DIRECT.PAS illustrates the following directory and file handling
+  routines:
+ 
+      ChDir    FindFirst    GetDir    Rename
+      Erase    FindNext     MkDir     RmDir
+ 
+  and the following standard variable:
+ 
+      DosError
+}
+ 
+USES
+    Dos;
+ 
+CONST
+    program_name = 'DIRECT ';
+    program_desc = 'demonstrates various directory routines.';
+    drive = 0;    { current drive }
+ 
+VAR
+    current_dir : STRING;
+    new_dir     : STRING;
+    sresults    : SearchRec;
+    new_file    : TEXT;
+    new_name    : STRING;
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+ 
+    { Get the current working directory. }
+    GetDir( drive, current_dir );
+    REPEAT
+        { Prompt user for name for test directory. }
+        Write( 'Enter name for new subdirectory of ', current_dir, ' :');
+        Readln( new_dir );
+ 
+        { Make sure it doesn't already exist. }
+        FindFirst( new_dir, Directory, sresults );
+        IF (DosError = 0) THEN
+            Writeln ('A subdirectory by that name already exists.');
+    UNTIL (DosError = 18);    { 18 means no more matches }
+ 
+    { Try to create a new directory, and if successful, change to it. }
+    MkDir( new_dir );
+    ChDir( new_dir );
+ 
+    { Create a file in this directory. }
+    Writeln( 'Creating new file test.doc in directory ', new_dir );
+    Assign( new_file, 'test.doc' );
+    Rewrite( new_file );
+    Writeln( new_file, 'This file was written by DIRECT.EXE.' );
+    Close( new_file );
+    Write( 'Enter new name for test.doc: ');
+    Readln( new_name );
+    Rename( new_file, new_name );
+ 
+    { List the contents of this new subdirectory. }
+    Writeln( 'Contents of subdirectory ', new_dir, ':' );
+    Writeln;
+    FindFirst( '*.*', Directory, sresults );
+    WHILE (DosError = 0) DO
+        BEGIN
+        Writeln( sresults.Name );
+        FindNext( sresults );
+        END;
+ 
+    { Delete new file. }
+    Erase( new_file );
+ 
+    { Return to previous directory and delete new one. }
+    ChDir( current_dir );
+    Writeln( 'Deleting new subdirectory.' );
+    RmDir( new_dir );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

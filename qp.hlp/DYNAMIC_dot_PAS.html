@@ -1,0 +1,120 @@
+<html>
+
+<head>
+<title>DYNAMIC.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> DYNAMIC.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM dynamic;
+ 
+{ DYNAMIC.PAS illustrates the use of dynamic variables with the
+  following procedures:
+ 
+      Dispose    New
+ 
+  It also uses two procedures to generate random numbers:
+ 
+      Random     Randomize
+}
+ 
+USES
+    Crt;
+ 
+CONST
+    program_name = 'DYNAMIC ';
+    program_desc = 'builds a simple linked list of records.';
+ 
+TYPE
+    record_ptr_t = ^record_t;
+    record_t = RECORD
+        name     : STRING[40];
+        id       : Integer;
+        amount   : Real;
+        next_rec : record_ptr_t;
+        END;
+ 
+VAR
+    record_ptr   : record_ptr_t;
+    first_record : record_ptr_t;
+    answer       : Char;
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+    Writeln( program_name,
+             'will prompt you for a string for each record,' );
+    Writeln( 'and will randomly generate two additional fields.' );
+    Write( 'Type a string up to 40 characters long in response to ' );
+    Writeln( 'the Name: prompt.' );
+ 
+    Randomize;
+ 
+    { Build simple linked list. }
+    first_record := NIL;
+ 
+    REPEAT
+        New( record_ptr );
+        WITH record_ptr^ DO
+            BEGIN
+            Write( 'Name: ' );
+            Readln( name );
+            id := Random( 255 );
+            amount := Random * 10;
+            Writeln( 'Random id:', id:4, ' Random real: ', amount:3:2 );
+            next_rec := first_record;
+            END;
+        first_record := record_ptr;
+        REPEAT
+            Write( 'More? (''Y'' or ENTER to continue; ''N'' to quit)' );
+            answer := ReadKey;
+            Writeln( answer );
+            answer := UpCase( answer );
+        UNTIL (answer = 'Y') OR (answer = 'N') OR (answer = Chr( 13 ));
+    UNTIL (answer = 'N');
+ 
+    { Traverse the list, print its contents, and release pointers. }
+    WHILE (record_ptr &lt;&gt; NIL) DO
+        BEGIN
+        Writeln;
+        WITH record_ptr^ DO
+            BEGIN
+            Writeln( name );
+            Writeln( id:4 );
+            Writeln( amount:3:2 );
+            END; { WITH statement }
+        Dispose( record_ptr );
+        record_ptr := record_ptr^.next_rec;
+        END;
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

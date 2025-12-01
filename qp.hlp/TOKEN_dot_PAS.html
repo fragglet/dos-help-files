@@ -1,0 +1,148 @@
+<html>
+
+<head>
+<title>TOKEN.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> TOKEN.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM token;
+ 
+{ TOKEN.PAS separates a string into individual tokens, delimited by a
+  set of common delimiters. It uses the following routines:
+ 
+      Copy    Delete    Length    Mark    Release
+ 
+  In addition, it uses the IN set operator and dynamic record and string
+  pointers.
+}
+ 
+CONST
+    program_name = 'TOKEN ';
+    program_desc = 'separates a string into individual tokens.';
+    max_tokens   = 127;
+ 
+TYPE
+    token_array_t = ARRAY[0..max_tokens] OF ^STRING;
+    token_rec_t   = RECORD
+        count      : Byte;
+        token_ptrs : token_array_t;
+        END;
+    token_ptr_t   = ^token_rec_t;
+    delimiter_set = SET OF Char;
+ 
+CONST
+    delimiters : delimiter_set = [' ', ';', ':', ',', '.', #9];
+ 
+VAR
+    parse_string : STRING;
+    tokens_back  : token_ptr_t;
+    j            : Byte;
+    top_of_heap  : POINTER;
+ 
+{============================= get_tokens =============================}
+PROCEDURE get_tokens(     from_string   : STRING ;
+                      VAR token_rec_ptr : token_ptr_t );
+ 
+VAR
+    temp, token : STRING;
+    i           : Byte;
+    count       : Byte;
+    token_array : token_array_t;
+ 
+BEGIN
+ 
+    count := 0;
+    token := '';
+    FOR i := 0 TO max_tokens DO token_array[i] := NIL;
+    temp := from_string;
+    Writeln( 'Length of string is ', Length( temp ) );
+ 
+    { Strip off leading delimiters. }
+    WHILE (temp[1] IN delimiters) DO
+        Delete( temp, 1, 1 );
+ 
+    { Mark top of heap before allocating any memory. }
+    Mark( top_of_heap );
+ 
+    { Pick tokens from rest of string. }
+    FOR i := 1 TO Length( temp ) DO
+        BEGIN
+        IF (temp[i] IN delimiters) THEN { This is a delimiter. }
+            BEGIN
+            { Check for multiple delimiters in a row. }
+            IF (Length( token ) &gt; 0) THEN
+                BEGIN
+                GetMem( token_array[count], Length( token ) + 1 );
+                token_array[count]^ := Copy( token, 1, Length( token ) );
+                token := '';
+                END; { IF this delimiter ends a token }
+            END { IF this character is a delimiter }
+        ELSE { This character is part of a token. }
+            BEGIN
+            IF Length( token ) = 0 THEN count := count + 1;
+            token := token + temp[i];
+            END; {IF this character is not a delimiter }
+    END; { FOR loop }
+ 
+    { Get the last token. }
+    IF Length( token ) &gt; 0 THEN
+        BEGIN
+        GetMem( token_array[count], Length( token ) + 1 );
+        token_array[count]^ := Copy( token, 1, Length( token ) );
+        END;
+ 
+    { Allocate a record to pass the information back. }
+    GetMem( token_rec_ptr, 1 + Sizeof( token_array ) );
+    token_rec_ptr^.count := count;
+    token_rec_ptr^.token_ptrs := token_array;
+END; { procedure get_tokens }
+ 
+{============================ main program ============================}
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+ 
+    Write( 'Enter string to parse: ' );
+    Readln( parse_string );
+    get_tokens( parse_string, tokens_back );
+    IF (tokens_back^.count = 1) THEN
+        Writeln( 'Found 1 token.  Token is:' )
+    ELSE Writeln( 'Found ', tokens_back^.count, ' token. Tokens are:' );
+    FOR j := 1 TO tokens_back^.count DO
+        Writeln( '     ', tokens_back^.token_ptrs[j]^ );
+ 
+    Release( top_of_heap );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

@@ -1,0 +1,116 @@
+<html>
+
+<head>
+<title>TEXTIO.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> TEXTIO.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM textio;
+ 
+{ Program TEXTIO.PAS demonstrates I/O to text files using the following
+  routines:
+ 
+      Append    Flush    Readln      Write
+      Eof       Read     SeekEoln    Writeln
+ 
+  While the program does not use Eoln or SeekEof, their use is
+  essentially similar to SeekEoln and Eof.
+}
+ 
+CONST
+    program_name = 'TEXTIO';
+    program_desc = ' demonstrates various I/O routines with text files.';
+    line1        = 'What a chimera then is man!     ';
+    line2        = 'What a novelty!';
+    line3        = 'What a monster, what a chaos, ' +
+                   'what a contradiction, what a prodigy!';
+ 
+VAR
+    file_name   : STRING;
+    text_file   : Text;
+    i           : ShortInt;
+    string5     : STRING[5];
+    full_string : STRING;
+    one_char    : Char;
+ 
+BEGIN
+ 
+    Writeln( program_name, program_desc );
+    Writeln;
+ 
+    Write( 'Name for file to create: ' );
+    Readln( file_name );
+    Assign( text_file, file_name );
+    Rewrite( text_file );
+ 
+    { Write first group of lines to file. }
+    Writeln( 'Writing 3 lines to file ', file_name, '.' );
+    Writeln( text_file, line1 );
+    Writeln( 'First line: ',line1 );
+    Writeln( text_file, line2 );
+    Writeln( 'Second line: ', line2 );
+    Writeln( text_file, line3 );
+    Writeln( 'Last line: ', line3 );
+    Flush( text_file );
+ 
+    Writeln( 'Returning to beginning of file to read.' );
+    Reset( text_file );
+    Read( text_file, full_string);
+    Writeln( 'Read into STRING: ', full_string );
+    Write( 'SeekEoln is ', SeekEoln( text_file ) );
+    Writeln( '.  Using Readln to go to next line of file.' );
+    Readln( text_file );
+    Read( text_file, string5 );
+    Writeln( 'Read into STRING[5]: ', string5 );
+    Write( 'SeekEoln is ', SeekEoln( text_file ), '.  ' );
+    Writeln( 'Reading 10 more characters from this line...' );
+    FOR i := 1 TO 10 DO
+        BEGIN
+        Read( text_file, one_char );
+        Writeln( 'Char', i:2, ': ', one_char );
+        END;
+ 
+    Writeln( 'Closing file.  Appending one more line.' );
+    Close( text_file );
+    Append( text_file );
+    Writeln( text_file, 'Blaise Pascal, Pensees, 1670' );
+ 
+    Writeln( 'Final contents of file: ');
+    Reset( text_file );
+    WHILE NOT Eof( text_file ) DO
+        BEGIN
+        Readln( text_file, full_string );
+        Writeln( full_string );
+        END;
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>

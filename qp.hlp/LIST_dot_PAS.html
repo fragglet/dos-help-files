@@ -1,0 +1,255 @@
+<html>
+
+<head>
+<title>LIST.PAS - qp.hlp</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="shortcut icon" href="../helpicon.png">
+</head>
+
+<body>
+<div class="page-heading">
+<form action="https://www.google.com/search" method="GET">
+<input name="as_q" id="search-box" placeholder="Search">
+<input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
+</form>
+qp.hlp (<a href='index.html'>Table of Contents</a>; <a href='TOPIC_LIST.html'>Topic list</a>)</div>
+<div class="notice">
+  <img src="../warning.png">
+  <div class="heading">
+    Important Notice
+  </div>
+  <div class="text">
+    The pages on this site contain documentation for very old MS-DOS software,
+    purely for historical purposes.
+
+    If you're looking for up-to-date documentation, particularly for programming,
+    you should not rely on the information found here, as it will be woefully
+    out of date.
+  </div>
+</div>
+<div class="page-title"> LIST.PAS</div>
+<pre>  <span class='grhilite'>◄</span>Example<span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='../unknown.html#h.contents'>Contents</a><span class='grhilite'>►</span> <span class='grhilite'>◄</span><a href='ACTUALLY_NAMED_index.html'>Index</a><span class='grhilite'>►</span>                                    <span class='grhilite'>◄</span><a href='..//b.html'>Back</a><span class='grhilite'>►</span>
+ 
+PROGRAM list;
+ 
+{ LIST.PAS builds a simple linked list (stack). The user can add new
+  records to the list (push a record onto the stack) or delete records
+  from the list (pop the stack).
+}
+ 
+USES
+    Crt;
+ 
+TYPE
+    rec_ptr   = ^stack_rec;
+ 
+    { Items in linked list. }
+    stack_rec = RECORD
+        data     : Integer;
+        next_rec : rec_ptr
+        END;
+ 
+VAR
+    stacks     : rec_ptr;
+    i, z       : Integer;
+ 
+    { global variable set when user wants to exit }
+    user_quits : Boolean;
+ 
+{============================== is_empty ===============================
+  The is_empty function checks to see if the stack is empty.
+}
+ 
+FUNCTION is_empty( VAR target : rec_ptr ) : Boolean;
+ 
+BEGIN
+    IF (target = NIL ) THEN
+        is_empty := True
+    ELSE
+        is_empty := False;
+END; { procedure is_empty }
+ 
+{================================ pause ================================
+  Procedure pause waits for the user to press ENTER before continuing.
+}
+ 
+PROCEDURE pause;
+ 
+VAR
+    wait : STRING;
+ 
+BEGIN
+    GotoXY( 25, 23 );
+    Write( 'Press ENTER to continue  ' );
+    Readln( wait );
+END; { procedure pause }
+ 
+{================================ push =================================
+  Procedure push adds a record to the front of the list.
+}
+ 
+PROCEDURE push( VAR x         : Integer;
+                VAR stack_ptr : rec_ptr );
+ 
+VAR
+   temp : rec_ptr;
+ 
+BEGIN
+    New( temp );
+    temp^.next_rec := stack_ptr;
+    stack_ptr := temp;
+    stack_ptr^.data := x;
+END; { procedure push }
+ 
+{================================= pop =================================
+  Procedure pop removes a record from the top of the list.
+}
+ 
+PROCEDURE pop( VAR stack_ptr : rec_ptr );
+ 
+VAR
+    temp : rec_ptr;
+ 
+BEGIN
+    IF is_empty( stack_ptr ) THEN
+        BEGIN
+        Writeln( ' ':25, 'No elements to pop.' );
+        pause;
+        END { THEN }
+    ELSE
+        BEGIN
+        z := stack_ptr^.data;
+        temp := stack_ptr;
+        stack_ptr := stack_ptr^.next_rec;
+        Dispose( temp );
+        END { ELSE }
+END; { procedure pop }
+ 
+{============================= print_stack =============================
+  Procedure print_stack displays the contents of the stack on the
+  standard output device.
+}
+ 
+PROCEDURE print_stack( stack_ptr : rec_ptr );
+ 
+VAR
+    stemp : rec_ptr;
+ 
+BEGIN
+    IF is_empty( stack_ptr ) THEN
+        BEGIN
+        Writeln( ' ':25, 'No stack elements to print.' );
+        pause;
+        END { THEN }
+    ELSE
+        BEGIN
+        stemp := NIL;
+        WHILE (stack_ptr &lt;&gt; NIL) DO
+            BEGIN
+            pop( stack_ptr );
+            push( z, stemp );
+            END;
+        Writeln;
+        Write( ' ':25 );
+        WHILE (stemp &lt;&gt; NIL) DO
+            BEGIN
+            pop( stemp );
+            Write( '  ' );
+            Write( z );
+            push( z, stack_ptr );
+            END;
+        Writeln( '  &lt;---- Top of stack' );
+        pause;
+        END; { ELSE }
+END; { procedure print_stack }
+ 
+{============================= dump_stack ==============================
+  Procedure dump_stack empties the list.
+}
+ 
+PROCEDURE dump_stack( VAR s1 : rec_ptr );
+ 
+VAR
+    temp : rec_ptr;
+ 
+BEGIN
+    WHILE NOT is_empty( s1 ) DO
+        BEGIN
+        temp := s1;
+        s1 := s1^.next_rec;
+        Dispose( temp )
+        END;
+END; { procedure dump_stack }
+ 
+{================================ menu =================================
+  Procedure menu displays a menu from which the user can manipulate the
+  linked list. It sets the global variable user_quits to true when the
+  user wants to quit.
+}
+ 
+PROCEDURE menu;
+ 
+VAR
+    choice : Char;
+    x      : Integer;
+    ans_x, ans_y : Byte;
+ 
+BEGIN
+    ClrScr;
+    choice := 'x';
+    GotoXY( 1, 8 );
+    Writeln( ' ':25, 'M E N U' );
+    Writeln;
+    Writeln( ' ':25, '1  push                     ' );
+    Writeln( ' ':25, '2  pop                      ' );
+    Writeln( ' ':25, '3  display stack            ' );
+    Writeln( ' ':25, 'Q  quit                     ' );
+    Writeln;
+    Writeln;
+    Write( ' ':25, 'Your choice:  ' );
+    ans_x := WhereX;
+    ans_y := WhereY;
+    Readln( choice );
+    WHILE NOT (choice IN ['1', '2', '3', 'Q', 'q']) DO
+        BEGIN
+        GotoXY( 1, ans_y + 1 );
+        Writeln( ' ':25, 'Please type 1, 2, 3, or Q.' );
+        GotoXY( ans_x, ans_y );
+        Readln( choice );
+        END;
+ 
+    CASE choice OF
+        '1' : BEGIN
+              GotoXY( 1, ans_y + 1 );
+              Write( ' ':25, 'Enter number to be pushed: ' );
+              Read( x );
+              push( x, stacks );
+              Readln;
+              END;
+        '2' : pop( stacks );
+        '3' : print_stack( stacks );
+        'Q', 'q' : user_quits := True;
+        END; { case }
+END; { procedure menu }
+ 
+{============================ main program ============================}
+ 
+BEGIN
+ 
+    stacks := NIL;
+    user_quits := False;
+    REPEAT
+        menu
+    UNTIL user_quits;
+    dump_stack( stacks );
+    ClrScr;
+    GotoXY( 1, 7 );
+    Writeln;
+    Writeln( ' ':25, 'Program terminated by user.' );
+ 
+END.
+ 
+</pre>
+</body>
+
+</html>
