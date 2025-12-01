@@ -40,7 +40,8 @@ HTML_TEMPLATE="""<html>
 <head>
 <title>%(title)s - %(db_title)s</title>
 <link rel="stylesheet" href="../style.css">
-<link rel="shortcut icon" href="../helpicon.png">
+<link rel="shortcut icon" href="/helpicon.png">
+<link rel="icon" href="/helpicon.png">
 </head>
 
 <body>
