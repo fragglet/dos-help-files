@@ -51,7 +51,7 @@ HTML_TEMPLATE="""<html>
 <input type="hidden" name="as_sitesearch" value="dos-help.soulsphere.org/*">
 </form>
 %(heading)s</div>
-<div class="notice">
+<div class="notice" data-nosnippet>
   <img src="../warning.png">
   <div class="heading">
     Important Notice
